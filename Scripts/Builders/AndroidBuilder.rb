@@ -1,5 +1,5 @@
 require_relative "Builder.rb"
-require_relative "Config.rb"
+require_relative "../Common/Config.rb"
 
 class AndroidBuilder < Builder
 
@@ -9,9 +9,9 @@ class AndroidBuilder < Builder
       @installDir = Config.installRoot + "/android/#{@arch}"
    end
 
-   def makeToolchain
+   def setupToolchain
       cmd = []
-      cmd << "#{Config.ndkPath}/build/tools/make-standalone-toolchain.sh"
+      cmd << "#{Config.ndkSourcesRoot}/build/tools/make-standalone-toolchain.sh"
       cmd << "--platform=android-#{Config.androidAPI}"
       cmd << "--install-dir=#{@installDir}"
       if @arch == "armv7a"

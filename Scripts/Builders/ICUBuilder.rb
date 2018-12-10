@@ -1,5 +1,5 @@
 require_relative "Builder.rb"
-require_relative "Config.rb"
+require_relative "../Common/Config.rb"
 
 # See:
 # - ICU Patches: https://github.com/amraboelela/swift/blob/android/docs/Android.md
@@ -12,7 +12,7 @@ require_relative "Config.rb"
 
 class ICUBuilder < Builder
 
-   def initialize(target)
+   def initialize(target = "armv7a")
       super()
       @target = target
       @buildDir = Config.buildRoot + "/icu/" + @target
@@ -24,7 +24,7 @@ class ICUBuilder < Builder
       if @target == "linux"
          cmd << 'CFLAGS="-Os"'
          cmd << 'CXXFLAGS="--std=c++11"'
-         cmd << "#{Config.icuSources}/source/runConfigureICU Linux --prefix=#{@prefixDir}"
+         cmd << "#{Config.icuSourcesRoot}/source/runConfigureICU Linux --prefix=#{@prefixDir}"
          cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
          cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       elsif @target == "armv7a"
@@ -36,7 +36,7 @@ class ICUBuilder < Builder
          cmd << "CXX=arm-linux-androideabi-clang++"
          cmd << "AR=arm-linux-androideabi-ar"
          cmd << "RINLIB=arm-linux-androideabi-ranlib"
-         cmd << "#{Config.icuSources}/source/configure --prefix=#{@prefixDir}"
+         cmd << "#{Config.icuSourcesRoot}/source/configure --prefix=#{@prefixDir}"
          cmd << "--host=arm-linux-androideabi"
          cmd << "--with-library-suffix=swift"
          cmd << "--enable-static --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
@@ -51,7 +51,7 @@ class ICUBuilder < Builder
          cmd << "CXX=i686-linux-android-clang++"
          cmd << "AR=i686-linux-android-ar"
          cmd << "RINLIB=i686-linux-android-ranlib"
-         cmd << "#{Config.icuSources}/source/configure --prefix=#{@prefixDir}"
+         cmd << "#{Config.icuSourcesRoot}/source/configure --prefix=#{@prefixDir}"
          cmd << "--host=i686-linux-android"
          cmd << "--with-library-suffix=swift"
          cmd << "--enable-static --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
@@ -66,7 +66,7 @@ class ICUBuilder < Builder
          cmd << "CXX=aarch64-linux-android-clang++"
          cmd << "AR=aarch64-linux-android-ar"
          cmd << "RINLIB=aarch64-linux-android-ranlib"
-         cmd << "#{Config.icuSources}/source/configure --prefix=#{@prefixDir}"
+         cmd << "#{Config.icuSourcesRoot}/source/configure --prefix=#{@prefixDir}"
          cmd << "--host=aarch64-linux-android"
          cmd << "--with-library-suffix=swift"
          cmd << "--enable-static --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
@@ -83,11 +83,14 @@ class ICUBuilder < Builder
    end
 
    def applyPatchIfNeeded()
-      originalFile = "#{Config.icuSources}/source/configure"
-      backupFile = "#{Config.icuSources}/source/configure.orig"
-      patchFile = "#{Config.icuPatchesDir}/configure.patch"
+      originalFile = "#{Config.icuSourcesRoot}/source/configure"
+      backupFile = "#{Config.icuSourcesRoot}/source/configure.orig"
+      patchFile = "#{Config.icuPatchesRoot}/configure.patch"
       if !File.exist? backupFile
+         puts "Patching ICU..."
          execute "patch --backup #{originalFile} #{patchFile}"
+      else
+         puts "Backup file \"#{backupFile}\" exists. Seems you already patched ICU. Skipping..."
       end
    end
 

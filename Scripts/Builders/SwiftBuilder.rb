@@ -1,5 +1,9 @@
 require_relative "Builder.rb"
-require_relative "Config.rb"
+require_relative "../Common/Config.rb"
+
+=begin
+
+Compiling swift on Linux: https://akrabat.com/compiling-swift-on-linux/
 
 # See:
 # 1. Building the Swift stdlib for Android – https://github.com/amraboelela/swift/blob/android/docs/Android.md
@@ -11,6 +15,29 @@ require_relative "Config.rb"
 # 7. Cross compile Apps on Mac for Linux: https://github.com/apple/swift-package-manager/blob/master/Utilities/build_ubuntu_cross_compilation_toolchain
 # 8. Swift cross compile on Rasperi Pi: https://stackoverflow.com/a/44003655/1418981
 # 9. Java and Swift interoperability: https://medium.com/@michiamling/android-app-with-java-native-interface-for-swift-c9c322609e08
+
+Swift in Java.
+
+- https://romain.goyet.com/articles/running_swift_code_on_android/
+- https://www.reddit.com/r/swift/comments/3w0xrd/im_patching_the_opensource_swift_compiler_to/
+- https://github.com/flowkey/UIKit-cross-platform
+- https://github.com/flowkey/swift-android-toolchain
+- https://blog.readdle.com/why-we-use-swift-for-android-db449feeacaf
+
+
+~~OLD
+
+// Later for update.
+4. swift/utils/update-checkout
+
+./swift/utils/build-script --help
+./swift/utils/build-script --show-presets (see also swift/utils/build-presets.ini)
+
+5. Build: ./swift/utils/build-script --preset=buildbot_linux installable_package=~/swift.tar.gz install_destdir=~/swift-install
+5. Build: ./swift/utils/build-script --preset=buildbot_linux,no_test installable_package=~/swift.tar.gz install_destdir=~/swift-install
+
+
+=end
 
 class SwiftBuilder < Builder
 

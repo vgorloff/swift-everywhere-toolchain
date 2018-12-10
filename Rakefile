@@ -1,116 +1,150 @@
 #!/usr/bin/env ruby
 
-require_relative "Scripts/ICUBuilder.rb"
-require_relative "Scripts/AndroidBuilder.rb"
-require_relative "Scripts/SwiftBuilder.rb"
+require_relative "Scripts/Builders/ICUBuilder.rb"
+require_relative "Scripts/Builders/AndroidBuilder.rb"
+require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/HelloProjectBuilder.rb"
 require_relative "Scripts/ADBHelper.rb"
 
-=begin
+# References:
+#
+# - Using Rake to Automate Tasks: https://www.stuartellis.name/articles/rake/
+#
 
-Building on Ubuntu for Android.
-------------------------------
+task default: %w[usage]
 
-1. Download sources. In this example v63.1 is used.
-- http://site.icu-project.org/download
-
-2. Extract binaries to folder "./icu"
-
-
-See also:
---------
-
-- Using Rake to Automate Tasks: https://www.stuartellis.name/articles/rake/
-
-=end
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-desc "Setup Android toolchains"
-task :setupAndroidToolchains do
-   AndroidBuilder.new("armv7a").makeToolchain
-   AndroidBuilder.new("x86").makeToolchain
-   AndroidBuilder.new("aarch64").makeToolchain
+task :usage do
+   help = <<EOM
+Usage:
+How to build Swift for Android. Steps:
+1. Validate environment variables setup.
+   Execute: "rake verify:environment"
+2. Prepare Android Toolchains:
+   Execute: "rake ndk:setup"
+3. Prior to building Swift for Android we need to patch ICU.
+   Execute: "rake icu:patch"
+4. Build ICU for all platforms.
+   Execute: "rake icu:build:all"
+   If you decided to build only one platform, them make sure that ICU for linux build before any other platform (due cross compilation).
+\n
+EOM
+   puts help
+   system "rake -T"
 end
 
-desc "Cleans ICU build"
-task :clean_icu do
-   ICUBuilder.new("").clean
+namespace :verify do
+   desc "Verify environment variables"
+   task :environment do
+      Config.verify
+   end
 end
 
-desc "Cleans Android build"
-task :clean_android do
-   AndroidBuilder.new("").clean
+namespace :icu do
+   desc "Cleans ICU build."
+   task :clean do
+      ICUBuilder.new().clean
+   end
+
+   desc "Installs patch which will add `swift` suffix to binary. Details here: http://fixme."
+   task :patch do
+      ICUBuilder.new().applyPatchIfNeeded
+   end
+
+   namespace :build do
+
+      desc "Applies patch (if needed) and builds ICU for all platforms."
+      task :all => [:linux, :armv7a, :x86, :aarch64] do
+      end
+
+      desc "Builds ICU for Linux"
+      task :linux do
+         ICUBuilder.new("linux").make
+      end
+
+      desc "Builds ICU for armv7a"
+      task :armv7a do
+         ICUBuilder.new("armv7a").make
+      end
+
+      desc "Builds ICU for x86"
+      task :x86 do
+         ICUBuilder.new("x86").make
+      end
+
+      desc "Builds ICU for aarch64"
+      task :aarch64 do
+         ICUBuilder.new("aarch64").make
+      end
+   end
 end
 
-desc "Builds ICU for Linux"
-task :icu_build_linux do
-   ICUBuilder.new("linux").make
+namespace :ndk do
+
+   desc "Cleans NDK build."
+   task :clean do
+      AndroidBuilder.new("").clean
+   end
+
+   desc "Setup Android toolchains for All platforms."
+   task :setup do
+      AndroidBuilder.new("armv7a").setupToolchain
+      AndroidBuilder.new("x86").setupToolchain
+      AndroidBuilder.new("aarch64").setupToolchain
+   end
 end
 
-desc "Builds ICU for armv7a"
-task :icu_build_armv7a do
-   ICUBuilder.new("armv7a").make
+namespace :swift do
+
+   desc "Builds Swift for Android"
+   task :swift_build_android do
+      SwiftBuilder.new().make
+   end
+
+   desc "Swift: Show Build options"
+   task :swift_help do
+      SwiftBuilder.new().help
+   end
+
+   desc "Swift: Update"
+   task :swift_update do
+      SwiftBuilder.new().update
+   end
+
 end
 
-desc "Builds ICU for x86"
-task :icu_build_x86 do
-   ICUBuilder.new("x86").make
-end
+namespace :project do
 
-desc "Builds ICU for aarch64"
-task :icu_build_aarch64 do
-   ICUBuilder.new("aarch64").make
-end
+   desc "Project Hello: Build"
+   task :project_hello_build do
+      HelloProjectBuilder.new().make
+   end
 
-desc "Builds ICU All"
-task :icu_build_all => [:icu_build_armv7a, :icu_build_x86, :icu_build_aarch64] do
-end
+   desc "Project Hello: Setup"
+   task :project_hello_setup do
+      ADBHelper.new().installDependencies
+   end
 
-desc "Builds Swift for Android"
-task :swift_build_android do
-   SwiftBuilder.new().make
-end
+   desc "Project Hello: Install on Android"
+   task :project_hello_install do
+      binary = "#{Config.buildRoot}/projects/hello/hello"
+      helper = ADBHelper.new()
+      helper.deployLibs
+      helper.deployProducts([binary])
+   end
 
-desc "Swift: Show Build options"
-task :swift_help do
-   SwiftBuilder.new().help
-end
+   desc "Project Hello: Run on Android"
+   task :project_hello_run do
+      ADBHelper.new().run("hello")
+   end
 
-desc "Swift: Update"
-task :swift_update do
-   SwiftBuilder.new().update
-end
+   desc "Project Hello: Cleanup on Android"
+   task :project_hello_cleanup do
+      ADBHelper.new().cleanup("hello")
+   end
 
-desc "Project Hello: Build"
-task :project_hello_build do
-   HelloProjectBuilder.new().make
-end
+   desc "Project Hello: Build and Run on Android"
+   task :project_hello_execute => [:project_hello_build, :project_hello_install, :project_hello_run] do
 
-desc "Project Hello: Setup"
-task :project_hello_setup do
-   ADBHelper.new().installDependencies
-end
-
-desc "Project Hello: Install on Android"
-task :project_hello_install do
-   binary = "#{Config.buildRoot}/projects/hello/hello"
-   helper = ADBHelper.new()
-   helper.deployLibs
-   helper.deployProducts([binary])
-end
-
-desc "Project Hello: Run on Android"
-task :project_hello_run do
-   ADBHelper.new().run("hello")
-end
-
-desc "Project Hello: Cleanup on Android"
-task :project_hello_cleanup do
-   ADBHelper.new().cleanup("hello")
-end
-
-desc "Project Hello: Build and Run on Android"
-task :project_hello_execute => [:project_hello_build, :project_hello_install, :project_hello_run] do
+   end
 
 end

@@ -1,5 +1,9 @@
 /.vagrant
 /*.log
+.DS_Store
+
+/Build
 /Sources
 /Downloads
 /Misc
+/Install
