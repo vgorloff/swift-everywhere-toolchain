@@ -1,0 +1,29 @@
+--- /Users/vova/Downloads/configure	2018-10-02 00:39:56.000000000 +0200
++++ /Users/vova/Downloads/configure-new	2018-11-30 22:54:31.000000000 +0100
+@@ -7763,15 +7763,18 @@
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $msg" >&5
+ $as_echo "$msg" >&6; }
+
+-if test "$ICULIBSUFFIX" != ""
+-then
+-    U_HAVE_LIB_SUFFIX=1
+-    ICULIBSUFFIXCNAME=`echo _$ICULIBSUFFIX | sed 's/^A-Za-z0-9_/_/g'`
+-    UCONFIG_CPPFLAGS="${UCONFIG_CPPFLAGS} -DU_HAVE_LIB_SUFFIX=1 -DU_LIB_SUFFIX_C_NAME=${ICULIBSUFFIXCNAME} "
+-else
+-    U_HAVE_LIB_SUFFIX=0
+-fi
++# >> SWIFT_ANDROID_PATCH_START
++# if test "$ICULIBSUFFIX" != ""
++# then
++#     U_HAVE_LIB_SUFFIX=1
++#     ICULIBSUFFIXCNAME=`echo _$ICULIBSUFFIX | sed 's/^A-Za-z0-9_/_/g'`
++#     UCONFIG_CPPFLAGS="${UCONFIG_CPPFLAGS} -DU_HAVE_LIB_SUFFIX=1 -DU_LIB_SUFFIX_C_NAME=${ICULIBSUFFIXCNAME} "
++# else
++#     U_HAVE_LIB_SUFFIX=0
++# fi
+
++U_HAVE_LIB_SUFFIX=0
++# << SWIFT_ANDROID_PATCH_END
+
+
+ # Enable/disable tests
