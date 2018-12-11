@@ -100,19 +100,11 @@ B. Setting up Ubuntu box
         host$ vagrant halt
         ```
 
-    2. Review and update Vagrantfile if needed.
+    2. Review and update Vagrantfile if needed. Increase CPU and Memory values if you have enough resources.
 
         ```
-        Vagrant.configure("2") do |config|
-        
-            ...
-            
-            # Increase CPU and Memory values if you have enough resources.
-            config.vm.provider "virtualbox" do |vb|
-                vb.memory = "5120"
-                vb.cpus = "4"
-            end
-        end
+        vb.memory = "5120"
+        vb.cpus = "4"
         ```
 
     3. Start Box again.
@@ -230,13 +222,7 @@ E. Installing dependencies on Box
     box$ sudo apt-get install cmake ninja-build clang python uuid-dev libicu-dev icu-devtools libbsd-dev libedit-dev libxml2-dev libsqlite3-dev swig libpython-dev libncurses5-dev pkg-config libblocksruntime-dev libcurl4-openssl-dev systemtap-sdt-dev tzdata rsync libz3-dev
     ```
 
-2. (Optionall) Take snapshot.
-
-    ```
-    host$ vagrant snapshot save "02. After installing dependencies."
-    ```
-
-3. Install Ruby and Rake.
+2. Install Ruby and Rake.
 
     **Note**: `rake` is kind of `make` for Ruby.
 
@@ -244,13 +230,18 @@ E. Installing dependencies on Box
     box$ sudo apt-get install ruby
     ```
     
-4. Verify Ruby and Rake
+3. Verify Ruby and Rake
 
     ```
     box$ ruby --version
     box$ rake --version
     ```
 
+4. (Optionall) Take snapshot.
+
+    ```
+    host$ vagrant snapshot save "02. After installing dependencies."
+    ```
     
 II. Usage
 =========
