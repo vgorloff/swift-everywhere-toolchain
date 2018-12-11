@@ -1,265 +1,255 @@
-Prerequesites:
+I. Prerequesites
+================
 
-Downloads
+**Note**: Every time you see `host$` – this means that command should be executed on **HOST** macOS computer. Every time you see `box$` – this means that command should be executed on virtual **GUEST** Linux OS.
+
+**Note**: If you found mistake or something from written below is not working, then open issue and specify exact step which fails. I.e. `Step B.2.2`.
+
+A. Downloads
+------------
 
 1. Vagrant: https://www.vagrantup.com
 2. VirtualBox: https://www.virtualbox.org
 
-If you have troubles with VirtualBox installation, then have a look on this SE Question: [VirtualBox 5.1.28 fails to install on MacOS 10.13 due to KEXT security](https://apple.stackexchange.com/questions/301303/virtualbox-5-1-28-fails-to-install-on-macos-10-13-due-to-kext-security)
+**Steps**
 
-Verifying the Installation:
+1. Download and install software above.
 
-`vagrant --version`
+    **Note**: If you have troubles with VirtualBox installation, then have a look on this SE question: [VirtualBox 5.1.28 fails to install on MacOS 10.13 due to KEXT security](https://apple.stackexchange.com/questions/301303/virtualbox-5-1-28-fails-to-install-on-macos-10-13-due-to-kext-security)
+    
+2. Verify installation.
 
-Most of the steps similar to [Getting Started](https://www.vagrantup.com/intro/getting-started/index.html) from Vagrant website.
 
-Project Setup:
+    ```
+    host$ vagrant --version
+    ```
+    
+B. Setting up Ubuntu box
+------------------------
 
-```
-mkdir swift-on-android
-cd swift-on-android
+**Note**: Most of the steps similar to [Getting Started](https://www.vagrantup.com/intro/getting-started/index.html) from Vagrant website.
 
-vagrant init ubuntu/bionic64
-```
+**Steps**
 
-Creating Ubuntu instance:
+1. Project setup.
 
-1. Installing a Box:
+    ```
+    host$ mkdir android-on-swift
+    host$ cd android-on-swift
+    
+    host$ vagrant init ubuntu/bionic64
+    ```
 
-Explore boxes:
+2. Setup Ubuntu box.
 
-- https://app.vagrantup.com/boxes/search
-- https://app.vagrantup.com/ubuntu/boxes/bionic64
+    1. Install Ubuntu box.
+    
+        ```
+        host$ vagrant box add ubuntu/bionic64
+        ```
+    
+        **Note**: You can explore trending boxes here:
 
-`vagrant box add ubuntu/bionic64`
+        - https://app.vagrantup.com/boxes/search
+        - https://app.vagrantup.com/ubuntu/boxes/bionic64
 
-This will download Ubuntu image to local folder:
+    2. (Optionall) Verify downloaded Ubuntu image in local folder.
 
-`ls -l ~/.vagrant.d/boxes`
+        ```
+        host$ ls -l ~/.vagrant.d/boxes
+        ```
 
-* Up And SSH
+    3. Start up box and connect via SSH.
 
-```
-vagrant up
-vagrant ssh
-```
+        ```
+        host$ vagrant up
+        host$ vagrant ssh
+        ```
 
-Box will be created in directory specified in VirtualBox settings. Detalis in [this post](http://www.thisprogrammingthing.com/2013/changing-the-directory-vagrant-stores-the-vms-in/).
+        **Note**: Box will be created in directory specified in VirtualBox settings. Detalis in [this post](http://www.thisprogrammingthing.com/2013/changing-the-directory-vagrant-stores-the-vms-in/).
 
-Verify Ubuntu version:
+    4. (Optionall) Verify Ubuntu version.
 
-```
-lsb_release -irc
-```
+        ```
+        box$ lsb_release -irc
+        ```
 
-Explore synced folders:
+    5. (Optionall) Explore synced folders:
 
-```
-ls -l /vagrant
-```
+        ```
+        box$ ls -l /vagrant
+        ```
 
-Now we have Ubuntu on macOS .)
+    As result we have Ubuntu box running on macOS.  
 
-Since we going to compile Swift there is a good idea to increase Box memory.
+3. Update Box settings.
 
-```
-vagrant halt
-```
+    Since we going to compile Swift. It is a good idea to review box's Memory and CPU settings to avoid situations like below.
 
-Update config file:
+    ```
+    /usr/bin/ld.gold: out of memory
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+    ```
 
-```
-Vagrant.configure("2") do |config|
-   config.vm.box = "ubuntu/bionic64"
+    ```
+    LLVM ERROR: out of memory
+    ```
 
-   config.vm.provider "virtualbox" do |vb|
-      vb.memory = "2560" # Customize the amount of memory on the VM
-   end
-end
-```
+    
+    1. Shutdown box.
 
-Start Box again.
+        ```
+        host$ vagrant halt
+        ```
 
-```
-vagrant up
-```
+    2. Review and update config file.
 
-Optionally save snapshot
+        ```
+        Vagrant.configure("2") do |config|
+            
+            # Increase CPU and Memory values if you have enough resources.
+            config.vm.provider "virtualbox" do |vb|
+                vb.memory = "5120"
+                vb.cpus = "4"
+            end
+        end
+        ```
 
-```
-vagrant snapshot save "01. After installing clean OS"
-```
+    3. Start Box again.
 
-Under the hood it will save VirtualBox snapshot.
+        ```
+        host$ vagrant up
+        ```
 
--------------
+    4. (Optionall) Save snapshot of Box.
 
-We will edit Ruby files, so worth to install Visual Studio Code for macOS.
+        ```
+        host$ vagrant snapshot save "01. After installing clean OS"
+        ```
+
+        **Note**: Under the hood it will save VirtualBox snapshot.
+
+C. Setting Up Visual Studio Code
+--------------------------------
+
+We will edit Ruby files, so worth to install Visual Studio Code for macOS and Ruby plugin.
 
 1. https://code.visualstudio.com
 2. Ruby language support: https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby
 
+D. Getting Sources
+------------------
+
 Download sources:
 
-1. Swift:
+1. Get Swift sources.
 
-Steps taken from [Guide](https://github.com/apple/swift)
+    **Note**: Steps taken from official [Guide](https://github.com/apple/swift).
 
-```
-mkdir -p Sources/swift
-cd Sources/swift
+    ```
+    host$ mkdir -p Sources/swift
+    host$ cd Sources/swift
 
-git clone https://github.com/apple/swift.git
-./swift/utils/update-checkout --clone
-```
-
-
-2. Android NDK
-
-- https://developer.android.com/ndk/downloads/
-
-At a time of writing this text there was release named: `android-ndk-r18b-linux-x86_64.zip`
-
-Unpack archive to folder `Sources/android-ndk-r18b`
+    host$ git clone https://github.com/apple/swift.git
+    host$ ./swift/utils/update-checkout --clone
+    ```
 
 
-3. ICU - International Components for Unicode
+2. Get Android NDK.
 
-- http://site.icu-project.org/download
+    1. Download from https://developer.android.com/ndk/downloads/
 
-At a time of writing this text there was release named: `ICU4C 63.1`. Download sources `icu4c-63_1-src.tgz`
+        **Note**: At a time of writing this text there was release named: `android-ndk-r18b-linux-x86_64.zip`
 
-Unpack archive to folder `Sources/icu`
+    2. Unpack archive to folder `Sources/android-ndk-r18b`.
 
-So, structure should be like:
 
-```
-Sources
-   - android-ndk-r18b
-   - icu
-   - swift
-Vagrantfile
-```
+3. Get ICU (International Components for Unicode)
 
-4. Provisioning Box
+    1. Download from http://site.icu-project.org/download
 
-Environment variables:
+        **Note**: At a time of writing this text there was release named `ICU4C 63.1` and downloadable archive with sources named `icu4c-63_1-src.tgz`.
 
-Create file `Scripts/bootstrap.sh`
+    2. Unpack archive to folder `Sources/icu`.
 
-```
-## Sources
-export SA_SOURCES_ROOT=/vagrant/Sources
+    As result, file structure should be like below:
 
-export SA_SOURCES_ANDK=$SA_SOURCES_ROOT/android-ndk-r18b
-export SA_SOURCES_ICU=$SA_SOURCES_ROOT/icu
-export SA_SOURCES_SWIFT=$SA_SOURCES_ROOT/swift
+    ```
+    Sources
+        - android-ndk-r18b
+        - icu
+        - swift
+    Vagrantfile
+    ```
 
-## Build
-export SA_BUILD_ROOT=/vagrant/Build
 
-export SA_BUILD_ROOT_ANDK=$SA_BUILD_ROOT/android-ndk
-export SA_BUILD_ROOT_ICU=$SA_BUILD_ROOT/icu
-export SA_BUILD_ROOT_SWIFT=$SA_BUILD_ROOT/swift
+4. Verify accessibility of sources inside Box.
 
-## Path
-export PATH=$PATH:$SA_SOURCES_ANDK
+    ```
+    host$ vagrant ssh
+    
+    box$ env | sort
+    ```
 
-```
+    Should output:
+    
+    ```
+    ...
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/vagrant/Sources/android-ndk-r18b
+    PWD=/home/vagrant
+    SA_BUILD_ROOT_ANDK=/vagrant/Build/android-ndk
+    SA_BUILD_ROOT_ICU=/vagrant/Build/icu
+    SA_BUILD_ROOT_SWIFT=/vagrant/Build/swift
+    SA_BUILD_ROOT=/vagrant/Build
+    SA_SOURCES_ROOT_ANDK=/vagrant/Sources/android-ndk-r18b
+    SA_SOURCES_ROOT_ICU=/vagrant/Sources/icu
+    SA_SOURCES_ROOT=/vagrant/Sources
+    SA_SOURCES_ROOT_SWIFT=/vagrant/Sources/swift
+    ...
+    ```
 
-Update `Vagrantfile` in order to enable Provisioning.
+E. Installing dependencies on Box
+---------------------------------------
 
-```
-Vagrant.configure("2") do |config|
-   config.vm.box = "ubuntu/bionic64"
-   config.vm.provision :shell, inline: "echo 'source /vagrant/Scripts/bootstrap.sh' > /etc/profile.d/sa-environment.sh", :run => 'always'
+1. Install development packages.
 
-   config.vm.provider "virtualbox" do |vb|
-      vb.memory = "2560" # Customize the amount of memory on the VM
-   end
-end
-```
+    ```
+    host$ vagrant ssh
 
-Verify setup:
+    box$ sudo apt-get update
+    box$ sudo apt-get install cmake ninja-build clang python uuid-dev libicu-dev icu-devtools libbsd-dev libedit-dev libxml2-dev libsqlite3-dev swig libpython-dev libncurses5-dev pkg-config libblocksruntime-dev libcurl4-openssl-dev systemtap-sdt-dev tzdata rsync libz3-dev
+    ```
 
-```
-vagrant ssh
-env | sort
-```
+2. (Optionall) Take snapshot.
 
-Should output:
-```
-...
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/vagrant/Sources/android-ndk-r18b
-PWD=/home/vagrant
-SA_BUILD_ROOT_ANDK=/vagrant/Build/android-ndk
-SA_BUILD_ROOT_ICU=/vagrant/Build/icu
-SA_BUILD_ROOT_SWIFT=/vagrant/Build/swift
-SA_BUILD_ROOT=/vagrant/Build
-SA_SOURCES_ROOT_ANDK=/vagrant/Sources/android-ndk-r18b
-SA_SOURCES_ROOT_ICU=/vagrant/Sources/icu
-SA_SOURCES_ROOT=/vagrant/Sources
-SA_SOURCES_ROOT_SWIFT=/vagrant/Sources/swift
-...
-````
+    ```
+    host$ vagrant snapshot save "02. After installing dependencies."
+    ```
 
-5. Installing needed pakaged on Box
+3. Install Ruby and Rake.
 
-```
-vagrant ssh
-sudo apt-get update
+    **Note**: `rake` is kind of `make` for Ruby.
 
-# Swift dependencies:
-sudo apt-get install cmake ninja-build clang python uuid-dev libicu-dev icu-devtools libbsd-dev libedit-dev libxml2-dev libsqlite3-dev swig libpython-dev libncurses5-dev pkg-config libblocksruntime-dev libcurl4-openssl-dev systemtap-sdt-dev tzdata rsync libz3-dev
+    ```
+    box$ sudo apt-get install ruby
+    ```
+    
+4. Verify Ruby and Rake
 
-sudo apt-get install git libcurl4 ???
-```
+    ```
+    box$ ruby --version
+    box$ rake --version
+    ```
 
-Not a bad idea to take snapshot:
+    
+II. Usage
+=========
+
+Remaining process of compilling ICU and Swift, building and deploying sample projects automated via Rakefile.
 
 ```
-vagrant snapshot save "02. After installing dependencies."
+box$ cd /vagrant/
+box$ rake
 ```
 
-6. Installing Ruby and Rake
-
-Rake is kind of Make for Ruby .)
-
-```
-sudo apt-get install ruby
-
-# Verify
-ruby --version
-rake --version
-```
-
-7. Using Rakefile
-
-```
-cd /vagrant/
-rake
-```
-
-Can be situation like below.
-
-```
-/usr/bin/ld.gold: out of memory
-clang: error: linker command failed with exit code 1 (use -v to see invocation)
-```
-
-Or like this
-```
-LLVM ERROR: out of memory
-```
-
-Just increate Vagrant Box Memeory.
-
-```
-Vagrant.configure("2") do |config|
-   ...
-   config.vm.provider "virtualbox" do |vb|
-      vb.memory = "4096" # Customize the amount of memory on the VM
-   end
-   ...
-end
-```
+**Note**: Some projects need to be executed on `host`, but some on `box`. Don't mix up execution environment.
