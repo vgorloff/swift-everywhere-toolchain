@@ -3,7 +3,7 @@ I. Prerequesites
 
 **Note**: Every time you see `host$` – this means that command should be executed on **HOST** macOS computer. Every time you see `box$` – this means that command should be executed on virtual **GUEST** Linux OS.
 
-**Note**: If you found mistake or something from written below is not working, then open issue and specify exact step which fails. I.e. `Step B.2.2`.
+**Note**: If you found mistake or something from written below is not working, then open issue and specify exact step which fails. I.e. `Step B.1.ii`.
 
 A. Initial setup
 ----------------
@@ -100,7 +100,7 @@ B. Setting up Ubuntu box
         host$ vagrant halt
         ```
 
-    2. Review and update config file if needed.
+    2. Review and update Vagrantfile if needed.
 
         ```
         Vagrant.configure("2") do |config|
@@ -134,21 +134,18 @@ C. Setting Up Visual Studio Code
 
 We will edit Ruby files, so worth to install Visual Studio Code for macOS and Ruby plugin.
 
-1. https://code.visualstudio.com
+1. Visual Studio Code: https://code.visualstudio.com
 2. Ruby language support: https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby
 
 D. Getting Sources
 ------------------
-
-Download sources:
 
 1. Get Swift sources.
 
     **Note**: Steps taken from official [Guide](https://github.com/apple/swift).
 
     ```
-    host$ mkdir -p Sources/swift
-    host$ cd Sources/swift
+    host$ cd Sources
 
     host$ git clone https://github.com/apple/swift.git
     host$ ./swift/utils/update-checkout --clone
@@ -164,7 +161,7 @@ Download sources:
     2. Unpack archive to folder `Sources/android-ndk-r18b`.
 
 
-3. Get ICU (International Components for Unicode)
+3. Get ICU (International Components for Unicode).
 
     1. Download from http://site.icu-project.org/download
 
@@ -175,19 +172,23 @@ Download sources:
     As result, file structure should be like below:
 
     ```
+    ...
     Sources
         - android-ndk-r18b
         - icu
         - swift
-    Vagrantfile
+    ...
     ```
 
-
-4. Verify accessibility of sources inside Box.
+4. Verify accessibility of sources.
 
     ```
-    host$ vagrant ssh
+    box$ ls -l /vagrant/Sources
+    ```
     
+5. Verify environment variables inside Box.
+
+    ```
     box$ env | sort
     ```
 
@@ -195,16 +196,25 @@ Download sources:
     
     ```
     ...
-    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/vagrant/Sources/android-ndk-r18b
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:
     PWD=/home/vagrant
+    RUBYOPT=-W0
     SA_BUILD_ROOT_ANDK=/vagrant/Build/android-ndk
     SA_BUILD_ROOT_ICU=/vagrant/Build/icu
-    SA_BUILD_ROOT_SWIFT=/vagrant/Build/swift
+    SA_BUILD_ROOT_SWIFT=/vagrant/Build/swift-android
     SA_BUILD_ROOT=/vagrant/Build
+    SA_INSTALL_ROOT_ANDK=/vagrant/Install/android-ndk
+    SA_INSTALL_ROOT_ICU=/vagrant/Install/icu
+    SA_INSTALL_ROOT_SWIFT=/vagrant/Install/swift
+    SA_INSTALL_ROOT=/vagrant/Install
+    SA_PATCHES_ROOT_ICU=/vagrant/Patches/icu
+    SA_PATCHES_ROOT=/vagrant/Patches
+    SA_PROJECTS_ROOT=/vagrant/Projects
     SA_SOURCES_ROOT_ANDK=/vagrant/Sources/android-ndk-r18b
     SA_SOURCES_ROOT_ICU=/vagrant/Sources/icu
-    SA_SOURCES_ROOT=/vagrant/Sources
     SA_SOURCES_ROOT_SWIFT=/vagrant/Sources/swift
+    SA_SOURCES_ROOT=/vagrant/Sources
+    SHELL=/bin/bash
     ...
     ```
 
@@ -252,4 +262,4 @@ box$ cd /vagrant/
 box$ rake
 ```
 
-**Note**: Some projects need to be executed on `host`, but some on `box`. Don't mix up execution environment.
+**Note**: Some Rake targets need to be executed on `host`, but some on `box`. Don't mix up execution environment.
