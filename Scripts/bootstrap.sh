@@ -28,5 +28,6 @@ export SA_PATCHES_ROOT_ICU=$SA_PATCHES_ROOT/icu
 export SA_PROJECTS_ROOT=/vagrant/Projects
 
 
-## Path
+## Misc
 export PATH=$PATH:$SA_SOURCES_ANDK
+export RUBYOPT=-W0

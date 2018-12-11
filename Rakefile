@@ -40,6 +40,7 @@ namespace :verify do
 end
 
 namespace :icu do
+
    desc "Cleans ICU build."
    task :clean do
       ICUBuilder.new().clean
@@ -96,17 +97,17 @@ end
 namespace :swift do
 
    desc "Builds Swift for Android"
-   task :swift_build_android do
+   task :build do
       SwiftBuilder.new().make
    end
 
-   desc "Swift: Show Build options"
-   task :swift_help do
+   desc "Swift: Show Build options (i.e. `swift/utils/build-script --help`)"
+   task :help do
       SwiftBuilder.new().help
    end
 
-   desc "Swift: Update"
-   task :swift_update do
+   desc "Swift: Update sources (i.e. `swift/utils/update-checkout`)"
+   task :update do
       SwiftBuilder.new().update
    end
 
