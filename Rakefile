@@ -29,6 +29,14 @@ How to build Swift for Android. Steps:
    build before any other platform (due cross compilation).
 5. Build Swift.
    Execute: "rake swift:build"
+6. Build Hello project using new Swift Compiler.
+   Execute: "rake project:hello:build"
+7. Install Android Tools for macOS. See: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
+8. Connect Android device to Host. Enable USB Debugging on Android device. Verify that device is connected.
+   Execute: "rake project:hello:verify"
+9. Deploy and run Hello Project to Android Device.
+   Execute: "rake project:hello:install"
+   Execute: "rake project:hello:run"
 \n
 EOM
    puts help
@@ -126,14 +134,14 @@ namespace :project do
          HelloProjectBuilder.new().make
       end
 
-      desc "Project Hello: Setup"
-      task :setup do
-         ADBHelper.new().installDependencies
+      desc "Project Hello: Verify"
+      task :verify do
+         ADBHelper.new().verify
       end
 
       desc "Project Hello: Install on Android"
       task :install do
-         binary = "#{Config.buildRoot}/projects/hello/hello"
+         binary = "#{Config.buildRoot}/hello/hello"
          helper = ADBHelper.new()
          helper.deployLibs
          helper.deployProducts([binary])
@@ -149,9 +157,8 @@ namespace :project do
          ADBHelper.new().cleanup("hello")
       end
 
-      desc "Project Hello: Build and Run on Android"
-      task :execute => [:build, :install, :run] do
-
+      desc "Project Hello: Deploy and Run on Android"
+      task :deploy => [:install, :run] do
       end
 
    end

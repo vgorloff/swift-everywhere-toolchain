@@ -239,3 +239,27 @@ rake --version
 cd /vagrant/
 rake
 ```
+
+Can be situation like below.
+
+```
+/usr/bin/ld.gold: out of memory
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+```
+
+Or like this
+```
+LLVM ERROR: out of memory
+```
+
+Just increate Vagrant Box Memeory.
+
+```
+Vagrant.configure("2") do |config|
+   ...
+   config.vm.provider "virtualbox" do |vb|
+      vb.memory = "4096" # Customize the amount of memory on the VM
+   end
+   ...
+end
+```

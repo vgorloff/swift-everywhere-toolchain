@@ -11,15 +11,15 @@ class ADBHelper < Tool
       @destinationDirPath = "/data/local/tmp"
    end
 
-   def installDependencies()
-      execute "sudo apt-get install android-tools-adb"
-      execute "sudo adb devices" # To run daemon.
+   def verify()
+      # execute "sudo apt-get install android-tools-adb"
+      # execute "sudo adb devices" # To run daemon.
       message "Make sure you are enabled \"USB debugging\" on Android device (See :https://developer.android.com/studio/command-line/adb#Enabling)"
       execute "adb devices" # To list devices.
    end
 
    def deployLibs()
-      swiftBuildDirPath = "#{Config.swiftSources}/build/Ninja-ReleaseAssert/swift-linux-x86_64/lib/swift/android"
+      swiftBuildDirPath = "#{Config.swiftBuildRoot}/swift-linux-x86_64/lib/swift/android"
       Dir[swiftBuildDirPath + "/*.so"].each { |lib|
          cmd = "adb push #{lib} #{@destinationDirPath}"
          execute cmd
@@ -31,7 +31,7 @@ class ADBHelper < Tool
          cmd = "adb push #{lib} #{@destinationDirPath}/#{destName}"
          execute cmd
       }
-      cxxLibPath = "#{Config.ndkPath}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
+      cxxLibPath = "#{Config.ndkSourcesRoot}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
       execute "adb push #{cxxLibPath} #{@destinationDirPath}"
    end
 
