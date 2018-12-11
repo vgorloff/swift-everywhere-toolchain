@@ -129,10 +129,10 @@ B. Setting up Ubuntu box
 
         **Note**: Under the hood it will save VirtualBox snapshot.
 
-C. Setting Up Visual Studio Code
---------------------------------
+C. (Optional) Setting Up Visual Studio Code
+-------------------------------------------
 
-We will edit Ruby files, so worth to install Visual Studio Code for macOS and Ruby plugin.
+If you going to edit Ruby files, then it worth to install Visual Studio Code for macOS and Ruby plugin.
 
 1. Visual Studio Code: https://code.visualstudio.com
 2. Ruby language support: https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby
@@ -180,7 +180,7 @@ D. Getting Sources
     ...
     ```
 
-4. Verify accessibility of sources.
+4. Verify accessibility of sources inside Box.
 
     ```
     box$ ls -l /vagrant/Sources
@@ -196,7 +196,7 @@ D. Getting Sources
     
     ```
     ...
-    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/vagrant/Sources/android-ndk-r18b
     PWD=/home/vagrant
     RUBYOPT=-W0
     SA_BUILD_ROOT_ANDK=/vagrant/Build/android-ndk

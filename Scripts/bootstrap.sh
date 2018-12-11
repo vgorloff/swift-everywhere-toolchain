@@ -29,5 +29,5 @@ export SA_PROJECTS_ROOT=/vagrant/Projects
 
 
 ## Misc
-export PATH=$PATH:$SA_SOURCES_ANDK
+export PATH=$PATH:$SA_SOURCES_ROOT_ANDK
 export RUBYOPT=-W0
