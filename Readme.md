@@ -5,8 +5,8 @@ I. Prerequesites
 
 **Note**: If you found mistake or something from written below is not working, then open issue and specify exact step which fails. I.e. `Step B.2.2`.
 
-A. Downloads
-------------
+A. Initial setup
+----------------
 
 1. Download and install software.
 
@@ -22,25 +22,23 @@ A. Downloads
     host$ vagrant --version
     ```
     
+3. Clone this repository.
+
+    ```
+    host$ git clone https://github.com/vgorloff/Android-On-Swift.git
+    host$ cd Android-On-Swift
+    ```
+    
 B. Setting up Ubuntu box
 ------------------------
 
 **Note**: Most of the steps similar to [Getting Started](https://www.vagrantup.com/intro/getting-started/index.html) from Vagrant website.
 
-**Steps**
+1. Setup Ubuntu box.
 
-1. Project setup.
+    1. Download Ubuntu box image.
 
-    ```
-    host$ mkdir android-on-swift
-    host$ cd android-on-swift
-    
-    host$ vagrant init ubuntu/bionic64
-    ```
-
-2. Setup Ubuntu box.
-
-    1. Install Ubuntu box.
+        **Note**: Usually you need to download box image once.
     
         ```
         host$ vagrant box add ubuntu/bionic64
@@ -57,7 +55,7 @@ B. Setting up Ubuntu box
         host$ ls -l ~/.vagrant.d/boxes
         ```
 
-    3. Start up box and connect via SSH.
+    3. Start box and connect via SSH.
 
         ```
         host$ vagrant up
@@ -77,10 +75,12 @@ B. Setting up Ubuntu box
         ```
         box$ ls -l /vagrant
         ```
+        
+        **Note**: You should see this `Readme.md` file inside Ubuntu Box.
 
     As result we have Ubuntu box running on macOS.  
 
-3. Update Box settings.
+2. Review Box settings.
 
     Since we going to compile Swift. It is a good idea to review box's Memory and CPU settings to avoid situations like below.
 
@@ -100,10 +100,12 @@ B. Setting up Ubuntu box
         host$ vagrant halt
         ```
 
-    2. Review and update config file.
+    2. Review and update config file if needed.
 
         ```
         Vagrant.configure("2") do |config|
+        
+            ...
             
             # Increase CPU and Memory values if you have enough resources.
             config.vm.provider "virtualbox" do |vb|
