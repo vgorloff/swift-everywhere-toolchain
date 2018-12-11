@@ -8,16 +8,14 @@ I. Prerequesites
 A. Downloads
 ------------
 
-1. Vagrant: https://www.vagrantup.com
-2. VirtualBox: https://www.virtualbox.org
+1. Download and install software.
 
-**Steps**
+    - Vagrant: https://www.vagrantup.com
+    - VirtualBox: https://www.virtualbox.org
 
-1. Download and install software above.
-
-    **Note**: If you have troubles with VirtualBox installation, then have a look on this SE question: [VirtualBox 5.1.28 fails to install on MacOS 10.13 due to KEXT security](https://apple.stackexchange.com/questions/301303/virtualbox-5-1-28-fails-to-install-on-macos-10-13-due-to-kext-security)
+    **Note**: If you have troubles with VirtualBox installation addressed blocked Kernel Extensions, then have a look on this SE question: [VirtualBox 5.1.28 fails to install on MacOS 10.13 due to KEXT security](https://apple.stackexchange.com/questions/301303/virtualbox-5-1-28-fails-to-install-on-macos-10-13-due-to-kext-security)
     
-2. Verify installation.
+2. Verify Vagrant installation.
 
 
     ```
