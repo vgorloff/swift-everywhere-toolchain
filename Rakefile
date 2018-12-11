@@ -119,36 +119,40 @@ end
 
 namespace :project do
 
-   desc "Project Hello: Build"
-   task :project_hello_build do
-      HelloProjectBuilder.new().make
-   end
+   namespace :hello do
 
-   desc "Project Hello: Setup"
-   task :project_hello_setup do
-      ADBHelper.new().installDependencies
-   end
+      desc "Project Hello: Build"
+      task :build do
+         HelloProjectBuilder.new().make
+      end
 
-   desc "Project Hello: Install on Android"
-   task :project_hello_install do
-      binary = "#{Config.buildRoot}/projects/hello/hello"
-      helper = ADBHelper.new()
-      helper.deployLibs
-      helper.deployProducts([binary])
-   end
+      desc "Project Hello: Setup"
+      task :setup do
+         ADBHelper.new().installDependencies
+      end
 
-   desc "Project Hello: Run on Android"
-   task :project_hello_run do
-      ADBHelper.new().run("hello")
-   end
+      desc "Project Hello: Install on Android"
+      task :install do
+         binary = "#{Config.buildRoot}/projects/hello/hello"
+         helper = ADBHelper.new()
+         helper.deployLibs
+         helper.deployProducts([binary])
+      end
 
-   desc "Project Hello: Cleanup on Android"
-   task :project_hello_cleanup do
-      ADBHelper.new().cleanup("hello")
-   end
+      desc "Project Hello: Run on Android"
+      task :run do
+         ADBHelper.new().run("hello")
+      end
 
-   desc "Project Hello: Build and Run on Android"
-   task :project_hello_execute => [:project_hello_build, :project_hello_install, :project_hello_run] do
+      desc "Project Hello: Cleanup on Android"
+      task :cleanup do
+         ADBHelper.new().cleanup("hello")
+      end
+
+      desc "Project Hello: Build and Run on Android"
+      task :execute => [:build, :install, :run] do
+
+      end
 
    end
 

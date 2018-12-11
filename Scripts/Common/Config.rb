@@ -29,6 +29,10 @@ class Config
       return getEnvVariable('SA_BUILD_ROOT')
    end
 
+   def self.swiftBuildRoot
+      return getEnvVariable('SA_BUILD_ROOT_SWIFT')
+   end
+
    def self.installRoot
       return getEnvVariable('SA_INSTALL_ROOT')
    end

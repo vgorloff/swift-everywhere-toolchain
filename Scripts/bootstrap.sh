@@ -10,7 +10,7 @@ export SA_BUILD_ROOT=/vagrant/Build
 
 export SA_BUILD_ROOT_ANDK=$SA_BUILD_ROOT/android-ndk
 export SA_BUILD_ROOT_ICU=$SA_BUILD_ROOT/icu
-export SA_BUILD_ROOT_SWIFT=$SA_BUILD_ROOT/swift
+export SA_BUILD_ROOT_SWIFT=$SA_BUILD_ROOT/swift-android
 
 ## Install
 export SA_INSTALL_ROOT=/vagrant/Install

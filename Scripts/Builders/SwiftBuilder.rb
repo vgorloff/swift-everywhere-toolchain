@@ -67,7 +67,7 @@ class SwiftBuilder < Builder
       cmd << "--android-icu-i18n-include #{Config.icuSourcesRoot}/source/i18n"
       cmd << "--android-icu-data #{Config.icuSourcesRoot}/libicudataswift.so"
       # cmd << "--foundation --libdispatch" # Needs to be compiled separately.
-      cmd << "--build-dir #{Config.buildRoot}/swift-android"
+      cmd << "--build-dir #{Config.swiftBuildRoot}"
       execute cmd.join(" ")
    end
 
