@@ -25,7 +25,10 @@ How to build Swift for Android. Steps:
    Execute: "rake icu:patch"
 4. Build ICU for all platforms.
    Execute: "rake icu:build:all"
-   If you decided to build only one platform, them make sure that ICU for linux build before any other platform (due cross compilation).
+   If you decided to build only one platform, them make sure that ICU for linux
+   build before any other platform (due cross compilation).
+5. Build Swift.
+   Execute: "rake swift:build"
 \n
 EOM
    puts help
@@ -55,6 +58,7 @@ namespace :icu do
 
       desc "Applies patch (if needed) and builds ICU for all platforms."
       task :all => [:linux, :armv7a, :x86, :aarch64] do
+         puts "Done!"
       end
 
       desc "Builds ICU for Linux"
