@@ -5,6 +5,7 @@ require_relative "Scripts/Builders/AndroidBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
 require_relative "Scripts/Builders/CurlBuilder.rb"
+require_relative "Scripts/Builders/OpenSSLBuilder.rb"
 require_relative "Scripts/Builders/HelloProjectBuilder.rb"
 require_relative "Scripts/ADBHelper.rb"
 
@@ -157,6 +158,19 @@ namespace :curl do
       CurlBuilder.new().make
    end
 
+end
+
+namespace :openssl do
+
+   desc "Checkout OpenSSL"
+   task :checkout do
+      OpenSSLBuilder.new().checkout
+   end
+
+   desc "Make OpenSSL"
+   task :make do
+      OpenSSLBuilder.new().make
+   end
 end
 
 namespace :project do

@@ -34,6 +34,10 @@ class Config
       return "#{sourcesRoot}/curl"
    end
 
+   def self.opensslSourcesRoot
+      return "#{sourcesRoot}/openssl"
+   end
+
    def self.sourcesRoot
       return "#{rootDirPath}/Sources"
    end
