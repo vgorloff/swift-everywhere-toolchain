@@ -14,21 +14,21 @@ A. Initial setup
     - VirtualBox: https://www.virtualbox.org
 
     **Note**: If you have troubles with VirtualBox installation addressed blocked Kernel Extensions, then have a look on this SE question: [VirtualBox 5.1.28 fails to install on MacOS 10.13 due to KEXT security](https://apple.stackexchange.com/questions/301303/virtualbox-5-1-28-fails-to-install-on-macos-10-13-due-to-kext-security)
-    
+
 2. Verify Vagrant installation.
 
 
     ```
     host$ vagrant --version
     ```
-    
+
 3. Clone this repository.
 
     ```
     host$ git clone https://github.com/vgorloff/Android-On-Swift.git
     host$ cd Android-On-Swift
     ```
-    
+
 B. Setting up Ubuntu box
 ------------------------
 
@@ -39,11 +39,11 @@ B. Setting up Ubuntu box
     1. Download Ubuntu box image.
 
         **Note**: Usually you need to download box image once.
-    
+
         ```
         host$ vagrant box add ubuntu/bionic64
         ```
-    
+
         **Note**: You can explore trending boxes here:
 
         - https://app.vagrantup.com/boxes/search
@@ -75,10 +75,10 @@ B. Setting up Ubuntu box
         ```
         box$ ls -l /vagrant
         ```
-        
+
         **Note**: You should see this `Readme.md` file inside Ubuntu Box.
 
-    As result we have Ubuntu box running on macOS.  
+    As result we have Ubuntu box running on macOS.
 
 2. Review Box settings.
 
@@ -93,7 +93,7 @@ B. Setting up Ubuntu box
     LLVM ERROR: out of memory
     ```
 
-    
+
     1. Shutdown box.
 
         ```
@@ -137,7 +137,8 @@ D. Getting Sources
     **Note**: Steps taken from official [Guide](https://github.com/apple/swift).
 
     ```
-    host$ cd Sources
+    host$ mkdir -p Sources/swift
+    host$ cd Sources/swift
 
     host$ git clone https://github.com/apple/swift.git
     host$ ./swift/utils/update-checkout --clone
@@ -146,20 +147,34 @@ D. Getting Sources
 
 2. Get Android NDK.
 
-    1. Download from https://developer.android.com/ndk/downloads/
+    1. Download and Unpack archive.
+
+        ```
+        host$ curl -O https://dl.google.com/android/repository/android-ndk-r18b-linux-x86_64.zip
+        host$ unzip -q -o android-ndk-*.zip
+        ```
+
+    2. If you prefer manual download, then visit https://developer.android.com/ndk/downloads/.
 
         **Note**: At a time of writing this text there was release named: `android-ndk-r18b-linux-x86_64.zip`
 
-    2. Unpack archive to folder `Sources/android-ndk-r18b`.
+    3. Ensure that archive extracted to folder `Sources/android-ndk-r18b`.
 
 
 3. Get ICU (International Components for Unicode).
 
-    1. Download from http://site.icu-project.org/download
+    1. Download and Unpack archive.
+
+        ```
+        host$ curl -O http://download.icu-project.org/files/icu4c/63.1/icu4c-63_1-src.tgz
+        host$ tar -xzf icu4c-63_1-src.tgz
+        ```
+
+    2. If you prefer manual download, then visit http://site.icu-project.org/download
 
         **Note**: At a time of writing this text there was release named `ICU4C 63.1` and downloadable archive with sources named `icu4c-63_1-src.tgz`.
 
-    2. Unpack archive to folder `Sources/icu`.
+    3. Ensure that archive extracted to folder `Sources/icu`.
 
     As result, file structure should be like below:
 
@@ -177,7 +192,7 @@ D. Getting Sources
     ```
     box$ ls -l /vagrant/Sources
     ```
-    
+
 5. Verify environment variables inside Box.
 
     ```
@@ -185,7 +200,7 @@ D. Getting Sources
     ```
 
     Should output:
-    
+
     ```
     ...
     PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/vagrant/Sources/android-ndk-r18b
@@ -229,7 +244,7 @@ E. Installing dependencies on Box
     ```
     box$ sudo apt-get install ruby
     ```
-    
+
 3. Verify Ruby and Rake
 
     ```
@@ -242,7 +257,7 @@ E. Installing dependencies on Box
     ```
     host$ vagrant snapshot save "02. After installing dependencies."
     ```
-    
+
 II. Usage
 =========
 
