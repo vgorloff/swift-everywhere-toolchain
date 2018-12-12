@@ -1,5 +1,5 @@
-require_relative "Builders/Builder.rb"
-require_relative "Common/Config.rb"
+require_relative "../Common/Builder.rb"
+require_relative "../Common/Config.rb"
 
 # See:
 # -  Build error: No such module "SwiftGlibc" – https://lists.swift.org/pipermail/swift-dev/Week-of-Mon-20160919/002955.html

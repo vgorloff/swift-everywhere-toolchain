@@ -5,7 +5,7 @@ require_relative "Scripts/Builders/AndroidBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
 require_relative "Scripts/Builders/CurlBuilder.rb"
-require_relative "Scripts/HelloProjectBuilder.rb"
+require_relative "Scripts/Builders/HelloProjectBuilder.rb"
 require_relative "Scripts/ADBHelper.rb"
 
 # References:
@@ -153,7 +153,7 @@ namespace :curl do
    end
 
    desc "Build curl"
-   task :build do
+   task :make do
       CurlBuilder.new().make
    end
 

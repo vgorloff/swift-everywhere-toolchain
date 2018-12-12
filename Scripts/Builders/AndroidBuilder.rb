@@ -6,7 +6,7 @@ class AndroidBuilder < Builder
    def initialize(arch)
       super()
       @arch = arch
-      @installDir = Config.installRoot + "/android/#{@arch}"
+      @installDir = Config.ndkInstallRoot + "/#{@arch}"
    end
 
    def setupToolchain
@@ -25,8 +25,7 @@ class AndroidBuilder < Builder
    end
 
    def clean()
-      execute "rm -rf #{Config.buildRoot}/android/"
-      execute "rm -rf #{Config.installRoot}/android/"
+      execute "rm -rf #{Config.ndkInstallRoot}/"
    end
 
 end

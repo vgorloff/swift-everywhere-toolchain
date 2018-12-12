@@ -24,7 +24,7 @@ class ADBHelper < Tool
          cmd = "adb push #{lib} #{@destinationDirPath}"
          execute cmd
       }
-      icuLibsDirPath = "#{Config.installRoot}/icu/armv7a/lib"
+      icuLibsDirPath = "#{Config.icuInstallRoot}/armv7a/lib"
       Dir[icuLibsDirPath + "/*.so*"].select { |lib| !File.symlink?(lib) } .each { |lib|
          destName = File.basename(lib)
          destName = destName.sub("63.1", "63") # Fix for error: CANNOT LINK EXECUTABLE ... library "libicudataswift.so.63" not found

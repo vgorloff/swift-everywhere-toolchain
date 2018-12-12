@@ -56,7 +56,7 @@ class SwiftBuilder < Builder
 
    def build()
       target = "armv7a"
-      libICUBuildPath = Config.installRoot + "/icu/#{target}/lib"
+      libICUBuildPath = Config.icuInstallRoot + "/#{target}/lib"
       cmd = ["cd #{Config.swiftSourcesRoot} &&"]
       cmd << "./swift/utils/build-script --release --android"
       cmd << "--android-ndk #{Config.ndkSourcesRoot}"

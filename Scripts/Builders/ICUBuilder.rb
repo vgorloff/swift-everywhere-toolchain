@@ -16,7 +16,7 @@ class ICUBuilder < Builder
       super()
       @target = target
       @buildDir = Config.buildRoot + "/icu/" + @target
-      @prefixDir = Config.installRoot + "/icu/" + @target
+      @prefixDir = Config.icuInstallRoot + "/" + @target
    end
 
    def configure
@@ -28,7 +28,7 @@ class ICUBuilder < Builder
          cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
          cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       elsif @target == "armv7a"
-         cmd << "PATH=#{Config.installRoot}/android/#{@target}/bin:$PATH"
+         cmd << "PATH=#{Config.ndkInstallRoot}/#{@target}/bin:$PATH"
          cmd << "CFLAGS='-Os -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
          cmd << "CXXFLAGS='--std=c++11 -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
          cmd << "LDFLAGS='-march=armv7-a -Wl,--fix-cortex-a8'"
@@ -44,7 +44,7 @@ class ICUBuilder < Builder
          cmd << "--with-cross-build=#{Config.buildRoot}/icu/linux"
          cmd << "--with-data-packaging=archive"
       elsif @target == "x86"
-         cmd << "PATH=#{Config.installRoot}/android/#{@target}/bin:$PATH"
+         cmd << "PATH=#{Config.ndkInstallRoot}/#{@target}/bin:$PATH"
          cmd << "CFLAGS='-Os -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32'"
          cmd << "CXXFLAGS='--std=c++11 -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32'"
          cmd << "CC=i686-linux-android-clang"
@@ -59,7 +59,7 @@ class ICUBuilder < Builder
          cmd << "--with-cross-build=#{Config.buildRoot}/icu/linux"
          cmd << "--with-data-packaging=archive"
       elsif @target == "aarch64"
-         cmd << "PATH=#{Config.installRoot}/android/#{@target}/bin:$PATH"
+         cmd << "PATH=#{Config.ndkInstallRoot}/#{@target}/bin:$PATH"
          cmd << "CFLAGS='-Os'"
          cmd << "CXXFLAGS='--std=c++11'"
          cmd << "CC=aarch64-linux-android-clang"
@@ -95,8 +95,8 @@ class ICUBuilder < Builder
    end
 
    def build
-      execute "cd #{@buildDir} && PATH=#{Config.installRoot}/android/#{@target}/bin:$PATH make -j4"
-      execute "cd #{@buildDir} && PATH=#{Config.installRoot}/android/#{@target}/bin:$PATH make install"
+      execute "cd #{@buildDir} && PATH=#{Config.ndkInstallRoot}/#{@target}/bin:$PATH make -j4"
+      execute "cd #{@buildDir} && PATH=#{Config.ndkInstallRoot}/#{@target}/bin:$PATH make install"
    end
 
    def make()
@@ -107,7 +107,7 @@ class ICUBuilder < Builder
 
    def clean()
       execute "rm -rf #{Config.buildRoot}/icu/"
-      execute "rm -rf #{Config.installRoot}/icu/"
+      execute "rm -rf #{Config.icuInstallRoot}/"
    end
 
 end

@@ -50,6 +50,14 @@ class Config
       return "#{rootDirPath}/Install"
    end
 
+   def self.ndkInstallRoot
+      return "#{installRoot}/android"
+   end
+
+   def self.icuInstallRoot
+      return "#{installRoot}/icu"
+   end
+
    def self.icuPatchesRoot
       return "#{rootDirPath}/Patches/icu"
    end
