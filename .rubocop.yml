@@ -1,0 +1,87 @@
+AllCops:
+  Exclude:
+    - Build/**/*
+    - Install/**/*
+    - Projects/**/*
+    - Sources/**/*
+
+Metrics/AbcSize:
+  Max: 50
+
+Metrics/ClassLength:
+  Max: 240
+
+Metrics/MethodLength:
+  Max: 80
+
+Metrics/CyclomaticComplexity:
+  Max: 20
+
+Metrics/PerceivedComplexity:
+  Max: 20
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/SpecialGlobalVars:
+  Enabled: false
+
+Style/BracesAroundHashParameters:
+  Enabled: false
+
+Style/WordArray:
+  EnforcedStyle: brackets
+
+Style/Documentation:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/RedundantReturn:
+  Enabled: false
+
+Style/MethodCallWithoutArgsParentheses:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Style/BlockDelimiters:
+  Enabled: false
+
+Style/NegatedIf:
+  Enabled: false
+
+Style/DefWithParentheses:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines
+
+Layout/IndentationWidth:
+  Width: 3
+
+Naming/VariableName:
+  EnforcedStyle: camelCase
+
+Naming/MethodName:
+  Enabled: false
+
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
+
+Naming/UncommunicativeBlockParamName:
+  Enabled: false
+
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: false
+
+Metrics/LineLength:
+  Enabled: false

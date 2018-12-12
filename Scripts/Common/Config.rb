@@ -4,45 +4,50 @@ class Config
       return "21"
    end
 
+   def self.rootDirPath
+      return File.realpath(File.dirname(__FILE__) + "/../../")
+   end
+
    def self.verify
-      puts "- Android NDK Path: \t\"#{andkPath}\""
-      puts "- ICU Sources Path: \t\"#{icuSources}\""
-      puts "- ICU Patches Path: \t\"#{icuPatchesDirPath}\""
-      puts "- Swift Sources Path: \t\"#{swiftSources}\""
+      puts "- Project Root Path: \t\"#{rootDirPath}\""
+      puts "- Android NDK Path: \t\"#{ndkSourcesRoot}\""
+      puts "- ICU Sources Path: \t\"#{icuSourcesRoot}\""
+      puts "- ICU Patches Path: \t\"#{icuPatchesRoot}\""
+      puts "- Swift Sources Path: \t\"#{swiftSourcesRoot}\""
       puts "- Build root Path: \t\"#{buildRoot}\""
       puts "- Install root Path: \t\"#{installRoot}\""
    end
 
    def self.ndkSourcesRoot
-      return getEnvVariable('SA_SOURCES_ROOT_ANDK')
+      return "#{rootDirPath}/Sources/android-ndk-r18b"
    end
 
    def self.icuSourcesRoot
-      return getEnvVariable('SA_SOURCES_ROOT_ICU')
+      return "#{rootDirPath}/Sources/icu"
    end
 
    def self.swiftSourcesRoot
-      return getEnvVariable('SA_SOURCES_ROOT_SWIFT')
+      return "#{rootDirPath}/Sources/swift"
    end
 
    def self.buildRoot
-      return getEnvVariable('SA_BUILD_ROOT')
+      return "#{rootDirPath}/Build"
    end
 
    def self.swiftBuildRoot
-      return getEnvVariable('SA_BUILD_ROOT_SWIFT')
+      return "#{buildRoot}/swift-android"
    end
 
    def self.installRoot
-      return getEnvVariable('SA_INSTALL_ROOT')
+      return "#{rootDirPath}/Install"
    end
 
    def self.icuPatchesRoot
-      return getEnvVariable('SA_PATCHES_ROOT_ICU')
+      return "#{rootDirPath}/Patches/icu"
    end
 
    def self.projectsRoot
-      return getEnvVariable('SA_PROJECTS_ROOT')
+      return "#{rootDirPath}/Projects"
    end
 
    def self.getEnvVariable(name)

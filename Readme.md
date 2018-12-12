@@ -182,38 +182,6 @@ D. Getting Sources
     box$ ls -l /vagrant/Sources
     ```
 
-5. Verify environment variables inside Box.
-
-    ```bash
-    box$ env | sort
-    ```
-
-    Should output:
-
-    ```
-    ...
-    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/vagrant/Sources/android-ndk-r18b
-    PWD=/home/vagrant
-    RUBYOPT=-W0
-    SA_BUILD_ROOT_ANDK=/vagrant/Build/android-ndk
-    SA_BUILD_ROOT_ICU=/vagrant/Build/icu
-    SA_BUILD_ROOT_SWIFT=/vagrant/Build/swift-android
-    SA_BUILD_ROOT=/vagrant/Build
-    SA_INSTALL_ROOT_ANDK=/vagrant/Install/android-ndk
-    SA_INSTALL_ROOT_ICU=/vagrant/Install/icu
-    SA_INSTALL_ROOT_SWIFT=/vagrant/Install/swift
-    SA_INSTALL_ROOT=/vagrant/Install
-    SA_PATCHES_ROOT_ICU=/vagrant/Patches/icu
-    SA_PATCHES_ROOT=/vagrant/Patches
-    SA_PROJECTS_ROOT=/vagrant/Projects
-    SA_SOURCES_ROOT_ANDK=/vagrant/Sources/android-ndk-r18b
-    SA_SOURCES_ROOT_ICU=/vagrant/Sources/icu
-    SA_SOURCES_ROOT_SWIFT=/vagrant/Sources/swift
-    SA_SOURCES_ROOT=/vagrant/Sources
-    SHELL=/bin/bash
-    ...
-    ```
-
 E. Installing dependencies on Box
 ---------------------------------------
 
