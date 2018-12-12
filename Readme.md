@@ -225,34 +225,18 @@ D. Getting Sources
 E. Installing dependencies on Box
 ---------------------------------------
 
-1. Install development packages.
+1. Install development packages and Verify Ruby and Rake version.
 
     ```bash
     host$ vagrant ssh
 
-    box$ sudo apt-get update
-    box$ sudo apt-get install cmake ninja-build clang python uuid-dev libicu-dev icu-devtools libbsd-dev libedit-dev libxml2-dev libsqlite3-dev swig libpython-dev libncurses5-dev pkg-config libblocksruntime-dev libcurl4-openssl-dev systemtap-sdt-dev tzdata rsync libz3-dev
-    ```
-
-2. Install Ruby and Rake.
-
-    **Note**: `rake` is kind of `make` for Ruby.
-
-    ```bash
-    box$ sudo apt-get install ruby
-    ```
-
-3. Verify Ruby and Rake
-
-    ```bash
-    box$ ruby --version
-    box$ rake --version
+    box$ bash /vagrant/Scripts/Shell/bootstrap.sh
     ```
 
 4. (Optionall) Take snapshot.
 
     ```bash
-    host$ vagrant snapshot save "02. After installing dependencies."
+    host$ vagrant snapshot save "Initial Setup"
     ```
 
 II. Usage
