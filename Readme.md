@@ -17,7 +17,6 @@ A. Initial setup
 
 2. Verify Vagrant installation.
 
-
     ```bash
     host$ vagrant --version
     ```
@@ -93,7 +92,6 @@ B. Setting up Ubuntu box
     LLVM ERROR: out of memory
     ```
 
-
     1. Shutdown box.
 
         ```bash
@@ -143,7 +141,6 @@ D. Getting Sources
     host$ git clone https://github.com/apple/swift.git
     host$ ./swift/utils/update-checkout --clone
     ```
-
 
 2. Get Android NDK.
 
