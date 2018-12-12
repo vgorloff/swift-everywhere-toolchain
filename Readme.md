@@ -18,13 +18,13 @@ A. Initial setup
 2. Verify Vagrant installation.
 
 
-    ```
+    ```bash
     host$ vagrant --version
     ```
 
 3. Clone this repository.
 
-    ```
+    ```bash
     host$ git clone https://github.com/vgorloff/Android-On-Swift.git
     host$ cd Android-On-Swift
     ```
@@ -40,7 +40,7 @@ B. Setting up Ubuntu box
 
         **Note**: Usually you need to download box image once.
 
-        ```
+        ```bash
         host$ vagrant box add ubuntu/bionic64
         ```
 
@@ -51,13 +51,13 @@ B. Setting up Ubuntu box
 
     2. (Optionall) Verify downloaded Ubuntu image in local folder.
 
-        ```
+        ```bash
         host$ ls -l ~/.vagrant.d/boxes
         ```
 
     3. Start box and connect via SSH.
 
-        ```
+        ```bash
         host$ vagrant up
         host$ vagrant ssh
         ```
@@ -66,13 +66,13 @@ B. Setting up Ubuntu box
 
     4. (Optionall) Verify Ubuntu version.
 
-        ```
+        ```bash
         box$ lsb_release -irc
         ```
 
     5. (Optionall) Explore synced folders:
 
-        ```
+        ```bash
         box$ ls -l /vagrant
         ```
 
@@ -96,26 +96,26 @@ B. Setting up Ubuntu box
 
     1. Shutdown box.
 
-        ```
+        ```bash
         host$ vagrant halt
         ```
 
     2. Review and update Vagrantfile if needed. Increase CPU and Memory values if you have enough resources.
 
-        ```
+        ```ruby
         vb.memory = "5120"
         vb.cpus = "4"
         ```
 
     3. Start Box again.
 
-        ```
+        ```bash
         host$ vagrant up
         ```
 
     4. (Optionall) Save snapshot of Box.
 
-        ```
+        ```bash
         host$ vagrant snapshot save "01. After installing clean OS"
         ```
 
@@ -136,7 +136,7 @@ D. Getting Sources
 
     **Note**: Steps taken from official [Guide](https://github.com/apple/swift).
 
-    ```
+    ```bash
     host$ mkdir -p Sources/swift
     host$ cd Sources/swift
 
@@ -149,7 +149,7 @@ D. Getting Sources
 
     1. Download and Unpack archive.
 
-        ```
+        ```bash
         host$ curl -O https://dl.google.com/android/repository/android-ndk-r18b-linux-x86_64.zip
         host$ unzip -q -o android-ndk-*.zip
         ```
@@ -165,7 +165,7 @@ D. Getting Sources
 
     1. Download and Unpack archive.
 
-        ```
+        ```bash
         host$ curl -O http://download.icu-project.org/files/icu4c/63.1/icu4c-63_1-src.tgz
         host$ tar -xzf icu4c-63_1-src.tgz
         ```
@@ -189,13 +189,13 @@ D. Getting Sources
 
 4. Verify accessibility of sources inside Box.
 
-    ```
+    ```bash
     box$ ls -l /vagrant/Sources
     ```
 
 5. Verify environment variables inside Box.
 
-    ```
+    ```bash
     box$ env | sort
     ```
 
@@ -230,7 +230,7 @@ E. Installing dependencies on Box
 
 1. Install development packages.
 
-    ```
+    ```bash
     host$ vagrant ssh
 
     box$ sudo apt-get update
@@ -241,20 +241,20 @@ E. Installing dependencies on Box
 
     **Note**: `rake` is kind of `make` for Ruby.
 
-    ```
+    ```bash
     box$ sudo apt-get install ruby
     ```
 
 3. Verify Ruby and Rake
 
-    ```
+    ```bash
     box$ ruby --version
     box$ rake --version
     ```
 
 4. (Optionall) Take snapshot.
 
-    ```
+    ```bash
     host$ vagrant snapshot save "02. After installing dependencies."
     ```
 
@@ -263,7 +263,7 @@ II. Usage
 
 Remaining process of compilling ICU and Swift, building and deploying sample projects automated via Rakefile.
 
-```
+```bash
 box$ cd /vagrant/
 box$ rake
 ```
