@@ -17,23 +17,32 @@ task :usage do
    help = <<EOM
 Usage:
 How to build Swift for Android. Steps:
+
 1. Validate environment variables setup.
    Execute: "rake verify:environment"
+
 2. Prepare Android Toolchains:
    Execute: "rake ndk:setup"
+
 3. Prior to building Swift for Android we need to patch ICU.
    Execute: "rake icu:patch"
+
 4. Build ICU for all platforms.
    Execute: "rake icu:build:all"
    If you decided to build only one platform, them make sure that ICU for linux
    build before any other platform (due cross compilation).
+
 5. Build Swift.
    Execute: "rake swift:build"
+
 6. Build Hello project using new Swift Compiler.
    Execute: "rake project:hello:build"
+
 7. Install Android Tools for macOS. See: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
+
 8. Connect Android device to Host. Enable USB Debugging on Android device. Verify that device is connected.
    Execute: "rake project:hello:verify"
+
 9. Deploy and run Hello Project to Android Device.
    Execute: "rake project:hello:install"
    Execute: "rake project:hello:run"
