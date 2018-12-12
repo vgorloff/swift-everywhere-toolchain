@@ -3,6 +3,8 @@
 require_relative "Scripts/Builders/ICUBuilder.rb"
 require_relative "Scripts/Builders/AndroidBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
+require_relative "Scripts/Builders/FoundationBuilder.rb"
+require_relative "Scripts/Builders/CurlBuilder.rb"
 require_relative "Scripts/HelloProjectBuilder.rb"
 require_relative "Scripts/ADBHelper.rb"
 
@@ -130,6 +132,29 @@ namespace :swift do
    desc "Swift: Update sources (i.e. `swift/utils/update-checkout`)"
    task :update do
       SwiftBuilder.new().update
+   end
+
+end
+
+namespace :foundation do
+
+   desc "Builds libFoundation for Android"
+   task :build do
+      FoundationBuilder.new().make
+   end
+
+end
+
+namespace :curl do
+
+   desc "Checkout curl"
+   task :checkout do
+      CurlBuilder.new().checkout
+   end
+
+   desc "Build curl"
+   task :build do
+      CurlBuilder.new().make
    end
 
 end

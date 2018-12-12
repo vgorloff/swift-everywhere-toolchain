@@ -1,4 +1,4 @@
-require_relative "Builder.rb"
+require_relative "../Common/Builder.rb"
 require_relative "../Common/Config.rb"
 
 =begin

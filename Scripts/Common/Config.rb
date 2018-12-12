@@ -19,15 +19,23 @@ class Config
    end
 
    def self.ndkSourcesRoot
-      return "#{rootDirPath}/Sources/android-ndk-r18b"
+      return "#{sourcesRoot}/android-ndk-r18b"
    end
 
    def self.icuSourcesRoot
-      return "#{rootDirPath}/Sources/icu"
+      return "#{sourcesRoot}/icu"
    end
 
    def self.swiftSourcesRoot
-      return "#{rootDirPath}/Sources/swift"
+      return "#{sourcesRoot}/swift"
+   end
+
+   def self.curlSourcesRoot
+      return "#{sourcesRoot}/curl"
+   end
+
+   def self.sourcesRoot
+      return "#{rootDirPath}/Sources"
    end
 
    def self.buildRoot
