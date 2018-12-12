@@ -111,14 +111,6 @@ B. Setting up Ubuntu box
         host$ vagrant up
         ```
 
-    4. (Optionall) Save snapshot of Box.
-
-        ```bash
-        host$ vagrant snapshot save "01. After installing clean OS"
-        ```
-
-        **Note**: Under the hood it will save VirtualBox snapshot.
-
 C. (Optional) Setting Up Visual Studio Code
 -------------------------------------------
 
@@ -238,6 +230,8 @@ E. Installing dependencies on Box
     ```bash
     host$ vagrant snapshot save "Initial Setup"
     ```
+    
+    **Note**: Under the hood it will save VirtualBox snapshot.
 
 II. Usage
 =========
