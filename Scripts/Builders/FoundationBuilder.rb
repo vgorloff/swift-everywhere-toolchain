@@ -6,7 +6,7 @@ class FoundationBuilder < Builder
    def initialize(target = "armv7a")
       super()
       @target = target
-      @sourcesDir = Config.swiftSourcesRoot
+      @sourcesDir = Config.swiftSourcesRoot + "/swift-corelibs-foundation"
       @buildDir = Config.buildRoot + "/foundation/" + @target
       @installDir = Config.installRoot + "/foundation/" + @target
    end
@@ -25,7 +25,7 @@ class FoundationBuilder < Builder
       swiftSDKRoot = "#{swiftBuildPath}/swift-linux-x86_64"
       icuRootPath = "#{Config.icuInstallRoot}/#{@target}"
       cmd = []
-      cmd << "cd #{@sourcesDir}/swift-corelibs-foundation &&"
+      cmd << "cd #{@sourcesDir} &&"
       cmd << "BUILD_DIR=#{@buildDir}"
       cmd << "DSTROOT=#{@installDir}"
 
@@ -40,11 +40,13 @@ class FoundationBuilder < Builder
       cmd << "./configure Release --target=armv7-none-linux-androideabi --sysroot=#{ndkToolchainSysPath}"
       # cmd << "-DXCTEST_BUILD_DIR=#{swiftSDKRoot}/xctest-linux-x86_64"
       cmd << "-DLIBDISPATCH_SOURCE_DIR=#{Config.swiftSourcesRoot}/swift-corelibs-libdispatch"
-      # cmd << "-DLIBDISPATCH_BUILD_DIR=#{Config.dispatchBuildDir}/swift-corelibs-libdispatch" #fixme
+      cmd << "-DLIBDISPATCH_BUILD_DIR=#{Config.dispatchInstallRoot}/swift-corelibs-libdispatch"
       execute cmd.join(" ")
    end
 
-   def build; end
+   def build
+      execute "cd #{@sourcesDir} && ninja"
+   end
 
    def make
       prepare

@@ -68,6 +68,10 @@ class Config
       return "#{installRoot}/android"
    end
 
+   def self.dispatchInstallRoot
+      return "#{installRoot}/dispatch"
+   end
+
    def self.icuInstallRoot
       return "#{installRoot}/icu"
    end

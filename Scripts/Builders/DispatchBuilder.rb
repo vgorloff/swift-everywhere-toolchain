@@ -11,7 +11,7 @@ class DispatchBuilder < Builder
       @target = target
       @sourcesDir = Config.swiftSourcesRoot + "/swift-corelibs-libdispatch"
       @buildDir = Config.buildRoot + "/dispatch/" + @target
-      @installDir = Config.installRoot + "/dispatch/" + @target
+      @installDir = Config.dispatchInstallRoot + "/" + @target
    end
 
    def prepare
