@@ -4,6 +4,7 @@ require_relative "Scripts/Builders/ICUBuilder.rb"
 require_relative "Scripts/Builders/AndroidBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
+require_relative "Scripts/Builders/DispatchBuilder.rb"
 require_relative "Scripts/Builders/CurlBuilder.rb"
 require_relative "Scripts/Builders/OpenSSLBuilder.rb"
 require_relative "Scripts/Builders/XMLBuilder.rb"
@@ -140,9 +141,18 @@ end
 
 namespace :foundation do
 
-   desc "Builds libFoundation for Android"
+   desc "Build libFoundation"
    task :build do
       FoundationBuilder.new().make
+   end
+
+end
+
+namespace :dispatch do
+
+   desc "Build libDispatch"
+   task :build do
+      DispatchBuilder.new().make
    end
 
 end

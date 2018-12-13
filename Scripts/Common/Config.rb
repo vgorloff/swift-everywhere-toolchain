@@ -1,13 +1,5 @@
 class Config
 
-   def self.androidAPI
-      return "21"
-   end
-
-   def self.rootDirPath
-      return File.realpath(File.dirname(__FILE__) + "/../../")
-   end
-
    def self.verify
       puts "- Project Root Path: \t\"#{rootDirPath}\""
       puts "- Android NDK Path: \t\"#{ndkSourcesRoot}\""
@@ -17,6 +9,16 @@ class Config
       puts "- Build root Path: \t\"#{buildRoot}\""
       puts "- Install root Path: \t\"#{installRoot}\""
    end
+
+   def self.androidAPI
+      return "21"
+   end
+
+   def self.rootDirPath
+      return File.realpath(File.dirname(__FILE__) + "/../../")
+   end
+
+   # Sources
 
    def self.ndkSourcesRoot
       return "#{sourcesRoot}/android-ndk-r18b"
@@ -46,6 +48,8 @@ class Config
       return "#{rootDirPath}/Sources"
    end
 
+   # Builds
+
    def self.buildRoot
       return "#{rootDirPath}/Build"
    end
@@ -53,6 +57,8 @@ class Config
    def self.swiftBuildRoot
       return "#{buildRoot}/swift-android"
    end
+
+   # Install
 
    def self.installRoot
       return "#{rootDirPath}/Install"
@@ -65,6 +71,8 @@ class Config
    def self.icuInstallRoot
       return "#{installRoot}/icu"
    end
+
+   # Misc
 
    def self.icuPatchesRoot
       return "#{rootDirPath}/Patches/icu"

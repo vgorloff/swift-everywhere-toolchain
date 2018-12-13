@@ -62,9 +62,9 @@ class CurlBuilder < Builder
    end
 
    def make
-      # checkout
-      # prepare
-      # configure
+      checkout
+      prepare
+      configure
       build
    end
 
