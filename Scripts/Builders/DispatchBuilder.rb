@@ -31,7 +31,7 @@ class DispatchBuilder < Builder
       cmd << "SWIFT=\"#{swiftCCRoot}/bin/swift\""
       cmd << "SWIFTC=\"#{swiftCCRoot}/bin/swiftc\""
       cmd << "cmake -G Ninja"
-      cmd << "-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
+      cmd << "-DCMAKE_C_COMPILER=#{llvmCCRoot}/bin/clang -DCMAKE_CXX_COMPILER=#{llvmCCRoot}/bin/clang++"
       cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
       cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
       cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\" -DCMAKE_BUILD_TYPE=Release"
@@ -42,6 +42,8 @@ class DispatchBuilder < Builder
 
    def build
       execute "cd #{@buildDir} && ninja"
+      # See: What is CMake equivalent of 'configure --prefix=DIR && make all install: https://stackoverflow.com/a/35753015/1418981
+      execute "cd #{@buildDir} && cmake -DCMAKE_INSTALL_PREFIX=#{@installDir} . && ninja install"
    end
 
    def make
