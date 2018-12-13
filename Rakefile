@@ -6,6 +6,7 @@ require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
 require_relative "Scripts/Builders/CurlBuilder.rb"
 require_relative "Scripts/Builders/OpenSSLBuilder.rb"
+require_relative "Scripts/Builders/XMLBuilder.rb"
 require_relative "Scripts/Builders/HelloProjectBuilder.rb"
 require_relative "Scripts/ADBHelper.rb"
 
@@ -142,6 +143,20 @@ namespace :foundation do
    desc "Builds libFoundation for Android"
    task :build do
       FoundationBuilder.new().make
+   end
+
+end
+
+namespace :xml do
+
+   desc "Checkout libXML"
+   task :checkout do
+      XMLBuilder.new().checkout
+   end
+
+   desc "Build libXML"
+   task :make do
+      XMLBuilder.new().make
    end
 
 end

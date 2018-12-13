@@ -38,6 +38,10 @@ class Config
       return "#{sourcesRoot}/openssl"
    end
 
+   def self.xmlSourcesRoot
+      return "#{sourcesRoot}/xml"
+   end
+
    def self.sourcesRoot
       return "#{rootDirPath}/Sources"
    end

@@ -15,17 +15,8 @@ class OpenSSLBuilder < Builder
    end
 
    def checkout
-      url = "https://github.com/openssl/openssl/archive/OpenSSL_1_1_1a.tar.gz"
-      if File.exist? Config.opensslSourcesRoot
-         message "Seems URL \"#{url}\" already downloaded and unpacked to \"#{Config.opensslSourcesRoot}\"."
-         return
-      end
-      execute "cd #{Config.sourcesRoot} && curl -O -J -L #{url}"
-      execute "cd #{Config.sourcesRoot} && tar -xzf openssl-*.tar.gz"
-      unpackedDir = Dir[Config.sourcesRoot + "/openssl-*"].select { |dir| File.directory?(dir) }.first
-      if !unpackedDir.nil?
-         File.rename(unpackedDir, Config.opensslSourcesRoot)
-      end
+      downloader = Downloader.new(Config.sourcesRoot, Config.opensslSourcesRoot, "https://github.com/openssl/openssl/archive/OpenSSL_1_1_1a.tar.gz", 'openssl-*')
+      downloader.bootstrap()
    end
 
    def prepare

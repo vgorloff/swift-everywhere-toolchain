@@ -74,6 +74,9 @@ Naming/VariableName:
 Naming/MethodName:
   Enabled: false
 
+Style/InverseMethods:
+  Enabled: false
+
 Layout/EmptyLinesAroundBlockBody:
   Enabled: false
 
