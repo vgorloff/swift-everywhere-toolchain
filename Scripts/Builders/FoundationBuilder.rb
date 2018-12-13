@@ -22,25 +22,27 @@ class FoundationBuilder < Builder
       ndkToolchainBinPath = "#{ndkToolchainPath}/bin"
       ndkToolchainSysPath = "#{ndkToolchainPath}/sysroot"
       swiftBuildPath = Config.swiftBuildRoot
-      swiftSDKRoot = "#{swiftBuildPath}/swift-linux-x86_64"
+      swiftCCRoot = "#{Config.swiftBuildRoot}/swift-linux-x86_64"
+      llvmCCRoot = "#{Config.swiftBuildRoot}/llvm-linux-x86_64"
       icuRootPath = "#{Config.icuInstallRoot}/#{@target}"
       cmd = []
       cmd << "cd #{@sourcesDir} &&"
       cmd << "BUILD_DIR=#{@buildDir}"
       cmd << "DSTROOT=#{@installDir}"
 
-      cmd << "SWIFTC=\"#{swiftSDKRoot}/bin/swiftc\""
-      cmd << "CLANG=\"#{swiftBuildPath}/llvm-linux-x86_64/bin/clang\""
-      cmd << "SWIFT=\"#{swiftSDKRoot}/bin/swift\""
-      cmd << "SDKROOT=\"#{swiftSDKRoot}\""
-      cmd << "CFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH --sysroot=#{ndkToolchainSysPath} -I#{icuRootPath}/include -I#{swiftSDKRoot}/lib/swift -I#{Config.ndkSourcesRoot}/sources/android/support/include -I#{ndkToolchainSysPath}/usr/include -I#{@sourcesDir}/swift-corelibs-foundation/closure\""
+      cmd << "SWIFTC=\"#{swiftCCRoot}/bin/swiftc\""
+      cmd << "CLANG=\"#{llvmCCRoot}/bin/clang\""
+      cmd << "CLANGXX=\"#{llvmCCRoot}/bin/clang++\""
+      cmd << "SWIFT=\"#{swiftCCRoot}/bin/swift\""
+      cmd << "SDKROOT=\"#{swiftCCRoot}\""
+      cmd << "CFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH --sysroot=#{ndkToolchainSysPath} -I#{icuRootPath}/include -I#{swiftCCRoot}/lib/swift -I#{Config.ndkSourcesRoot}/sources/android/support/include -I#{ndkToolchainSysPath}/usr/include -I#{@sourcesDir}/closure\""
       cmd << "SWIFTCFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH -I#{ndkToolchainSysPath}/usr/include\""
-      cmd << "LDFLAGS=\"-fuse-ld=gold --sysroot=#{ndkToolchainSysPath} -L#{Config.ndkSourcesRoot}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x -L#{icuRootPath} -L#{ndkToolchainSysPath}/usr/lib -ldispatch\""
+      cmd << "LDFLAGS=\"-fuse-ld=gold --sysroot=#{ndkToolchainSysPath} -L#{Config.ndkSourcesRoot}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x -L#{icuRootPath}/lib -L#{ndkToolchainSysPath}/usr/lib -ldispatch\""
 
       cmd << "./configure Release --target=armv7-none-linux-androideabi --sysroot=#{ndkToolchainSysPath}"
-      # cmd << "-DXCTEST_BUILD_DIR=#{swiftSDKRoot}/xctest-linux-x86_64"
+      # cmd << "-DXCTEST_BUILD_DIR=#{swiftCCRoot}/xctest-linux-x86_64"
       cmd << "-DLIBDISPATCH_SOURCE_DIR=#{Config.swiftSourcesRoot}/swift-corelibs-libdispatch"
-      cmd << "-DLIBDISPATCH_BUILD_DIR=#{Config.dispatchInstallRoot}/swift-corelibs-libdispatch"
+      cmd << "-DLIBDISPATCH_BUILD_DIR=#{Config.dispatchInstallRoot}/#{@target}"
       execute cmd.join(" ")
    end
 
