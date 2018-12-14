@@ -76,6 +76,14 @@ class Config
       return "#{installRoot}/icu"
    end
 
+   def self.curlInstallRoot
+      return "#{installRoot}/curl"
+   end
+
+   def self.xmlInstallRoot
+      return "#{installRoot}/xml"
+   end
+
    # Misc
 
    def self.icuPatchesRoot
