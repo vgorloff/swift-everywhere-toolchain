@@ -18,7 +18,7 @@ class Tool
    end
 
    def error(command)
-      puts "\e[31m#{command}\e[0m" # Print to console with Light blue color.
+      puts "\e[31m#{command}\e[0m" # Print to console with Red color.
    end
 
 end

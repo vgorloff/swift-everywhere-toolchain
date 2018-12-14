@@ -63,15 +63,10 @@ B. Setting up Ubuntu box
 
         **Note**: Box will be created in directory specified in VirtualBox settings. Detalis in [this post](http://www.thisprogrammingthing.com/2013/changing-the-directory-vagrant-stores-the-vms-in/).
 
-    4. (Optionall) Verify Ubuntu version.
+    4. (Optionall) Verify Ubuntu version and Explore synced folders.
 
         ```bash
         box$ lsb_release -irc
-        ```
-
-    5. (Optionall) Explore synced folders:
-
-        ```bash
         box$ ls -l /vagrant
         ```
 
@@ -79,37 +74,6 @@ B. Setting up Ubuntu box
 
     As result we have Ubuntu box running on macOS.
 
-2. Review Box settings.
-
-    Since we going to compile Swift. It is a good idea to review box's Memory and CPU settings to avoid situations like below.
-
-    ```
-    /usr/bin/ld.gold: out of memory
-    clang: error: linker command failed with exit code 1 (use -v to see invocation)
-    ```
-
-    ```
-    LLVM ERROR: out of memory
-    ```
-
-    1. Shutdown box.
-
-        ```bash
-        host$ vagrant halt
-        ```
-
-    2. Review and update Vagrantfile if needed. Increase CPU and Memory values if you have enough resources.
-
-        ```ruby
-        vb.memory = "5120"
-        vb.cpus = "4"
-        ```
-
-    3. Start Box again.
-
-        ```bash
-        host$ vagrant up
-        ```
 
 C. (Optional) Setting Up Visual Studio Code
 -------------------------------------------
@@ -118,69 +82,6 @@ If you going to edit Ruby files, then it worth to install Visual Studio Code for
 
 1. Visual Studio Code: https://code.visualstudio.com
 2. Ruby language support: https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby
-
-D. Getting Sources
-------------------
-
-1. Get Swift sources.
-
-    **Note**: Steps taken from official [Guide](https://github.com/apple/swift).
-
-    ```bash
-    host$ mkdir -p Sources/swift
-    host$ cd Sources/swift
-
-    host$ git clone https://github.com/apple/swift.git
-    host$ ./swift/utils/update-checkout --clone
-    ```
-
-2. Get Android NDK.
-
-    1. Download and Unpack archive.
-
-        ```bash
-        host$ curl -O https://dl.google.com/android/repository/android-ndk-r18b-linux-x86_64.zip
-        host$ unzip -q -o android-ndk-*.zip
-        ```
-
-    2. If you prefer manual download, then visit https://developer.android.com/ndk/downloads/.
-
-        **Note**: At a time of writing this text there was release named: `android-ndk-r18b-linux-x86_64.zip`
-
-    3. Ensure that archive extracted to folder `Sources/android-ndk-r18b`.
-
-
-3. Get ICU (International Components for Unicode).
-
-    1. Download and Unpack archive.
-
-        ```bash
-        host$ curl -O http://download.icu-project.org/files/icu4c/63.1/icu4c-63_1-src.tgz
-        host$ tar -xzf icu4c-63_1-src.tgz
-        ```
-
-    2. If you prefer manual download, then visit http://site.icu-project.org/download
-
-        **Note**: At a time of writing this text there was release named `ICU4C 63.1` and downloadable archive with sources named `icu4c-63_1-src.tgz`.
-
-    3. Ensure that archive extracted to folder `Sources/icu`.
-
-    As result, file structure should be like below:
-
-    ```
-    ...
-    Sources
-        - android-ndk-r18b
-        - icu
-        - swift
-    ...
-    ```
-
-4. Verify accessibility of sources inside Box.
-
-    ```bash
-    box$ ls -l /vagrant/Sources
-    ```
 
 E. Installing dependencies on Box
 ---------------------------------------
@@ -193,18 +94,18 @@ E. Installing dependencies on Box
     box$ bash /vagrant/Scripts/Shell/bootstrap.sh
     ```
 
-4. (Optionall) Take snapshot.
+2. (Optionall) Take snapshot.
 
     ```bash
-    host$ vagrant snapshot save "Initial Setup"
+    host$ vagrant snapshot save "Clean System"
     ```
-    
+
     **Note**: Under the hood it will save VirtualBox snapshot.
 
 II. Usage
 =========
 
-Remaining process of compilling ICU and Swift, building and deploying sample projects automated via Rakefile.
+Remaining process of compilling Swift Toolchain, building and deploying sample projects automated via Rakefile.
 
 ```bash
 box$ cd /vagrant/

@@ -20,17 +20,18 @@ task default: ['usage']
 
 task :usage do
    help = <<EOM
-Usage:
-How to build Swift for Android. Steps:
 
-1. Validate environment variables setup.
-   Execute: "rake verify:environment"
+Building Swift Toolchain. Steps:
+
+1. Checkout Sources.
+   "rake checkout:swift"
+   "rake checkout:ndk"
+   "rake checkout:icu"
+
+   Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put it into Downloads folder.
 
 2. Prepare Android Toolchains:
    Execute: "rake ndk:setup"
-
-3. Prior to building Swift for Android we need to patch ICU.
-   Execute: "rake icu:patch"
 
 4. Build ICU for all platforms.
    Execute: "rake icu:build:all"
@@ -64,16 +65,34 @@ namespace :verify do
    end
 end
 
+namespace :checkout do
+
+   desc "Checkout Swift"
+   task :swift do
+      SwiftBuilder.new().checkout
+   end
+
+   desc "Checkout ICU"
+   task :icu do
+      ICUBuilder.new().checkout
+   end
+
+   desc "Download Android NDK"
+   task :ndk do
+      AndroidBuilder.new().download
+   end
+
+end
+
+namespace :build do
+
+end
+
 namespace :icu do
 
    desc "Cleans ICU build."
    task :clean do
       ICUBuilder.new().clean
-   end
-
-   desc "Installs patch which will add `swift` suffix to binary. Details here: http://fixme."
-   task :patch do
-      ICUBuilder.new().applyPatchIfNeeded
    end
 
    namespace :build do
@@ -122,7 +141,7 @@ end
 
 namespace :swift do
 
-   desc "Builds Swift for Android"
+   desc "Build Swift"
    task :build do
       SwiftBuilder.new().make
    end

@@ -77,6 +77,11 @@ class ICUBuilder < Builder
       execute cmd.join(" ")
    end
 
+   def checkout
+      execute "cd \"#{Config.sourcesRoot}\" && git clone --depth=100 https://github.com/unicode-org/icu.git"
+      message "#{Lib::ICU} checkout completed."
+   end
+
    def prepare()
       execute "mkdir -p #{@buildDir}"
       applyPatchIfNeeded()

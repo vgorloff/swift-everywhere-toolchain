@@ -1,12 +1,15 @@
 require_relative "../Common/Builder.rb"
-require_relative "../Common/Config.rb"
 
 class AndroidBuilder < Builder
 
-   def initialize(arch)
-      super()
-      @arch = arch
+   def initialize(arch = Arch.default)
+      super(Lib.ndk, arch)
       @installDir = Config.ndkInstallRoot + "/#{@arch}"
+   end
+
+   def download()
+      downloader = Downloader.new(Config.downloads, @sources, "https://dl.google.com/android/repository/android-ndk-r18b-linux-x86_64.zip", 'android-ndk-*')
+      downloader.bootstrap()
    end
 
    def setupToolchain

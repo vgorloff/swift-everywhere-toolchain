@@ -17,6 +17,8 @@ class Downloader < Tool
    def unpack()
       if archive.end_with? ".tar.gz"
          execute "cd #{@downloads} && tar -xzf \"#{archive}\""
+      elsif archive.end_with? ".zip"
+         execute "cd #{@downloads} && unzip -q -o \"#{archive}\""
       else
          raise "Don't know how to unpack file \"#{archive}\"."
       end

@@ -1,5 +1,4 @@
 require_relative "../Common/Builder.rb"
-require_relative "../Common/Config.rb"
 
 =begin
 
@@ -15,6 +14,7 @@ Compiling swift on Linux: https://akrabat.com/compiling-swift-on-linux/
 # 7. Cross compile Apps on Mac for Linux: https://github.com/apple/swift-package-manager/blob/master/Utilities/build_ubuntu_cross_compilation_toolchain
 # 8. Swift cross compile on Rasperi Pi: https://stackoverflow.com/a/44003655/1418981
 # 9. Java and Swift interoperability: https://medium.com/@michiamling/android-app-with-java-native-interface-for-swift-c9c322609e08
+# 10. /Sources/Swift/swift/utils/android/build-toolchain
 
 Swift in Java.
 
@@ -96,6 +96,14 @@ class SwiftBuilder < Builder
 
    def update
       execute "cd #{Config.swiftSourcesRoot} && ./swift/utils/update-checkout"
+   end
+
+   def checkout
+      sources = Config.sources(Lib::Swift)
+      execute "mkdir -p \"#{sources}\""
+      execute "cd \"#{sources}\" && git clone --depth=100 https://github.com/apple/swift.git"
+      execute "cd \"#{sources}\" && ./swift/utils/update-checkout --clone"
+      message "#{Lib::Swift} checkout completed."
    end
 
 end

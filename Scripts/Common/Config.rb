@@ -1,7 +1,13 @@
+require_relative "Location.rb"
+
 class Config
 
+   def self.sources(component)
+      return sourcesRoot + "/" + component
+   end
+
    def self.verify
-      puts "- Project Root Path: \t\"#{rootDirPath}\""
+      puts "- Project Root Path: \t\"#{root}\""
       puts "- Android NDK Path: \t\"#{ndkSourcesRoot}\""
       puts "- ICU Sources Path: \t\"#{icuSourcesRoot}\""
       puts "- ICU Patches Path: \t\"#{icuPatchesRoot}\""
@@ -14,7 +20,7 @@ class Config
       return "21"
    end
 
-   def self.rootDirPath
+   def self.root
       return File.realpath(File.dirname(__FILE__) + "/../../")
    end
 
@@ -45,23 +51,23 @@ class Config
    end
 
    def self.sourcesRoot
-      return "#{rootDirPath}/Sources"
+      return "#{root}/Sources"
    end
 
    # Builds
 
    def self.buildRoot
-      return "#{rootDirPath}/Build"
+      return "#{root}/Build"
    end
 
    def self.swiftBuildRoot
-      return "#{buildRoot}/swift-android"
+      return "#{buildRoot}/swift"
    end
 
    # Install
 
    def self.installRoot
-      return "#{rootDirPath}/Install"
+      return "#{root}/Install"
    end
 
    def self.ndkInstallRoot
@@ -87,11 +93,31 @@ class Config
    # Misc
 
    def self.icuPatchesRoot
-      return "#{rootDirPath}/Patches/icu"
+      return "#{root}/Patches/icu"
    end
 
    def self.projectsRoot
-      return "#{rootDirPath}/Projects"
+      return "#{root}/Projects"
+   end
+
+   def self.sources
+      return "#{root}/#{Location.sources}"
+   end
+
+   def self.downloads
+      return "#{root}/#{Location.downloads}"
+   end
+
+   def self.build
+      return "#{root}/#{Location.build}"
+   end
+
+   def self.install
+      return "#{root}/#{Location.install}"
+   end
+
+   def self.patches
+      return "#{root}/#{Location.patches}"
    end
 
    def self.getEnvVariable(name)
