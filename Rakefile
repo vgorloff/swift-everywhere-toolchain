@@ -16,7 +16,7 @@ require_relative "Scripts/ADBHelper.rb"
 # - Using Rake to Automate Tasks: https://www.stuartellis.name/articles/rake/
 #
 
-task default: %w[usage]
+task default: ['usage']
 
 task :usage do
    help = <<EOM
@@ -79,7 +79,7 @@ namespace :icu do
    namespace :build do
 
       desc "Applies patch (if needed) and builds ICU for all platforms."
-      task :all => [:linux, :armv7a, :x86, :aarch64] do
+      task all: [:linux, :armv7a, :x86, :aarch64] do
          puts "Done!"
       end
 
@@ -166,7 +166,7 @@ namespace :dispatch do
    end
 
    desc "Rebuild libDispatch"
-   task :rebuild => [:clean, :build] do
+   task rebuild: [:clean, :build] do
    end
 
 end
@@ -245,7 +245,7 @@ namespace :project do
       end
 
       desc "Project Hello: Deploy and Run on Android"
-      task :deploy => [:install, :run] do
+      task deploy: [:install, :run] do
       end
 
    end
