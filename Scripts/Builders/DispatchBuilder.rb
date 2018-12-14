@@ -12,6 +12,8 @@ class DispatchBuilder < Builder
       @sourcesDir = Config.swiftSourcesRoot + "/swift-corelibs-libdispatch"
       @buildDir = Config.buildRoot + "/dispatch/" + @target
       @installDir = Config.dispatchInstallRoot + "/" + @target
+      @swiftCCRoot = "#{Config.swiftBuildRoot}/swift-linux-x86_64"
+      @llvmCCRoot = "#{Config.swiftBuildRoot}/llvm-linux-x86_64"
    end
 
    def prepare
@@ -19,34 +21,44 @@ class DispatchBuilder < Builder
       execute "mkdir -p #{@installDir}"
    end
 
-   def configure
-      # See: /swift/swift-corelibs-libdispatch/INSTALL.md
-      swiftCCRoot = "#{Config.swiftBuildRoot}/swift-linux-x86_64"
-      llvmCCRoot = "#{Config.swiftBuildRoot}/llvm-linux-x86_64"
+   def args
       cmd = []
-      cmd << "cd #{@buildDir} &&"
-      cmd << "CLANG=\"#{llvmCCRoot}/bin/clang\""
-      cmd << "CC=\"#{llvmCCRoot}/bin/clang\""
-      cmd << "CXX=\"#{llvmCCRoot}/bin/clang++\""
-      cmd << "SWIFT=\"#{swiftCCRoot}/bin/swift\""
-      cmd << "SWIFTC=\"#{swiftCCRoot}/bin/swiftc\""
-      cmd << "cmake -G Ninja"
-      cmd << "-DCMAKE_C_COMPILER=#{llvmCCRoot}/bin/clang -DCMAKE_CXX_COMPILER=#{llvmCCRoot}/bin/clang++"
+      cmd << "CLANG=\"#{@llvmCCRoot}/bin/clang\""
+      cmd << "CC=\"#{@llvmCCRoot}/bin/clang\""
+      cmd << "CXX=\"#{@llvmCCRoot}/bin/clang++\""
+      cmd << "SWIFT=\"#{@swiftCCRoot}/bin/swift\""
+      cmd << "SWIFTC=\"#{@swiftCCRoot}/bin/swiftc\""
+      return cmd
+   end
+
+   def options
+      # See: /swift/swift-corelibs-libdispatch/INSTALL.md
+      cmd = []
+      cmd << "-DCMAKE_C_COMPILER=#{@llvmCCRoot}/bin/clang -DCMAKE_CXX_COMPILER=#{@llvmCCRoot}/bin/clang++"
       cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
       cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
       cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\" -DCMAKE_BUILD_TYPE=Release"
       cmd << "-DENABLE_SWIFT=true"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{swiftCCRoot}/bin/swift\""
-      cmd << "-DCMAKE_PREFIX_PATH=\"#{swiftCCRoot}/lib/cmake/swift\""
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swiftCCRoot}/bin/swiftc\""
+      cmd << "-DCMAKE_PREFIX_PATH=\"#{@swiftCCRoot}/lib/cmake/swift\""
+      cmd << "-DCMAKE_INSTALL_PREFIX=#{@installDir}"
       cmd << "-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=#{Config.androidAPI} -DCMAKE_ANDROID_NDK=#{Config.ndkSourcesRoot}"
+      return cmd
+   end
+
+   def configure
+      cmd = []
+      cmd << "cd #{@buildDir} &&"
+      cmd += args
+      cmd << "cmake -G Ninja"
+      cmd += options
       cmd << @sourcesDir
       execute cmd.join(" ")
    end
 
    def build
-      execute "cd #{@buildDir} && ninja"
       # See: What is CMake equivalent of 'configure --prefix=DIR && make all install: https://stackoverflow.com/a/35753015/1418981
-      execute "cd #{@buildDir} && cmake -DCMAKE_INSTALL_PREFIX=#{@installDir} . && ninja install"
+      execute "cd #{@buildDir} && cmake " + options.join(" ") + " . && " + args.join(" ") + " ninja install"
    end
 
    def make
