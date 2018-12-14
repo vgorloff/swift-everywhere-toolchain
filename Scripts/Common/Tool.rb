@@ -5,11 +5,20 @@ class Tool
 
    def execute(command)
       puts "\e[32m#{command}\e[0m" # Print to console with Green color.
-      system command
+      if system(command) != true
+         message "Execution of command is failed:"
+         error command
+         puts
+         raise
+      end
    end
 
    def message(command)
       puts "\e[36m#{command}\e[0m" # Print to console with Light blue color.
+   end
+
+   def error(command)
+      puts "\e[31m#{command}\e[0m" # Print to console with Light blue color.
    end
 
 end

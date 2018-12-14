@@ -155,6 +155,15 @@ namespace :dispatch do
       DispatchBuilder.new().make
    end
 
+   desc "Clean libDispatch"
+   task :clean do
+      DispatchBuilder.new().clean
+   end
+
+   desc "Rebuild libDispatch"
+   task :rebuild => [:clean, :build] do
+   end
+
 end
 
 namespace :xml do

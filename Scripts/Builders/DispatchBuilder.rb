@@ -35,6 +35,9 @@ class DispatchBuilder < Builder
       cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
       cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
       cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\" -DCMAKE_BUILD_TYPE=Release"
+      cmd << "-DENABLE_SWIFT=true"
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{swiftCCRoot}/bin/swift\""
+      cmd << "-DCMAKE_PREFIX_PATH=\"#{swiftCCRoot}/lib/cmake/swift\""
       cmd << "-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=#{Config.androidAPI} -DCMAKE_ANDROID_NDK=#{Config.ndkSourcesRoot}"
       cmd << @sourcesDir
       execute cmd.join(" ")
@@ -50,6 +53,11 @@ class DispatchBuilder < Builder
       prepare
       configure
       build
+   end
+
+   def clean
+      execute "rm -rf \"#{@buildDir}\""
+      execute "rm -rf \"#{@installDir}\""
    end
 
 end
