@@ -146,6 +146,11 @@ namespace :foundation do
       FoundationBuilder.new().make
    end
 
+   desc "Clean libFoundation"
+   task :clean do
+      FoundationBuilder.new().clean
+   end
+
 end
 
 namespace :dispatch do

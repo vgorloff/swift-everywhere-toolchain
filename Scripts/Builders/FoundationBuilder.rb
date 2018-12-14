@@ -100,4 +100,9 @@ class FoundationBuilder < Builder
       build
    end
 
+   def clean
+      execute "rm -rf \"#{@buildDir}\""
+      execute "rm -rf \"#{@installDir}\""
+   end
+
 end
