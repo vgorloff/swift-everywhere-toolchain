@@ -36,13 +36,13 @@ I. Initial setup
     host$ cd Android-On-Swift
     ```
 
-2. (Optionall) Verify downloaded Ubuntu image in local folder.
+5. (Optionall) Verify downloaded Ubuntu image in local folder.
 
     ```bash
     host$ ls -l ~/.vagrant.d/boxes
     ```
 
-3. Start box and connect via SSH.
+6. Start box and connect via SSH.
 
     ```bash
     host$ vagrant up
@@ -51,7 +51,7 @@ I. Initial setup
 
     **Note**: Box will be created in directory specified in VirtualBox settings. Detalis in [this post](http://www.thisprogrammingthing.com/2013/changing-the-directory-vagrant-stores-the-vms-in/).
 
-4. (Optionall) Verify Ubuntu version and Explore synced folders.
+7. (Optionall) Verify Ubuntu version and Explore synced folders.
 
     ```bash
     box$ lsb_release -irc
@@ -60,13 +60,20 @@ I. Initial setup
 
     **Note**: You should see this `Readme.md` file inside Ubuntu Box.
 
-5. (Optional) Setting Up Visual Studio Code
+8. (Optionall) Take snapshot.
+
+    ```bash
+    host$ vagrant snapshot save "Clean System"
+    ```
+
+    **Note**: Under the hood it will save VirtualBox snapshot.
+
+9. (Optional) Setting Up Visual Studio Code
 
     If you going to edit Ruby files, then it worth to install Visual Studio Code for macOS and Ruby plugin.
 
     - Visual Studio Code: https://code.visualstudio.com
     - Ruby language support: https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby
-
 
 II. Usage
 =========
