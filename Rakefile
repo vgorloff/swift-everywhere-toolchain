@@ -24,34 +24,30 @@ task :usage do
 Building Swift Toolchain. Steps:
 
 1. Checkout Sources.
-   "rake checkout:swift"
-   "rake checkout:ndk"
-   "rake checkout:icu"
+   rake checkout:swift
+   rake checkout:ndk
+   rake checkout:icu
 
    Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put it into Downloads folder.
 
-2. Prepare Android Toolchains:
-   Execute: "rake ndk:setup"
+2. Configure and Build Sources:
+   rake build:armv7a:ndk
+   rake build:armv7a:icu
+   rake build:armv7a:swift
 
-4. Build ICU for all platforms.
-   Execute: "rake icu:build:all"
-   If you decided to build only one platform, them make sure that ICU for linux
-   build before any other platform (due cross compilation).
-
-5. Build Swift.
-   Execute: "rake swift:build"
-
-6. Build Hello project using new Swift Compiler.
+3. Build `Hello` project.
    Execute: "rake project:hello:build"
 
-7. Install Android Tools for macOS. See: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
+4. Install Android Tools for macOS. See: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
 
-8. Connect Android device to Host. Enable USB Debugging on Android device. Verify that device is connected.
+5. Connect Android device to Host. Enable USB Debugging on Android device. Verify that device is connected.
    Execute: "rake project:hello:verify"
 
-9. Deploy and run Hello Project to Android Device.
+6. Deploy and run Hello Project to Android Device.
    Execute: "rake project:hello:install"
    Execute: "rake project:hello:run"
+
+7. Repeat steps 2...6 for other architectures.
 \n
 EOM
    puts help
@@ -86,14 +82,33 @@ end
 
 namespace :build do
 
+   namespace :armv7a do
+
+      desc "Setup Android toolchain."
+      task :ndk do
+         AndroidBuilder.new(Arch.armv7a).setup
+      end
+
+      desc "Build ICU"
+      task :icu do
+         ICUBuilder.new(Arch.armv7a).make
+      end
+   end
+end
+
+namespace :clean do
+
+   namespace :armv7a do
+
+      desc "Clean ICU."
+      task :icu do
+         ICUBuilder.new(Arch.armv7a).clean
+      end
+   end
+
 end
 
 namespace :icu do
-
-   desc "Cleans ICU build."
-   task :clean do
-      ICUBuilder.new().clean
-   end
 
    namespace :build do
 
@@ -105,11 +120,6 @@ namespace :icu do
       desc "Builds ICU for Linux"
       task :linux do
          ICUBuilder.new("linux").make
-      end
-
-      desc "Builds ICU for armv7a"
-      task :armv7a do
-         ICUBuilder.new("armv7a").make
       end
 
       desc "Builds ICU for x86"
@@ -131,12 +141,6 @@ namespace :ndk do
       AndroidBuilder.new("").clean
    end
 
-   desc "Setup Android toolchains for All platforms."
-   task :setup do
-      AndroidBuilder.new("armv7a").setupToolchain
-      AndroidBuilder.new("x86").setupToolchain
-      AndroidBuilder.new("aarch64").setupToolchain
-   end
 end
 
 namespace :swift do

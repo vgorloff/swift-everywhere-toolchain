@@ -2,6 +2,10 @@ require_relative "../Common/Builder.rb"
 
 class AndroidBuilder < Builder
 
+   def self.api
+      return "21"
+   end
+
    def initialize(arch = Arch.default)
       super(Lib.ndk, arch)
       @installDir = Config.ndkInstallRoot + "/#{@arch}"
@@ -12,23 +16,23 @@ class AndroidBuilder < Builder
       downloader.bootstrap()
    end
 
-   def setupToolchain
+   def setup
       cmd = []
-      cmd << "#{Config.ndkSourcesRoot}/build/tools/make-standalone-toolchain.sh"
-      cmd << "--platform=android-#{Config.androidAPI}"
-      cmd << "--install-dir=#{@installDir}"
-      if @arch == "armv7a"
+      cmd << "#{@sources}/build/tools/make-standalone-toolchain.sh"
+      cmd << "--platform=android-#{AndroidBuilder.api}"
+      cmd << "--install-dir=#{@install}"
+      if @arch == Arch.armv7a
          cmd << "--toolchain=arm-linux-androideabi-4.9"
-      elsif @arch == "x86"
+      elsif @arch == Arch.x86
          cmd << "--toolchain=x86-4.9"
-      elsif @arch == "aarch64"
+      elsif @arch == Arch.aarch64
          cmd << "--toolchain=aarch64-linux-android-4.9"
       end
       execute cmd.join(" ")
    end
 
    def clean()
-      execute "rm -rf #{Config.ndkInstallRoot}/"
+      execute "rm -rf #{@install}/"
    end
 
 end

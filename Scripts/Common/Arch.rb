@@ -1,5 +1,9 @@
 class Arch
 
+   def self.default
+      return armv7a
+   end
+
    def self.x86
       return "x86"
    end
@@ -12,7 +16,4 @@ class Arch
       return "aarch64"
    end
 
-   def self.default
-      return armv7a
-   end
 end

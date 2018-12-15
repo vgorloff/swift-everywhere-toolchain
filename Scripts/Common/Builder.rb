@@ -7,6 +7,8 @@ require_relative "Downloader.rb"
 
 class Builder < Tool
 
+   attr_reader :build, :install, :sources
+
    def initialize(component, arch)
       @component = component
       @arch = arch
@@ -21,6 +23,7 @@ class Builder < Tool
          message "Repository #{repoURL} seems already checked out."
       else
          execute "cd #{File.dirname(localPath)} && git clone --depth=100 #{repoURL}"
+         message "#{repoURL} checkout completed."
       end
    end
 
