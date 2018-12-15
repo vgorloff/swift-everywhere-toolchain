@@ -2,7 +2,7 @@ require_relative "../Common/Builder.rb"
 
 class AndroidBuilder < Builder
 
-   def self.api
+   def api
       return "21"
    end
 
@@ -19,7 +19,7 @@ class AndroidBuilder < Builder
    def setup
       cmd = []
       cmd << "#{@sources}/build/tools/make-standalone-toolchain.sh"
-      cmd << "--platform=android-#{AndroidBuilder.api}"
+      cmd << "--platform=android-#{@api}"
       cmd << "--install-dir=#{@install}"
       if @arch == Arch.armv7a
          cmd << "--toolchain=arm-linux-androideabi-4.9"

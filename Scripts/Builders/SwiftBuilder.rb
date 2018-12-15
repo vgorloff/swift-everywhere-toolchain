@@ -48,30 +48,52 @@ Swift in Java.
 
 class SwiftBuilder < Builder
 
-   def initialize()
-      super()
-      @installRoot = Config.installRoot + "/swift/swift"
-      @installArchive = Config.installRoot + "/swift/swift.tar.gz"
+   def initialize(arch = Arch.default)
+      super(Lib.swift, arch)
+      @icu = ICUBuilder.new(arch)
+      @ndk = AndroidBuilder.new(arch)
    end
 
-   def build()
-      target = "armv7a"
-      libICUBuildPath = Config.icuInstallRoot + "/#{target}/lib"
-      cmd = ["cd #{Config.swiftSourcesRoot} &&"]
+   def compileOLD
+      cmd = ["cd #{@sources} &&"]
       cmd << "./swift/utils/build-script --release --android"
-      cmd << "--android-ndk #{Config.ndkSourcesRoot}"
-      cmd << "--android-api-level #{Config.androidAPI}"
-      cmd << "--android-icu-uc #{libICUBuildPath}/libicuucswift.so"
-      cmd << "--android-icu-uc-include #{Config.icuSourcesRoot}/source/common"
-      cmd << "--android-icu-i18n #{libICUBuildPath}/libicui18nswift.so"
-      cmd << "--android-icu-i18n-include #{Config.icuSourcesRoot}/source/i18n"
-      cmd << "--android-icu-data #{Config.icuSourcesRoot}/libicudataswift.so"
+      cmd << "--android-ndk #{@ndk.sources}"
+      cmd << "--android-api-level #{@ndk.api}"
+      cmd << "--android-icu-uc #{@icu.lib}/libicuucswift.so"
+      cmd << "--android-icu-uc-include #{@icu.sources}/source/common"
+      cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
+      cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
+      cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
       # cmd << "--foundation --libdispatch" # Needs to be compiled separately.
-      cmd << "--build-dir #{Config.swiftBuildRoot}"
+      cmd << "--build-dir #{@build}"
       execute cmd.join(" ")
    end
 
-   def prepare()
+   def compile
+      cmd = ["cd #{@sources} &&"]
+      cmd << "./swift/utils/build-script --release --android"
+      cmd << "--android-ndk #{@ndk.sources}"
+      cmd << "--android-api-level #{@ndk.api}"
+      cmd << "--android-icu-uc #{@icu.lib}/libicuucswift.so"
+      cmd << "--android-icu-uc-include #{@icu.sources}/source/common"
+      cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
+      cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
+      cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
+      cmd << "--libdispatch --install-libdispatch"
+      cmd << "--foundation --install-foundation"
+      cmd << "--llbuild --install-llbuild"
+      cmd << "--lldb --install-lldb"
+      cmd << "--swiftpm --install-swiftpm"
+      cmd << "--xctest --install-xctest"
+      cmd << "--install-swift"
+      cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;dev'"
+      cmd << "--install-prefix=/usr"
+      cmd << "--install-destdir=#{@install}"
+      cmd << "--build-dir #{@build}"
+      execute cmd.join(" ")
+   end
+
+   def prepare
       targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
       if File.exist?(targetFile)
          return
@@ -85,25 +107,24 @@ class SwiftBuilder < Builder
       execute "ls -a /usr/bin/*ld.gold"
    end
 
-   def make()
-      prepare
-      build
+   def make
+      # prepare
+      compile
    end
 
    def help
-      execute "cd #{Config.swiftSourcesRoot} && ./swift/utils/build-script --help | more"
+      execute "cd #{@sources} && ./swift/utils/build-script --help | more"
    end
 
    def update
-      execute "cd #{Config.swiftSourcesRoot} && ./swift/utils/update-checkout"
+      execute "cd #{@sources} && ./swift/utils/update-checkout"
    end
 
    def checkout
-      sources = Config.sources(Lib::Swift)
-      execute "mkdir -p \"#{sources}\""
-      execute "cd \"#{sources}\" && git clone --depth=100 https://github.com/apple/swift.git"
-      execute "cd \"#{sources}\" && ./swift/utils/update-checkout --clone"
-      message "#{Lib::Swift} checkout completed."
+      dir = @sources + "/swift"
+      checkoutIfNeeded(dir, "https://github.com/apple/swift.git")
+      execute "cd \"#{dir}\" && ./swift/utils/update-checkout --clone"
+      message "#{Lib.swift} checkout completed."
    end
 
 end

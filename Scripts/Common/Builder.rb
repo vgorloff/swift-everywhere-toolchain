@@ -18,11 +18,17 @@ class Builder < Tool
       @install = "#{Config.install}/#{component}/#{arch}"
    end
 
+   def lib
+      return @install + "/lib"
+   end
+
    def checkoutIfNeeded(localPath, repoURL)
       if File.exist?(localPath)
          message "Repository #{repoURL} seems already checked out."
       else
-         execute "cd #{File.dirname(localPath)} && git clone --depth=100 #{repoURL}"
+         dir = File.dirname(localPath)
+         execute "mkdir -p \"#{dir}\""
+         execute "cd \"#{dir}\" && git clone --depth=100 #{repoURL}"
          message "#{repoURL} checkout completed."
       end
    end

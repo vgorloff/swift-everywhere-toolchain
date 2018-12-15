@@ -93,6 +93,11 @@ namespace :build do
       task :icu do
          ICUBuilder.new(Arch.armv7a).make
       end
+
+      desc "Build Swift"
+      task :swift do
+         SwiftBuilder.new(Arch.armv7a).make
+      end
    end
 end
 
@@ -104,51 +109,16 @@ namespace :clean do
       task :icu do
          ICUBuilder.new(Arch.armv7a).clean
       end
-   end
 
-end
-
-namespace :icu do
-
-   namespace :build do
-
-      desc "Applies patch (if needed) and builds ICU for all platforms."
-      task all: [:linux, :armv7a, :x86, :aarch64] do
-         puts "Done!"
+      desc "Clean NDK."
+      task :ndk do
+         AndroidBuilder.new(Arch.armv7a).clean
       end
-
-      desc "Builds ICU for Linux"
-      task :linux do
-         ICUBuilder.new("linux").make
-      end
-
-      desc "Builds ICU for x86"
-      task :x86 do
-         ICUBuilder.new("x86").make
-      end
-
-      desc "Builds ICU for aarch64"
-      task :aarch64 do
-         ICUBuilder.new("aarch64").make
-      end
-   end
-end
-
-namespace :ndk do
-
-   desc "Cleans NDK build."
-   task :clean do
-      AndroidBuilder.new("").clean
    end
 
 end
 
 namespace :swift do
-
-   desc "Build Swift"
-   task :build do
-      SwiftBuilder.new().make
-   end
 
    desc "Swift: Show Build options (i.e. `swift/utils/build-script --help`)"
    task :help do

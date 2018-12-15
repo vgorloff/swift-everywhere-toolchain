@@ -6,7 +6,7 @@
 Vagrant.configure("2") do |config|
 
    config.vm.box = "ubuntu/bionic64"
-   config.disksize.size = '25GB'
+   config.vm.provision :shell, path: "Scripts/Shell/bootstrap.sh"
    config.vm.provision :shell, inline: "echo 'source /vagrant/Scripts/Shell/environment.sh' > /etc/profile.d/sa-environment.sh", :run => 'always'
 
    config.vm.provider "virtualbox" do |vb|
