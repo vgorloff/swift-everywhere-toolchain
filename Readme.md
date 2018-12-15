@@ -62,7 +62,7 @@ I. Initial setup
 
 5. (Optional) Setting Up Visual Studio Code
 
-If you going to edit Ruby files, then it worth to install Visual Studio Code for macOS and Ruby plugin.
+    If you going to edit Ruby files, then it worth to install Visual Studio Code for macOS and Ruby plugin.
 
     - Visual Studio Code: https://code.visualstudio.com
     - Ruby language support: https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby
