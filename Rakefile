@@ -114,20 +114,29 @@ namespace :clean do
       task :ndk do
          AndroidBuilder.new(Arch.armv7a).clean
       end
+
+      desc "Clean Swift."
+      task :swift do
+         SwiftBuilder.new(Arch.armv7a).clean
+      end
    end
 
 end
 
-namespace :swift do
+namespace :update do
 
-   desc "Swift: Show Build options (i.e. `swift/utils/build-script --help`)"
-   task :help do
-      SwiftBuilder.new().help
+   desc "Updated Git repositories: `swift/utils/update-checkout`"
+   task :swift do
+      SwiftBuilder.new().update
    end
 
-   desc "Swift: Update sources (i.e. `swift/utils/update-checkout`)"
-   task :update do
-      SwiftBuilder.new().update
+end
+
+namespace :help do
+
+   desc "Show Build options: `swift/utils/build-script --help`"
+   task :swift do
+      SwiftBuilder.new().help
    end
 
 end
