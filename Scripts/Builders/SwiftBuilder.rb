@@ -86,26 +86,8 @@ class SwiftBuilder < Builder
       execute cmd.join(" ")
    end
 
-   def buildLLVM
-      # See: LLVM Getting Started https://llvm.org/docs/GettingStarted.html
-      execute "mkdir -p #{@build}/llvm"
-      cmd = []
-      cmd << "cd #{@build}/llvm &&"
-      cmd << "cmake -G Ninja"
-      cmd << "-DCMAKE_INSTALL_PREFIX=#{@install}/llvm"
-      cmd << "-DCMAKE_BUILD_TYPE=Release"
-      cmd << "#{@sources}/llvm"
-      execute cmd.join(" ")
-
-      execute "cd #{@build}/llvm && ninja"
-      message "LLVM Compile is completed."
-
-      execute "cd #{@build}/llvm && ninja install"
-      message "LLVM Install is completed."
-   end
-
    def compile
-      buildLLVM
+      puts "Implement Me"
    end
 
    def prepare

@@ -12,4 +12,8 @@ class Lib
       return "ndk"
    end
 
+   def self.llvm
+      return "llvm"
+   end
+
 end

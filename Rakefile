@@ -9,6 +9,7 @@ require_relative "Scripts/Builders/CurlBuilder.rb"
 require_relative "Scripts/Builders/OpenSSLBuilder.rb"
 require_relative "Scripts/Builders/XMLBuilder.rb"
 require_relative "Scripts/Builders/HelloProjectBuilder.rb"
+require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/ADBHelper.rb"
 
 # References:
@@ -97,6 +98,11 @@ namespace :build do
       desc "Build Swift"
       task :swift do
          SwiftBuilder.new(Arch.armv7a).make
+      end
+
+      desc "Build LLVM"
+      task :llvm do
+         LLVMBuilder.new(Arch.armv7a).make
       end
    end
 end
