@@ -107,17 +107,19 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_INCLUDE_DOCS=NO"
       cmd << "-DSWIFT_BUILD_SOURCEKIT=NO"
       cmd << "-DSWIFT_BUILD_SYNTAXPARSERLIB=NO"
-      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.sources}\""
-      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.sources}\""
-      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.sources}\""
-      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.sources}\""
-      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.builds}\""
-      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@llvm.builds}\""
-      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.builds}\""
-      cmd << "-DLLVM_BUILD_LIBRARY_DIR=\"#{@llvm.lib}\""
-      cmd << "-DLLVM_BUILD_MAIN_INCLUDE_DIR=\"#{@llvm.include}\""
-      cmd << "-DLLVM_BUILD_BINARY_DIR=\"#{@llvm.bin}\""
-      cmd << "-DLLVM_BUILD_MAIN_SRC_DIR=\"#{@llvm.sources}\""
+
+      # cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.sources}\""
+      # cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.sources}\""
+      # cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.sources}\""
+      # cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.sources}\""
+      # cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.builds}\""
+      # cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@llvm.builds}\""
+      # cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.builds}\""
+      # cmd << "-DLLVM_BUILD_LIBRARY_DIR=\"#{@llvm.lib}\""
+      # cmd << "-DLLVM_BUILD_MAIN_INCLUDE_DIR=\"#{@llvm.include}\""
+      # cmd << "-DLLVM_BUILD_BINARY_DIR=\"#{@llvm.bin}\""
+      # cmd << "-DLLVM_BUILD_MAIN_SRC_DIR=\"#{@llvm.sources}\""
+
       # Both lines not needed after setting C/CXX compillers
       # cmd << "-DCMAKE_PREFIX_PATH=#{@llvm.lib}/cmake/clang"
       # cmd << "-DClang_DIR=#{@llvm.lib}/cmake/clang"
@@ -128,7 +130,7 @@ class SwiftBuilder < Builder
       # -DSWIFT_WINDOWS_x86_64_ICU_I18N="%swift_source_dir%/icu/lib64/icuin.lib"^
       cmd << @sources
       execute cmd.join(" ")
-      message "Swift Configure is completed."
+      logConfigureCompleted
    end
 
    def build
@@ -138,12 +140,14 @@ class SwiftBuilder < Builder
 
    def install
       puts "Implement Me"
+      logInstallCompleted
    end
 
    def prepare
       execute "mkdir -p #{@builds}"
       # Fix for missed file: `CMake Error at cmake/modules/SwiftSharedCMakeConfig.cmake:196 (include):`
-      execute "touch \"#{@cmark.builds}/src/CMarkExports.cmake\""
+      # execute "touch \"#{@cmark.builds}/src/CMarkExports.cmake\""
+
       # targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
       # if File.exist?(targetFile)
       #    return

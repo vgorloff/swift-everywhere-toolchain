@@ -19,7 +19,7 @@ class AndroidBuilder < Builder
       cmd = []
       cmd << "#{@sources}/build/tools/make-standalone-toolchain.sh"
       cmd << "--platform=android-#{@api}"
-      cmd << "--install-dir=#{@install}"
+      cmd << "--install-dir=#{@installs}"
       if @arch == Arch.armv7a
          cmd << "--toolchain=arm-linux-androideabi-4.9"
       elsif @arch == Arch.x86
@@ -31,7 +31,7 @@ class AndroidBuilder < Builder
    end
 
    def clean()
-      execute "rm -rf #{@install}/"
+      execute "rm -rf #{@installs}/"
    end
 
 end

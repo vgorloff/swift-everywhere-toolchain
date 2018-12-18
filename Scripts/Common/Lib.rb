@@ -1,7 +1,7 @@
 class Lib
 
    def self.swift
-      return "Swift"
+      return "swift"
    end
 
    def self.icu

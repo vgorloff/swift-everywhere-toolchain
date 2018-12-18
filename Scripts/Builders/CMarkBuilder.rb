@@ -15,7 +15,7 @@ class CMarkBuilder < Builder
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << @sources
       execute cmd.join(" ")
-      message "LLVM Configure is completed."
+      logConfigureCompleted
    end
 
    def checkout
@@ -24,12 +24,12 @@ class CMarkBuilder < Builder
 
    def build
       execute "cd #{@builds} && ninja"
-      message "CMark Build is completed."
+      logBuildCompleted
    end
 
    def install
       execute "cd #{@builds} && ninja install"
-      message "CMark Install is completed."
+      logInstallCompleted
    end
 
    def make
