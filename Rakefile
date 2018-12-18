@@ -160,12 +160,7 @@ namespace :armv7a do
       end
    end
 
-end
-
-namespace :clean do
-
-   namespace :armv7a do
-
+   namespace :clean do
       desc "Clean ICU."
       task :icu do
          ICUBuilder.new(Arch.armv7a).clean
@@ -179,6 +174,11 @@ namespace :clean do
       desc "Clean Swift."
       task :swift do
          SwiftBuilder.new(Arch.armv7a).clean
+      end
+
+      desc "LLVM Swift."
+      task :llvm do
+         LLVMBuilder.new(Arch.armv7a).clean
       end
    end
 
