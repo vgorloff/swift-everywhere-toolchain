@@ -37,7 +37,7 @@ class LLVMBuilder < Builder
    def make
       prepare
       configure
-      compile
+      build
       install
    end
 
