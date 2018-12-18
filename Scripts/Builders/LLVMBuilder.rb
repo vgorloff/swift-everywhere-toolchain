@@ -4,7 +4,6 @@ class LLVMBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.llvm, arch)
-      @sources = SwiftBuilder.new(Arch.default).sources + "/llvm"
    end
 
    def configure
@@ -42,7 +41,7 @@ class LLVMBuilder < Builder
    end
 
    def checkout
-      puts "Implement LLVM Download"
+      checkoutIfNeeded(@sources, "https://git.llvm.org/git/llvm.git")
    end
 
    def prepare()

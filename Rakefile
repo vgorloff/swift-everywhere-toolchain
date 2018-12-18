@@ -11,6 +11,8 @@ require_relative "Scripts/Builders/XMLBuilder.rb"
 require_relative "Scripts/Builders/HelloProjectBuilder.rb"
 require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/Builders/CMarkBuilder.rb"
+require_relative "Scripts/Builders/ClangBuilder.rb"
+require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 require_relative "Scripts/ADBHelper.rb"
 
 # References:
@@ -26,9 +28,9 @@ task :usage do
 Building Swift Toolchain. Steps:
 
 1. Checkout Sources.
-   rake checkout:swift
    rake checkout:ndk
    rake checkout:icu
+   rake checkout:swift
 
    Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put it into Downloads folder.
 
@@ -65,14 +67,22 @@ end
 
 namespace :checkout do
 
-   desc "Checkout Swift"
+   desc "Checkout Swift, CMark"
    task :swift do
+      CMarkBuilder.new().checkout
       SwiftBuilder.new().checkout
    end
 
    desc "Checkout ICU"
    task :icu do
       ICUBuilder.new().checkout
+   end
+
+   desc "Checkout LLVM, Clang, Compiler-RT"
+   task :llvm do
+      LLVMBuilder.new().checkout
+      ClangBuilder.new().checkout
+      CompilerRTBuilder.new().checkout
    end
 
    desc "Download Android NDK"

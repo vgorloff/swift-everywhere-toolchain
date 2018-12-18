@@ -4,7 +4,6 @@ class CMarkBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.cmark, arch)
-      @sources = SwiftBuilder.new(Arch.default).sources + "/cmark"
    end
 
    def configure
@@ -17,6 +16,10 @@ class CMarkBuilder < Builder
       cmd << @sources
       execute cmd.join(" ")
       message "LLVM Configure is completed."
+   end
+
+   def checkout
+      checkoutIfNeeded(@sources, "https://github.com/commonmark/cmark.git")
    end
 
    def compile

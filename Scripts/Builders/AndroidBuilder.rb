@@ -8,7 +8,6 @@ class AndroidBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.ndk, arch)
-      @installDir = Config.ndkInstallRoot + "/#{@arch}"
    end
 
    def download()

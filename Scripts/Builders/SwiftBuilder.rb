@@ -148,10 +148,7 @@ class SwiftBuilder < Builder
    end
 
    def checkout
-      dir = @sources + "/swift"
-      checkoutIfNeeded(dir, "https://github.com/apple/swift.git")
-      execute "cd \"#{dir}\" && ./swift/utils/update-checkout --clone"
-      message "#{Lib.swift} checkout completed."
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift.git")
    end
 
    def clean

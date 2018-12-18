@@ -13,7 +13,8 @@ class ICUBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.icu, arch)
-      @sources = "#{Config.sources}/#{Lib.icu}/icu4c"
+      @gitRepoRoot = "#{Config.sources}/#{Lib.icu}"
+      @sources = "#{@gitRepoRoot}/icu4c"
       @ndk = AndroidBuilder.new(arch)
       if arch != "linux"
          @host = ICUBuilder.new("linux")
@@ -91,7 +92,7 @@ class ICUBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/unicode-org/icu.git")
+      checkoutIfNeeded(@gitRepoRoot, "https://github.com/unicode-org/icu.git")
    end
 
    def prepare()

@@ -20,4 +20,12 @@ class Lib
       return "cmark"
    end
 
+   def self.clang
+      return "clang"
+   end
+
+   def self.crt
+      return "compiler-rt"
+   end
+
 end

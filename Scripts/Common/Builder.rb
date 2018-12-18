@@ -24,12 +24,12 @@ class Builder < Tool
 
    def checkoutIfNeeded(localPath, repoURL)
       if File.exist?(localPath)
-         message "Repository #{repoURL} seems already checked out."
+         message "Repository \"#{repoURL}\" seems already checked out to \"#{localPath}\"."
       else
          dir = File.dirname(localPath)
          execute "mkdir -p \"#{dir}\""
-         execute "cd \"#{dir}\" && git clone --depth=100 #{repoURL}"
-         message "#{repoURL} checkout completed."
+         execute "cd \"#{dir}\" && git clone --depth=10 #{repoURL}"
+         message "#{repoURL} checkout to \"#{localPath}\" is completed."
       end
    end
 
