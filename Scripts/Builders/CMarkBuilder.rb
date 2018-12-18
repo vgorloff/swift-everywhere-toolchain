@@ -19,7 +19,7 @@ class CMarkBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/commonmark/cmark.git")
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift-cmark.git")
    end
 
    def build

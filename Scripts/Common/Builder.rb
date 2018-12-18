@@ -34,6 +34,10 @@ class Builder < Tool
       return @installs + "/usr"
    end
 
+   def logBuildCompleted
+      message "\"#{@component}\" build is completed."
+   end
+
    def checkoutIfNeeded(localPath, repoURL)
       if File.exist?(localPath)
          message "Repository \"#{repoURL}\" seems already checked out to \"#{localPath}\"."

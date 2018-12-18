@@ -7,7 +7,7 @@ class ClangBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://git.llvm.org/git/clang.git")
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift-clang.git")
    end
 
 end

@@ -91,25 +91,37 @@ class SwiftBuilder < Builder
    end
 
    def configure
+      prepare
       # See: SWIFT_GIT_ROOT/docs/WindowsBuild.md
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
-      # -DCMAKE_C_COMPILER="%llvm_bin_dir%/clang-cl.exe"^
-      # -DCMAKE_CXX_COMPILER="%llvm_bin_dir%/clang-cl.exe"^
+      cmd << "-DCMAKE_C_COMPILER=\"#{@llvm.bin}/clang\""
+      cmd << "-DCMAKE_CXX_COMPILER=\"#{@llvm.bin}/clang++\""
       # cmd << "-DCMAKE_CXX_FLAGS="-Wno-c++98-compat -Wno-c++98-compat-pedantic"^
       # cmd << "-DCMAKE_EXE_LINKER_FLAGS:STRING="/INCREMENTAL:NO"^
       # cmd << "-DCMAKE_SHARED_LINKER_FLAGS="/INCREMENTAL:NO"^
       cmd << "-DCMAKE_INSTALL_PREFIX=\"#{@installs}\""
       cmd << "-DCMAKE_BUILD_TYPE=Release"
+      cmd << "-DSWIFT_INCLUDE_TESTS=NO"
       cmd << "-DSWIFT_INCLUDE_DOCS=NO"
+      cmd << "-DSWIFT_BUILD_SOURCEKIT=NO"
+      cmd << "-DSWIFT_BUILD_SYNTAXPARSERLIB=NO"
       cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.sources}\""
       cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.sources}\""
       cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.sources}\""
       cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.sources}\""
-      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.installs}\""
-      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@clang.installs}\""
-      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.installs}\""
+      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.builds}\""
+      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@llvm.builds}\""
+      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.builds}\""
+      cmd << "-DLLVM_BUILD_LIBRARY_DIR=\"#{@llvm.lib}\""
+      cmd << "-DLLVM_BUILD_MAIN_INCLUDE_DIR=\"#{@llvm.include}\""
+      cmd << "-DLLVM_BUILD_BINARY_DIR=\"#{@llvm.bin}\""
+      cmd << "-DLLVM_BUILD_MAIN_SRC_DIR=\"#{@llvm.sources}\""
+      # Both lines not needed after setting C/CXX compillers
+      # cmd << "-DCMAKE_PREFIX_PATH=#{@llvm.lib}/cmake/clang"
+      # cmd << "-DClang_DIR=#{@llvm.lib}/cmake/clang"
+      #
       # -DSWIFT_WINDOWS_x86_64_ICU_UC_INCLUDE="%swift_source_dir%/icu/include"^
       # -DSWIFT_WINDOWS_x86_64_ICU_UC="%swift_source_dir%/icu/lib64/icuuc.lib"^
       # -DSWIFT_WINDOWS_x86_64_ICU_I18N_INCLUDE="%swift_source_dir%/icu/include"^
@@ -120,7 +132,8 @@ class SwiftBuilder < Builder
    end
 
    def build
-      puts "Implement Me"
+      execute "cd #{@builds} && ninja"
+      logBuildCompleted()
    end
 
    def install
@@ -129,6 +142,8 @@ class SwiftBuilder < Builder
 
    def prepare
       execute "mkdir -p #{@builds}"
+      # Fix for missed file: `CMake Error at cmake/modules/SwiftSharedCMakeConfig.cmake:196 (include):`
+      execute "touch \"#{@cmark.builds}/src/CMarkExports.cmake\""
       # targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
       # if File.exist?(targetFile)
       #    return
@@ -153,8 +168,8 @@ class SwiftBuilder < Builder
    end
 
    def clean
-      execute "rm -rf #{@build}"
-      execute "rm -rf #{@install}"
+      execute "rm -rf #{@builds}"
+      execute "rm -rf #{@installs}"
    end
 
 end
