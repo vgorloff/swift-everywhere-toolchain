@@ -28,4 +28,8 @@ class Lib
       return "compiler-rt"
    end
 
+   def self.dispatch
+      return "swift-corelibs-libdispatch"
+   end
+
 end

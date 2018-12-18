@@ -40,6 +40,7 @@ class SwiftBuilder < Builder
       @ndk = AndroidBuilder.new(arch)
       @cmark = CMarkBuilder.new(arch)
       @llvm = LLVMBuilder.new(arch)
+      @clang = ClangBuilder.new(arch)
    end
 
    def compileOLD
@@ -100,13 +101,13 @@ class SwiftBuilder < Builder
       # cmd << "-DCMAKE_SHARED_LINKER_FLAGS="/INCREMENTAL:NO"^
       cmd << "-DCMAKE_INSTALL_PREFIX=\"#{@install}\""
       cmd << "-DCMAKE_BUILD_TYPE=Release"
-      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.source}\""
       cmd << "-DSWIFT_INCLUDE_DOCS=NO"
       cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.source}\""
-      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@llvm.source}/tools/clang\""
+      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.source}\""
+      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.source}\""
       cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@source}/../swift-corelibs-libdispatch\""
       cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.install}\""
-      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@llvm.install}\""
+      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@clang.install}\""
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.install}\""
       # -DSWIFT_WINDOWS_x86_64_ICU_UC_INCLUDE="%swift_source_dir%/icu/include"^
       # -DSWIFT_WINDOWS_x86_64_ICU_UC="%swift_source_dir%/icu/lib64/icuuc.lib"^
@@ -121,30 +122,29 @@ class SwiftBuilder < Builder
       puts "Implement Me"
    end
 
+   def install
+      puts "Implement Me"
+   end
+
    def prepare
-      targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
-      if File.exist?(targetFile)
-         return
-      end
-      puts "Making symbolic link to \"#{targetFile}\"..."
-      cmd = ["sudo"]
-      cmd << "ln -svf #{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold"
-      cmd << targetFile
-      execute cmd.join(" ")
-      execute "ls -a /usr/bin/*ld.gold"
+      execute "mkdir -p #{@build}"
+      # targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
+      # if File.exist?(targetFile)
+      #    return
+      # end
+      # puts "Making symbolic link to \"#{targetFile}\"..."
+      # cmd = ["sudo"]
+      # cmd << "ln -svf #{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold"
+      # cmd << targetFile
+      # execute cmd.join(" ")
+      # execute "ls -a /usr/bin/*ld.gold"
    end
 
    def make
-      # prepare
+      prepare
+      configure
       compile
-   end
-
-   def help
-      execute "cd #{@sources} && ./swift/utils/build-script --help | more"
-   end
-
-   def update
-      execute "cd #{@sources} && ./swift/utils/update-checkout"
+      install
    end
 
    def checkout
