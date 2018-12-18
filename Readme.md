@@ -1,5 +1,5 @@
-I. Initial setup
-================
+Setup and Build
+===============
 
 **Note**: Every time you see `host$` – this means that command should be executed on **HOST** macOS computer. Every time you see `box$` – this means that command should be executed on virtual **GUEST** Linux OS.
 
@@ -71,5 +71,5 @@ I. Initial setup
 
    ```bash
    box$ cd /vagrant/
-   box$ rake
+   box$ rake | more
    ```
