@@ -47,33 +47,29 @@ I. Initial setup
     ```bash
     host$ vagrant up
     # (Optionall) Take snapshot. Under the hood it will save VirtualBox snapshot.
+
     host$ vagrant snapshot save "Clean System"
+
     host$ vagrant ssh
+
+    # (Optionall) Explore synced folders. You should see this `Readme.md` file inside Ubuntu Box.
+    box$ ls -l /vagrant
     ```
 
     **Note**: Box will be created in directory specified in VirtualBox settings. Detalis in [this post](http://www.thisprogrammingthing.com/2013/changing-the-directory-vagrant-stores-the-vms-in/).
 
-7. (Optionall) Verify Ubuntu version and Explore synced folders.
-
-    ```bash
-    box$ ls -l /vagrant
-    ```
-
-    **Note**: You should see this `Readme.md` file inside Ubuntu Box.
-
-8. (Optional) Setting Up Visual Studio Code
+7. (Optional) Setting Up Visual Studio Code
 
     If you going to edit Ruby files, then it worth to install Visual Studio Code for macOS and Ruby plugin.
 
     - Visual Studio Code: https://code.visualstudio.com
     - Ruby language support: https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby
 
-II. Usage
-=========
+8. Start a build.
 
-Remaining process of compilling Swift Toolchain, building and deploying sample projects automated via Rakefile.
+   **Note**: Process of compilling Swift Toolchain, building and deploying sample projects automated via Rakefile.
 
-```bash
-box$ cd /vagrant/
-box$ rake
-```
+   ```bash
+   box$ cd /vagrant/
+   box$ rake
+   ```
