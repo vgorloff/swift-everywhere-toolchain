@@ -10,7 +10,6 @@ class DispatchBuilder < Builder
       super(Lib.swift, arch)
       @llvm = LLVMBuilder.new(arch)
       @swift = SwiftBuilder.new(arch)
-      @swiftCCRoot = "#{Config.swiftBuildRoot}/swift-linux-x86_64"
       @ndk = AndroidBuilder.new(arch)
    end
 

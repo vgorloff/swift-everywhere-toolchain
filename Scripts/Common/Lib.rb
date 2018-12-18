@@ -32,4 +32,8 @@ class Lib
       return "swift-corelibs-libdispatch"
    end
 
+   def self.foundation
+      return "swift-corelibs-foundation"
+   end
+
 end

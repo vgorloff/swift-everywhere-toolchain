@@ -26,6 +26,14 @@ class Builder < Tool
       return @install + "/bin"
    end
 
+   def include
+      return @install + "/include"
+   end
+
+   def usr
+      return @install + "/usr"
+   end
+
    def checkoutIfNeeded(localPath, repoURL)
       if File.exist?(localPath)
          message "Repository \"#{repoURL}\" seems already checked out to \"#{localPath}\"."
