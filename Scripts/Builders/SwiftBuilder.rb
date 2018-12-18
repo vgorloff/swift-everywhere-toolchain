@@ -38,6 +38,8 @@ class SwiftBuilder < Builder
       super(Lib.swift, arch)
       @icu = ICUBuilder.new(arch)
       @ndk = AndroidBuilder.new(arch)
+      @cmark = CMarkBuilder.new(arch)
+      @llvm = LLVMBuilder.new(arch)
    end
 
    def compileOLD
@@ -84,6 +86,35 @@ class SwiftBuilder < Builder
       cmd << "--install-destdir=#{@install}"
       cmd << "--build-dir #{@build}"
       execute cmd.join(" ")
+   end
+
+   def configure
+      # See: SWIFT_GIT_ROOT/docs/WindowsBuild.md
+      cmd = []
+      cmd << "cd #{@build} &&"
+      cmd << "cmake -G Ninja"
+      # -DCMAKE_C_COMPILER="%llvm_bin_dir%/clang-cl.exe"^
+      # -DCMAKE_CXX_COMPILER="%llvm_bin_dir%/clang-cl.exe"^
+      # cmd << "-DCMAKE_CXX_FLAGS="-Wno-c++98-compat -Wno-c++98-compat-pedantic"^
+      # cmd << "-DCMAKE_EXE_LINKER_FLAGS:STRING="/INCREMENTAL:NO"^
+      # cmd << "-DCMAKE_SHARED_LINKER_FLAGS="/INCREMENTAL:NO"^
+      cmd << "-DCMAKE_INSTALL_PREFIX=\"#{@install}\""
+      cmd << "-DCMAKE_BUILD_TYPE=Release"
+      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.source}\""
+      cmd << "-DSWIFT_INCLUDE_DOCS=NO"
+      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.source}\""
+      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@llvm.source}/tools/clang\""
+      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@source}/../swift-corelibs-libdispatch\""
+      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.install}\""
+      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@llvm.install}\""
+      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.install}\""
+      # -DSWIFT_WINDOWS_x86_64_ICU_UC_INCLUDE="%swift_source_dir%/icu/include"^
+      # -DSWIFT_WINDOWS_x86_64_ICU_UC="%swift_source_dir%/icu/lib64/icuuc.lib"^
+      # -DSWIFT_WINDOWS_x86_64_ICU_I18N_INCLUDE="%swift_source_dir%/icu/include"^
+      # -DSWIFT_WINDOWS_x86_64_ICU_I18N="%swift_source_dir%/icu/lib64/icuin.lib"^
+      cmd << @sources
+      execute cmd.join(" ")
+      message "Swift Configure is completed."
    end
 
    def compile

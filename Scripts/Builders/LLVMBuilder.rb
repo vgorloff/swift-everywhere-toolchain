@@ -17,7 +17,8 @@ class LLVMBuilder < Builder
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@install}"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       # See: https://stackoverflow.com/questions/40122657/build-llvm-clang4-0-for-android-armeabi
-      cmd << "-DLLVM_TARGETS_TO_BUILD=\"ARM;AArch64\" -DLLVM_DEFAULT_TARGET_TRIPLE=\"arm-linux-androideabi\""
+      # Line below still cause build failure.
+      # cmd << "-DLLVM_TARGETS_TO_BUILD=\"ARM;AArch64\" -DLLVM_DEFAULT_TARGET_TRIPLE=\"arm-linux-androideabi\""
       cmd << @sources
       execute cmd.join(" ")
       message "LLVM Configure is completed."
