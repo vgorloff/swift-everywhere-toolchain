@@ -28,16 +28,18 @@ task :usage do
 Building Swift Toolchain. Steps:
 
 1. Checkout Sources.
-   rake checkout:ndk
    rake checkout:icu
+   rake checkout:llvm
    rake checkout:swift
+   rake checkout:ndk
 
-   Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put it into Downloads folder.
+   Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put archive to Downloads folder.
 
 2. Configure and Build Sources:
-   rake build:armv7a:ndk
-   rake build:armv7a:icu
-   rake build:armv7a:swift
+   rake armv7a:setup:ndk
+   rake armv7a:build:llvm
+   rake armv7a:build:icu
+   rake armv7a:build:cmark
 
 3. Build `Hello` project.
    Execute: "rake project:hello:build"
@@ -120,7 +122,7 @@ namespace :armv7a do
       end
    end
 
-   namespace :build do
+   namespace :compile do
       desc "Build ICU"
       task :icu do
          ICUBuilder.new(Arch.armv7a).compile
@@ -139,7 +141,7 @@ namespace :armv7a do
       end
    end
 
-   namespace :make do
+   namespace :build do
       desc "Configure, Build and Install ICU"
       task :icu do
          ICUBuilder.new(Arch.armv7a).make

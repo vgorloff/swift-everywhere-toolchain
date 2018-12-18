@@ -4,6 +4,8 @@ class LLVMBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.llvm, arch)
+      @clang = ClangBuilder.new()
+      @crt = CompilerRTBuilder.new()
    end
 
    def configure
@@ -46,6 +48,11 @@ class LLVMBuilder < Builder
 
    def prepare()
       execute "mkdir -p #{@build}"
+      # Making needed SymLinks. See: https://llvm.org/docs/GettingStarted.html#git-mirror
+      message "Making symbolic links..."
+      execute "ln -svf \"#{@clang.sources}\" \"#{@sources}/tools\""
+      execute "ln -svf \"#{@crt.sources}\" \"#{@sources}/projects\""
+      message "LLVM Prepare is Done!"
    end
 
 end
