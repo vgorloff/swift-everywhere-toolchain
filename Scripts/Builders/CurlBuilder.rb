@@ -12,7 +12,7 @@ class CurlBuilder < Builder
    end
 
    def prepare
-      execute "mkdir -p #{@build}"
+      execute "mkdir -p #{@builds}"
    end
 
    def commonArgs()
@@ -52,12 +52,11 @@ class CurlBuilder < Builder
    end
 
    def build
-      execute "cd #{@sourcesDir} && make"
-      execute "cd #{@sourcesDir} && make install"
+      execute "cd #{@sources} && make"
+      execute "cd #{@sources} && make install"
    end
 
    def make
-      checkout
       prepare
       configure
       build

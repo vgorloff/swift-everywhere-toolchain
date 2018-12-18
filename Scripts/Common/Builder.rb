@@ -7,31 +7,31 @@ require_relative "Downloader.rb"
 
 class Builder < Tool
 
-   attr_reader :build, :install, :sources
+   attr_reader :builds, :installs, :sources
 
    def initialize(component, arch)
       @component = component
       @arch = arch
       @sources = "#{Config.sources}/#{component}"
       @patches = "#{Config.patches}/#{component}"
-      @build = "#{Config.build}/#{component}/#{arch}"
-      @install = "#{Config.install}/#{component}/#{arch}"
+      @builds = "#{Config.build}/#{component}/#{arch}"
+      @installs = "#{Config.install}/#{component}/#{arch}"
    end
 
    def lib
-      return @install + "/lib"
+      return @installs + "/lib"
    end
 
    def bin
-      return @install + "/bin"
+      return @installs + "/bin"
    end
 
    def include
-      return @install + "/include"
+      return @installs + "/include"
    end
 
    def usr
-      return @install + "/usr"
+      return @installs + "/usr"
    end
 
    def checkoutIfNeeded(localPath, repoURL)

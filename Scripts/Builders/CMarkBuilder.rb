@@ -9,9 +9,9 @@ class CMarkBuilder < Builder
    def configure
       # See: $SWIFT_REPO/docs/WindowsBuild.md
       cmd = []
-      cmd << "cd #{@build} &&"
+      cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
-      cmd << "-DCMAKE_INSTALL_PREFIX=#{@install}"
+      cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << @sources
       execute cmd.join(" ")
@@ -22,25 +22,25 @@ class CMarkBuilder < Builder
       checkoutIfNeeded(@sources, "https://github.com/commonmark/cmark.git")
    end
 
-   def compile
-      execute "cd #{@build} && ninja"
+   def build
+      execute "cd #{@builds} && ninja"
       message "CMark Build is completed."
    end
 
    def install
-      execute "cd #{@build} && ninja install"
+      execute "cd #{@builds} && ninja install"
       message "CMark Install is completed."
    end
 
    def make
       prepare
       configure
-      compile
+      build
       install
    end
 
    def prepare
-      execute "mkdir -p #{@build}"
+      execute "mkdir -p #{@builds}"
    end
 
 end

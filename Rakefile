@@ -125,22 +125,22 @@ namespace :armv7a do
       end
    end
 
-   namespace :compile do
+   namespace :build do
       desc "Build ICU"
       task :icu do
-         ICUBuilder.new(Arch.armv7a).compile
+         ICUBuilder.new(Arch.armv7a).build
       end
       desc "Build Swift"
       task :swift do
-         SwiftBuilder.new(Arch.armv7a).compile
+         SwiftBuilder.new(Arch.armv7a).build
       end
       desc "Build LLVM"
       task :llvm do
-         LLVMBuilder.new(Arch.armv7a).compile
+         LLVMBuilder.new(Arch.armv7a).build
       end
       desc "Build CMark"
       task :cmark do
-         CMarkBuilder.new(Arch.armv7a).compile
+         CMarkBuilder.new(Arch.armv7a).build
       end
    end
 
@@ -163,7 +163,7 @@ namespace :armv7a do
       end
    end
 
-   namespace :build do
+   namespace :make do
       desc "Configure, Build and Install ICU"
       task :icu do
          ICUBuilder.new(Arch.armv7a).make

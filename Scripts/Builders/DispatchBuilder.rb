@@ -11,7 +11,7 @@ class DispatchBuilder < Builder
    end
 
    def prepare
-      execute "mkdir -p #{@build}"
+      execute "mkdir -p #{@builds}"
    end
 
    def args
@@ -40,14 +40,14 @@ class DispatchBuilder < Builder
       cmd << "-DENABLE_SWIFT=true"
       cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.bin}/swiftc\""
       cmd << "-DCMAKE_PREFIX_PATH=\"#{@swift.lib}/cmake/swift\""
-      cmd << "-DCMAKE_INSTALL_PREFIX=#{@install}"
+      cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       cmd << "-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=#{@ndk.api} -DCMAKE_ANDROID_NDK=#{@ndk.sources}"
       return cmd
    end
 
    def configure
       cmd = []
-      cmd << "cd #{@build} &&"
+      cmd << "cd #{@builds} &&"
       cmd += args
       cmd << "cmake -G Ninja"
       cmd += options
@@ -55,7 +55,7 @@ class DispatchBuilder < Builder
       execute cmd.join(" ")
    end
 
-   def compile
+   def build
       # See: What is CMake equivalent of 'configure --prefix=DIR && make all install: https://stackoverflow.com/a/35753015/1418981
       execute "cd #{@build} && cmake " + options.join(" ") + " . && " + args.join(" ") + " ninja install"
    end
@@ -63,12 +63,12 @@ class DispatchBuilder < Builder
    def make
       prepare
       configure
-      compile
+      build
    end
 
    def clean
-      execute "rm -rf \"#{@build}\""
-      execute "rm -rf \"#{@install}\""
+      execute "rm -rf \"#{@builds}\""
+      execute "rm -rf \"#{@installs}\""
    end
 
    def checkout

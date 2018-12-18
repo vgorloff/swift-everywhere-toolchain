@@ -93,23 +93,23 @@ class SwiftBuilder < Builder
    def configure
       # See: SWIFT_GIT_ROOT/docs/WindowsBuild.md
       cmd = []
-      cmd << "cd #{@build} &&"
+      cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
       # -DCMAKE_C_COMPILER="%llvm_bin_dir%/clang-cl.exe"^
       # -DCMAKE_CXX_COMPILER="%llvm_bin_dir%/clang-cl.exe"^
       # cmd << "-DCMAKE_CXX_FLAGS="-Wno-c++98-compat -Wno-c++98-compat-pedantic"^
       # cmd << "-DCMAKE_EXE_LINKER_FLAGS:STRING="/INCREMENTAL:NO"^
       # cmd << "-DCMAKE_SHARED_LINKER_FLAGS="/INCREMENTAL:NO"^
-      cmd << "-DCMAKE_INSTALL_PREFIX=\"#{@install}\""
+      cmd << "-DCMAKE_INSTALL_PREFIX=\"#{@installs}\""
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DSWIFT_INCLUDE_DOCS=NO"
-      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.source}\""
-      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.source}\""
-      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.source}\""
-      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.source}\""
-      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.install}\""
-      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@clang.install}\""
-      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.install}\""
+      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.sources}\""
+      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.sources}\""
+      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.sources}\""
+      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.sources}\""
+      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.installs}\""
+      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@clang.installs}\""
+      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.installs}\""
       # -DSWIFT_WINDOWS_x86_64_ICU_UC_INCLUDE="%swift_source_dir%/icu/include"^
       # -DSWIFT_WINDOWS_x86_64_ICU_UC="%swift_source_dir%/icu/lib64/icuuc.lib"^
       # -DSWIFT_WINDOWS_x86_64_ICU_I18N_INCLUDE="%swift_source_dir%/icu/include"^
@@ -119,7 +119,7 @@ class SwiftBuilder < Builder
       message "Swift Configure is completed."
    end
 
-   def compile
+   def build
       puts "Implement Me"
    end
 
@@ -128,7 +128,7 @@ class SwiftBuilder < Builder
    end
 
    def prepare
-      execute "mkdir -p #{@build}"
+      execute "mkdir -p #{@builds}"
       # targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
       # if File.exist?(targetFile)
       #    return
@@ -144,8 +144,8 @@ class SwiftBuilder < Builder
    def make
       prepare
       configure
-      compile
-      install
+      # build
+      # install
    end
 
    def checkout
