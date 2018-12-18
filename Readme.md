@@ -46,6 +46,8 @@ I. Initial setup
 
     ```bash
     host$ vagrant up
+    # (Optionall) Take snapshot. Under the hood it will save VirtualBox snapshot.
+    host$ vagrant snapshot save "Clean System"
     host$ vagrant ssh
     ```
 
@@ -54,21 +56,12 @@ I. Initial setup
 7. (Optionall) Verify Ubuntu version and Explore synced folders.
 
     ```bash
-    box$ lsb_release -irc
     box$ ls -l /vagrant
     ```
 
     **Note**: You should see this `Readme.md` file inside Ubuntu Box.
 
-8. (Optionall) Take snapshot.
-
-    ```bash
-    host$ vagrant snapshot save "Clean System"
-    ```
-
-    **Note**: Under the hood it will save VirtualBox snapshot.
-
-9. (Optional) Setting Up Visual Studio Code
+8. (Optional) Setting Up Visual Studio Code
 
     If you going to edit Ruby files, then it worth to install Visual Studio Code for macOS and Ruby plugin.
 
