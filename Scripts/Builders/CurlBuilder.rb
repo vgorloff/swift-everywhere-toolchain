@@ -3,21 +3,16 @@ require_relative "../Common/Config.rb"
 
 class CurlBuilder < Builder
 
-   def initialize(target = "armv7a")
-      super()
-      @target = target
-      @sourcesDir = Config.curlSourcesRoot
-      @buildDir = Config.buildRoot + "/curl/" + @target
-      @installDir = Config.installRoot + "/curl/" + @target
+   def initialize(arch = Arch.default)
+      super(Lib.curl, arch)
    end
 
    def checkout
-      checkoutIfNeeded(@sourcesDir, "https://github.com/curl/curl.git")
+      checkoutIfNeeded(@sources, "https://github.com/curl/curl.git")
    end
 
    def prepare
-      execute "mkdir -p #{@buildDir}"
-      execute "mkdir -p #{@installDir}"
+      execute "mkdir -p #{@build}"
    end
 
    def commonArgs()

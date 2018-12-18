@@ -38,8 +38,9 @@ Building Swift Toolchain. Steps:
 2. Configure and Build Sources:
    rake armv7a:setup:ndk
    rake armv7a:build:llvm
-   rake armv7a:build:icu
    rake armv7a:build:cmark
+   rake armv7a:build:icu
+   rake armv7a:build:swift
 
 3. Build `Hello` project.
    Execute: "rake project:hello:build"
@@ -69,10 +70,12 @@ end
 
 namespace :checkout do
 
-   desc "Checkout Swift, CMark"
+   desc "Checkout Swift, libDispatch, libFoundation, CMark"
    task :swift do
-      CMarkBuilder.new().checkout
       SwiftBuilder.new().checkout
+      DispatchBuilder.new().checkout
+      FoundationBuilder.new().checkout
+      CMarkBuilder.new().checkout
    end
 
    desc "Checkout ICU"
@@ -138,6 +141,25 @@ namespace :armv7a do
       desc "Build CMark"
       task :cmark do
          CMarkBuilder.new(Arch.armv7a).compile
+      end
+   end
+
+   namespace :install do
+      desc "Install ICU"
+      task :icu do
+         ICUBuilder.new(Arch.armv7a).install
+      end
+      desc "Install Swift"
+      task :swift do
+         SwiftBuilder.new(Arch.armv7a).install
+      end
+      desc "Install LLVM"
+      task :llvm do
+         LLVMBuilder.new(Arch.armv7a).install
+      end
+      desc "Install CMark"
+      task :cmark do
+         CMarkBuilder.new(Arch.armv7a).install
       end
    end
 

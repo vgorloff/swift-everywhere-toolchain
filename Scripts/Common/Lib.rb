@@ -28,6 +28,14 @@ class Lib
       return "compiler-rt"
    end
 
+   def self.curl
+      return "curl"
+   end
+
+   def self.xml
+      return "xml"
+   end
+
    def self.dispatch
       return "swift-corelibs-libdispatch"
    end

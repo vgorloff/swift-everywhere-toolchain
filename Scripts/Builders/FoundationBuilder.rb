@@ -6,7 +6,7 @@ require_relative "../Common/Config.rb"
 class FoundationBuilder < Builder
 
    def initialize(arch = Arch.default)
-      super(Lib.swift, arch)
+      super(Lib.foundation, arch)
       @ndk = AndroidBuilder.new(arch)
       @dispatch = DispatchBuilder.new(arch)
       @swift = SwiftBuilder.new(arch)
@@ -104,6 +104,10 @@ class FoundationBuilder < Builder
    def clean
       execute "rm -rf \"#{@build}\""
       execute "rm -rf \"#{@install}\""
+   end
+
+   def checkout
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-foundation")
    end
 
 end

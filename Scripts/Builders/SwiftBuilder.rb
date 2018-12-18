@@ -41,6 +41,7 @@ class SwiftBuilder < Builder
       @cmark = CMarkBuilder.new(arch)
       @llvm = LLVMBuilder.new(arch)
       @clang = ClangBuilder.new(arch)
+      @dispatch = DispatchBuilder.new(arch)
    end
 
    def compileOLD
@@ -105,7 +106,7 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.source}\""
       cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.source}\""
       cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.source}\""
-      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@source}/../swift-corelibs-libdispatch\""
+      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.source}\""
       cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.install}\""
       cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@clang.install}\""
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.install}\""

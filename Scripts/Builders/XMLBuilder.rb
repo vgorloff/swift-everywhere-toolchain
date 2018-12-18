@@ -2,22 +2,16 @@ require_relative "../Common/Builder.rb"
 
 class XMLBuilder < Builder
 
-   def initialize(target = "armv7a")
-      super()
-      @target = target
-      @sourcesDir = Config.xmlSourcesRoot
-      @buildDir = Config.buildRoot + "/xml/" + @target
-      @installDir = Config.installRoot + "/xml/" + @target
+   def initialize(arch = Arch.default)
+      super(Lib.xml, arch)
    end
 
    def checkout
-      downloader = Downloader.new(Config.sourcesRoot, Config.xmlSourcesRoot, "https://github.com/GNOME/libxml2/archive/v2.9.8.tar.gz", 'libxml2-*')
-      downloader.bootstrap()
+      checkoutIfNeeded(@sources, "https://github.com/GNOME/libxml2.git")
    end
 
    def prepare
-      execute "mkdir -p #{@buildDir}"
-      execute "mkdir -p #{@installDir}"
+      execute "mkdir -p #{@build}"
    end
 
    def configure

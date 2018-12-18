@@ -7,10 +7,7 @@ require_relative "../Common/Config.rb"
 class DispatchBuilder < Builder
 
    def initialize(arch = Arch.default)
-      super(Lib.swift, arch)
-      @llvm = LLVMBuilder.new(arch)
-      @swift = SwiftBuilder.new(arch)
-      @ndk = AndroidBuilder.new(arch)
+      super(Lib.dispatch, arch)
    end
 
    def prepare
@@ -18,6 +15,8 @@ class DispatchBuilder < Builder
    end
 
    def args
+      @llvm = LLVMBuilder.new(arch)
+      @swift = SwiftBuilder.new(arch)
       cmd = []
       cmd << "CLANG=\"#{@llvm.bin}/clang\""
       cmd << "CC=\"#{@llvm.bin}/clang\""
@@ -28,6 +27,9 @@ class DispatchBuilder < Builder
    end
 
    def options
+      @llvm = LLVMBuilder.new(arch)
+      @swift = SwiftBuilder.new(arch)
+      @ndk = AndroidBuilder.new(arch)
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
       cmd = []
       cmd << "-DCMAKE_C_COMPILER=#{@llvm.bin}/clang -DCMAKE_CXX_COMPILER=#{@llvm.bin}/clang++"
@@ -67,6 +69,10 @@ class DispatchBuilder < Builder
    def clean
       execute "rm -rf \"#{@build}\""
       execute "rm -rf \"#{@install}\""
+   end
+
+   def checkout
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-libdispatch.git")
    end
 
 end
