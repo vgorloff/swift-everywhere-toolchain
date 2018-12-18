@@ -16,4 +16,8 @@ class Lib
       return "llvm"
    end
 
+   def self.cmark
+      return "cmark"
+   end
+
 end

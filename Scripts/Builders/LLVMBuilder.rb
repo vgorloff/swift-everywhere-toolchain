@@ -1,10 +1,5 @@
 require_relative "../Common/Builder.rb"
 
-# See:
-# - build llvm clang4.0 for android armeabi - https://stackoverflow.com/questions/40122657/build-llvm-clang4-0-for-android-armeabi
-# - LLVM Getting Started: https://llvm.org/docs/GettingStarted.html#requirements
-# - CLANG Getting Started: http://clang.llvm.org/get_started.html
-
 class LLVMBuilder < Builder
 
    def initialize(arch = Arch.default)
@@ -13,11 +8,16 @@ class LLVMBuilder < Builder
    end
 
    def configure
+      # See:
+      # - LLVM Getting Started: https://llvm.org/docs/GettingStarted.html#requirements
+      # - CLANG Getting Started: http://clang.llvm.org/get_started.html
       cmd = []
       cmd << "cd #{@build} &&"
       cmd << "cmake -G Ninja"
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@install}"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
+      # See: https://stackoverflow.com/questions/40122657/build-llvm-clang4-0-for-android-armeabi
+      cmd << "-DLLVM_TARGETS_TO_BUILD=\"ARM;AArch64\" -DLLVM_DEFAULT_TARGET_TRIPLE=\"arm-linux-androideabi\""
       cmd << @sources
       execute cmd.join(" ")
       message "LLVM Configure is completed."
@@ -25,7 +25,7 @@ class LLVMBuilder < Builder
 
    def compile
       execute "cd #{@build} && ninja"
-      message "LLVM Compile is completed."
+      message "LLVM Build is completed."
    end
 
    def install

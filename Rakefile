@@ -10,6 +10,7 @@ require_relative "Scripts/Builders/OpenSSLBuilder.rb"
 require_relative "Scripts/Builders/XMLBuilder.rb"
 require_relative "Scripts/Builders/HelloProjectBuilder.rb"
 require_relative "Scripts/Builders/LLVMBuilder.rb"
+require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/ADBHelper.rb"
 
 # References:
@@ -81,30 +82,72 @@ namespace :checkout do
 
 end
 
-namespace :build do
+namespace :armv7a do
 
-   namespace :armv7a do
-
-      desc "Setup Android toolchain."
+   namespace :setup do
+      desc "Setup NDK Toolchain."
       task :ndk do
          AndroidBuilder.new(Arch.armv7a).setup
       end
+   end
 
+   namespace :configure do
+      desc "Configure ICU"
+      task :icu do
+         ICUBuilder.new(Arch.armv7a).configure
+      end
+      desc "Configure Swift"
+      task :swift do
+         SwiftBuilder.new(Arch.armv7a).configure
+      end
+      desc "Configure LLVM"
+      task :llvm do
+         LLVMBuilder.new(Arch.armv7a).configure
+      end
+      desc "Configure CMark"
+      task :cmark do
+         CMarkBuilder.new(Arch.armv7a).configure
+      end
+   end
+
+   namespace :build do
       desc "Build ICU"
+      task :icu do
+         ICUBuilder.new(Arch.armv7a).compile
+      end
+      desc "Build Swift"
+      task :swift do
+         SwiftBuilder.new(Arch.armv7a).compile
+      end
+      desc "Build LLVM"
+      task :llvm do
+         LLVMBuilder.new(Arch.armv7a).compile
+      end
+      desc "Build CMark"
+      task :cmark do
+         CMarkBuilder.new(Arch.armv7a).compile
+      end
+   end
+
+   namespace :make do
+      desc "Configure, Build and Install ICU"
       task :icu do
          ICUBuilder.new(Arch.armv7a).make
       end
-
-      desc "Build Swift"
+      desc "Configure, Build and Install Swift"
       task :swift do
          SwiftBuilder.new(Arch.armv7a).make
       end
-
-      desc "Build LLVM"
+      desc "Configure, Build and Install LLVM"
       task :llvm do
          LLVMBuilder.new(Arch.armv7a).make
       end
+      desc "Configure, Build and Install CMark"
+      task :cmark do
+         CMarkBuilder.new(Arch.armv7a).make
+      end
    end
+
 end
 
 namespace :clean do
