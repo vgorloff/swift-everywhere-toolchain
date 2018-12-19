@@ -108,13 +108,18 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_BUILD_SOURCEKIT=NO"
       cmd << "-DSWIFT_BUILD_SYNTAXPARSERLIB=NO"
 
-      # cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.sources}\""
+      # Making Ninja verbose. See: https://github.com/ninja-build/ninja/issues/900#issuecomment-132346047
+      cmd << "-DCMAKE_VERBOSE_MAKEFILE=ON"
+
+      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.sources}\""
+      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.builds}\""
+
+      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.sources}\""
+      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.builds}\""
+
       # cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.sources}\""
-      # cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.sources}\""
       # cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.sources}\""
-      # cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.builds}\""
       # cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@llvm.builds}\""
-      # cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.builds}\""
       # cmd << "-DLLVM_BUILD_LIBRARY_DIR=\"#{@llvm.lib}\""
       # cmd << "-DLLVM_BUILD_MAIN_INCLUDE_DIR=\"#{@llvm.include}\""
       # cmd << "-DLLVM_BUILD_BINARY_DIR=\"#{@llvm.bin}\""
@@ -134,7 +139,7 @@ class SwiftBuilder < Builder
    end
 
    def build
-      execute "cd #{@builds} && ninja"
+      execute "cd #{@builds} && cmake --build ."
       logBuildCompleted()
    end
 
@@ -163,8 +168,8 @@ class SwiftBuilder < Builder
    def make
       prepare
       configure
-      # build
-      # install
+      build
+      install
    end
 
    def checkout
