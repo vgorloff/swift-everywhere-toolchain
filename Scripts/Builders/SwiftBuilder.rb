@@ -96,8 +96,23 @@ class SwiftBuilder < Builder
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
-      cmd << "-DCMAKE_C_COMPILER=\"#{@llvm.bin}/clang\""
-      cmd << "-DCMAKE_CXX_COMPILER=\"#{@llvm.bin}/clang++\""
+
+      # cmd << "-DCMAKE_C_COMPILER=\"#{@llvm.bin}/clang\""
+      # cmd << "-DCMAKE_CXX_COMPILER=\"#{@llvm.bin}/clang++\""
+
+      cmd << "-DCMAKE_C_COMPILER=/usr/bin/clang"
+      cmd << "-DCMAKE_CXX_COMPILER=/usr/bin/clang++"
+
+      # See:
+      # - https://stackoverflow.com/questions/10712972/what-is-the-use-of-fno-stack-protector
+      # - https://reviews.llvm.org/D34264
+      # - https://bugzilla.mozilla.org/show_bug.cgi?id=731316
+      cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
+      cmd << "-DCMAKE_C_FLAGS=\"#{cFlags}\""
+      cmd << "-DCMAKE_CXX_FLAGS=\"#{cFlags}\""
+
+      # cmd << "-DCLANG_VERSION_MAJOR=\"7\" -DCLANG_VERSION_MINOR=\"0\" -DCLANG_VERSION_PATCH=\"0\""
+
       # cmd << "-DCMAKE_CXX_FLAGS="-Wno-c++98-compat -Wno-c++98-compat-pedantic"^
       # cmd << "-DCMAKE_EXE_LINKER_FLAGS:STRING="/INCREMENTAL:NO"^
       # cmd << "-DCMAKE_SHARED_LINKER_FLAGS="/INCREMENTAL:NO"^
@@ -109,16 +124,23 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_BUILD_SYNTAXPARSERLIB=NO"
 
       # Making Ninja verbose. See: https://github.com/ninja-build/ninja/issues/900#issuecomment-132346047
-      cmd << "-DCMAKE_VERBOSE_MAKEFILE=ON"
+      # cmd << "-DCMAKE_VERBOSE_MAKEFILE=ON"
 
       cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.sources}\""
       cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.builds}\""
 
       cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.sources}\""
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.builds}\""
+      cmd << "-DSWIFT_CMARK_LIBRARY_DIR=\"#{@cmark.lib}\""
+
+      cmd << "-DSWIFT_SDKS=LINUX"
+
+      # Seems these vars is unused.
+      cmd << "-DSWIFT_EXEC=#{@builds}/bin/swiftc"
+      cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE=Release"
 
       # cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.sources}\""
-      # cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.sources}\""
+      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.sources}\""
       # cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@llvm.builds}\""
       # cmd << "-DLLVM_BUILD_LIBRARY_DIR=\"#{@llvm.lib}\""
       # cmd << "-DLLVM_BUILD_MAIN_INCLUDE_DIR=\"#{@llvm.include}\""
@@ -144,7 +166,7 @@ class SwiftBuilder < Builder
    end
 
    def install
-      puts "Implement Me"
+      execute "cd #{@builds} && ninja install"
       logInstallCompleted
    end
 

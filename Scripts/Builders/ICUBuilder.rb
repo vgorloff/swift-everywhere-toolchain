@@ -34,11 +34,12 @@ class ICUBuilder < Builder
    end
 
    def configure
-      if !@host.nil? && !File.exist?(@host.builds)
+      if !@host.nil? && !File.exist?(@host.bin)
          message "Building Corss-Build Host."
          @host.prepare
          @host.configureHost
          @host.build
+         @host.install
          message "Corss-Build Host Build completed."
       end
 
@@ -79,6 +80,7 @@ class ICUBuilder < Builder
       cmd << "--with-cross-build=#{@host.builds}"
       cmd << "--with-data-packaging=archive"
       execute cmd.join(" ")
+      logConfigureCompleted
    end
 
    def checkout
@@ -104,13 +106,19 @@ class ICUBuilder < Builder
 
    def build
       execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make -j4"
+      logBuildCompleted
+   end
+
+   def install
       execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
+      logInstallCompleted
    end
 
    def make
       prepare
       configure
       build
+      install
    end
 
    def clean

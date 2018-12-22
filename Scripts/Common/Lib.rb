@@ -13,19 +13,19 @@ class Lib
    end
 
    def self.llvm
-      return "swift-llvm"
+      return "llvm"
    end
 
    def self.cmark
-      return "swift-cmark"
+      return "cmark"
    end
 
    def self.clang
-      return "swift-clang"
+      return "clang"
    end
 
    def self.crt
-      return "swift-compiler-rt"
+      return "compiler-rt"
    end
 
    def self.curl
