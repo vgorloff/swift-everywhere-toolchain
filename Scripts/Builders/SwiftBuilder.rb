@@ -38,10 +38,10 @@ class SwiftBuilder < Builder
       super(Lib.swift, arch)
       @icu = ICUBuilder.new(arch)
       @ndk = AndroidBuilder.new(arch)
-      @cmark = CMarkBuilder.new(arch)
-      @llvm = LLVMBuilder.new(arch)
-      @clang = ClangBuilder.new(arch)
-      @dispatch = DispatchBuilder.new(arch)
+      # @cmark = CMarkBuilder.new(arch)
+      # @llvm = LLVMBuilder.new(arch)
+      # @clang = ClangBuilder.new(arch)
+      # @dispatch = DispatchBuilder.new(arch)
    end
 
    def compileOLD
@@ -66,7 +66,7 @@ class SwiftBuilder < Builder
       execute cmd.join(" ")
    end
 
-   def compileNew
+   def compileOld2
       cmd = ["cd #{@sources} &&"]
       cmd << "./swift/utils/build-script --release --android"
       cmd << "--android-ndk #{@ndk.sources}"
@@ -90,7 +90,7 @@ class SwiftBuilder < Builder
       execute cmd.join(" ")
    end
 
-   def configure
+   def configureOld
       prepare
       # See: SWIFT_GIT_ROOT/docs/WindowsBuild.md
       cmd = []
@@ -161,13 +161,34 @@ class SwiftBuilder < Builder
    end
 
    def build
-      execute "cd #{@builds} && cmake --build ."
+      cmd = ["cd #{@sources} &&"]
+      cmd << "./utils/build-script --release --skip-reconfigure"
+      cmd << "--assertions --no-swift-stdlib-assertions --swift-enable-ast-verifier=0"
+      # cmd << "--android"
+      # cmd << "--android-ndk #{@ndk.sources}"
+      # cmd << "--android-api-level #{@ndk.api}"
+      # cmd << "--android-icu-uc #{@icu.lib}/libicuucswift.so"
+      # cmd << "--android-icu-uc-include #{@icu.sources}/source/common"
+      # cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
+      # cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
+      # cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
+      cmd << "--install-swift"
+      cmd << "--libdispatch --install-libdispatch"
+      cmd << "--foundation --install-foundation"
+      cmd << "--build-swift-static-stdlib --build-swift-static-sdk-overlay"
+      cmd << "--skip-test-cmark --skip-test-lldb --skip-test-swift --skip-test-llbuild --skip-test-swiftpm --skip-test-xctest"
+      cmd << "--skip-test-foundation --skip-test-libdispatch --skip-test-playgroundsupport --skip-test-libicu"
+      # cmd << "--llbuild --install-llbuild"
+      # cmd << "--lldb --install-lldb"
+      # cmd << "--swiftpm --install-swiftpm"
+      # cmd << "--xctest --install-xctest"
+      cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license;sourcekit-inproc'"
+      cmd << "'--llvm-install-components=llvm-cov;llvm-profdata;IndexStore'"
+      cmd << "--install-prefix=/usr"
+      cmd << "--install-destdir=#{@installs}"
+      cmd << "--build-dir #{@builds}"
+      execute cmd.join(" ")
       logBuildCompleted()
-   end
-
-   def install
-      execute "cd #{@builds} && ninja install"
-      logInstallCompleted
    end
 
    def prepare
@@ -189,9 +210,7 @@ class SwiftBuilder < Builder
 
    def make
       prepare
-      configure
       build
-      install
    end
 
    def checkout
