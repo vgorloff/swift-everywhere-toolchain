@@ -38,10 +38,6 @@ class SwiftBuilder < Builder
       super(Lib.swift, arch)
       @icu = ICUBuilder.new(arch)
       @ndk = AndroidBuilder.new(arch)
-      # @cmark = CMarkBuilder.new(arch)
-      # @llvm = LLVMBuilder.new(arch)
-      # @clang = ClangBuilder.new(arch)
-      # @dispatch = DispatchBuilder.new(arch)
    end
 
    def compileOLD
@@ -49,49 +45,9 @@ class SwiftBuilder < Builder
       # To avoid issue:
       # /usr/bin/ld.gold: fatal error: /vagrant/Sources/ndk/platforms/android-21/arch-arm/usr/lib/../lib/crtbegin_so.o: unsupported ELF machine number 40
       cmd << "env PATH=#{@ndk.install}/arm-linux-androideabi/bin:$PATH"
-
-      cmd << "./swift/utils/build-script --release --android"
-      cmd << "--android-ndk #{@ndk.sources}"
-      cmd << "--android-api-level #{@ndk.api}"
-      cmd << "--android-icu-uc #{@icu.lib}/libicuucswift.so"
-      cmd << "--android-icu-uc-include #{@icu.sources}/source/common"
-      cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
-      cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
-      cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
-      cmd << "--libdispatch --install-libdispatch"
-      cmd << "--foundation --install-foundation"
-      cmd << "--install-prefix=/usr"
-      cmd << "--install-destdir=#{@install}"
-      cmd << "--build-dir #{@build}"
-      execute cmd.join(" ")
-   end
-
-   def compileOld2
-      cmd = ["cd #{@sources} &&"]
-      cmd << "./swift/utils/build-script --release --android"
-      cmd << "--android-ndk #{@ndk.sources}"
-      cmd << "--android-api-level #{@ndk.api}"
-      cmd << "--android-icu-uc #{@icu.lib}/libicuucswift.so"
-      cmd << "--android-icu-uc-include #{@icu.sources}/source/common"
-      cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
-      cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
-      cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
-      cmd << "--libdispatch --install-libdispatch"
-      cmd << "--foundation --install-foundation"
-      cmd << "--llbuild --install-llbuild"
-      cmd << "--lldb --install-lldb"
-      cmd << "--swiftpm --install-swiftpm"
-      cmd << "--xctest --install-xctest"
-      cmd << "--install-swift"
-      cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;dev'"
-      cmd << "--install-prefix=/usr"
-      cmd << "--install-destdir=#{@install}"
-      cmd << "--build-dir #{@build}"
-      execute cmd.join(" ")
    end
 
    def configureOld
-      prepare
       # See: SWIFT_GIT_ROOT/docs/WindowsBuild.md
       cmd = []
       cmd << "cd #{@builds} &&"
@@ -163,21 +119,36 @@ class SwiftBuilder < Builder
    def build
       cmd = ["cd #{@sources} &&"]
       cmd << "./utils/build-script --release --skip-reconfigure"
+      # cmd << "--dry-run"
+      # cmd << "--verbose-build"
       cmd << "--assertions --no-swift-stdlib-assertions --swift-enable-ast-verifier=0"
-      # cmd << "--android"
-      # cmd << "--android-ndk #{@ndk.sources}"
-      # cmd << "--android-api-level #{@ndk.api}"
-      # cmd << "--android-icu-uc #{@icu.lib}/libicuucswift.so"
-      # cmd << "--android-icu-uc-include #{@icu.sources}/source/common"
-      # cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
-      # cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
-      # cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
+
+      cmd << "--android"
+      cmd << "--android-ndk #{@ndk.sources}"
+      cmd << "--android-api-level #{@ndk.api}"
+      cmd << "--android-icu-uc #{@icu.lib}/libicuucswift.so"
+      cmd << "--android-icu-uc-include #{@icu.sources}/source/common"
+      cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
+      cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
+      cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
+
       cmd << "--install-swift"
       cmd << "--libdispatch --install-libdispatch"
       cmd << "--foundation --install-foundation"
+
+      # Try without it.
       cmd << "--build-swift-static-stdlib --build-swift-static-sdk-overlay"
+
+      # Try it
+      # cmd << "--test false"
       cmd << "--skip-test-cmark --skip-test-lldb --skip-test-swift --skip-test-llbuild --skip-test-swiftpm --skip-test-xctest"
       cmd << "--skip-test-foundation --skip-test-libdispatch --skip-test-playgroundsupport --skip-test-libicu"
+
+      # TODO: Try it
+      # cmd << '--llvm-targets-to-build="ARM;AArch64;X86"'
+      # TODO: Try it
+      # cmd << "--skip-test-android-host"
+
       # cmd << "--llbuild --install-llbuild"
       # cmd << "--lldb --install-lldb"
       # cmd << "--swiftpm --install-swiftpm"
