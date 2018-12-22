@@ -52,7 +52,7 @@ class Builder < Tool
       else
          dir = File.dirname(localPath)
          execute "mkdir -p \"#{dir}\""
-         execute "cd \"#{dir}\" && git clone --depth=10 #{repoURL}"
+         execute "cd \"#{dir}\" && git clone --depth=10 #{repoURL} \"#{localPath}\""
          message "#{repoURL} checkout to \"#{localPath}\" is completed."
       end
    end

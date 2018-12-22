@@ -22,27 +22,29 @@ class ICUBuilder < Builder
    end
 
    def configureHost
-      cmd = ["cd #{@build} &&"]
+      cmd = ["cd #{@builds} &&"]
+      cmd << 'CC="/usr/bin/clang"'
+      cmd << 'CXX="/usr/bin/clang++"'
       cmd << 'CFLAGS="-Os"'
       cmd << 'CXXFLAGS="--std=c++11"'
-      cmd << "#{@sources}/source/runConfigureICU Linux --prefix=#{@install}"
+      cmd << "#{@sources}/source/runConfigureICU Linux --prefix=#{@installs}"
       cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
       cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       execute cmd.join(" ")
    end
 
    def configure
-      if !@host.nil? && !File.exist?(@host.build)
+      if !@host.nil? && !File.exist?(@host.builds)
          message "Building Corss-Build Host."
          @host.prepare
          @host.configureHost
-         @host.compile
+         @host.build
          message "Corss-Build Host Build completed."
       end
 
-      cmd = ["cd #{@build} &&"]
+      cmd = ["cd #{@builds} &&"]
+      cmd << "PATH=#{@ndk.installs}/bin:$PATH"
       if @arch == Arch.armv7a
-         cmd << "PATH=#{@ndk.install}/bin:$PATH"
          cmd << "CFLAGS='-Os -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
          cmd << "CXXFLAGS='--std=c++11 -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
          cmd << "LDFLAGS='-march=armv7-a -Wl,--fix-cortex-a8'"
@@ -50,44 +52,32 @@ class ICUBuilder < Builder
          cmd << "CXX=arm-linux-androideabi-clang++"
          cmd << "AR=arm-linux-androideabi-ar"
          cmd << "RINLIB=arm-linux-androideabi-ranlib"
-         cmd << "#{@sources}/source/configure --prefix=#{@install}"
+         cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=arm-linux-androideabi"
-         cmd << "--with-library-suffix=swift"
-         cmd << "--enable-static --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
-         cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
-         cmd << "--with-cross-build=#{@host.build}"
-         cmd << "--with-data-packaging=archive"
       elsif @arch == Arch.x86
-         cmd << "PATH=#{@ndk.install}/bin:$PATH"
          cmd << "CFLAGS='-Os -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32'"
          cmd << "CXXFLAGS='--std=c++11 -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32'"
          cmd << "CC=i686-linux-android-clang"
          cmd << "CXX=i686-linux-android-clang++"
          cmd << "AR=i686-linux-android-ar"
          cmd << "RINLIB=i686-linux-android-ranlib"
-         cmd << "#{@sources}/source/configure --prefix=#{@install}"
+         cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=i686-linux-android"
-         cmd << "--with-library-suffix=swift"
-         cmd << "--enable-static --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
-         cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
-         cmd << "--with-cross-build=#{@host.build}"
-         cmd << "--with-data-packaging=archive"
       elsif @arch == Arch.aarch64
-         cmd << "PATH=#{@ndk.install}/bin:$PATH"
          cmd << "CFLAGS='-Os'"
          cmd << "CXXFLAGS='--std=c++11'"
          cmd << "CC=aarch64-linux-android-clang"
          cmd << "CXX=aarch64-linux-android-clang++"
          cmd << "AR=aarch64-linux-android-ar"
          cmd << "RINLIB=aarch64-linux-android-ranlib"
-         cmd << "#{@sources}/source/configure --prefix=#{@install}"
+         cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=aarch64-linux-android"
-         cmd << "--with-library-suffix=swift"
-         cmd << "--enable-static --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
-         cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
-         cmd << "--with-cross-build=#{@host.build}"
-         cmd << "--with-data-packaging=archive"
       end
+      cmd << "--with-library-suffix=swift"
+      cmd << "--enable-static --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
+      cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
+      cmd << "--with-cross-build=#{@host.builds}"
+      cmd << "--with-data-packaging=archive"
       execute cmd.join(" ")
    end
 
@@ -96,7 +86,7 @@ class ICUBuilder < Builder
    end
 
    def prepare()
-      execute "mkdir -p #{@build}"
+      execute "mkdir -p #{@builds}"
       applyPatchIfNeeded()
    end
 
@@ -112,23 +102,23 @@ class ICUBuilder < Builder
       end
    end
 
-   def compile
-      execute "cd #{@build} && PATH=#{@ndk.install}/bin:$PATH make -j4"
-      execute "cd #{@build} && PATH=#{@ndk.install}/bin:$PATH make install"
+   def build
+      execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make -j4"
+      execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
    end
 
-   def make()
+   def make
       prepare
       configure
-      compile
+      build
    end
 
-   def clean()
+   def clean
       if !@host.nil?
          @host.clean
       end
-      execute "rm -rf #{@build}"
-      execute "rm -rf #{@install}"
+      execute "rm -rf #{@builds}"
+      execute "rm -rf #{@installs}"
    end
 
 end

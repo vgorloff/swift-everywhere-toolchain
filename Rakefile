@@ -37,8 +37,6 @@ Building Swift Toolchain. Steps:
 
 2. Configure and Build Sources:
    rake armv7a:setup:ndk
-   rake armv7a:build:llvm
-   rake armv7a:build:cmark
    rake armv7a:build:icu
    rake armv7a:build:swift
 
