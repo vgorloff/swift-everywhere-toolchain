@@ -118,9 +118,6 @@ class ICUBuilder < Builder
    def build
       prepare
       execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make -j4"
-      if !@host.nil?
-         applyPatchIfNeeded(false)
-      end
       logBuildCompleted
    end
 
