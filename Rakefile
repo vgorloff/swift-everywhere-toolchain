@@ -107,8 +107,15 @@ namespace :armv7a do
 
 end
 
-
 namespace :develop do
+   namespace :host do
+      namespace :make do
+         desc "Configure, Build and Install Swift"
+         task :swift do
+            SwiftBuilder.new(Arch.host).make
+         end
+      end
+   end
 
    namespace :armv7a do
 

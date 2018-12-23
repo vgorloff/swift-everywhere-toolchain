@@ -133,6 +133,11 @@ class SwiftBuilder < Builder
          cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
          cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
          cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
+         cmd << '--llvm-targets-to-build="ARM;AArch64;X86"'
+      end
+
+      if @arch == Arch.host
+         cmd << '--llvm-targets-to-build="X86"'
       end
 
       cmd << "--install-swift"
@@ -141,21 +146,6 @@ class SwiftBuilder < Builder
 
       # Try without it.
       cmd << "--build-swift-static-stdlib --build-swift-static-sdk-overlay"
-
-      # Try it
-      # cmd << "--test false"
-      # cmd << "--skip-test-cmark --skip-test-lldb --skip-test-swift --skip-test-llbuild --skip-test-swiftpm --skip-test-xctest"
-      # cmd << "--skip-test-foundation --skip-test-libdispatch --skip-test-playgroundsupport --skip-test-libicu"
-
-      # TODO: Try it
-      cmd << '--llvm-targets-to-build="ARM;AArch64;X86"'
-      # TODO: Try it
-      # cmd << "--skip-test-android-host"
-
-      # cmd << "--llbuild --install-llbuild"
-      # cmd << "--lldb --install-lldb"
-      # cmd << "--swiftpm --install-swiftpm"
-      # cmd << "--xctest --install-xctest"
 
       # cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license;sourcekit-inproc'"
       cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license'"
@@ -183,7 +173,6 @@ class SwiftBuilder < Builder
          puts "Making symbolic link to \"#{targetFile}\"..."
          execute "sudo ln -svf #{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold #{targetFile}"
          execute "ls -al /usr/bin/*ld.gold"
-         # FIXME: Remove simlink once done.
       end
    end
 
