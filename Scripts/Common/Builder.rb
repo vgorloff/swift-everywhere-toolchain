@@ -55,7 +55,8 @@ class Builder < Tool
          execute "cd \"#{localPath}\" && git init && git remote add origin \"#{repoURL}\""
          execute "cd \"#{localPath}\" && git config --local uploadpack.allowReachableSHA1InWant true"
          execute "cd \"#{localPath}\" && git fetch --depth 10 origin #{revision}"
-         execute "cd \"#{localPath}\" && git checkout FETCH_HEAD"
+         # Disable warning about detached HEAD - https://stackoverflow.com/a/45652159/1418981
+         execute "cd \"#{localPath}\" && git -c advice.detachedHead=false checkout FETCH_HEAD"
          message "#{repoURL} checkout to \"#{localPath}\" is completed."
       end
    end
