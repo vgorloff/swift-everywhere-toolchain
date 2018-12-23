@@ -167,20 +167,6 @@ class SwiftBuilder < Builder
       setupLinkerSymLink()
    end
 
-   def setupLinkerSymLink(shouldCreate = true)
-      if @arch == Arch.armv7a
-         targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
-         if shouldCreate
-            message "Making symbolic link to \"#{targetFile}\"..."
-            execute "sudo ln -svf #{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold #{targetFile}"
-         else
-            message "Removing previously created symlink: \"#{targetFile}\"..."
-            execute "sudo rm -fv #{targetFile}"
-         end
-         execute "ls -al /usr/bin/*ld.gold"
-      end
-   end
-
    def make
       prepare
       build

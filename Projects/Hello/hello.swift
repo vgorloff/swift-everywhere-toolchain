@@ -3,9 +3,21 @@
 // as Workflow will support Dispatch and Foundation frameworks compilation.
 print("Hello, This Is Swift!")
 
-import Foundation
 import Dispatch
+let sema = DispatchSemaphore(value: 0)
 
+let queue = DispatchQueue(label: "queueName")
+queue.async {
+   print("Hello from DispatchQueue")
+   sema.signal()
+}
+
+if sema.wait(timeout: .now() + 10) == .timedOut {
+   print("~~~~~~")
+}
+
+/*
+import Foundation
 
 let op = BlockOperation {
    print("Operation")
@@ -13,17 +25,7 @@ let op = BlockOperation {
 let opQueue = OperationQueue()
 opQueue.addOperations([op], waitUntilFinished: true)
 
-let sema = DispatchSemaphore(value: 0)
 
-let queue = DispatchQueue(label: "queueName")
-queue.async {
-   print("XYZ")
-   sema.signal()
-}
-
-if sema.wait(timeout: .now() + 10) == .timedOut {
-   print("~~~~~~")
-}
 
 let config = URLSessionConfiguration()
 let session = URLSession(configuration: config)
@@ -63,3 +65,4 @@ do {
 } catch {
    print(error)
 }
+*/

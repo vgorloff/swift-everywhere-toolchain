@@ -147,6 +147,10 @@ namespace :develop do
          task :cmark do
             CMarkBuilder.new(Arch.armv7a).configure
          end
+         desc "Configure libDispatch"
+         task :dispatch do
+            DispatchBuilder.new(Arch.armv7a).configure
+         end
       end
 
       namespace :build do
@@ -166,6 +170,10 @@ namespace :develop do
          task :cmark do
             CMarkBuilder.new(Arch.armv7a).build
          end
+         desc "Build libDispatch"
+         task :dispatch do
+            DispatchBuilder.new(Arch.armv7a).build
+         end
       end
 
       namespace :install do
@@ -184,6 +192,10 @@ namespace :develop do
          desc "Install CMark"
          task :cmark do
             CMarkBuilder.new(Arch.armv7a).install
+         end
+         desc "Install libDispatch"
+         task :dispatch do
+            DispatchBuilder.new(Arch.armv7a).install
          end
 
          desc "Install Hello project on Android"

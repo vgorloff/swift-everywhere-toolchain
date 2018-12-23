@@ -19,11 +19,13 @@ class ICUBuilder < Builder
       if arch != Arch.host
          @host = ICUBuilder.new(Arch.host)
       end
+      @originalFile = "#{@sources}/source/configure"
+      @patchFile = "#{@patches}/configure.patch"
    end
 
    def configureHost
       prepare
-      applyPatchIfNeeded(false)
+      configurePatch(@originalFile, @patchFile, false)
       cmd = ["cd #{@builds} &&"]
       cmd << 'CC="/usr/bin/clang"'
       cmd << 'CXX="/usr/bin/clang++"'
@@ -45,8 +47,8 @@ class ICUBuilder < Builder
       end
 
       prepare
-      applyPatchIfNeeded(false)
-      applyPatchIfNeeded
+      configurePatch(@originalFile, @patchFile, false)
+      configurePatch(@originalFile, @patchFile)
       cmd = ["cd #{@builds} &&"]
       cmd << "PATH=#{@ndk.installs}/bin:$PATH"
       if @arch == Arch.armv7a
@@ -93,26 +95,6 @@ class ICUBuilder < Builder
 
    def prepare()
       execute "mkdir -p #{@builds}"
-   end
-
-   def applyPatchIfNeeded(shouldApply = true)
-      originalFile = "#{@sources}/source/configure"
-      backupFile = "#{@sources}/source/configure.orig"
-      patchFile = "#{@patches}/configure.patch"
-      if shouldApply
-         if !File.exist? backupFile
-            puts "Patching ICU..."
-            execute "patch --backup #{originalFile} #{patchFile}"
-         else
-            puts "Backup file \"#{backupFile}\" exists. Seems you already patched ICU. Skipping..."
-         end
-      else
-         message "Removing previously applied patch..."
-         execute "cd \"#{@gitRepoRoot}\" && git checkout #{originalFile}"
-         if File.exist? backupFile
-            execute "rm -fv #{backupFile}"
-         end
-      end
    end
 
    def build

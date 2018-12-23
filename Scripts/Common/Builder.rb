@@ -46,6 +46,40 @@ class Builder < Tool
       message "\"#{@component}\" install is completed."
    end
 
+   def setupLinkerSymLink(shouldCreate = true)
+      ndk = AndroidBuilder.new(@arch)
+      if @arch == Arch.armv7a
+         targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
+         if shouldCreate
+            message "Making symbolic link to \"#{targetFile}\"..."
+            execute "sudo ln -svf #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold #{targetFile}"
+         else
+            message "Removing previously created symlink: \"#{targetFile}\"..."
+            execute "sudo rm -fv #{targetFile}"
+         end
+         execute "ls -al /usr/bin/*ld.gold"
+      end
+   end
+
+   def configurePatch(originalFile, patchFile, shouldApply = true)
+      gitRepoRoot = "#{Config.sources}/#{@component}"
+      backupFile = "#{originalFile}.orig"
+      if shouldApply
+         if !File.exist? backupFile
+            puts "Patching \"#{@component}\"..."
+            execute "patch --backup #{originalFile} #{patchFile}"
+         else
+            puts "Backup file \"#{backupFile}\" exists. Seems you already patched \"#{@component}\". Skipping..."
+         end
+      else
+         message "Removing previously applied patch..."
+         execute "cd \"#{gitRepoRoot}\" && git checkout #{originalFile}"
+         if File.exist? backupFile
+            execute "rm -fv #{backupFile}"
+         end
+      end
+   end
+
    def checkoutIfNeeded(localPath, repoURL, revision)
       if File.exist?(localPath)
          message "Repository \"#{repoURL}\" seems already checked out to \"#{localPath}\"."
