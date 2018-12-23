@@ -90,7 +90,7 @@ namespace :armv7a do
    end
 
    desc "Build Swift Toolchain."
-   task build: [":develop:armv7a:make:icu", ":develop:armv7a:make:swift"] do
+   task build: ["develop:armv7a:make:icu", "develop:armv7a:make:swift"] do
    end
 
    namespace :project do
@@ -101,7 +101,7 @@ namespace :armv7a do
       end
 
       desc "Deploy and Run on Android"
-      task deploy: [":develop:armv7a:install:project", ":develop:armv7a:run:project"] do
+      task deploy: ["develop:armv7a:install:project", "develop:armv7a:run:project"] do
       end
    end
 

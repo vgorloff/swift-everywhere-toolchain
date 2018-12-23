@@ -23,6 +23,7 @@ class ICUBuilder < Builder
 
    def configureHost
       prepare
+      applyPatchIfNeeded(false)
       cmd = ["cd #{@builds} &&"]
       cmd << 'CC="/usr/bin/clang"'
       cmd << 'CXX="/usr/bin/clang++"'
@@ -44,6 +45,8 @@ class ICUBuilder < Builder
       end
 
       prepare
+      applyPatchIfNeeded(false)
+      applyPatchIfNeeded
       cmd = ["cd #{@builds} &&"]
       cmd << "PATH=#{@ndk.installs}/bin:$PATH"
       if @arch == Arch.armv7a
@@ -92,31 +95,33 @@ class ICUBuilder < Builder
       execute "mkdir -p #{@builds}"
    end
 
-   def applyPatchIfNeeded()
+   def applyPatchIfNeeded(shouldApply = true)
       originalFile = "#{@sources}/source/configure"
       backupFile = "#{@sources}/source/configure.orig"
       patchFile = "#{@patches}/configure.patch"
-      if !File.exist? backupFile
-         puts "Patching ICU..."
-         execute "patch --backup #{originalFile} #{patchFile}"
+      if shouldApply
+         if !File.exist? backupFile
+            puts "Patching ICU..."
+            execute "patch --backup #{originalFile} #{patchFile}"
+         else
+            puts "Backup file \"#{backupFile}\" exists. Seems you already patched ICU. Skipping..."
+         end
       else
-         puts "Backup file \"#{backupFile}\" exists. Seems you already patched ICU. Skipping..."
+         message "Removing previously applied patch..."
+         execute "cd \"#{@gitRepoRoot}\" && git checkout #{originalFile}"
+         if File.exist? backupFile
+            execute "rm -fv #{backupFile}"
+         end
       end
-   end
-
-   def removePatchIfNeeded()
-      message "Removing previously applied patch..."
-      execute "cd \"#{@gitRepoRoot}\" && git reset --hard"
-      execute "cd \"#{@gitRepoRoot}\" && git clean -f"
    end
 
    def build
       prepare
-      removePatchIfNeeded
-      applyPatchIfNeeded
       execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make -j4"
+      if !@host.nil?
+         applyPatchIfNeeded(false)
+      end
       logBuildCompleted
-      removePatchIfNeeded
    end
 
    def install
