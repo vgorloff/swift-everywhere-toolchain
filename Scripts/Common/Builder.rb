@@ -14,8 +14,8 @@ class Builder < Tool
       @arch = arch
       @sources = "#{Config.sources}/#{component}"
       @patches = "#{Config.patches}/#{component}"
-      @builds = "#{Config.build}/#{component}/#{arch}"
-      @installs = "#{Config.install}/#{component}/#{arch}"
+      @builds = "#{Config.build}/#{arch}/#{component}"
+      @installs = "#{Config.install}/#{arch}/#{component}"
    end
 
    def lib
