@@ -160,6 +160,9 @@ namespace :develop do
          end
          desc "Configure OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).configure end
+
+         desc "Configure curl"
+         task :curl do CurlBuilder.new(Arch.armv7a).configure end
       end
 
       namespace :build do
@@ -188,6 +191,9 @@ namespace :develop do
 
          desc "Build OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).build end
+
+         desc "Build curl"
+         task :curl do CurlBuilder.new(Arch.armv7a).build end
       end
 
       namespace :install do
@@ -212,6 +218,9 @@ namespace :develop do
 
          desc "Install OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).install end
+
+         desc "Install curl"
+         task :curl do CurlBuilder.new(Arch.armv7a).install end
 
          desc "Install Hello project on Android"
          task :project do
