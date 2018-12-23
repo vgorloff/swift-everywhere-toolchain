@@ -1,8 +1,4 @@
-require_relative "Common/Config.rb"
 require_relative "Common/Tool.rb"
-require_relative "Builders/ICUBuilder.rb"
-require_relative "Builders/SwiftBuilder.rb"
-require_relative "Builders/AndroidBuilder.rb"
 
 # See also:
 # - Enable adb debugging on your device – https://developer.android.com/studio/command-line/adb#Enabling
