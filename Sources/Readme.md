@@ -1,1 +1,1 @@
-# Put downloaded Swift, ICU sources and Android NDK here
+# Swift, ICU, libXML, ... sources and Android NDK will be extracted here.

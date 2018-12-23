@@ -1,0 +1,14 @@
+diff --git a/build.py b/build.py
+index 8ee475f374dbb2cf479d7447c953719643bf8075..b228a4dcc6fd4c04619e03d22ff32bbd93d076e9 100755
+--- a/build.py
++++ b/build.py
+@@ -211,6 +211,9 @@ private = [
+ 	'CoreFoundation/PlugIn.subproj/CFBundle_BinaryTypes.h',
+ 	'CoreFoundation/Locale.subproj/CFICULogging.h',
+ 	'CoreFoundation/Locale.subproj/CFLocaleInternal.h',
++	'CoreFoundation/Locale.subproj/CFCalendar_Internal.h',
++	'CoreFoundation/Locale.subproj/CFDateComponents.h',
++	'CoreFoundation/Locale.subproj/CFDateInterval.h',
+ 	'CoreFoundation/StringEncodings.subproj/CFUnicodePrecomposition.h',
+ 	'CoreFoundation/Base.subproj/CFPriv.h',
+ 	'CoreFoundation/StringEncodings.subproj/CFUniCharPriv.h',

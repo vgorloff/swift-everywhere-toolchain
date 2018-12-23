@@ -1,0 +1,13 @@
+diff --git a/cmake/modules/SwiftSupport.cmake b/cmake/modules/SwiftSupport.cmake
+index 60f8b45a33e1546dce4aa2b30d3f9070f7b37ab9..14b4e950210f72321f1418531687ad67fc44e7a2 100644
+--- a/cmake/modules/SwiftSupport.cmake
++++ b/cmake/modules/SwiftSupport.cmake
+@@ -228,6 +228,8 @@ function(get_swift_host_arch result_var_name)
+     set("${result_var_name}" "s390x" PARENT_SCOPE)
+   elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "armv6l")
+     set("${result_var_name}" "armv6" PARENT_SCOPE)
++  elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "armv7-a")
++    set("${result_var_name}" "armv7" PARENT_SCOPE)
+   elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "armv7l")
+     set("${result_var_name}" "armv7" PARENT_SCOPE)
+   elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "AMD64")
