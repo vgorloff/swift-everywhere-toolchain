@@ -4,6 +4,10 @@ class Arch
       return armv7a
    end
 
+   def self.host
+      return "host"
+   end
+
    def self.x86
       return "x86"
    end

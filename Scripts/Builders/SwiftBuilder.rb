@@ -123,14 +123,16 @@ class SwiftBuilder < Builder
       # cmd << "--verbose-build"
       cmd << "--assertions --no-swift-stdlib-assertions --swift-enable-ast-verifier=0"
 
-      cmd << "--android"
-      cmd << "--android-ndk #{@ndk.sources}"
-      cmd << "--android-api-level #{@ndk.api}"
-      cmd << "--android-icu-uc #{@icu.lib}/libicuucswift.so"
-      cmd << "--android-icu-uc-include #{@icu.sources}/source/common"
-      cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
-      cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
-      cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
+      if @arch != Arch.host
+         cmd << "--android"
+         cmd << "--android-ndk #{@ndk.sources}"
+         cmd << "--android-api-level #{@ndk.api}"
+         cmd << "--android-icu-uc #{@icu.lib}/libicuucswift.so"
+         cmd << "--android-icu-uc-include #{@icu.sources}/source/common"
+         cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
+         cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
+         cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
+      end
 
       cmd << "--install-swift"
       cmd << "--libdispatch --install-libdispatch"

@@ -16,8 +16,8 @@ class ICUBuilder < Builder
       @gitRepoRoot = "#{Config.sources}/#{Lib.icu}"
       @sources = "#{@gitRepoRoot}/icu4c"
       @ndk = AndroidBuilder.new(arch)
-      if arch != "linux"
-         @host = ICUBuilder.new("linux")
+      if arch != Arch.host
+         @host = ICUBuilder.new(Arch.host)
       end
    end
 
