@@ -27,13 +27,17 @@ task :usage do
 
 Building Swift Toolchain. Steps:
 
+Note: Every time you see host$ – this means that command should be executed on HOST macOS computer.
+      Every time you see box$ – this means that command should be executed on virtual GUEST Linux OS.
+
 1. Get Sources and Tools.
    host$ rake checkout
    host$ rake download
 
    Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put archive to Downloads folder.
 
-2. Build all Swift components for armv7a:
+2. Setup and Build all Swift components for armv7a:
+   box$ rake armv7a:setup
    box$ rake armv7a:build
 
 3. Enable USB Debugging on Android device. Install Android Tools for macOS. Connect Android device and Verify ADB shell setup.
@@ -43,8 +47,8 @@ Building Swift Toolchain. Steps:
    See: How to Enable USB Debugging on Android device: https://developer.android.com/studio/debug/dev-options
 
 4. Build, Deploy and run Demo project to Android Device.
-   box$ rake hello:build
-   host$ rake hello:deploy
+   box$ rake armv7a:project:build
+   host$ rake armv7a:project:deploy
 
 EOM
    puts help
@@ -86,22 +90,23 @@ namespace :armv7a do
    end
 
    desc "Build Swift Toolchain."
-   task build: [":develop:make:icu", ":develop:make:swift"] do
+   task build: [":develop:armv7a:make:icu", ":develop:armv7a:make:swift"] do
+   end
+
+   namespace :project do
+
+      desc "Builds Sample project"
+      task :build do
+         HelloProjectBuilder.new(Arch.armv7a).build
+      end
+
+      desc "Deploy and Run on Android"
+      task deploy: [":develop:armv7a:install:project", ":develop:armv7a:run:project"] do
+      end
    end
 
 end
 
-namespace :project do
-
-   desc "Builds sample project"
-   task :build do
-      HelloProjectBuilder.new().build
-   end
-
-   desc "Deploy and Run on Android"
-   task deploy: [":develop:install:hello", ":develop:run:helo"] do
-   end
-end
 
 namespace :develop do
 
