@@ -165,8 +165,8 @@ class SwiftBuilder < Builder
       cmd << "--install-destdir=#{@installs}"
       cmd << "--build-dir #{@builds}"
       execute cmd.join(" ")
-      logBuildCompleted()
       removeLinkerSymLink()
+      logBuildCompleted()
    end
 
    def prepare

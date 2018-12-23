@@ -169,7 +169,7 @@ namespace :develop do
          end
 
          desc "Install Hello project on Android"
-         task :hello do
+         task :project do
             binary = HelloProjectBuilder.new(Arch.armv7a).executable
             helper = ADBHelper.new()
             helper.deployLibs
@@ -236,14 +236,14 @@ namespace :develop do
          end
 
          desc "Clean Hello project."
-         task :hello do
+         task :project do
             ADBHelper.new().cleanup(HelloProjectBuilder.new(Arch.armv7a).executableName)
          end
       end
 
       namespace :run do
          desc "Run Hello project on Android"
-         task :helo do
+         task :project do
             ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executableName)
          end
       end
