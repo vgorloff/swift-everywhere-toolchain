@@ -20,11 +20,13 @@ class HelloProjectBuilder < Builder
       cmd = ["cd #{@builds} &&"]
       cmd << "PATH=#{swift.installs}/usr/bin:$PATH"
       cmd << "swiftc"
-      cmd << "-tools-directory #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin"
-      cmd << "-target armv7-none-linux-androideabi" # Targeting android-armv7.
-      cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.
-      cmd << "-L #{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a"  # Link the Android NDK's libc++ and libgcc.
-      cmd << "-L #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x"
+      if @arch != Arch.host
+         cmd << "-tools-directory #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin"
+         cmd << "-target armv7-none-linux-androideabi" # Targeting android-armv7.
+         cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.
+         cmd << "-L #{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a"  # Link the Android NDK's libc++ and libgcc.
+         cmd << "-L #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x"
+      end
       cmd << "#{@projectRoot}/hello.swift"
       execute cmd.join(" ")
       execute "readelf -h #{@executable}"

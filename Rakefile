@@ -115,6 +115,17 @@ namespace :develop do
             SwiftBuilder.new(Arch.host).make
          end
       end
+      namespace :project do
+         desc "Builds Sample project"
+         task :build do
+            HelloProjectBuilder.new(Arch.host).build
+         end
+         desc "Deploy and Run on Android"
+         task :run do
+            builder = HelloProjectBuilder.new(Arch.host)
+            builder.execute(builder.executable)
+         end
+      end
    end
 
    namespace :armv7a do
@@ -177,10 +188,9 @@ namespace :develop do
 
          desc "Install Hello project on Android"
          task :project do
-            binary = HelloProjectBuilder.new(Arch.armv7a).executable
             helper = ADBHelper.new()
             helper.deployLibs
-            helper.deployProducts([binary])
+            helper.deployProducts([HelloProjectBuilder.new(Arch.armv7a).executable])
          end
       end
 

@@ -3,7 +3,6 @@
 // as Workflow will support Dispatch and Foundation frameworks compilation.
 print("Hello, This Is Swift!")
 
-/*
 import Foundation
 import Dispatch
 
@@ -64,4 +63,3 @@ do {
 } catch {
    print(error)
 }
-*/
