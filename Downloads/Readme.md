@@ -1,1 +1,1 @@
-# Automatically or Manually downloadded ICU, libXML, ... and Android NDK archives will be placed here
+# Automatically or Manually downloadded Android NDK archive will be placed here
