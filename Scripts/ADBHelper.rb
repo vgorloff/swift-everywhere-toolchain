@@ -1,4 +1,3 @@
-require_relative "Common/Config.rb"
 require_relative "Common/Tool.rb"
 
 # See also:
@@ -9,29 +8,30 @@ class ADBHelper < Tool
    def initialize()
       super()
       @destinationDirPath = "/data/local/tmp"
+      @swift = SwiftBuilder.new()
+      @ndk = AndroidBuilder.new()
+      @icu = ICUBuilder.new()
    end
 
    def verify()
-      # execute "sudo apt-get install android-tools-adb"
-      # execute "sudo adb devices" # To run daemon.
+      # On linux `execute "sudo apt-get install android-tools-adb"`
+      execute "adb devices" # To run daemon.
       message "Make sure you are enabled \"USB debugging\" on Android device (See :https://developer.android.com/studio/command-line/adb#Enabling)"
       execute "adb devices" # To list devices.
    end
 
    def deployLibs()
-      swiftBuildDirPath = "#{Config.swiftBuildRoot}/swift-linux-x86_64/lib/swift/android"
-      Dir[swiftBuildDirPath + "/*.so"].each { |lib|
+      Dir["#{@swift.installs}/usr/lib/swift/android" + "/*.so"].each { |lib|
          cmd = "adb push #{lib} #{@destinationDirPath}"
          execute cmd
       }
-      icuLibsDirPath = "#{Config.installRoot}/icu/armv7a/lib"
-      Dir[icuLibsDirPath + "/*.so*"].select { |lib| !File.symlink?(lib) } .each { |lib|
+      Dir[@icu.lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
          destName = File.basename(lib)
          destName = destName.sub("63.1", "63") # Fix for error: CANNOT LINK EXECUTABLE ... library "libicudataswift.so.63" not found
          cmd = "adb push #{lib} #{@destinationDirPath}/#{destName}"
          execute cmd
       }
-      cxxLibPath = "#{Config.ndkSourcesRoot}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
+      cxxLibPath = "#{@ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
       execute "adb push #{cxxLibPath} #{@destinationDirPath}"
    end
 

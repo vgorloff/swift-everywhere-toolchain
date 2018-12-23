@@ -3,7 +3,16 @@
 require_relative "Scripts/Builders/ICUBuilder.rb"
 require_relative "Scripts/Builders/AndroidBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
-require_relative "Scripts/HelloProjectBuilder.rb"
+require_relative "Scripts/Builders/FoundationBuilder.rb"
+require_relative "Scripts/Builders/DispatchBuilder.rb"
+require_relative "Scripts/Builders/CurlBuilder.rb"
+require_relative "Scripts/Builders/OpenSSLBuilder.rb"
+require_relative "Scripts/Builders/XMLBuilder.rb"
+require_relative "Scripts/Builders/HelloProjectBuilder.rb"
+require_relative "Scripts/Builders/LLVMBuilder.rb"
+require_relative "Scripts/Builders/CMarkBuilder.rb"
+require_relative "Scripts/Builders/ClangBuilder.rb"
+require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 require_relative "Scripts/ADBHelper.rb"
 
 # References:
@@ -11,165 +20,274 @@ require_relative "Scripts/ADBHelper.rb"
 # - Using Rake to Automate Tasks: https://www.stuartellis.name/articles/rake/
 #
 
-task default: %w[usage]
+task default: ['usage']
 
 task :usage do
    help = <<EOM
-Usage:
-How to build Swift for Android. Steps:
 
-1. Validate environment variables setup.
-   Execute: "rake verify:environment"
+Building Swift Toolchain. Steps:
 
-2. Prepare Android Toolchains:
-   Execute: "rake ndk:setup"
+Note: Every time you see host$ – this means that command should be executed on HOST macOS computer.
+      Every time you see box$ – this means that command should be executed on virtual GUEST Linux OS.
 
-3. Prior to building Swift for Android we need to patch ICU.
-   Execute: "rake icu:patch"
+1. Get Sources and Tools.
+   box$ rake checkout
+   box$ rake download
 
-4. Build ICU for all platforms.
-   Execute: "rake icu:build:all"
-   If you decided to build only one platform, them make sure that ICU for linux
-   build before any other platform (due cross compilation).
+   Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put archive to Downloads folder.
 
-5. Build Swift.
-   Execute: "rake swift:build"
+2. Setup and Build all Swift components and Sample project for armv7a:
+   box$ rake armv7a:setup
+   box$ rake armv7a:build
+   box$ rake armv7a:project:build
 
-6. Build Hello project using new Swift Compiler.
-   Execute: "rake project:hello:build"
+3. Enable USB Debugging on Android device. Install Android Tools for macOS. Connect Android device and Verify ADB shell setup.
+   host$ rake verify
 
-7. Install Android Tools for macOS. See: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
+   See: How to Install Android Tools for macOS: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
+   See: How to Enable USB Debugging on Android device: https://developer.android.com/studio/debug/dev-options
 
-8. Connect Android device to Host. Enable USB Debugging on Android device. Verify that device is connected.
-   Execute: "rake project:hello:verify"
+4. Deploy and run Demo project to Android Device.
+   host$ rake armv7a:project:deploy
 
-9. Deploy and run Hello Project to Android Device.
-   Execute: "rake project:hello:install"
-   Execute: "rake project:hello:run"
-\n
 EOM
    puts help
-   system "rake -T"
+   system "rake -T | grep --invert-match develop"
 end
 
-namespace :verify do
-   desc "Verify environment variables"
-   task :environment do
-      Config.verify
-   end
+desc "Verify ADB shell setup."
+task :verify do
+   ADBHelper.new().verify
 end
 
-namespace :icu do
-
-   desc "Cleans ICU build."
-   task :clean do
-      ICUBuilder.new().clean
-   end
-
-   desc "Installs patch which will add `swift` suffix to binary. Details here: http://fixme."
-   task :patch do
-      ICUBuilder.new().applyPatchIfNeeded
-   end
-
-   namespace :build do
-
-      desc "Applies patch (if needed) and builds ICU for all platforms."
-      task :all => [:linux, :armv7a, :x86, :aarch64] do
-         puts "Done!"
-      end
-
-      desc "Builds ICU for Linux"
-      task :linux do
-         ICUBuilder.new("linux").make
-      end
-
-      desc "Builds ICU for armv7a"
-      task :armv7a do
-         ICUBuilder.new("armv7a").make
-      end
-
-      desc "Builds ICU for x86"
-      task :x86 do
-         ICUBuilder.new("x86").make
-      end
-
-      desc "Builds ICU for aarch64"
-      task :aarch64 do
-         ICUBuilder.new("aarch64").make
-      end
-   end
+desc "Show more actions (for Developers)."
+task :more do
+   system "rake -T | grep develop"
 end
 
-namespace :ndk do
+desc "Checkout Sources of all Components from Git."
+task :checkout do
+   SwiftBuilder.new().checkout
+   DispatchBuilder.new().checkout
+   FoundationBuilder.new().checkout
+   CMarkBuilder.new().checkout
+   ICUBuilder.new().checkout
+   LLVMBuilder.new().checkout
+   ClangBuilder.new().checkout
+   CompilerRTBuilder.new().checkout
+end
 
-   desc "Cleans NDK build."
-   task :clean do
-      AndroidBuilder.new("").clean
-   end
+desc "Download Android NDK"
+task :download do
+   AndroidBuilder.new().download
+end
 
-   desc "Setup Android toolchains for All platforms."
+namespace :armv7a do
+
+   desc "Setup NDK Toolchain."
    task :setup do
-      AndroidBuilder.new("armv7a").setupToolchain
-      AndroidBuilder.new("x86").setupToolchain
-      AndroidBuilder.new("aarch64").setupToolchain
-   end
-end
-
-namespace :swift do
-
-   desc "Builds Swift for Android"
-   task :build do
-      SwiftBuilder.new().make
+      AndroidBuilder.new(Arch.armv7a).setup
    end
 
-   desc "Swift: Show Build options (i.e. `swift/utils/build-script --help`)"
-   task :help do
-      SwiftBuilder.new().help
+   desc "Build Swift Toolchain."
+   task build: ["develop:armv7a:make:icu", "develop:armv7a:make:swift"] do
    end
 
-   desc "Swift: Update sources (i.e. `swift/utils/update-checkout`)"
-   task :update do
-      SwiftBuilder.new().update
-   end
+   namespace :project do
 
-end
-
-namespace :project do
-
-   namespace :hello do
-
-      desc "Project Hello: Build"
+      desc "Builds Sample project"
       task :build do
-         HelloProjectBuilder.new().make
+         HelloProjectBuilder.new(Arch.armv7a).build
       end
 
-      desc "Project Hello: Verify"
-      task :verify do
-         ADBHelper.new().verify
+      desc "Deploy and Run on Android"
+      task deploy: ["develop:armv7a:install:project", "develop:armv7a:run:project"] do
+      end
+   end
+
+end
+
+
+namespace :develop do
+
+   namespace :armv7a do
+
+      namespace :configure do
+         desc "Configure ICU"
+         task :icu do
+            ICUBuilder.new(Arch.armv7a).configure
+         end
+         desc "Configure Swift"
+         task :swift do
+            SwiftBuilder.new(Arch.armv7a).configure
+         end
+         desc "Configure LLVM"
+         task :llvm do
+            LLVMBuilder.new(Arch.armv7a).configure
+         end
+         desc "Configure CMark"
+         task :cmark do
+            CMarkBuilder.new(Arch.armv7a).configure
+         end
       end
 
-      desc "Project Hello: Install on Android"
-      task :install do
-         binary = "#{Config.buildRoot}/hello/hello"
-         helper = ADBHelper.new()
-         helper.deployLibs
-         helper.deployProducts([binary])
+      namespace :build do
+         desc "Build ICU"
+         task :icu do
+            ICUBuilder.new(Arch.armv7a).build
+         end
+         desc "Build Swift"
+         task :swift do
+            SwiftBuilder.new(Arch.armv7a).build
+         end
+         desc "Build LLVM"
+         task :llvm do
+            LLVMBuilder.new(Arch.armv7a).build
+         end
+         desc "Build CMark"
+         task :cmark do
+            CMarkBuilder.new(Arch.armv7a).build
+         end
       end
 
-      desc "Project Hello: Run on Android"
-      task :run do
-         ADBHelper.new().run("hello")
+      namespace :install do
+         desc "Install ICU"
+         task :icu do
+            ICUBuilder.new(Arch.armv7a).install
+         end
+         desc "Install Swift"
+         task :swift do
+            SwiftBuilder.new(Arch.armv7a).install
+         end
+         desc "Install LLVM"
+         task :llvm do
+            LLVMBuilder.new(Arch.armv7a).install
+         end
+         desc "Install CMark"
+         task :cmark do
+            CMarkBuilder.new(Arch.armv7a).install
+         end
+
+         desc "Install Hello project on Android"
+         task :project do
+            binary = HelloProjectBuilder.new(Arch.armv7a).executable
+            helper = ADBHelper.new()
+            helper.deployLibs
+            helper.deployProducts([binary])
+         end
       end
 
-      desc "Project Hello: Cleanup on Android"
-      task :cleanup do
-         ADBHelper.new().cleanup("hello")
+      namespace :make do
+         desc "Configure, Build and Install ICU"
+         task :icu do
+            ICUBuilder.new(Arch.armv7a).make
+         end
+         desc "Configure, Build and Install Swift"
+         task :swift do
+            SwiftBuilder.new(Arch.armv7a).make
+         end
+         desc "Configure, Build and Install LLVM"
+         task :llvm do
+            LLVMBuilder.new(Arch.armv7a).make
+         end
+         desc "Configure, Build and Install CMark"
+         task :cmark do
+            CMarkBuilder.new(Arch.armv7a).make
+         end
+         desc "Configure, Build and Install libDispatch"
+         task :dispatch do
+            DispatchBuilder.new().make
+         end
+         desc "Configure, Build and Install  libFoundation"
+         task :foundation do
+            FoundationBuilder.new().make
+         end
       end
 
-      desc "Project Hello: Deploy and Run on Android"
-      task :deploy => [:install, :run] do
+      namespace :clean do
+         desc "Clean ICU."
+         task :icu do
+            ICUBuilder.new(Arch.armv7a).clean
+         end
+
+         desc "Clean NDK."
+         task :ndk do
+            AndroidBuilder.new(Arch.armv7a).clean
+         end
+
+         desc "Clean Swift."
+         task :swift do
+            SwiftBuilder.new(Arch.armv7a).clean
+         end
+
+         desc "Clean LLVM."
+         task :llvm do
+            LLVMBuilder.new(Arch.armv7a).clean
+         end
+
+         desc "Clean libDispatch"
+         task :dispatch do
+            DispatchBuilder.new().clean
+         end
+
+         desc "Clean libFoundation"
+         task :foundation do
+            FoundationBuilder.new().clean
+         end
+
+         desc "Clean Hello project."
+         task :project do
+            ADBHelper.new().cleanup(HelloProjectBuilder.new(Arch.armv7a).executableName)
+         end
+      end
+
+      namespace :run do
+         desc "Run Hello project on Android"
+         task :project do
+            ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executableName)
+         end
+      end
+
+      namespace :xml do
+
+         desc "Checkout libXML"
+         task :checkout do
+            XMLBuilder.new().checkout
+         end
+
+         desc "Build libXML"
+         task :make do
+            XMLBuilder.new().make
+         end
+
+      end
+
+      namespace :curl do
+
+         desc "Checkout curl"
+         task :checkout do
+            CurlBuilder.new().checkout
+         end
+
+         desc "Build curl"
+         task :make do
+            CurlBuilder.new().make
+         end
+
+      end
+
+      namespace :openssl do
+
+         desc "Checkout OpenSSL"
+         task :checkout do
+            OpenSSLBuilder.new().checkout
+         end
+
+         desc "Make OpenSSL"
+         task :make do
+            OpenSSLBuilder.new().make
+         end
       end
 
    end
-
 end

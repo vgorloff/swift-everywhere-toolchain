@@ -1,58 +1,33 @@
+require_relative "Location.rb"
+
 class Config
 
-   def self.androidAPI
-      return "21"
+   def self.root
+      return File.realpath(File.dirname(__FILE__) + "/../../")
    end
 
-   def self.verify
-      puts "- Android NDK Path: \t\"#{andkPath}\""
-      puts "- ICU Sources Path: \t\"#{icuSources}\""
-      puts "- ICU Patches Path: \t\"#{icuPatchesDirPath}\""
-      puts "- Swift Sources Path: \t\"#{swiftSources}\""
-      puts "- Build root Path: \t\"#{buildRoot}\""
-      puts "- Install root Path: \t\"#{installRoot}\""
+   def self.sources
+      return "#{root}/#{Location.sources}"
    end
 
-   def self.ndkSourcesRoot
-      return getEnvVariable('SA_SOURCES_ROOT_ANDK')
+   def self.downloads
+      return "#{root}/#{Location.downloads}"
    end
 
-   def self.icuSourcesRoot
-      return getEnvVariable('SA_SOURCES_ROOT_ICU')
+   def self.build
+      return "#{root}/#{Location.build}"
    end
 
-   def self.swiftSourcesRoot
-      return getEnvVariable('SA_SOURCES_ROOT_SWIFT')
+   def self.install
+      return "#{root}/#{Location.install}"
    end
 
-   def self.buildRoot
-      return getEnvVariable('SA_BUILD_ROOT')
+   def self.patches
+      return "#{root}/#{Location.patches}"
    end
 
-   def self.swiftBuildRoot
-      return getEnvVariable('SA_BUILD_ROOT_SWIFT')
-   end
-
-   def self.installRoot
-      return getEnvVariable('SA_INSTALL_ROOT')
-   end
-
-   def self.icuPatchesRoot
-      return getEnvVariable('SA_PATCHES_ROOT_ICU')
-   end
-
-   def self.projectsRoot
-      return getEnvVariable('SA_PROJECTS_ROOT')
-   end
-
-   def self.getEnvVariable(name)
-      result = ENV[name]
-      if result.nil?
-         puts "Environment variable \"#{name}\" is not found. Did you completed Vagrant setup?"
-         puts "Check \"config.vm.provision\" setting in Vagrantfile..."
-         abort
-      end
-      return result
+   def self.projects
+      return "#{root}/#{Location.projects}"
    end
 
 end
