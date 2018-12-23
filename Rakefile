@@ -154,6 +154,10 @@ namespace :develop do
          task :dispatch do
             DispatchBuilder.new(Arch.armv7a).configure
          end
+         desc "Configure libXML"
+         task :xml do
+            XMLBuilder.new(Arch.armv7a).configure
+         end
       end
 
       namespace :build do
@@ -177,29 +181,29 @@ namespace :develop do
          task :dispatch do
             DispatchBuilder.new(Arch.armv7a).build
          end
+         desc "Build libXML"
+         task :xml do XMLBuilder.new(Arch.armv7a).build end
       end
 
       namespace :install do
+
          desc "Install ICU"
-         task :icu do
-            ICUBuilder.new(Arch.armv7a).install
-         end
+         task :icu do ICUBuilder.new(Arch.armv7a).install end
+
          desc "Install Swift"
-         task :swift do
-            SwiftBuilder.new(Arch.armv7a).install
-         end
+         task :swift do SwiftBuilder.new(Arch.armv7a).install end
+
          desc "Install LLVM"
-         task :llvm do
-            LLVMBuilder.new(Arch.armv7a).install
-         end
+         task :llvm do LLVMBuilder.new(Arch.armv7a).install end
+
          desc "Install CMark"
-         task :cmark do
-            CMarkBuilder.new(Arch.armv7a).install
-         end
+         task :cmark do CMarkBuilder.new(Arch.armv7a).install end
+
          desc "Install libDispatch"
-         task :dispatch do
-            DispatchBuilder.new(Arch.armv7a).install
-         end
+         task :dispatch do DispatchBuilder.new(Arch.armv7a).install end
+
+         desc "Install libXML"
+         task :xml do XMLBuilder.new(Arch.armv7a).install end
 
          desc "Install Hello project on Android"
          task :project do

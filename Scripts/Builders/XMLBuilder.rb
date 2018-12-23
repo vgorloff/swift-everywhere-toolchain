@@ -11,16 +11,17 @@ class XMLBuilder < Builder
    end
 
    def prepare
-      execute "mkdir -p #{@builds}"
+      # Not used at the moment.
+      # execute "mkdir -p #{@builds}"
    end
 
    def configure
       prepare
       # Arguments took from `swift/swift-corelibs-foundation/build-android`
-      ndk = AndroidBuilder.new(arch)
+      ndk = AndroidBuilder.new(@arch)
       archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
       ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"
-      cmd = ["cd #{@sourcesDir} &&"]
+      cmd = ["cd #{@sources} &&"]
       cmd << "PATH=#{ndk.bin}:$PATH"
       cmd << "CC=#{ndk.bin}/arm-linux-androideabi-clang"
       cmd << "CXX=#{ndk.bin}/arm-linux-androideabi-clang++"
@@ -40,16 +41,19 @@ class XMLBuilder < Builder
 
       args = "--with-sysroot=#{ndk.installs}/sysroot --with-zlib=#{ndk.installs}/sysroot/usr --prefix=#{@installs} --host=arm-linux-androideabi --without-lzma --disable-static --enable-shared --without-http --without-html --without-ftp"
       execute cmd.join(" ") + " ./configure " + args
+      logConfigureCompleted
    end
 
    def build
       prepare
       execute "cd #{@sources} && make libxml2.la"
+      logBuildCompleted
    end
 
    def install
       execute "cd #{@sources} && make install-libLTLIBRARIES"
       execute "cd #{@sources}/include && make install"
+      logInstallCompleted
    end
 
    def make
