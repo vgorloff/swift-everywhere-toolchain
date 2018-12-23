@@ -31,14 +31,15 @@ Note: Every time you see host$ – this means that command should be executed on
       Every time you see box$ – this means that command should be executed on virtual GUEST Linux OS.
 
 1. Get Sources and Tools.
-   host$ rake checkout
-   host$ rake download
+   box$ rake checkout
+   box$ rake download
 
    Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put archive to Downloads folder.
 
-2. Setup and Build all Swift components for armv7a:
+2. Setup and Build all Swift components and Sample project for armv7a:
    box$ rake armv7a:setup
    box$ rake armv7a:build
+   box$ rake armv7a:project:build
 
 3. Enable USB Debugging on Android device. Install Android Tools for macOS. Connect Android device and Verify ADB shell setup.
    host$ rake verify
@@ -46,8 +47,7 @@ Note: Every time you see host$ – this means that command should be executed on
    See: How to Install Android Tools for macOS: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
    See: How to Enable USB Debugging on Android device: https://developer.android.com/studio/debug/dev-options
 
-4. Build, Deploy and run Demo project to Android Device.
-   box$ rake armv7a:project:build
+4. Deploy and run Demo project to Android Device.
    host$ rake armv7a:project:deploy
 
 EOM
