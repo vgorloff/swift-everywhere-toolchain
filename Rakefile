@@ -40,19 +40,17 @@ Building Swift Toolchain. Steps:
    rake armv7a:make:icu
    rake armv7a:make:swift
 
-3. Build `Hello` project.
-   Execute: "rake project:hello:build"
+3. Install Android Tools for macOS. See: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
 
-4. Install Android Tools for macOS. See: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
+4. Connect Android device to Host. Enable USB Debugging on Android device. Verify that device is connected.
+   host$ rake project:hello:verify
 
-5. Connect Android device to Host. Enable USB Debugging on Android device. Verify that device is connected.
-   Execute: "rake project:hello:verify"
+5. Build, Deploy and run `Hello` Project to Android Device.
+   rake project:hello:build
+   rake project:hello:install
+   rake project:hello:run
 
-6. Deploy and run Hello Project to Android Device.
-   Execute: "rake project:hello:install"
-   Execute: "rake project:hello:run"
-
-7. Repeat steps 2...6 for other architectures.
+7. Repeat steps 2 and 6 for other architectures.
 \n
 EOM
    puts help
@@ -311,7 +309,7 @@ namespace :project do
 
       desc "Project Hello: Install on Android"
       task :install do
-         binary = "#{Config.buildRoot}/hello/hello"
+         binary = HelloProjectBuilder.new().executable
          helper = ADBHelper.new()
          helper.deployLibs
          helper.deployProducts([binary])
@@ -319,12 +317,12 @@ namespace :project do
 
       desc "Project Hello: Run on Android"
       task :run do
-         ADBHelper.new().run("hello")
+         ADBHelper.new().run(HelloProjectBuilder.new().executableName)
       end
 
       desc "Project Hello: Cleanup on Android"
-      task :cleanup do
-         ADBHelper.new().cleanup("hello")
+      task :clean do
+         ADBHelper.new().cleanup(HelloProjectBuilder.new().executableName)
       end
 
       desc "Project Hello: Deploy and Run on Android"

@@ -4,9 +4,12 @@ require_relative "../Common/Builder.rb"
 # -  Build error: No such module "SwiftGlibc" – https://lists.swift.org/pipermail/swift-dev/Week-of-Mon-20160919/002955.html
 class HelloProjectBuilder < Builder
 
+   attr_reader :executable, :executableName
+
    def initialize(arch = Arch.default)
       super("Hello", arch)
-      @executable = @builds + "/hello"
+      @executableName = "hello"
+      @executable = @builds + "/" + @executableName
       @projectRoot = "#{Config.projects}/Hello"
    end
 
