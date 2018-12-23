@@ -118,6 +118,7 @@ class SwiftBuilder < Builder
 
    def build
       cmd = ["cd #{@sources} &&"]
+      cmd << "SKIP_BUILD_SWIFT_STATIC_LIBDISPATCH=1 SKIP_BUILD_STATIC_FOUNDATION=1"
       cmd << "./utils/build-script --release --skip-reconfigure"
       # cmd << "--dry-run"
       # cmd << "--verbose-build"
@@ -143,11 +144,11 @@ class SwiftBuilder < Builder
 
       # Try it
       # cmd << "--test false"
-      cmd << "--skip-test-cmark --skip-test-lldb --skip-test-swift --skip-test-llbuild --skip-test-swiftpm --skip-test-xctest"
-      cmd << "--skip-test-foundation --skip-test-libdispatch --skip-test-playgroundsupport --skip-test-libicu"
+      # cmd << "--skip-test-cmark --skip-test-lldb --skip-test-swift --skip-test-llbuild --skip-test-swiftpm --skip-test-xctest"
+      # cmd << "--skip-test-foundation --skip-test-libdispatch --skip-test-playgroundsupport --skip-test-libicu"
 
       # TODO: Try it
-      # cmd << '--llvm-targets-to-build="ARM;AArch64;X86"'
+      cmd << '--llvm-targets-to-build="ARM;AArch64;X86"'
       # TODO: Try it
       # cmd << "--skip-test-android-host"
 
@@ -155,7 +156,10 @@ class SwiftBuilder < Builder
       # cmd << "--lldb --install-lldb"
       # cmd << "--swiftpm --install-swiftpm"
       # cmd << "--xctest --install-xctest"
-      cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license;sourcekit-inproc'"
+
+      # cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license;sourcekit-inproc'"
+      cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license'"
+
       cmd << "'--llvm-install-components=llvm-cov;llvm-profdata;IndexStore'"
       cmd << "--install-prefix=/usr"
       cmd << "--install-destdir=#{@installs}"
@@ -169,16 +173,13 @@ class SwiftBuilder < Builder
       # Fix for missed file: `CMake Error at cmake/modules/SwiftSharedCMakeConfig.cmake:196 (include):`
       # execute "touch \"#{@cmark.builds}/src/CMarkExports.cmake\""
 
-      # targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
-      # if File.exist?(targetFile)
-      #    return
-      # end
-      # puts "Making symbolic link to \"#{targetFile}\"..."
-      # cmd = ["sudo"]
-      # cmd << "ln -svf #{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold"
-      # cmd << targetFile
-      # execute cmd.join(" ")
-      # execute "ls -a /usr/bin/*ld.gold"
+      if @arch != Arch.host
+         targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
+         puts "Making symbolic link to \"#{targetFile}\"..."
+         execute "sudo ln -svf #{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold #{targetFile}"
+         execute "ls -a /usr/bin/*ld.gold"
+         # FIXME: Remove simlink once done.
+      end
    end
 
    def make

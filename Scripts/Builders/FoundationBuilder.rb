@@ -1,5 +1,4 @@
 require_relative "../Common/Builder.rb"
-require_relative "../Common/Config.rb"
 
 # See:
 # - Libdispatch issues with CMake: https://forums.swift.org/t/libdispatch-switched-to-cmake/6665/7

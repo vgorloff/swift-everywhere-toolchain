@@ -1,5 +1,4 @@
 require_relative "../Common/Builder.rb"
-require_relative "../Common/Config.rb"
 
 # See:
 # - Compiling the latest OpenSSL for Android: https://stackoverflow.com/questions/11929773/compiling-the-latest-openssl-for-android

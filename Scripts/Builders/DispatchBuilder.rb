@@ -1,5 +1,4 @@
 require_relative "../Common/Builder.rb"
-require_relative "../Common/Config.rb"
 
 # See:
 # - Dispatch build script: https://github.com/readdle/swift-android-toolchain/blob/master/build/Linux/040_build_corelibs_libdispatch.sh

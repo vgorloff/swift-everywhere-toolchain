@@ -19,4 +19,9 @@ class Location
    def self.patches
       return "Patches"
    end
+
+   def self.projects
+      return "Projects"
+   end
+
 end

@@ -37,8 +37,8 @@ Building Swift Toolchain. Steps:
 
 2. Configure and Build Sources:
    rake armv7a:setup:ndk
-   rake armv7a:build:icu
-   rake armv7a:build:swift
+   rake armv7a:make:icu
+   rake armv7a:make:swift
 
 3. Build `Hello` project.
    Execute: "rake project:hello:build"
@@ -301,7 +301,7 @@ namespace :project do
 
       desc "Project Hello: Build"
       task :build do
-         HelloProjectBuilder.new().make
+         HelloProjectBuilder.new().build
       end
 
       desc "Project Hello: Verify"

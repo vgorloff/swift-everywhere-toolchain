@@ -1,5 +1,4 @@
 require_relative "../Common/Builder.rb"
-require_relative "../Common/Config.rb"
 
 class CurlBuilder < Builder
 
