@@ -36,6 +36,10 @@ class Lib
       return "xml"
    end
 
+   def self.ssl
+      return "ssl"
+   end
+
    def self.dispatch
       return "swift-corelibs-libdispatch"
    end

@@ -5,17 +5,12 @@ require_relative "../Common/Builder.rb"
 
 class OpenSSLBuilder < Builder
 
-   def initialize(target = "armv7a")
-      super()
-      @target = target
-      @sourcesDir = Config.opensslSourcesRoot
-      @buildDir = Config.buildRoot + "/openssl/" + @target
-      @installDir = Config.installRoot + "/openssl/" + @target
+   def initialize(arch = Arch.default)
+      super(Lib.ssl, arch)
    end
 
    def checkout
-      downloader = Downloader.new(Config.sourcesRoot, Config.opensslSourcesRoot, "https://github.com/openssl/openssl/archive/OpenSSL_1_1_1a.tar.gz", 'openssl-*')
-      downloader.bootstrap()
+      checkoutIfNeeded(@sources, "https://github.com/openssl/openssl.git", "cf1698cb9137de7fa4681f5babbdcb464ed1c70d")
    end
 
    def prepare

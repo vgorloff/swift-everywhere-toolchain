@@ -75,6 +75,9 @@ task :checkout do
    LLVMBuilder.new().checkout
    ClangBuilder.new().checkout
    CompilerRTBuilder.new().checkout
+   XMLBuilder.new().checkout
+   CurlBuilder.new().checkout
+   OpenSSLBuilder.new().checkout
 end
 
 desc "Download Android NDK"
@@ -238,32 +241,26 @@ namespace :develop do
          task :icu do
             ICUBuilder.new(Arch.armv7a).clean
          end
-
          desc "Clean NDK."
          task :ndk do
             AndroidBuilder.new(Arch.armv7a).clean
          end
-
          desc "Clean Swift."
          task :swift do
             SwiftBuilder.new(Arch.armv7a).clean
          end
-
          desc "Clean LLVM."
          task :llvm do
             LLVMBuilder.new(Arch.armv7a).clean
          end
-
          desc "Clean libDispatch"
          task :dispatch do
             DispatchBuilder.new().clean
          end
-
          desc "Clean libFoundation"
          task :foundation do
             FoundationBuilder.new().clean
          end
-
          desc "Clean Hello project."
          task :project do
             ADBHelper.new().cleanup(HelloProjectBuilder.new(Arch.armv7a).executableName)
@@ -279,11 +276,6 @@ namespace :develop do
 
       namespace :xml do
 
-         desc "Checkout libXML"
-         task :checkout do
-            XMLBuilder.new().checkout
-         end
-
          desc "Build libXML"
          task :make do
             XMLBuilder.new().make
@@ -293,11 +285,6 @@ namespace :develop do
 
       namespace :curl do
 
-         desc "Checkout curl"
-         task :checkout do
-            CurlBuilder.new().checkout
-         end
-
          desc "Build curl"
          task :make do
             CurlBuilder.new().make
@@ -306,11 +293,6 @@ namespace :develop do
       end
 
       namespace :openssl do
-
-         desc "Checkout OpenSSL"
-         task :checkout do
-            OpenSSLBuilder.new().checkout
-         end
 
          desc "Make OpenSSL"
          task :make do

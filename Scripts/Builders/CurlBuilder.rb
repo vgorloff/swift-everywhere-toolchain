@@ -7,7 +7,7 @@ class CurlBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/curl/curl.git")
+      checkoutIfNeeded(@sources, "https://github.com/curl/curl.git", "7608f9a2d57c26320a35f07d36fe20f6bde92fc4")
    end
 
    def prepare
