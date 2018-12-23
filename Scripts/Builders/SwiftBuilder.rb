@@ -155,32 +155,28 @@ class SwiftBuilder < Builder
       cmd << "--install-destdir=#{@installs}"
       cmd << "--build-dir #{@builds}"
       execute cmd.join(" ")
-      removeLinkerSymLink()
+      setupLinkerSymLink(false)
       logBuildCompleted()
    end
 
    def prepare
-      removeLinkerSymLink()
+      setupLinkerSymLink(false)
       execute "mkdir -p #{@builds}"
       # Fix for missed file: `CMake Error at cmake/modules/SwiftSharedCMakeConfig.cmake:196 (include):`
       # execute "touch \"#{@cmark.builds}/src/CMarkExports.cmake\""
       setupLinkerSymLink()
    end
 
-   def setupLinkerSymLink
+   def setupLinkerSymLink(shouldCreate = true)
       if @arch == Arch.armv7a
          targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
-         puts "Making symbolic link to \"#{targetFile}\"..."
-         execute "sudo ln -svf #{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold #{targetFile}"
-         execute "ls -al /usr/bin/*ld.gold"
-      end
-   end
-
-   def removeLinkerSymLink
-      if @arch == Arch.armv7a
-         message "Removing previously created symlink..."
-         targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
-         execute "sudo rm -fv #{targetFile}"
+         if shouldCreate
+            message "Making symbolic link to \"#{targetFile}\"..."
+            execute "sudo ln -svf #{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold #{targetFile}"
+         else
+            message "Removing previously created symlink: \"#{targetFile}\"..."
+            execute "sudo rm -fv #{targetFile}"
+         end
          execute "ls -al /usr/bin/*ld.gold"
       end
    end
