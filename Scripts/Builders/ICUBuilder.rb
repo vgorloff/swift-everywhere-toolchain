@@ -104,9 +104,16 @@ class ICUBuilder < Builder
       end
    end
 
+   def removePatchIfNeeded
+      message "Removing previously applied patch..."
+      execute "cd \"#{@gitRepoRoot}\" && git reset --hard"
+      execute "cd \"#{@gitRepoRoot}\" && git clean -f"
+   end
+
    def build
       execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make -j4"
       logBuildCompleted
+      removePatchIfNeeded
    end
 
    def install
