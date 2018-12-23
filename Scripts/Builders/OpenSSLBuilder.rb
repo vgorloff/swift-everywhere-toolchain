@@ -14,39 +14,43 @@ class OpenSSLBuilder < Builder
    end
 
    def prepare
-      execute "mkdir -p #{@buildDir}"
-      execute "mkdir -p #{@installDir}"
+      # Not used at the moment
+      # execute "mkdir -p #{@builds}"
    end
 
-   def configure
-      execute commonArgs.join(" ") + " ./Configure -D__ANDROID_API__=#{Config.androidAPI} --prefix=#{@installDir} android-arm"
-   end
-
-   def commonArgs()
-      ndkToolchainPath = "#{Config.ndkInstallRoot}/#{@target}"
-      ndkToolchainBinPath = "#{ndkToolchainPath}/bin"
-      archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
-      ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"
-      cmd = ["cd #{@sourcesDir} &&"]
-      cmd << "ANDROID_NDK=#{ndkToolchainPath}"
-      cmd << "PATH=#{ndkToolchainBinPath}:$PATH"
+   def options()
+      ndk = AndroidBuilder.new(@arch)
+      cmd = ["cd #{@sources} &&"]
+      cmd << "ANDROID_NDK=#{ndk.installs}"
+      cmd << "PATH=#{ndk.bin}:$PATH"
       # >> Seems not needed
-      cmd << "CPPFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing\""
-      cmd << "CXXFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing -frtti -fexceptions -std=c++11 -Wno-error=unused-command-line-argument\""
-      cmd << "CFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing\""
-      cmd << "LDFLAGS=\"#{ldFlags}\""
+      # archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
+      # ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"
+      # cmd << "CPPFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing\""
+      # cmd << "CXXFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing -frtti -fexceptions -std=c++11 -Wno-error=unused-command-line-argument\""
+      # cmd << "CFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing\""
+      # cmd << "LDFLAGS=\"#{ldFlags}\""
       # <<
       return cmd
    end
 
+   def configure
+      prepare
+      ndk = AndroidBuilder.new(@arch)
+      # Seems `-D__ANDROID_API__` not needed. See: #{@sources}/NOTES.ANDROID
+      execute options.join(" ") + " ./Configure -D__ANDROID_API__=#{ndk.api} --prefix=#{@installs} android-arm"
+   end
+
    def build
-      execute commonArgs.join(" ") + " make -j4"
-      execute commonArgs.join(" ") + " make install"
+      prepare
+      execute options.join(" ") + " make -j4"
+   end
+
+   def install
+      execute options.join(" ") + " make install_sw install_ssldirs"
    end
 
    def make
-      checkout
-      prepare
       configure
       build
    end
