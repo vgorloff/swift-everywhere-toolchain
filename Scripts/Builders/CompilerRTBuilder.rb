@@ -7,7 +7,7 @@ class CompilerRTBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-compiler-rt.git")
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift-compiler-rt.git", "d4667fe980efc317baf2641bc29ce1d41a1a0a6b")
    end
 
 end

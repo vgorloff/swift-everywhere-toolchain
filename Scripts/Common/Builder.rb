@@ -46,13 +46,16 @@ class Builder < Tool
       message "\"#{@component}\" install is completed."
    end
 
-   def checkoutIfNeeded(localPath, repoURL)
+   def checkoutIfNeeded(localPath, repoURL, revision)
       if File.exist?(localPath)
          message "Repository \"#{repoURL}\" seems already checked out to \"#{localPath}\"."
       else
-         dir = File.dirname(localPath)
-         execute "mkdir -p \"#{dir}\""
-         execute "cd \"#{dir}\" && git clone --depth=10 #{repoURL} \"#{localPath}\""
+         execute "mkdir -p \"#{localPath}\""
+         # Checking out specific SHA - https://stackoverflow.com/a/43136160/1418981
+         execute "cd \"#{localPath}\" && git init && git remote add origin \"#{repoURL}\""
+         execute "cd \"#{localPath}\" && git config --local uploadpack.allowReachableSHA1InWant true"
+         execute "cd \"#{localPath}\" && git fetch --depth 10 origin #{revision}"
+         execute "cd \"#{dir}\" && git checkout FETCH_HEAD"
          message "#{repoURL} checkout to \"#{localPath}\" is completed."
       end
    end

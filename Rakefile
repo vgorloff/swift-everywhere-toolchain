@@ -202,24 +202,6 @@ namespace :armv7a do
 
 end
 
-namespace :update do
-
-   desc "Updated Git repositories: `swift/utils/update-checkout`"
-   task :swift do
-      SwiftBuilder.new().update
-   end
-
-end
-
-namespace :help do
-
-   desc "Show Build options: `swift/utils/build-script --help`"
-   task :swift do
-      SwiftBuilder.new().help
-   end
-
-end
-
 namespace :foundation do
 
    desc "Build libFoundation"
