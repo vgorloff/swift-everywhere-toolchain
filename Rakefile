@@ -230,9 +230,21 @@ namespace :develop do
          task :dispatch do
             DispatchBuilder.new().make
          end
-         desc "Configure, Build and Install  libFoundation"
+         desc "Configure, Build and Install libFoundation"
          task :foundation do
             FoundationBuilder.new().make
+         end
+         desc "Configure, Build and Install libXML"
+         task :xml do
+            XMLBuilder.new().make
+         end
+         desc "Configure, Build and Install curl"
+         task :curl do
+            CurlBuilder.new().make
+         end
+         desc "Configure, Build and Install OpenSSL"
+         task :ssl do
+            OpenSSLBuilder.new().make
          end
       end
 
@@ -273,32 +285,5 @@ namespace :develop do
             ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executableName)
          end
       end
-
-      namespace :xml do
-
-         desc "Build libXML"
-         task :make do
-            XMLBuilder.new().make
-         end
-
-      end
-
-      namespace :curl do
-
-         desc "Build curl"
-         task :make do
-            CurlBuilder.new().make
-         end
-
-      end
-
-      namespace :openssl do
-
-         desc "Make OpenSSL"
-         task :make do
-            OpenSSLBuilder.new().make
-         end
-      end
-
    end
 end
