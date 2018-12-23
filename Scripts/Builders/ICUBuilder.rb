@@ -22,6 +22,7 @@ class ICUBuilder < Builder
    end
 
    def configureHost
+      prepare
       cmd = ["cd #{@builds} &&"]
       cmd << 'CC="/usr/bin/clang"'
       cmd << 'CXX="/usr/bin/clang++"'
@@ -36,13 +37,13 @@ class ICUBuilder < Builder
    def configure
       if !@host.nil? && !File.exist?(@host.bin)
          message "Building Corss-Build Host."
-         @host.prepare
          @host.configureHost
          @host.build
          @host.install
          message "Corss-Build Host Build completed."
       end
 
+      prepare
       cmd = ["cd #{@builds} &&"]
       cmd << "PATH=#{@ndk.installs}/bin:$PATH"
       if @arch == Arch.armv7a
@@ -89,7 +90,6 @@ class ICUBuilder < Builder
 
    def prepare()
       execute "mkdir -p #{@builds}"
-      applyPatchIfNeeded()
    end
 
    def applyPatchIfNeeded()
@@ -104,13 +104,16 @@ class ICUBuilder < Builder
       end
    end
 
-   def removePatchIfNeeded
+   def removePatchIfNeeded()
       message "Removing previously applied patch..."
       execute "cd \"#{@gitRepoRoot}\" && git reset --hard"
       execute "cd \"#{@gitRepoRoot}\" && git clean -f"
    end
 
    def build
+      prepare
+      removePatchIfNeeded
+      applyPatchIfNeeded
       execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make -j4"
       logBuildCompleted
       removePatchIfNeeded
@@ -122,7 +125,6 @@ class ICUBuilder < Builder
    end
 
    def make
-      prepare
       configure
       build
       install

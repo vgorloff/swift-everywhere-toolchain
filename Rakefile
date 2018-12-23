@@ -27,80 +27,82 @@ task :usage do
 
 Building Swift Toolchain. Steps:
 
-1. Checkout Sources.
-   rake checkout:icu
-   rake checkout:llvm
-   rake checkout:swift
-   rake checkout:ndk
+1. Get Sources and Tools.
+   host$ rake checkout
+   host$ rake download
 
    Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put archive to Downloads folder.
 
-2. Configure and Build Sources:
-   rake armv7a:setup:ndk
-   rake armv7a:make:icu
-   rake armv7a:make:swift
+2. Build all Swift components for armv7a:
+   box$ rake armv7a:build
 
 3. Install Android Tools for macOS. See: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
 
 4. Connect Android device to Host. Enable USB Debugging on Android device. Verify that device is connected.
-   host$ rake project:hello:verify
+   host$ rake verify
 
 5. Build, Deploy and run `Hello` Project to Android Device.
-   rake project:hello:build
-   rake project:hello:install
-   rake project:hello:run
+   box$ rake hello:build
+   host$ rake hello:deploy
 
-7. Repeat steps 2 and 6 for other architectures.
-\n
 EOM
    puts help
-   system "rake -T"
+   system "rake -T | grep --invert-match develop"
 end
 
-namespace :verify do
-   desc "Verify environment variables"
-   task :environment do
-      Config.verify
-   end
+desc "Verify ADB shell setup."
+task :verify do
+   ADBHelper.new().verify
 end
 
-namespace :checkout do
+desc "Show more actions (for Developers)."
+task :more do
+   system "rake -T | grep develop"
+end
 
-   desc "Checkout Swift, libDispatch, libFoundation, CMark"
-   task :swift do
-      SwiftBuilder.new().checkout
-      DispatchBuilder.new().checkout
-      FoundationBuilder.new().checkout
-      CMarkBuilder.new().checkout
-   end
+desc "Checkout Sources of all Components from Git."
+task :checkout do
+   SwiftBuilder.new().checkout
+   DispatchBuilder.new().checkout
+   FoundationBuilder.new().checkout
+   CMarkBuilder.new().checkout
+   ICUBuilder.new().checkout
+   LLVMBuilder.new().checkout
+   ClangBuilder.new().checkout
+   CompilerRTBuilder.new().checkout
+end
 
-   desc "Checkout ICU"
-   task :icu do
-      ICUBuilder.new().checkout
-   end
-
-   desc "Checkout LLVM, Clang, Compiler-RT"
-   task :llvm do
-      LLVMBuilder.new().checkout
-      ClangBuilder.new().checkout
-      CompilerRTBuilder.new().checkout
-   end
-
-   desc "Download Android NDK"
-   task :ndk do
-      AndroidBuilder.new().download
-   end
-
+desc "Download Android NDK"
+task :download do
+   AndroidBuilder.new().download
 end
 
 namespace :armv7a do
 
-   namespace :setup do
-      desc "Setup NDK Toolchain."
-      task :ndk do
-         AndroidBuilder.new(Arch.armv7a).setup
-      end
+   desc "Setup NDK Toolchain."
+   task :setup do
+      AndroidBuilder.new(Arch.armv7a).setup
    end
+
+   desc "Build Swift Toolchain."
+   task build: [":develop:install:hello", ":develop:run:helo"] do
+   end
+
+end
+
+namespace :hello do
+
+   desc "Builds sample project"
+   task :build do
+      HelloProjectBuilder.new().build
+   end
+
+   desc "Deploy and Run on Android"
+   task deploy: [":develop:make:icu", ":develop:make:swift"] do
+   end
+end
+
+namespace :develop do
 
    namespace :configure do
       desc "Configure ICU"
@@ -157,6 +159,14 @@ namespace :armv7a do
       task :cmark do
          CMarkBuilder.new(Arch.armv7a).install
       end
+
+      desc "Install Hello project on Android"
+      task :hello do
+         binary = HelloProjectBuilder.new().executable
+         helper = ADBHelper.new()
+         helper.deployLibs
+         helper.deployProducts([binary])
+      end
    end
 
    namespace :make do
@@ -176,6 +186,14 @@ namespace :armv7a do
       task :cmark do
          CMarkBuilder.new(Arch.armv7a).make
       end
+      desc "Configure, Build and Install libDispatch"
+      task :dispatch do
+         DispatchBuilder.new().make
+      end
+      desc "Configure, Build and Install  libFoundation"
+      task :foundation do
+         FoundationBuilder.new().make
+      end
    end
 
    namespace :clean do
@@ -194,123 +212,72 @@ namespace :armv7a do
          SwiftBuilder.new(Arch.armv7a).clean
       end
 
-      desc "LLVM Swift."
+      desc "Clean LLVM."
       task :llvm do
          LLVMBuilder.new(Arch.armv7a).clean
       end
-   end
 
-end
-
-namespace :foundation do
-
-   desc "Build libFoundation"
-   task :build do
-      FoundationBuilder.new().make
-   end
-
-   desc "Clean libFoundation"
-   task :clean do
-      FoundationBuilder.new().clean
-   end
-
-end
-
-namespace :dispatch do
-
-   desc "Build libDispatch"
-   task :build do
-      DispatchBuilder.new().make
-   end
-
-   desc "Clean libDispatch"
-   task :clean do
-      DispatchBuilder.new().clean
-   end
-
-   desc "Rebuild libDispatch"
-   task rebuild: [:clean, :build] do
-   end
-
-end
-
-namespace :xml do
-
-   desc "Checkout libXML"
-   task :checkout do
-      XMLBuilder.new().checkout
-   end
-
-   desc "Build libXML"
-   task :make do
-      XMLBuilder.new().make
-   end
-
-end
-
-namespace :curl do
-
-   desc "Checkout curl"
-   task :checkout do
-      CurlBuilder.new().checkout
-   end
-
-   desc "Build curl"
-   task :make do
-      CurlBuilder.new().make
-   end
-
-end
-
-namespace :openssl do
-
-   desc "Checkout OpenSSL"
-   task :checkout do
-      OpenSSLBuilder.new().checkout
-   end
-
-   desc "Make OpenSSL"
-   task :make do
-      OpenSSLBuilder.new().make
-   end
-end
-
-namespace :project do
-
-   namespace :hello do
-
-      desc "Project Hello: Build"
-      task :build do
-         HelloProjectBuilder.new().build
+      desc "Clean libDispatch"
+      task :dispatch do
+         DispatchBuilder.new().clean
       end
 
-      desc "Project Hello: Verify"
-      task :verify do
-         ADBHelper.new().verify
+      desc "Clean libFoundation"
+      task :foundation do
+         FoundationBuilder.new().clean
       end
 
-      desc "Project Hello: Install on Android"
-      task :install do
-         binary = HelloProjectBuilder.new().executable
-         helper = ADBHelper.new()
-         helper.deployLibs
-         helper.deployProducts([binary])
-      end
-
-      desc "Project Hello: Run on Android"
-      task :run do
-         ADBHelper.new().run(HelloProjectBuilder.new().executableName)
-      end
-
-      desc "Project Hello: Cleanup on Android"
-      task :clean do
+      desc "Clean Hello project."
+      task :hello do
          ADBHelper.new().cleanup(HelloProjectBuilder.new().executableName)
       end
+   end
 
-      desc "Project Hello: Deploy and Run on Android"
-      task deploy: [:install, :run] do
+   namespace :run do
+      desc "Run Hello project on Android"
+      task :helo do
+         ADBHelper.new().run(HelloProjectBuilder.new().executableName)
+      end
+   end
+
+   namespace :xml do
+
+      desc "Checkout libXML"
+      task :checkout do
+         XMLBuilder.new().checkout
+      end
+
+      desc "Build libXML"
+      task :make do
+         XMLBuilder.new().make
       end
 
    end
 
+   namespace :curl do
+
+      desc "Checkout curl"
+      task :checkout do
+         CurlBuilder.new().checkout
+      end
+
+      desc "Build curl"
+      task :make do
+         CurlBuilder.new().make
+      end
+
+   end
+
+   namespace :openssl do
+
+      desc "Checkout OpenSSL"
+      task :checkout do
+         OpenSSLBuilder.new().checkout
+      end
+
+      desc "Make OpenSSL"
+      task :make do
+         OpenSSLBuilder.new().make
+      end
+   end
 end
