@@ -73,9 +73,10 @@ class FoundationBuilder < Builder
       cmd = []
       cmd << "cd #{@builds} &&"
       # Seems not needed.
-      # if @arch != Arch.host
-      #    cmd << "ICU_ROOT=#{@icu.installs}"
-      # end
+      if @arch != Arch.host
+         # cmd << "ICU_ROOT=#{@icu.installs}"
+         cmd << "PATH=#{@ndk.bin}:$PATH"
+      end
       cmd << "cmake -G Ninja"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}" # Check later if we can use `@installs`
@@ -88,10 +89,8 @@ class FoundationBuilder < Builder
          cmd << "-DCMAKE_ANDROID_NDK=#{@ndk.sources}"
          cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
          cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
-         # cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
+         cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
 
-         # cmd << "PATH=#{@ndk.bin}:$PATH"
-         # cmd += args
          cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
          cmd << "-DICU_LIBRARY=#{@icu.lib}"
 
@@ -148,6 +147,10 @@ class FoundationBuilder < Builder
       end
       originalFile = "#{@sources}/cmake/modules/SwiftSupport.cmake"
       patchFile = "#{@patches}/CmakeSystemProcessor.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
+
+      originalFile = "#{@sources}/CoreFoundation/CMakeLists.txt"
+      patchFile = "#{@patches}/CompileOptions.patch"
       configurePatch(originalFile, patchFile, shouldEnable)
    end
 
