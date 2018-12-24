@@ -26,7 +26,7 @@ class DispatchBuilder < Builder
       cmd << "cmake -G Ninja"
       if @arch == Arch.host
          cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-         cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
+         cmd << "-DCMAKE_C_COMPILER=\"#{swift.llvm}/bin/clang\""
       else
          cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
          cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"

@@ -122,6 +122,10 @@ namespace :develop do
          desc "Configure, Build and Install libFoundation"
          task :foundation do FoundationBuilder.new(Arch.host).make end
       end
+      namespace :clean do
+         desc "Clean libDispatch"
+         task :dispatch do DispatchBuilder.new(Arch.host).clean end
+      end
       namespace :project do
          desc "Builds Sample project"
          task :build do HelloProjectBuilder.new(Arch.host).build end
@@ -251,62 +255,52 @@ namespace :develop do
          end
          desc "Configure, Build and Install libDispatch"
          task :dispatch do
-            DispatchBuilder.new().make
+            DispatchBuilder.new(Arch.armv7a).make
          end
          desc "Configure, Build and Install libFoundation"
          task :foundation do
-            FoundationBuilder.new().make
+            FoundationBuilder.new(Arch.armv7a).make
          end
          desc "Configure, Build and Install libXML"
          task :xml do
-            XMLBuilder.new().make
+            XMLBuilder.new(Arch.armv7a).make
          end
          desc "Configure, Build and Install curl"
          task :curl do
-            CurlBuilder.new().make
+            CurlBuilder.new(Arch.armv7a).make
          end
          desc "Configure, Build and Install OpenSSL"
          task :ssl do
-            OpenSSLBuilder.new().make
+            OpenSSLBuilder.new(Arch.armv7a).make
          end
       end
 
       namespace :clean do
          desc "Clean ICU."
-         task :icu do
-            ICUBuilder.new(Arch.armv7a).clean
-         end
+         task :icu do ICUBuilder.new(Arch.armv7a).clean end
+
          desc "Clean NDK."
-         task :ndk do
-            AndroidBuilder.new(Arch.armv7a).clean
-         end
+         task :ndk do AndroidBuilder.new(Arch.armv7a).clean end
+
          desc "Clean Swift."
-         task :swift do
-            SwiftBuilder.new(Arch.armv7a).clean
-         end
+         task :swift do SwiftBuilder.new(Arch.armv7a).clean end
+
          desc "Clean LLVM."
-         task :llvm do
-            LLVMBuilder.new(Arch.armv7a).clean
-         end
+         task :llvm do  LLVMBuilder.new(Arch.armv7a).clean end
+
          desc "Clean libDispatch"
-         task :dispatch do
-            DispatchBuilder.new().clean
-         end
+         task :dispatch do DispatchBuilder.new(Arch.armv7a).clean end
+
          desc "Clean libFoundation"
-         task :foundation do
-            FoundationBuilder.new().clean
-         end
+         task :foundation do FoundationBuilder.new(Arch.armv7a).clean end
+
          desc "Clean Hello project."
-         task :project do
-            ADBHelper.new().cleanup(HelloProjectBuilder.new(Arch.armv7a).executableName)
-         end
+         task :project do ADBHelper.new().cleanup(HelloProjectBuilder.new(Arch.armv7a).executableName) end
       end
 
       namespace :run do
          desc "Run Hello project on Android"
-         task :project do
-            ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executableName)
-         end
+         task :project do ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executableName) end
       end
    end
 end
