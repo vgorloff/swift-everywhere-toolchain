@@ -12,6 +12,7 @@ class FoundationBuilder < Builder
       @curl = CurlBuilder.new(arch)
       @icu = ICUBuilder.new(arch)
       @xml = XMLBuilder.new(arch)
+      @includes = "#{@builds}/external-includes"
    end
 
    def prepare
@@ -38,6 +39,14 @@ class FoundationBuilder < Builder
       execute "ln -fvs #{usr}/include/libxml2/libxml #{usr}/include/libxml"
 
       execute "cp -vr /usr/include/uuid #{usr}/include"
+   end
+
+   def setupSymLinks
+      if @arch == Arch.host
+         return
+      end
+      execute "mkdir -p #{@includes}"
+      execute "ln -fvs /usr/include/uuid #{@includes}"
    end
 
    def args
@@ -110,7 +119,7 @@ class FoundationBuilder < Builder
       cmd << @sources
       execute cmd.join(" ")
       fixNinjaBuild()
-      execute "cd #{@builds} && CFLAGS='-DDEPLOYMENT_TARGET_ANDROID' ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
+      execute "cd #{@builds} && CFLAGS='-DDEPLOYMENT_TARGET_ANDROID -I#{@includes}' ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
       logConfigureCompleted
    end
 
@@ -171,6 +180,7 @@ class FoundationBuilder < Builder
 
    def build
       prepare
+      setupSymLinks
       # cmd += args
       # execute cmd.join(" ") + " ninja CopyHeaders"
       # fixModuleMap()
