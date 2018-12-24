@@ -17,7 +17,6 @@ class HelloProjectBuilder < Builder
       prepare
       swift = SwiftBuilder.new()
       ndk = AndroidBuilder.new()
-      foundation = FoundationBuilder.new()
       cmd = ["cd #{@builds} &&"]
       cmd << "PATH=#{swift.installs}/usr/bin:$PATH"
       cmd << "swiftc"
@@ -27,10 +26,6 @@ class HelloProjectBuilder < Builder
          cmd << "-Xcc -I#{ndk.installs}/sysroot/usr/include"
          cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID"
          cmd << "-Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
-
-         # Attempt to fix `cannot locate symbol "__CFConstantStringClassReference"`
-         # cmd << "-lCoreFoundation -L #{foundation.builds}/CoreFoundation-prefix/usr/lib"
-         # cmd << "-Xlinker -defsym -Xlinker '__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN'"
 
          # Below seems not needed.
          # cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.

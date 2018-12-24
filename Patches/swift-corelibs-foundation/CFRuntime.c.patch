@@ -1,0 +1,16 @@
+diff --git a/CoreFoundation/Base.subproj/CFRuntime.c b/CoreFoundation/Base.subproj/CFRuntime.c
+index 9eebfb991aff60639568c295fec0eb998a6f991a..f015e4c9e2ee2384d8aefdad9c8a247bdd5a03ae 100644
+--- a/CoreFoundation/Base.subproj/CFRuntime.c
++++ b/CoreFoundation/Base.subproj/CFRuntime.c
+@@ -266,6 +266,11 @@ bool (*__CFObjCIsCollectable)(void *) = NULL;
+ #if DEPLOYMENT_RUNTIME_SWIFT
+ // The constant string class reference is set at link time to _NSCFConstantString
+ void *__CFConstantStringClassReferencePtr = &_CF_CONSTANT_STRING_SWIFT_CLASS;
++#if TARGET_RT_64_BIT
++int __CFConstantStringClassReference[24] = {0};
++#else
++int __CFConstantStringClassReference[12] = {0};
++#endif
+ #else
+ #if !__CONSTANT_CFSTRINGS__ || DEPLOYMENT_TARGET_EMBEDDED_MINI
+ // Compiler uses this symbol name; must match compiler built-in decl, so we use 'int'

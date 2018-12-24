@@ -162,9 +162,8 @@ class FoundationBuilder < Builder
       patchFile = "#{@patches}/ForSwiftFoundationOnly.patch"
       configurePatch(originalFile, patchFile, shouldEnable)
 
-      originalFile = "#{@sources}/Foundation/FileManager.swift"
-      patchFile = "#{@patches}/FileManager.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
+      configurePatch("#{@sources}/Foundation/FileManager.swift", "#{@patches}/FileManager.patch", shouldEnable)
+      configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFRuntime.c", "#{@patches}/CFRuntime.c.patch", shouldEnable)
    end
 
 end
