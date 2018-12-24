@@ -76,6 +76,7 @@ class FoundationBuilder < Builder
       if @arch != Arch.host
          # cmd << "ICU_ROOT=#{@icu.installs}"
          # cmd << "PATH=#{@ndk.bin}:$PATH"
+         # cmd << "CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
       end
       cmd << "cmake -G Ninja"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
@@ -109,7 +110,8 @@ class FoundationBuilder < Builder
       cmd << @sources
       execute cmd.join(" ")
       fixNinjaBuild()
-      execute "cd #{@builds} && ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
+      execute "cd #{@builds} && CFLAGS='-DDEPLOYMENT_TARGET_ANDROID' ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
+      logConfigureCompleted
    end
 
    def fixNinjaBuild
@@ -123,7 +125,7 @@ class FoundationBuilder < Builder
       contents = contents.gsub('libicuuc.so', 'libicuucswift.so')
       contents = contents.gsub('libicui18n.so', 'libicui18nswift.so')
       # FIXME: Try to comment `find_package(UUID REQUIRED)` in CMakeLists.txt
-      contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libuuid.so', '')
+      # contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libuuid.so', '')
       File.write(file, contents)
 
       # execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/x86_64-linux-gnu//' build.ninja"
@@ -159,6 +161,11 @@ class FoundationBuilder < Builder
 
       originalFile = "#{@sources}/CMakeLists.txt"
       patchFile = "#{@patches}/CMakeLists.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
+
+      # FIXME: This may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
+      originalFile = "#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c"
+      patchFile = "#{@patches}/CFKnownLocations.patch"
       configurePatch(originalFile, patchFile, shouldEnable)
    end
 
