@@ -113,6 +113,9 @@ namespace :armv7a do
       desc "Deploy and Run on Android"
       task deploy: ["develop:armv7a:install:project", "develop:armv7a:run:project"] do
       end
+
+      desc "Clean Hello project."
+      task :clean do ADBHelper.new().clean end
    end
 
 end
@@ -290,9 +293,6 @@ namespace :develop do
 
          desc "Clean libFoundation"
          task :foundation do FoundationBuilder.new(Arch.armv7a).clean end
-
-         desc "Clean Hello project."
-         task :project do ADBHelper.new().cleanup(HelloProjectBuilder.new(Arch.armv7a).executableName) end
       end
 
       namespace :run do

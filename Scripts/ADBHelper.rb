@@ -7,10 +7,13 @@ class ADBHelper < Tool
 
    def initialize()
       super()
-      @destinationDirPath = "/data/local/tmp"
+      @destinationDirPath = "/data/local/tmp/hello"
       @swift = SwiftBuilder.new()
       @ndk = AndroidBuilder.new()
       @icu = ICUBuilder.new()
+      @curl = CurlBuilder.new()
+      @ssl = OpenSSLBuilder.new()
+      @xml = XMLBuilder.new()
    end
 
    def verify()
@@ -21,15 +24,24 @@ class ADBHelper < Tool
    end
 
    def deployLibs()
+      execute "adb shell rm -rf #{@destinationDirPath}"
+      execute "adb shell mkdir -p #{@destinationDirPath}"
       Dir["#{@swift.installs}/usr/lib/swift/android" + "/*.so"].each { |lib|
-         cmd = "adb push #{lib} #{@destinationDirPath}"
-         execute cmd
+         execute "adb push #{lib} #{@destinationDirPath}"
       }
       Dir[@icu.lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
          destName = File.basename(lib)
          destName = destName.sub("63.1", "63") # Fix for error: CANNOT LINK EXECUTABLE ... library "libicudataswift.so.63" not found
-         cmd = "adb push #{lib} #{@destinationDirPath}/#{destName}"
-         execute cmd
+         execute "adb push #{lib} #{@destinationDirPath}/#{destName}"
+      }
+      Dir[@curl.lib + "/*.so"].each { |lib|
+         execute "adb push #{lib} #{@destinationDirPath}"
+      }
+      Dir[@xml.lib + "/*.so"].each { |lib|
+         execute "adb push #{lib} #{@destinationDirPath}"
+      }
+      Dir[@ssl.lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
+         execute "adb push #{lib} #{@destinationDirPath}"
       }
       cxxLibPath = "#{@ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
       execute "adb push #{cxxLibPath} #{@destinationDirPath}"
@@ -43,15 +55,12 @@ class ADBHelper < Tool
    end
 
    def run(binary)
-      execute "adb shell ls -l /data/local/tmp"
+      execute "adb shell ls -l #{@destinationDirPath}"
       execute "adb shell LD_LIBRARY_PATH=#{@destinationDirPath} #{@destinationDirPath}/#{binary}"
    end
 
-   def cleanup(binary)
-      execute "adb shell rm #{@destinationDirPath}/#{binary}"
-      execute "adb shell rm #{@destinationDirPath}/lib*swift*"
-      execute "adb shell rm #{@destinationDirPath}/libc++_shared.so"
-      execute "adb shell ls -l /data/local/tmp"
+   def clean
+      execute "adb shell rm -rf #{@destinationDirPath}"
    end
 
 end

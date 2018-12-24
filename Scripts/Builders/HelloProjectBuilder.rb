@@ -17,16 +17,24 @@ class HelloProjectBuilder < Builder
       prepare
       swift = SwiftBuilder.new()
       ndk = AndroidBuilder.new()
+      foundation = FoundationBuilder.new()
       cmd = ["cd #{@builds} &&"]
       cmd << "PATH=#{swift.installs}/usr/bin:$PATH"
       cmd << "swiftc"
       if @arch != Arch.host
-         cmd << "-tools-directory #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin"
+         cmd << "-tools-directory #{ndk.installs}/bin"
          cmd << "-target armv7-none-linux-androideabi" # Targeting android-armv7.
          cmd << "-Xcc -I#{ndk.installs}/sysroot/usr/include"
-         cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.
-         cmd << "-L #{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a"  # Link the Android NDK's libc++ and libgcc.
-         cmd << "-L #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x"
+         cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID"
+         cmd << "-Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
+
+         # Attempt to fix `cannot locate symbol "__CFConstantStringClassReference"`
+         # cmd << "-lCoreFoundation -L #{foundation.builds}/CoreFoundation-prefix/usr/lib"
+
+         # Below seems not needed.
+         # cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.
+         # cmd << "-L #{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a"  # Link the Android NDK's libc++ and libgcc.
+         # cmd << "-L #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x"
       end
       cmd << "#{@projectRoot}/hello.swift"
       execute cmd.join(" ")

@@ -1,8 +1,8 @@
-// This is primitive ever "Hello World"-like Project.
-// Project which uses Dispatch and Foundation frameworks will be added as soon,
-// as Workflow will support Dispatch and Foundation frameworks compilation.
+// ~~~~~~~~~~~~~~ CORE
 print("Hello, This Is Swift!")
 
+
+// ~~~~~~~~~~~~~~ DISPATCH
 import Dispatch
 let sema = DispatchSemaphore(value: 0)
 
@@ -16,7 +16,8 @@ if sema.wait(timeout: .now() + 10) == .timedOut {
    print("~~~~~~")
 }
 
-/*
+
+// ~~~~~~~~~~~~~~ FOUNDATION
 import Foundation
 
 let op = BlockOperation {
@@ -24,7 +25,6 @@ let op = BlockOperation {
 }
 let opQueue = OperationQueue()
 opQueue.addOperations([op], waitUntilFinished: true)
-
 
 
 let config = URLSessionConfiguration()
@@ -65,4 +65,3 @@ do {
 } catch {
    print(error)
 }
-*/
