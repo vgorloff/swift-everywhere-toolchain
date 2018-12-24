@@ -184,7 +184,11 @@ class FoundationBuilder < Builder
       # cmd += args
       # execute cmd.join(" ") + " ninja CopyHeaders"
       # fixModuleMap()
-      execute "cd #{@builds} && ninja CoreFoundation"
+
+      # For troubleshooting purpose.
+      # execute "cd #{@builds} && ninja CoreFoundation"
+
+      execute "cd #{@builds} && ninja"
       logBuildCompleted
    end
 
