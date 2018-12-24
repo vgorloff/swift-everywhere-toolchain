@@ -114,15 +114,18 @@ namespace :develop do
    namespace :host do
       namespace :make do
          desc "Configure, Build and Install Swift"
-         task :swift do
-            SwiftBuilder.new(Arch.host).make
-         end
+         task :swift do SwiftBuilder.new(Arch.host).make end
+
+         desc "Configure, Build and Install libDispatch"
+         task :dispatch do DispatchBuilder.new(Arch.host).make end
+
+         desc "Configure, Build and Install libFoundation"
+         task :foundation do FoundationBuilder.new(Arch.host).make end
       end
       namespace :project do
          desc "Builds Sample project"
-         task :build do
-            HelloProjectBuilder.new(Arch.host).build
-         end
+         task :build do HelloProjectBuilder.new(Arch.host).build end
+
          desc "Deploy and Run on Android"
          task :run do
             builder = HelloProjectBuilder.new(Arch.host)
@@ -135,21 +138,17 @@ namespace :develop do
 
       namespace :configure do
          desc "Configure ICU"
-         task :icu do
-            ICUBuilder.new(Arch.armv7a).configure
-         end
+         task :icu do ICUBuilder.new(Arch.armv7a).configure end
+
          desc "Configure Swift"
-         task :swift do
-            SwiftBuilder.new(Arch.armv7a).configure
-         end
+         task :swift do SwiftBuilder.new(Arch.armv7a).configure end
+
          desc "Configure LLVM"
-         task :llvm do
-            LLVMBuilder.new(Arch.armv7a).configure
-         end
+         task :llvm do LLVMBuilder.new(Arch.armv7a).configure end
+
          desc "Configure CMark"
-         task :cmark do
-            CMarkBuilder.new(Arch.armv7a).configure
-         end
+         task :cmark do CMarkBuilder.new(Arch.armv7a).configure end
+
          desc "Configure libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).configure end
 

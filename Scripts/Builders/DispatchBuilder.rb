@@ -24,17 +24,22 @@ class DispatchBuilder < Builder
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
-      cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
-      cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
-      cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
+      if @arch == Arch.host
+         cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
+         cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
+      else
+         cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
+         cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
+         cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
+         cmd << "-DCMAKE_SYSTEM_NAME=Android"
+         cmd << "-DCMAKE_SYSTEM_VERSION=#{ndk.api} -DCMAKE_ANDROID_NDK=#{ndk.sources}"
+         cmd << "-DCMAKE_INSTALL_PREFIX=#{swift.installs}/usr" # Applying Dispatch over existing file structure.
+      end
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DENABLE_SWIFT=true"
       cmd << "-DENABLE_TESTING=false"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{swift.builds}/swift-linux-x86_64/bin/swiftc\""
-      cmd << "-DCMAKE_PREFIX_PATH=\"#{swift.builds}/swift-linux-x86_64/lib/cmake/swift\""
-      cmd << "-DCMAKE_INSTALL_PREFIX=#{swift.installs}/usr" # Applying Dispatch over existing file structure.
-      cmd << "-DCMAKE_SYSTEM_NAME=Android"
-      cmd << "-DCMAKE_SYSTEM_VERSION=#{ndk.api} -DCMAKE_ANDROID_NDK=#{ndk.sources}"
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{swift.swift}/bin/swiftc\""
+      cmd << "-DCMAKE_PREFIX_PATH=\"#{swift.swift}/lib/cmake/swift\""
       cmd << @sources
       execute cmd.join(" ")
       fixNinjaBuild
@@ -42,6 +47,9 @@ class DispatchBuilder < Builder
    end
 
    def fixNinjaBuild
+      if @arch == Arch.host
+         return
+      end
       ndk = AndroidBuilder.new(@arch)
       file = "#{@builds}/build.ninja"
       message "Applying fix for #{file}"
@@ -54,6 +62,9 @@ class DispatchBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
+      if @arch == Arch.host && shouldEnable
+         return
+      end
       originalFile = "#{@sources}/cmake/modules/SwiftSupport.cmake"
       patchFile = "#{@patches}/CmakeSystemProcessor.patch"
       configurePatch(originalFile, patchFile, shouldEnable)

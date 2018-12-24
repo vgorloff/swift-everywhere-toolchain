@@ -48,10 +48,10 @@ class FoundationBuilder < Builder
       cmd << "BUILD_DIR=#{@builds}"
       cmd << "DSTROOT=#{@installs}"
 
-      cmd << "SWIFTC=\"#{@swift.builds}/swift-linux-x86_64/bin/swiftc\""
-      cmd << "CLANG=\"#{@swift.builds}/llvm-linux-x86_64/bin/clang\""
+      cmd << "SWIFTC=\"#{@swift.swift}/bin/swiftc\""
+      cmd << "CLANG=\"#{@swift.llvm}/bin/clang\""
       # cmd << "CLANGXX=\"#{@llvm.bin}/clang++\""
-      cmd << "SWIFT=\"#{@swift.builds}/swift-linux-x86_64/bin/swift\""
+      cmd << "SWIFT=\"#{@swift.swift}/bin/swift\""
       # cmd << "SDKROOT=\"#{@swift.installs}\""
       cmd << "CFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH --sysroot=#{sysroot} -I#{@icu.include} -I#{@swift.lib}/swift -I#{@ndk.sources}/sources/android/support/include -I#{sysroot}/usr/include -I#{@sources}/closure\""
       cmd << "SWIFTCFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH -Xcc -DDEPLOYMENT_TARGET_ANDROID -I#{sysroot}/usr/include\""
@@ -90,9 +90,9 @@ class FoundationBuilder < Builder
       cmd << "-DCURL_INCLUDE_DIR=#{@curl.include}"
       cmd << "-DCURL_LIBRARY=#{@curl.lib}/libcurl.so"
       cmd << "-DICU_ROOT=#{@icu.installs}"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/swift-linux-x86_64/bin/swiftc\""
-      cmd << "-DCMAKE_C_COMPILER=\"#{@swift.builds}/llvm-linux-x86_64/bin/clang\""
-      # cmd << "-DCMAKE_CXX_COMPILER=\"#{@swift.builds}/llvm-linux-x86_64/bin/clang++\""
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.swift}/bin/swiftc\""
+      cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
+      # cmd << "-DCMAKE_CXX_COMPILER=\"#{@swift.llvm}/bin/clang++\""
       cmd << @sources
       execute cmd.join(" ")
    end

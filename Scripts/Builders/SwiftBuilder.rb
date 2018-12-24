@@ -40,6 +40,14 @@ class SwiftBuilder < Builder
       @ndk = AndroidBuilder.new(arch)
    end
 
+   def llvm
+      return @builds + "/llvm-linux-x86_64"
+   end
+
+   def swift
+      return @builds + "/swift-linux-x86_64"
+   end
+
    def compileOLD
       cmd = ["cd #{@sources} &&"]
       # To avoid issue:
