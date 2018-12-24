@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ff47064da305032b285037bbcd6846bed15c027c..723751d92bfd744560377b8542a4cdba15a309a1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -45,6 +45,7 @@ ExternalProject_Add(CoreFoundation
+                       -DCF_PATH_TO_LIBDISPATCH_SOURCE=${FOUNDATION_PATH_TO_LIBDISPATCH_SOURCE}
+                       -DCF_PATH_TO_LIBDISPATCH_BUILD=${FOUNDATION_PATH_TO_LIBDISPATCH_BUILD}
+                       -DICU_INCLUDE_DIR=${ICU_INCLUDE_DIR}
++                      -DICU_LIBRARY=${ICU_LIBRARY}
+                       -DLIBXML2_LIBRARY=${LIBXML2_LIBRARY}
+                       -DLIBXML2_INCLUDE_DIR=${LIBXML2_INCLUDE_DIR}
+                       -DCURL_LIBRARY=${CURL_LIBRARY}

@@ -75,7 +75,7 @@ class FoundationBuilder < Builder
       # Seems not needed.
       if @arch != Arch.host
          # cmd << "ICU_ROOT=#{@icu.installs}"
-         cmd << "PATH=#{@ndk.bin}:$PATH"
+         # cmd << "PATH=#{@ndk.bin}:$PATH"
       end
       cmd << "cmake -G Ninja"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
@@ -84,9 +84,12 @@ class FoundationBuilder < Builder
       if @arch == Arch.host
          cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
       else
+         cmd << "-DCMAKE_SYSROOT=#{@ndk.installs}/sysroot"
+         # cmd << "-DCMAKE_C_COMPILER=\"#{@ndk.bin}/clang\""
          cmd << "-DCMAKE_SYSTEM_NAME=Android"
+         cmd << "-DCMAKE_SYSTEM_VERSION=#{@ndk.api}"
          # cmd << "-DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=#{@ndk.installs}"
-         cmd << "-DCMAKE_ANDROID_NDK=#{@ndk.sources}"
+         # cmd << "-DCMAKE_ANDROID_NDK=#{@ndk.sources}"
          cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
          cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
          cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
@@ -119,6 +122,7 @@ class FoundationBuilder < Builder
       contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libicu', "#{@icu.lib}/libicu")
       contents = contents.gsub('libicuuc.so', 'libicuucswift.so')
       contents = contents.gsub('libicui18n.so', 'libicui18nswift.so')
+      # FIXME: Try to comment `find_package(UUID REQUIRED)` in CMakeLists.txt
       contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libuuid.so', '')
       File.write(file, contents)
 
@@ -151,6 +155,10 @@ class FoundationBuilder < Builder
 
       originalFile = "#{@sources}/CoreFoundation/CMakeLists.txt"
       patchFile = "#{@patches}/CompileOptions.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
+
+      originalFile = "#{@sources}/CMakeLists.txt"
+      patchFile = "#{@patches}/CMakeLists.patch"
       configurePatch(originalFile, patchFile, shouldEnable)
    end
 
