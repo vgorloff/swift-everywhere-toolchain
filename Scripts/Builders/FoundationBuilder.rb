@@ -23,16 +23,8 @@ class FoundationBuilder < Builder
       prepare
       configurePatches(false)
       configurePatches
-      # sysroot = @ndk.installs + "/sysroot"
       cmd = []
       cmd << "cd #{@builds} &&"
-      # Seems not needed.
-      if @arch != Arch.host
-         # cmd << "ICU_ROOT=#{@icu.installs}"
-         # cmd << "PATH=#{@ndk.bin}:$PATH"
-         # cmd << "CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
-         # cmd << "SWIFTCFLAGS='-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH -Xcc -DDEPLOYMENT_TARGET_ANDROID -I#{sysroot}/usr/include'"
-      end
       cmd << "cmake -G Ninja"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}" # Check later if we can use `@installs`
@@ -92,7 +84,7 @@ class FoundationBuilder < Builder
    def make
       configure
       build
-      # install
+      install
    end
 
    def clean
