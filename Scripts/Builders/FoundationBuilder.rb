@@ -162,48 +162,10 @@ class FoundationBuilder < Builder
       originalFile = "#{@sources}/Foundation/NSGeometry.swift"
       patchFile = "#{@patches}/NSGeometry.patch"
       configurePatch(originalFile, patchFile, shouldEnable)
-   end
 
-   # ~~~ OLD
-
-   def copyFiles
-      usr = @ndk.installs + "/sysroot/usr"
-      # Copy dispatch public and private headers to the directory foundation is expecting to get it
-      targetDir = "#{usr}/include/dispatch"
-      execute "mkdir -p #{targetDir}"
-      execute "cp -v #{@dispatch.sources}/dispatch/*.h #{targetDir}"
-      execute "cp -v #{@dispatch.sources}/private/*.h #{targetDir}"
-
-      # libFoundation script is not completely prepared to handle cross compilation yet.
-      execute "ln -svf #{@swift.lib}/swift #{usr}/lib/"
-      execute "cp -vr #{@swift.lib}/swift/android/armv7/* #{@swift.lib}/swift/android/"
-
-      # Search path for curl seems to be wrong in foundation
-      execute "cp -rv #{@curl.include}/curl #{usr}/include"
-      execute "ln -fvs #{usr}/include/curl #{usr}/include/curl/curl"
-
-      execute "cp -rv #{@xml.include}/libxml2 #{usr}/include"
-      execute "ln -fvs #{usr}/include/libxml2/libxml #{usr}/include/libxml"
-
-      execute "cp -vr /usr/include/uuid #{usr}/include"
-   end
-
-   def args
-      # Arguments took from `swift/swift-corelibs-foundation/build-android`
-      sysroot = @ndk.installs + "/sysroot"
-      cmd = []
-      cmd << "BUILD_DIR=#{@builds}"
-      cmd << "DSTROOT=#{@installs}"
-
-      cmd << "SWIFTC=\"#{@swift.swift}/bin/swiftc\""
-      cmd << "CLANG=\"#{@swift.llvm}/bin/clang\""
-      # cmd << "CLANGXX=\"#{@llvm.bin}/clang++\""
-      cmd << "SWIFT=\"#{@swift.swift}/bin/swift\""
-      # cmd << "SDKROOT=\"#{@swift.installs}\""
-      cmd << "CFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH --sysroot=#{sysroot} -I#{@icu.include} -I#{@swift.lib}/swift -I#{@ndk.sources}/sources/android/support/include -I#{sysroot}/usr/include -I#{@sources}/closure\""
-      cmd << "SWIFTCFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH -Xcc -DDEPLOYMENT_TARGET_ANDROID -I#{sysroot}/usr/include\""
-      cmd << "LDFLAGS=\"-fuse-ld=gold --sysroot=#{sysroot} -L#{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x -L#{@icu.lib} -L#{sysroot}/usr/lib -ldispatch\""
-      return cmd
+      originalFile = "#{@sources}/Tools/plutil/main.swift"
+      patchFile = "#{@patches}/plutil.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
    end
 
 end
