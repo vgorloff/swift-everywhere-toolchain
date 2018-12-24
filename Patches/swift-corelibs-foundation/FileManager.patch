@@ -1,0 +1,62 @@
+diff --git a/Foundation/FileManager.swift b/Foundation/FileManager.swift
+index c51536246fc92efd82115c2217b256466b234712..deb963b154856ca19b278bb777ffaf71ce75ce03 100644
+--- a/Foundation/FileManager.swift
++++ b/Foundation/FileManager.swift
+@@ -38,7 +38,7 @@ open class FileManager : NSObject {
+     open func mountedVolumeURLs(includingResourceValuesForKeys propertyKeys: [URLResourceKey]?, options: VolumeEnumerationOptions = []) -> [URL]? {
+         var urls: [URL]
+ 
+-#if os(Linux)
++#if os(Linux) || os(Android)
+         guard let procMounts = try? String(contentsOfFile: "/proc/mounts", encoding: .utf8) else {
+             return nil
+         }
+@@ -657,8 +657,8 @@ open class FileManager : NSObject {
+ 
+ #if os(macOS) || os(iOS)
+         let ti = (TimeInterval(s.st_mtimespec.tv_sec) - kCFAbsoluteTimeIntervalSince1970) + (1.0e-9 * TimeInterval(s.st_mtimespec.tv_nsec))
+-#elseif os(Android)
+-        let ti = (TimeInterval(s.st_mtime) - kCFAbsoluteTimeIntervalSince1970) + (1.0e-9 * TimeInterval(s.st_mtime_nsec))
++// #elseif os(Android)
++        // let ti = (TimeInterval(s.st_mtime) - kCFAbsoluteTimeIntervalSince1970) + (1.0e-9 * TimeInterval(s.st_mtime_nsec))
+ #else
+         let ti = (TimeInterval(s.st_mtim.tv_sec) - kCFAbsoluteTimeIntervalSince1970) + (1.0e-9 * TimeInterval(s.st_mtim.tv_nsec))
+ #endif
+@@ -679,7 +679,7 @@ open class FileManager : NSObject {
+             result[.groupOwnerAccountName] = name
+         }
+ 
+-        let type = FileAttributeType(statMode: s.st_mode)
++        let type = FileAttributeType(statMode: UInt16(s.st_mode))
+         result[.type] = type
+         
+         if type == .typeBlockSpecial || type == .typeCharacterSpecial {
+@@ -880,7 +880,7 @@ open class FileManager : NSObject {
+                 return
+         }
+ 
+-        let fileType = FileAttributeType(statMode: stat.st_mode)
++        let fileType = FileAttributeType(statMode: UInt16(stat.st_mode))
+         if fileType == .typeDirectory {
+             try createDirectory(atPath: dstPath, withIntermediateDirectories: false, attributes: nil)
+ 
+@@ -892,7 +892,7 @@ open class FileManager : NSObject {
+                 let src = srcPath + "/" + item
+                 let dst = dstPath + "/" + item
+                 if let stat = try? _lstatFile(atPath: src) {
+-                    let fileType = FileAttributeType(statMode: stat.st_mode)
++                    let fileType = FileAttributeType(statMode: UInt16(stat.st_mode))
+                     if fileType == .typeDirectory {
+                         try createDirectory(atPath: dst, withIntermediateDirectories: false, attributes: nil)
+                     } else {
+@@ -1413,8 +1413,8 @@ open class FileManager : NSObject {
+ 
+         if file1Type == S_IFCHR || file1Type == S_IFBLK {
+             // For character devices, just check the major/minor pair is the same.
+-            return _dev_major(file1.st_rdev) == _dev_major(file2.st_rdev)
+-                && _dev_minor(file1.st_rdev) == _dev_minor(file2.st_rdev)
++            // return _dev_major(file1.st_rdev) == _dev_major(file2.st_rdev)
++                // && _dev_minor(file1.st_rdev) == _dev_minor(file2.st_rdev)
+         }
+ 
+         // If both paths point to the same device/inode or they are both zero length
