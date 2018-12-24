@@ -147,6 +147,14 @@ class FoundationBuilder < Builder
       patchFile = "#{@patches}/CMakeLists.patch"
       configurePatch(originalFile, patchFile, shouldEnable)
 
+      originalFile = "#{@sources}/Foundation/NSGeometry.swift"
+      patchFile = "#{@patches}/NSGeometry.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
+
+      originalFile = "#{@sources}/Tools/plutil/main.swift"
+      patchFile = "#{@patches}/plutil.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
+
       # FIXME: Below patches may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
 
       originalFile = "#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c"
@@ -159,14 +167,6 @@ class FoundationBuilder < Builder
 
       originalFile = "#{@sources}/Foundation/FileManager.swift"
       patchFile = "#{@patches}/FileManager.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
-
-      originalFile = "#{@sources}/Foundation/NSGeometry.swift"
-      patchFile = "#{@patches}/NSGeometry.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
-
-      originalFile = "#{@sources}/Tools/plutil/main.swift"
-      patchFile = "#{@patches}/plutil.patch"
       configurePatch(originalFile, patchFile, shouldEnable)
    end
 
