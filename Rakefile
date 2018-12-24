@@ -93,7 +93,14 @@ namespace :armv7a do
    end
 
    desc "Build Swift Toolchain."
-   task build: ["develop:armv7a:make:icu", "develop:armv7a:make:swift"] do
+   task :build do
+      ICUBuilder.new(Arch.armv7a).make
+      SwiftBuilder.new(Arch.armv7a).make
+      XMLBuilder.new(Arch.armv7a).make
+      OpenSSLBuilder.new(Arch.armv7a).make
+      CurlBuilder.new(Arch.armv7a).make
+      DispatchBuilder.new(Arch.armv7a).make
+      FoundationBuilder.new(Arch.armv7a).make
    end
 
    namespace :project do
@@ -238,41 +245,31 @@ namespace :develop do
 
       namespace :make do
          desc "Configure, Build and Install ICU"
-         task :icu do
-            ICUBuilder.new(Arch.armv7a).make
-         end
+         task :icu do ICUBuilder.new(Arch.armv7a).make end
+
          desc "Configure, Build and Install Swift"
-         task :swift do
-            SwiftBuilder.new(Arch.armv7a).make
-         end
+         task :swift do SwiftBuilder.new(Arch.armv7a).make end
+
          desc "Configure, Build and Install LLVM"
-         task :llvm do
-            LLVMBuilder.new(Arch.armv7a).make
-         end
+         task :llvm do LLVMBuilder.new(Arch.armv7a).make end
+
          desc "Configure, Build and Install CMark"
-         task :cmark do
-            CMarkBuilder.new(Arch.armv7a).make
-         end
+         task :cmark do CMarkBuilder.new(Arch.armv7a).make end
+
          desc "Configure, Build and Install libDispatch"
-         task :dispatch do
-            DispatchBuilder.new(Arch.armv7a).make
-         end
+         task :dispatch do DispatchBuilder.new(Arch.armv7a).make end
+
          desc "Configure, Build and Install libFoundation"
-         task :foundation do
-            FoundationBuilder.new(Arch.armv7a).make
-         end
+         task :foundation do FoundationBuilder.new(Arch.armv7a).make end
+
          desc "Configure, Build and Install libXML"
-         task :xml do
-            XMLBuilder.new(Arch.armv7a).make
-         end
+         task :xml do XMLBuilder.new(Arch.armv7a).make end
+
          desc "Configure, Build and Install curl"
-         task :curl do
-            CurlBuilder.new(Arch.armv7a).make
-         end
+         task :curl do CurlBuilder.new(Arch.armv7a).make end
+
          desc "Configure, Build and Install OpenSSL"
-         task :ssl do
-            OpenSSLBuilder.new(Arch.armv7a).make
-         end
+         task :ssl do OpenSSLBuilder.new(Arch.armv7a).make end
       end
 
       namespace :clean do
