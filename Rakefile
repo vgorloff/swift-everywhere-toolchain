@@ -151,13 +151,14 @@ namespace :develop do
             CMarkBuilder.new(Arch.armv7a).configure
          end
          desc "Configure libDispatch"
-         task :dispatch do
-            DispatchBuilder.new(Arch.armv7a).configure
-         end
+         task :dispatch do DispatchBuilder.new(Arch.armv7a).configure end
+
+         desc "Configure libFoundation"
+         task :foundation do FoundationBuilder.new(Arch.armv7a).configure end
+
          desc "Configure libXML"
-         task :xml do
-            XMLBuilder.new(Arch.armv7a).configure
-         end
+         task :xml do XMLBuilder.new(Arch.armv7a).configure end
+
          desc "Configure OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).configure end
 
@@ -183,9 +184,11 @@ namespace :develop do
             CMarkBuilder.new(Arch.armv7a).build
          end
          desc "Build libDispatch"
-         task :dispatch do
-            DispatchBuilder.new(Arch.armv7a).build
-         end
+         task :dispatch do DispatchBuilder.new(Arch.armv7a).build end
+
+         desc "Build libFoundation"
+         task :foundation do FoundationBuilder.new(Arch.armv7a).build end
+
          desc "Build libXML"
          task :xml do XMLBuilder.new(Arch.armv7a).build end
 

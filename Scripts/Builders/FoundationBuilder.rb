@@ -12,16 +12,15 @@ class FoundationBuilder < Builder
       @curl = CurlBuilder.new(arch)
       @icu = ICUBuilder.new(arch)
       @xml = XMLBuilder.new(arch)
-      @llvm = LLVMBuilder.new(arch)
    end
 
    def prepare
-      execute "mkdir -p #{@build}"
-      copyFiles
+      execute "mkdir -p #{@builds}"
+      # copyFiles
    end
 
    def copyFiles
-      usr = @ndk.install + "/sysroot/usr"
+      usr = @ndk.installs + "/sysroot/usr"
       # Copy dispatch public and private headers to the directory foundation is expecting to get it
       targetDir = "#{usr}/include/dispatch"
       execute "mkdir -p #{targetDir}"
@@ -44,43 +43,70 @@ class FoundationBuilder < Builder
 
    def args
       # Arguments took from `swift/swift-corelibs-foundation/build-android`
-      sysroot = @ndk.install + "/sysroot"
+      sysroot = @ndk.installs + "/sysroot"
       cmd = []
-      cmd << "cd #{@sources} && env"
-      cmd << "BUILD_DIR=#{@build}"
-      cmd << "DSTROOT=#{@install}"
+      cmd << "BUILD_DIR=#{@builds}"
+      cmd << "DSTROOT=#{@installs}"
 
-      cmd << "SWIFTC=\"#{@swift.bin}/swiftc\""
-      cmd << "CLANG=\"#{@llvm.bin}/clang\""
+      cmd << "SWIFTC=\"#{@swift.builds}/swift-linux-x86_64/bin/swiftc\""
+      cmd << "CLANG=\"#{@swift.builds}/llvm-linux-x86_64/bin/clang\""
       # cmd << "CLANGXX=\"#{@llvm.bin}/clang++\""
-      cmd << "SWIFT=\"#{@swift.bin}/swift\""
-      cmd << "SDKROOT=\"#{@swift.install}\""
+      cmd << "SWIFT=\"#{@swift.builds}/swift-linux-x86_64/bin/swift\""
+      # cmd << "SDKROOT=\"#{@swift.installs}\""
       cmd << "CFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH --sysroot=#{sysroot} -I#{@icu.include} -I#{@swift.lib}/swift -I#{@ndk.sources}/sources/android/support/include -I#{sysroot}/usr/include -I#{@sources}/closure\""
       cmd << "SWIFTCFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH -Xcc -DDEPLOYMENT_TARGET_ANDROID -I#{sysroot}/usr/include\""
       cmd << "LDFLAGS=\"-fuse-ld=gold --sysroot=#{sysroot} -L#{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x -L#{@icu.lib} -L#{sysroot}/usr/lib -ldispatch\""
       return cmd
    end
 
-   def configure
-      sysroot = @ndk.install + "/sysroot"
-      cmd = args
+   def configure_
+      sysroot = @ndk.installs + "/sysroot"
+      cmd = ["cd #{@sources} &&"]
+      cmd += args
       cmd << "./configure Release --target=armv7-none-linux-androideabi --sysroot=#{sysroot}"
-      # cmd << "-DXCTEST_BUILD_DIR=#{swiftCCRoot}/xctest-linux-x86_64"
       cmd << "-DLIBDISPATCH_SOURCE_DIR=#{@dispatch.sources}"
-      cmd << "-DLIBDISPATCH_BUILD_DIR=#{@dispatch.install}"
+      cmd << "-DLIBDISPATCH_BUILD_DIR=#{@dispatch.installs}"
+      cmd << "-DCMAKE_SYSTEM_NAME=Android"
       execute cmd.join(" ")
 
-      execute "cd #{@sourcesDir} && sed --in-place 's/-I\\/usr\\/include\\/x86_64-linux-gnu//' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-I\\/usr\\/include\\/libxml2//' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-I.\\///' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-licui18n/-licui18nswift/g' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-licuuc/-licuucswift/g' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-licudata/-licudataswift/g' build.ninja"
+      fixNinjaBuild()
+      logConfigureCompleted
    end
 
-   def compile
-      execute args.join(" ") + " ninja CopyHeaders"
+   def configure
+      prepare
+      cmd = []
+      cmd << "cd #{@builds} &&"
+      # cmd << "PATH=#{@ndk.bin}:$PATH"
+      # cmd += args
+      cmd << "cmake -G Ninja"
+      cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
+      cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}"
+      cmd << "-DCMAKE_BUILD_TYPE=Release"
+      cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
+      cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
+      cmd << "-DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2"
+      cmd << "-DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so"
+      cmd << "-DCURL_INCLUDE_DIR=#{@curl.include}"
+      cmd << "-DCURL_LIBRARY=#{@curl.lib}/libcurl.so"
+      cmd << "-DICU_ROOT=#{@icu.installs}"
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/swift-linux-x86_64/bin/swiftc\""
+      cmd << "-DCMAKE_C_COMPILER=\"#{@swift.builds}/llvm-linux-x86_64/bin/clang\""
+      # cmd << "-DCMAKE_CXX_COMPILER=\"#{@swift.builds}/llvm-linux-x86_64/bin/clang++\""
+      cmd << @sources
+      execute cmd.join(" ")
+   end
 
+   def fixNinjaBuild
+      execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/x86_64-linux-gnu//' build.ninja"
+      execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/libxml2//' build.ninja"
+      execute "cd #{@sources} && sed --in-place 's/-I.\\///' build.ninja"
+      execute "cd #{@sources} && sed --in-place 's/-licui18n/-licui18nswift/g' build.ninja"
+      execute "cd #{@sources} && sed --in-place 's/-licuuc/-licuucswift/g' build.ninja"
+      execute "cd #{@sources} && sed --in-place 's/-licudata/-licudataswift/g' build.ninja"
+   end
+
+   def fixModuleMap
       # Patching module.modulemap file.
       message "Patching module.modulemap file."
       headersPath = "#{@build}/Foundation/usr/lib/swift/CoreFoundation"
@@ -89,20 +115,31 @@ class FoundationBuilder < Builder
       contents = contents.sub('"CoreFoundation.h"', '"' + headersPath + '/CoreFoundation.h"')
       contents = contents.sub('"CFPlugInCOM.h"', '"' + headersPath + '/CFPlugInCOM.h"')
       File.write(moduleMapPath, contents)
+   end
 
-      # Running build.
-      execute args.join(" ") + " ninja"
+   def build
+      cmd = ["cd #{@builds} &&"]
+      # cmd += args
+      # execute cmd.join(" ") + " ninja CopyHeaders"
+      # fixModuleMap()
+      execute cmd.join(" ") + " ninja"
+      logBuildCompleted
+   end
+
+   def install
+      logInstallCompleted
    end
 
    def make
       prepare
       configure
-      compile
+      build
+      install
    end
 
    def clean
-      execute "rm -rf \"#{@build}\""
-      execute "rm -rf \"#{@install}\""
+      execute "rm -rf \"#{@builds}\""
+      execute "rm -rf \"#{@installs}\""
    end
 
    def checkout
