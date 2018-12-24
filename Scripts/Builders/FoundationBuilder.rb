@@ -16,7 +16,6 @@ class FoundationBuilder < Builder
 
    def prepare
       execute "mkdir -p #{@builds}"
-      # copyFiles
    end
 
    def copyFiles
@@ -64,29 +63,37 @@ class FoundationBuilder < Builder
       cmd = ["cd #{@sources} &&"]
       cmd += args
       cmd << "./configure Release --target=armv7-none-linux-androideabi --sysroot=#{sysroot}"
-      cmd << "-DLIBDISPATCH_SOURCE_DIR=#{@dispatch.sources}"
-      cmd << "-DLIBDISPATCH_BUILD_DIR=#{@dispatch.installs}"
       cmd << "-DCMAKE_SYSTEM_NAME=Android"
-      execute cmd.join(" ")
-
-      fixNinjaBuild()
-      logConfigureCompleted
    end
 
    def configure
       prepare
+      configurePatches(false)
+      configurePatches
       cmd = []
       cmd << "cd #{@builds} &&"
-      # cmd << "PATH=#{@ndk.bin}:$PATH"
-      # cmd += args
+      # Seems not needed.
+      # if @arch != Arch.host
+      #    cmd << "ICU_ROOT=#{@icu.installs}"
+      # end
       cmd << "cmake -G Ninja"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}" # Check later if we can use `@installs`
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       if @arch == Arch.host
+         cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
       else
-         cmd << "-DICU_ROOT=#{@icu.installs}" # Check if maybe `ICU_INCLUDE_DIR` is not needed
+         cmd << "-DCMAKE_SYSTEM_NAME=Android"
+         # cmd << "-DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=#{@ndk.installs}"
+         cmd << "-DCMAKE_ANDROID_NDK=#{@ndk.sources}"
+         cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
+         cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
+         # cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
+
+         # cmd << "PATH=#{@ndk.bin}:$PATH"
+         # cmd += args
          cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
+         cmd << "-DICU_LIBRARY=#{@icu.lib}"
 
          cmd << "-DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2"
          cmd << "-DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so"
@@ -96,23 +103,32 @@ class FoundationBuilder < Builder
       end
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.swift}/bin/swiftc\""
-      cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
-      # cmd << "-DCMAKE_CXX_COMPILER=\"#{@swift.llvm}/bin/clang++\""
 
       cmd << @sources
       execute cmd.join(" ")
+      fixNinjaBuild()
+      execute "cd #{@builds} && ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
    end
 
    def fixNinjaBuild
       if @arch == Arch.host
          return
       end
-      execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/x86_64-linux-gnu//' build.ninja"
-      execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/libxml2//' build.ninja"
-      execute "cd #{@sources} && sed --in-place 's/-I.\\///' build.ninja"
-      execute "cd #{@sources} && sed --in-place 's/-licui18n/-licui18nswift/g' build.ninja"
-      execute "cd #{@sources} && sed --in-place 's/-licuuc/-licuucswift/g' build.ninja"
-      execute "cd #{@sources} && sed --in-place 's/-licudata/-licudataswift/g' build.ninja"
+      file = "#{@builds}/build.ninja"
+      message "Applying fix for #{file}"
+      contents = File.readlines(file).join()
+      contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libicu', "#{@icu.lib}/libicu")
+      contents = contents.gsub('libicuuc.so', 'libicuucswift.so')
+      contents = contents.gsub('libicui18n.so', 'libicui18nswift.so')
+      contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libuuid.so', '')
+      File.write(file, contents)
+
+      # execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/x86_64-linux-gnu//' build.ninja"
+      # execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/libxml2//' build.ninja"
+      # execute "cd #{@sources} && sed --in-place 's/-I.\\///' build.ninja"
+      # execute "cd #{@sources} && sed --in-place 's/-licui18n/-licui18nswift/g' build.ninja"
+      # execute "cd #{@sources} && sed --in-place 's/-licuuc/-licuucswift/g' build.ninja"
+      # execute "cd #{@sources} && sed --in-place 's/-licudata/-licudataswift/g' build.ninja"
    end
 
    def fixModuleMap
@@ -126,12 +142,21 @@ class FoundationBuilder < Builder
       File.write(moduleMapPath, contents)
    end
 
+   def configurePatches(shouldEnable = true)
+      if @arch == Arch.host && shouldEnable
+         return
+      end
+      originalFile = "#{@sources}/cmake/modules/SwiftSupport.cmake"
+      patchFile = "#{@patches}/CmakeSystemProcessor.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
+   end
+
    def build
       prepare
       # cmd += args
       # execute cmd.join(" ") + " ninja CopyHeaders"
       # fixModuleMap()
-      execute "cd #{@builds} && ninja"
+      execute "cd #{@builds} && ninja CoreFoundation"
       logBuildCompleted
    end
 
@@ -143,7 +168,7 @@ class FoundationBuilder < Builder
    def make
       configure
       build
-      install
+      # install
    end
 
    def clean
