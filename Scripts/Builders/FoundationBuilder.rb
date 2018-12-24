@@ -81,23 +81,32 @@ class FoundationBuilder < Builder
       # cmd += args
       cmd << "cmake -G Ninja"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
-      cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}"
+      cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}" # Check later if we can use `@installs`
       cmd << "-DCMAKE_BUILD_TYPE=Release"
+      if @arch == Arch.host
+      else
+         cmd << "-DICU_ROOT=#{@icu.installs}" # Check if maybe `ICU_INCLUDE_DIR` is not needed
+         cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
+
+         cmd << "-DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2"
+         cmd << "-DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so"
+
+         cmd << "-DCURL_INCLUDE_DIR=#{@curl.include}"
+         cmd << "-DCURL_LIBRARY=#{@curl.lib}/libcurl.so"
+      end
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-      cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
-      cmd << "-DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2"
-      cmd << "-DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so"
-      cmd << "-DCURL_INCLUDE_DIR=#{@curl.include}"
-      cmd << "-DCURL_LIBRARY=#{@curl.lib}/libcurl.so"
-      cmd << "-DICU_ROOT=#{@icu.installs}"
       cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.swift}/bin/swiftc\""
       cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
       # cmd << "-DCMAKE_CXX_COMPILER=\"#{@swift.llvm}/bin/clang++\""
+
       cmd << @sources
       execute cmd.join(" ")
    end
 
    def fixNinjaBuild
+      if @arch == Arch.host
+         return
+      end
       execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/x86_64-linux-gnu//' build.ninja"
       execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/libxml2//' build.ninja"
       execute "cd #{@sources} && sed --in-place 's/-I.\\///' build.ninja"
@@ -118,20 +127,20 @@ class FoundationBuilder < Builder
    end
 
    def build
-      cmd = ["cd #{@builds} &&"]
+      prepare
       # cmd += args
       # execute cmd.join(" ") + " ninja CopyHeaders"
       # fixModuleMap()
-      execute cmd.join(" ") + " ninja"
+      execute "cd #{@builds} && ninja"
       logBuildCompleted
    end
 
    def install
+      execute "cd #{@builds} && ninja install"
       logInstallCompleted
    end
 
    def make
-      prepare
       configure
       build
       install

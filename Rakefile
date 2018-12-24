@@ -122,6 +122,10 @@ namespace :develop do
          desc "Configure, Build and Install libFoundation"
          task :foundation do FoundationBuilder.new(Arch.host).make end
       end
+      namespace :install do
+         desc "Install libFoundation"
+         task :foundation do FoundationBuilder.new(Arch.host).install end
+      end
       namespace :clean do
          desc "Clean libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.host).clean end
@@ -171,21 +175,17 @@ namespace :develop do
 
       namespace :build do
          desc "Build ICU"
-         task :icu do
-            ICUBuilder.new(Arch.armv7a).build
-         end
+         task :icu do ICUBuilder.new(Arch.armv7a).build end
+
          desc "Build Swift"
-         task :swift do
-            SwiftBuilder.new(Arch.armv7a).build
-         end
+         task :swift do SwiftBuilder.new(Arch.armv7a).build end
+
          desc "Build LLVM"
-         task :llvm do
-            LLVMBuilder.new(Arch.armv7a).build
-         end
+         task :llvm do LLVMBuilder.new(Arch.armv7a).build end
+
          desc "Build CMark"
-         task :cmark do
-            CMarkBuilder.new(Arch.armv7a).build
-         end
+         task :cmark do CMarkBuilder.new(Arch.armv7a).build end
+
          desc "Build libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).build end
 
