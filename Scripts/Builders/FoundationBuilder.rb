@@ -31,6 +31,7 @@ class FoundationBuilder < Builder
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       if @arch == Arch.host
          cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
+         cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       else
          cmd << "-DCMAKE_SYSROOT=#{@ndk.installs}/sysroot"
          cmd << "-DCMAKE_SYSTEM_NAME=Android"
@@ -54,8 +55,9 @@ class FoundationBuilder < Builder
 
          cmd << "-DCURL_INCLUDE_DIR=#{@curl.include}"
          cmd << "-DCURL_LIBRARY=#{@curl.lib}/libcurl.so"
+
+         cmd << "-DCMAKE_INSTALL_PREFIX=#{@swift.installs}/usr" # Applying Foundation over existing file structure.
       end
-      cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.swift}/bin/swiftc\""
 
       cmd << @sources
