@@ -88,6 +88,7 @@ class FoundationBuilder < Builder
    end
 
    def clean
+      configurePatches(false)
       execute "rm -rf \"#{@builds}\""
       execute "rm -rf \"#{@installs}\""
    end
