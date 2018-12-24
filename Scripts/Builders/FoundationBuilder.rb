@@ -112,12 +112,10 @@ class FoundationBuilder < Builder
       contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libicu', "#{@icu.lib}/libicu")
       contents = contents.gsub('libicuuc.so', 'libicuucswift.so')
       contents = contents.gsub('libicui18n.so', 'libicui18nswift.so')
-      # FIXME: Try to comment `find_package(UUID REQUIRED)` in CMakeLists.txt
-      # contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libuuid.so', '')
       includePath = "#{@ndk.installs}/sysroot/usr/include"
       if !contents.include?(includePath)
          contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -Xcc -I#{includePath}")
-         # contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -tools-directory #{@ndk.installs}/bin")
+         contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -tools-directory #{@ndk.installs}/bin")
          contents = contents.gsub('-Xcc -DDEPLOYMENT_TARGET_LINUX', '-Xcc -DDEPLOYMENT_TARGET_ANDROID')
       end
       File.write(file, contents)
@@ -159,6 +157,10 @@ class FoundationBuilder < Builder
 
       originalFile = "#{@sources}/Foundation/FileManager.swift"
       patchFile = "#{@patches}/FileManager.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
+
+      originalFile = "#{@sources}/Foundation/NSGeometry.swift"
+      patchFile = "#{@patches}/NSGeometry.patch"
       configurePatch(originalFile, patchFile, shouldEnable)
    end
 
