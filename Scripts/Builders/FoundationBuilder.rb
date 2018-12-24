@@ -67,18 +67,11 @@ class FoundationBuilder < Builder
       return cmd
    end
 
-   def configure_
-      sysroot = @ndk.installs + "/sysroot"
-      cmd = ["cd #{@sources} &&"]
-      cmd += args
-      cmd << "./configure Release --target=armv7-none-linux-androideabi --sysroot=#{sysroot}"
-      cmd << "-DCMAKE_SYSTEM_NAME=Android"
-   end
-
    def configure
       prepare
       configurePatches(false)
       configurePatches
+      # sysroot = @ndk.installs + "/sysroot"
       cmd = []
       cmd << "cd #{@builds} &&"
       # Seems not needed.
@@ -86,6 +79,7 @@ class FoundationBuilder < Builder
          # cmd << "ICU_ROOT=#{@icu.installs}"
          # cmd << "PATH=#{@ndk.bin}:$PATH"
          # cmd << "CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
+         # cmd << "SWIFTCFLAGS='-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH -Xcc -DDEPLOYMENT_TARGET_ANDROID -I#{sysroot}/usr/include'"
       end
       cmd << "cmake -G Ninja"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
@@ -95,14 +89,16 @@ class FoundationBuilder < Builder
          cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
       else
          cmd << "-DCMAKE_SYSROOT=#{@ndk.installs}/sysroot"
-         # cmd << "-DCMAKE_C_COMPILER=\"#{@ndk.bin}/clang\""
          cmd << "-DCMAKE_SYSTEM_NAME=Android"
          cmd << "-DCMAKE_SYSTEM_VERSION=#{@ndk.api}"
-         # cmd << "-DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=#{@ndk.installs}"
-         # cmd << "-DCMAKE_ANDROID_NDK=#{@ndk.sources}"
          cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
          cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
          cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
+
+         # Seems not needed.
+         # cmd << "-DCMAKE_C_COMPILER=\"#{@ndk.bin}/clang\""
+         # cmd << "-DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=#{@ndk.installs}"
+         # cmd << "-DCMAKE_ANDROID_NDK=#{@ndk.sources}"
 
          cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
          cmd << "-DICU_LIBRARY=#{@icu.lib}"
@@ -135,14 +131,13 @@ class FoundationBuilder < Builder
       contents = contents.gsub('libicui18n.so', 'libicui18nswift.so')
       # FIXME: Try to comment `find_package(UUID REQUIRED)` in CMakeLists.txt
       # contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libuuid.so', '')
+      includePath = "#{@ndk.installs}/sysroot/usr/include"
+      if !contents.include?(includePath)
+         contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -Xcc -I#{includePath}")
+         # contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -tools-directory #{@ndk.installs}/bin")
+         contents = contents.gsub('-Xcc -DDEPLOYMENT_TARGET_LINUX', '-Xcc -DDEPLOYMENT_TARGET_ANDROID')
+      end
       File.write(file, contents)
-
-      # execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/x86_64-linux-gnu//' build.ninja"
-      # execute "cd #{@sources} && sed --in-place 's/-I\\/usr\\/include\\/libxml2//' build.ninja"
-      # execute "cd #{@sources} && sed --in-place 's/-I.\\///' build.ninja"
-      # execute "cd #{@sources} && sed --in-place 's/-licui18n/-licui18nswift/g' build.ninja"
-      # execute "cd #{@sources} && sed --in-place 's/-licuuc/-licuucswift/g' build.ninja"
-      # execute "cd #{@sources} && sed --in-place 's/-licudata/-licudataswift/g' build.ninja"
    end
 
    def fixModuleMap
@@ -175,6 +170,10 @@ class FoundationBuilder < Builder
       # FIXME: This may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
       originalFile = "#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c"
       patchFile = "#{@patches}/CFKnownLocations.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
+
+      originalFile = "#{@sources}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h"
+      patchFile = "#{@patches}/ForSwiftFoundationOnly.patch"
       configurePatch(originalFile, patchFile, shouldEnable)
    end
 
