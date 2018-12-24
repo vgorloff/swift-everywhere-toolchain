@@ -32,7 +32,8 @@ class DispatchBuilder < Builder
          cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
          cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
          cmd << "-DCMAKE_SYSTEM_NAME=Android"
-         cmd << "-DCMAKE_SYSTEM_VERSION=#{ndk.api} -DCMAKE_ANDROID_NDK=#{ndk.sources}"
+         cmd << "-DCMAKE_SYSTEM_VERSION=#{ndk.api}"
+         cmd << "-DCMAKE_ANDROID_NDK=#{ndk.sources}"
          cmd << "-DCMAKE_INSTALL_PREFIX=#{swift.installs}/usr" # Applying Dispatch over existing file structure.
       end
       cmd << "-DCMAKE_BUILD_TYPE=Release"
