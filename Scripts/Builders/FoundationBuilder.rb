@@ -54,6 +54,8 @@ class FoundationBuilder < Builder
 
          cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
          cmd << "-DICU_LIBRARY=#{@icu.lib}"
+         cmd << "-DICU_I18N_LIBRARY_RELEASE=#{@icu.lib}/libicui18nswift.so"
+         cmd << "-DICU_UC_LIBRARY_RELEASE=#{@icu.lib}/libicuucswift.so"
 
          cmd << "-DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2"
          cmd << "-DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so"
@@ -115,7 +117,7 @@ class FoundationBuilder < Builder
       includePath = "#{@ndk.installs}/sysroot/usr/include"
       if !contents.include?(includePath)
          contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -Xcc -I#{includePath}")
-         contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -tools-directory #{@ndk.installs}/bin")
+         contents = contents.gsub('-target armv7-none-linux-androideabi', "-target armv7-none-linux-androideabi -tools-directory #{@ndk.installs}/bin")
          contents = contents.gsub('-Xcc -DDEPLOYMENT_TARGET_LINUX', '-Xcc -DDEPLOYMENT_TARGET_ANDROID')
       end
       File.write(file, contents)
