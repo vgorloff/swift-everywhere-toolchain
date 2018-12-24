@@ -229,6 +229,9 @@ namespace :develop do
          desc "Install libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).install end
 
+         desc "Install libFoundation"
+         task :foundation do FoundationBuilder.new(Arch.armv7a).install end
+
          desc "Install libXML"
          task :xml do XMLBuilder.new(Arch.armv7a).install end
 

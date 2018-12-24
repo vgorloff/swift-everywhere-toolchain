@@ -30,6 +30,7 @@ class HelloProjectBuilder < Builder
 
          # Attempt to fix `cannot locate symbol "__CFConstantStringClassReference"`
          # cmd << "-lCoreFoundation -L #{foundation.builds}/CoreFoundation-prefix/usr/lib"
+         # cmd << "-Xlinker -defsym -Xlinker '__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN'"
 
          # Below seems not needed.
          # cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.

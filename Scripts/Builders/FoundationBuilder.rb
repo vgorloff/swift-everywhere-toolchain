@@ -79,6 +79,7 @@ class FoundationBuilder < Builder
    end
 
    def install
+      execute "rm -rf \"#{@installs}\""
       execute "cd #{@builds} && ninja install"
       logInstallCompleted
    end
@@ -92,7 +93,6 @@ class FoundationBuilder < Builder
    def clean
       configurePatches(false)
       execute "rm -rf \"#{@builds}\""
-      execute "rm -rf \"#{@installs}\""
    end
 
    def checkout
