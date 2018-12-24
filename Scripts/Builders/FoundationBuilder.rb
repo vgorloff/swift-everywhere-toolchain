@@ -109,6 +109,7 @@ class FoundationBuilder < Builder
       includePath = "#{@ndk.installs}/sysroot/usr/include"
       if !contents.include?(includePath)
          contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -Xcc -I#{includePath}")
+         contents = contents.gsub('-module-name plutil', "-module-name plutil -target armv7-none-linux-androideabi")
          contents = contents.gsub('-target armv7-none-linux-androideabi', "-target armv7-none-linux-androideabi -tools-directory #{@ndk.installs}/bin")
          contents = contents.gsub('-Xcc -DDEPLOYMENT_TARGET_LINUX', '-Xcc -DDEPLOYMENT_TARGET_ANDROID')
       end
