@@ -16,41 +16,25 @@ class ICUBuilder < Builder
       @gitRepoRoot = "#{Config.sources}/#{Lib.icu}"
       @sources = "#{@gitRepoRoot}/icu4c"
       @ndk = AndroidBuilder.new(arch)
-      if arch != Arch.host
-         @host = ICUBuilder.new(Arch.host)
-      end
       @originalFile = "#{@sources}/source/configure"
       @patchFile = "#{@patches}/configure.patch"
    end
 
-   def configureHost
-      prepare
-      configurePatch(@originalFile, @patchFile, false)
-      cmd = ["cd #{@builds} &&"]
-      cmd << 'CC="/usr/bin/clang"'
-      cmd << 'CXX="/usr/bin/clang++"'
-      cmd << 'CFLAGS="-Os"'
-      cmd << 'CXXFLAGS="--std=c++11"'
-      cmd << "#{@sources}/source/runConfigureICU Linux --prefix=#{@installs}"
-      cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
-      cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
-      execute cmd.join(" ")
-   end
-
    def configure
-      if !@host.nil? && !File.exist?(@host.bin)
+      host = ICUBuilder.new(Arch.host)
+      if @arch != Arch.host && !File.exist?(host.bin)
          message "Building Corss-Build Host."
-         @host.configureHost
-         @host.build
-         @host.install
+         host.make
          message "Corss-Build Host Build completed."
       end
 
       prepare
       configurePatch(@originalFile, @patchFile, false)
-      configurePatch(@originalFile, @patchFile)
       cmd = ["cd #{@builds} &&"]
-      cmd << "PATH=#{@ndk.installs}/bin:$PATH"
+      if @arch != Arch.host
+         configurePatch(@originalFile, @patchFile)
+         cmd << "PATH=#{@ndk.installs}/bin:$PATH"
+      end
       if @arch == Arch.armv7a
          cmd << "CFLAGS='-Os -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
          cmd << "CXXFLAGS='--std=c++11 -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
@@ -79,12 +63,22 @@ class ICUBuilder < Builder
          cmd << "RINLIB=aarch64-linux-android-ranlib"
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=aarch64-linux-android"
+      elsif @arch == Arch.host
+         cmd << 'CC="/usr/bin/clang"'
+         cmd << 'CXX="/usr/bin/clang++"'
+         cmd << 'CFLAGS="-Os"'
+         cmd << 'CXXFLAGS="--std=c++11"'
+         cmd << "#{@sources}/source/runConfigureICU Linux --prefix=#{@installs}"
+         cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
+         cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       end
-      cmd << "--with-library-suffix=swift"
-      cmd << "--enable-static --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
-      cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
-      cmd << "--with-cross-build=#{@host.builds}"
-      cmd << "--with-data-packaging=archive"
+      if @arch != Arch.host
+         cmd << "--with-library-suffix=swift"
+         cmd << "--enable-static=no --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
+         cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
+         cmd << "--with-cross-build=#{host.builds}"
+         cmd << "--with-data-packaging=archive"
+      end
       execute cmd.join(" ")
       logConfigureCompleted
    end
@@ -116,8 +110,8 @@ class ICUBuilder < Builder
    end
 
    def clean
-      if !@host.nil?
-         @host.clean
+      if @arch != Arch.host
+         ICUBuilder.new(Arch.host).clean
       end
       removeBuilds()
    end

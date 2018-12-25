@@ -313,7 +313,7 @@ EOM
    box$ rake checkout
    box$ rake download
 
-   Alternatively you can download "Android NDK" manually form "https://developer.android.com/ndk/downloads/" and put archive to Downloads folder.
+   Alternatively you can download "Android NDK" manually from "https://developer.android.com/ndk/downloads/" and put archive to Downloads folder.
 EOM
    tool.print(help, 36)
 
