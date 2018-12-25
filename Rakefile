@@ -28,10 +28,17 @@ task :verify do
    ADBHelper.new().verify
 end
 
-desc "Show more actions (for Developers)."
-task :more do
-   system "rake -T | grep develop"
+namespace :more do
+   desc "Show more actions for ARMv7a targets (for Developers)."
+   task :armv7a do
+      system "rake -T | grep develop | grep armv7a"
+   end
+   desc "Show more actions for Host targets (for Developers)."
+   task :host do
+      system "rake -T | grep develop | grep host"
+   end
 end
+
 
 desc "Checkout Sources of all Components from Git."
 task :checkout do
@@ -91,22 +98,28 @@ end
 namespace :develop do
    namespace :host do
       namespace :make do
-         desc "Configure, Build and Install Swift"
+         desc "Configure, Build and Install - Swift"
          task :swift do SwiftBuilder.new(Arch.host).make end
 
-         desc "Configure, Build and Install libDispatch"
+         desc "Configure, Build and Install - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.host).make end
 
-         desc "Configure, Build and Install libFoundation"
+         desc "Configure, Build and Install - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.host).make end
       end
       namespace :install do
-         desc "Install libFoundation"
+         desc "Install - libDispatch"
+         task :dispatch do DispatchBuilder.new(Arch.host).install end
+
+         desc "Install - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.host).install end
       end
       namespace :clean do
-         desc "Clean libDispatch"
+         desc "Clean - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.host).clean end
+
+         desc "Clean - libFoundation"
+         task :foundation do FoundationBuilder.new(Arch.host).clean end
       end
       namespace :project do
          desc "Builds Sample project"
@@ -121,95 +134,94 @@ namespace :develop do
    end
 
    namespace :armv7a do
-
       namespace :configure do
-         desc "Configure ICU"
+         desc "Configure - ICU"
          task :icu do ICUBuilder.new(Arch.armv7a).configure end
 
-         desc "Configure Swift"
+         desc "Configure - Swift"
          task :swift do SwiftBuilder.new(Arch.armv7a).configure end
 
-         desc "Configure LLVM"
+         desc "Configure - LLVM"
          task :llvm do LLVMBuilder.new(Arch.armv7a).configure end
 
-         desc "Configure CMark"
+         desc "Configure - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).configure end
 
-         desc "Configure libDispatch"
+         desc "Configure - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).configure end
 
-         desc "Configure libFoundation"
+         desc "Configure - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.armv7a).configure end
 
-         desc "Configure libXML"
+         desc "Configure - libXML"
          task :xml do XMLBuilder.new(Arch.armv7a).configure end
 
-         desc "Configure OpenSSL"
+         desc "Configure - OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).configure end
 
-         desc "Configure curl"
+         desc "Configure - curl"
          task :curl do CurlBuilder.new(Arch.armv7a).configure end
       end
 
       namespace :build do
-         desc "Build ICU"
+         desc "Build - ICU"
          task :icu do ICUBuilder.new(Arch.armv7a).build end
 
-         desc "Build Swift"
+         desc "Build - Swift"
          task :swift do SwiftBuilder.new(Arch.armv7a).build end
 
-         desc "Build LLVM"
+         desc "Build - LLVM"
          task :llvm do LLVMBuilder.new(Arch.armv7a).build end
 
-         desc "Build CMark"
+         desc "Build - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).build end
 
-         desc "Build libDispatch"
+         desc "Build - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).build end
 
-         desc "Build libFoundation"
+         desc "Build - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.armv7a).build end
 
-         desc "Build libXML"
+         desc "Build - libXML"
          task :xml do XMLBuilder.new(Arch.armv7a).build end
 
-         desc "Build OpenSSL"
+         desc "Build - OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).build end
 
-         desc "Build curl"
+         desc "Build - curl"
          task :curl do CurlBuilder.new(Arch.armv7a).build end
       end
 
       namespace :install do
 
-         desc "Install ICU"
+         desc "Install - ICU"
          task :icu do ICUBuilder.new(Arch.armv7a).install end
 
-         desc "Install Swift"
+         desc "Install - Swift"
          task :swift do SwiftBuilder.new(Arch.armv7a).install end
 
-         desc "Install LLVM"
+         desc "Install - LLVM"
          task :llvm do LLVMBuilder.new(Arch.armv7a).install end
 
-         desc "Install CMark"
+         desc "Install - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).install end
 
-         desc "Install libDispatch"
+         desc "Install - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).install end
 
-         desc "Install libFoundation"
+         desc "Install - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.armv7a).install end
 
-         desc "Install libXML"
+         desc "Install - libXML"
          task :xml do XMLBuilder.new(Arch.armv7a).install end
 
-         desc "Install OpenSSL"
+         desc "Install - OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).install end
 
-         desc "Install curl"
+         desc "Install - curl"
          task :curl do CurlBuilder.new(Arch.armv7a).install end
 
-         desc "Install Hello project on Android"
+         desc "Install - Hello project on Android"
          task :project do
             helper = ADBHelper.new()
             helper.deployLibs
@@ -218,56 +230,56 @@ namespace :develop do
       end
 
       namespace :make do
-         desc "Configure, Build and Install ICU"
+         desc "Configure, Build and Install - ICU"
          task :icu do ICUBuilder.new(Arch.armv7a).make end
 
-         desc "Configure, Build and Install Swift"
+         desc "Configure, Build and Install - Swift"
          task :swift do SwiftBuilder.new(Arch.armv7a).make end
 
-         desc "Configure, Build and Install LLVM"
+         desc "Configure, Build and Install - LLVM"
          task :llvm do LLVMBuilder.new(Arch.armv7a).make end
 
-         desc "Configure, Build and Install CMark"
+         desc "Configure, Build and Install - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).make end
 
-         desc "Configure, Build and Install libDispatch"
+         desc "Configure, Build and Install - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).make end
 
-         desc "Configure, Build and Install libFoundation"
+         desc "Configure, Build and Install - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.armv7a).make end
 
-         desc "Configure, Build and Install libXML"
+         desc "Configure, Build and Install - libXML"
          task :xml do XMLBuilder.new(Arch.armv7a).make end
 
-         desc "Configure, Build and Install curl"
+         desc "Configure, Build and Install - curl"
          task :curl do CurlBuilder.new(Arch.armv7a).make end
 
-         desc "Configure, Build and Install OpenSSL"
+         desc "Configure, Build and Install - OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).make end
       end
 
       namespace :clean do
-         desc "Clean ICU."
+         desc "Clean - ICU."
          task :icu do ICUBuilder.new(Arch.armv7a).clean end
 
-         desc "Clean NDK."
+         desc "Clean - NDK."
          task :ndk do AndroidBuilder.new(Arch.armv7a).clean end
 
-         desc "Clean Swift."
+         desc "Clean - Swift."
          task :swift do SwiftBuilder.new(Arch.armv7a).clean end
 
-         desc "Clean LLVM."
+         desc "Clean - LLVM."
          task :llvm do  LLVMBuilder.new(Arch.armv7a).clean end
 
-         desc "Clean libDispatch"
+         desc "Clean - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).clean end
 
-         desc "Clean libFoundation"
+         desc "Clean - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.armv7a).clean end
       end
 
       namespace :run do
-         desc "Run Hello project on Android"
+         desc "Run - Hello project on Android"
          task :project do ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executableName) end
       end
    end

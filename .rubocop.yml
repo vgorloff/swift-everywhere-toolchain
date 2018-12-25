@@ -71,6 +71,9 @@ Layout/IndentationWidth:
 Layout/IndentHeredoc:
   Enabled: false
 
+Metrics/BlockLength:
+  Enabled: false
+
 Naming/VariableName:
   EnforcedStyle: camelCase
 
