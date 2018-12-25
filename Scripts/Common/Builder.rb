@@ -34,6 +34,10 @@ class Builder < Tool
       return @installs + "/usr"
    end
 
+   def logSetupCompleted
+      message "\"#{@component}\" setup is completed."
+   end
+
    def logBuildCompleted
       message "\"#{@component}\" build is completed."
    end

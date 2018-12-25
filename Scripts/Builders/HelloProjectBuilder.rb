@@ -35,6 +35,7 @@ class HelloProjectBuilder < Builder
       cmd << "#{@projectRoot}/hello.swift"
       execute cmd.join(" ")
       execute "readelf -h #{@executable}"
+      logBuildCompleted
    end
 
    def prepare()

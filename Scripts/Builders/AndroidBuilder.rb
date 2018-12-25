@@ -28,6 +28,7 @@ class AndroidBuilder < Builder
          cmd << "--toolchain=aarch64-linux-android-4.9"
       end
       execute cmd.join(" ")
+      logSetupCompleted
    end
 
    def clean()

@@ -172,6 +172,7 @@ class SwiftBuilder < Builder
    def make
       prepare
       build
+      logInstallCompleted
    end
 
    def checkout

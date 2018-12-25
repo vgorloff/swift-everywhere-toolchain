@@ -46,15 +46,18 @@ class CurlBuilder < Builder
       cmd << "--target=arm-linux-androideabi --build=x86_64-unknown-linux-gnu"
       cmd << "--with-zlib=#{ndk.installs}/usr/sysroot --with-ssl=#{ssl.installs} --prefix=#{@installs}"
       execute cmd.join(" ")
+      logConfigureCompleted
    end
 
    def build
       prepare
       execute "cd #{@sources} && make"
+      logBuildCompleted
    end
 
    def install
       execute "cd #{@sources} && make install"
+      logInstallCompleted
    end
 
    def make
