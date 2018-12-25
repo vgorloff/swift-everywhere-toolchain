@@ -12,7 +12,7 @@ class CurlBuilder < Builder
 
    def prepare
       # Unused at the moment.
-      # execute "mkdir -p #{@builds}"
+      # prepareBuilds()
    end
 
    def configure

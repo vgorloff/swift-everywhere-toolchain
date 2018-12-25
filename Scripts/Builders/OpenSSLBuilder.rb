@@ -15,7 +15,7 @@ class OpenSSLBuilder < Builder
 
    def prepare
       # Not used at the moment
-      # execute "mkdir -p #{@builds}"
+      # prepareBuilds()
    end
 
    def options()

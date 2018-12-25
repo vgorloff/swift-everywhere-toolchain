@@ -16,7 +16,7 @@ class FoundationBuilder < Builder
    end
 
    def prepare
-      execute "mkdir -p #{@builds}"
+      prepareBuilds()
    end
 
    def configure

@@ -38,7 +38,7 @@ class HelloProjectBuilder < Builder
    end
 
    def prepare()
-      execute "mkdir -p #{@builds}"
+      prepareBuilds()
    end
 
 end

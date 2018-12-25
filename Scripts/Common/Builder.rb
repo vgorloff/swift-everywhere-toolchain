@@ -46,6 +46,18 @@ class Builder < Tool
       message "\"#{@component}\" install is completed."
    end
 
+   def removeInstalls()
+      execute "rm -rf \"#{@installs}\""
+   end
+
+   def removeBuilds()
+      execute "rm -rf \"#{@builds}\""
+   end
+
+   def prepareBuilds()
+      execute "mkdir -p \"#{@builds}\""
+   end
+
    def setupLinkerSymLink(shouldCreate = true)
       ndk = AndroidBuilder.new(@arch)
       if @arch == Arch.armv7a

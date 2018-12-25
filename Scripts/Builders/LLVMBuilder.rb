@@ -48,7 +48,7 @@ class LLVMBuilder < Builder
    end
 
    def prepare()
-      execute "mkdir -p #{@builds}"
+      prepareBuilds()
       # Making needed SymLinks. See: https://llvm.org/docs/GettingStarted.html#git-mirror
       message "Making symbolic links..."
       @clang = ClangBuilder.new()

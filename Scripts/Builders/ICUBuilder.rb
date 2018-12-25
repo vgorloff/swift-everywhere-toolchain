@@ -94,7 +94,7 @@ class ICUBuilder < Builder
    end
 
    def prepare()
-      execute "mkdir -p #{@builds}"
+      prepareBuilds()
    end
 
    def build
@@ -104,7 +104,7 @@ class ICUBuilder < Builder
    end
 
    def install
-      execute "rm -rf #{@installs}"
+      removeInstalls()
       execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
       logInstallCompleted
    end

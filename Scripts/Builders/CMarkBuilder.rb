@@ -41,7 +41,7 @@ class CMarkBuilder < Builder
    end
 
    def prepare
-      execute "mkdir -p #{@builds}"
+      prepareBuilds()
    end
 
 end

@@ -163,7 +163,7 @@ class SwiftBuilder < Builder
 
    def prepare
       setupLinkerSymLink(false)
-      execute "mkdir -p #{@builds}"
+      prepareBuilds()
       # Fix for missed file: `CMake Error at cmake/modules/SwiftSharedCMakeConfig.cmake:196 (include):`
       # execute "touch \"#{@cmark.builds}/src/CMarkExports.cmake\""
       setupLinkerSymLink()
