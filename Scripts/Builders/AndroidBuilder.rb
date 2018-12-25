@@ -31,7 +31,7 @@ class AndroidBuilder < Builder
    end
 
    def clean()
-      execute "rm -rf \"#{@installs}/\""
+      removeInstalls()
    end
 
 end

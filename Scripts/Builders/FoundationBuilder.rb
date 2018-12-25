@@ -79,7 +79,7 @@ class FoundationBuilder < Builder
    end
 
    def install
-      execute "rm -rf \"#{@installs}\""
+      removeInstalls()
       execute "cd #{@builds} && ninja install"
       logInstallCompleted
    end

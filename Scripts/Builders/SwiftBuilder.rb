@@ -180,7 +180,7 @@ class SwiftBuilder < Builder
 
    def clean
       execute "rm -rf #{@builds}"
-      execute "rm -rf #{@installs}"
+      removeInstalls()
    end
 
 end
