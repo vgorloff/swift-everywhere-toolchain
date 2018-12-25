@@ -77,6 +77,22 @@ class Builder < Tool
       end
    end
 
+   def addFile(replacementFile, destinationFile, shouldApply = true)
+      if shouldApply
+         if !File.exist? destinationFile
+            puts "Applying fix \"#{@component}\"..."
+            execute "cp -vf \"#{replacementFile}\" \"#{destinationFile}\""
+         else
+            puts "File \"#{destinationFile}\" exists. Seems you already applied fix for \"#{@component}\". Skipping..."
+         end
+      else
+         message "Removing previously applied fix..."
+         if File.exist? destinationFile
+            execute "rm -fv #{destinationFile}"
+         end
+      end
+   end
+
    def configurePatch(originalFile, patchFile, shouldApply = true)
       gitRepoRoot = "#{Config.sources}/#{@component}"
       backupFile = "#{originalFile}.orig"

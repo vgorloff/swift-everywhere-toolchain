@@ -8,6 +8,7 @@ class UUIDBuilder < Builder
    end
 
    def configure
+      configurePatches()
       ndk = AndroidBuilder.new(@arch)
       prepare
       cmd = []
@@ -44,10 +45,16 @@ class UUIDBuilder < Builder
    def install
       removeInstalls()
       execute "cd #{@builds} && ninja install"
+      configurePatches(false)
       logInstallCompleted
    end
 
+   def configurePatches(shouldEnable = true)
+      addFile("#{@patches}/CMakeLists.txt", "#{@sources}/libuuid/src/CMakeLists.txt", shouldEnable)
+   end
+
    def clean
+      configurePatches(false)
       removeBuilds()
    end
 
