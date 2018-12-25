@@ -57,9 +57,9 @@ class XMLBuilder < Builder
    end
 
    def make
-      checkout
       configure
       build
+      install
    end
 
 end

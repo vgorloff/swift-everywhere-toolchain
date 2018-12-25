@@ -53,6 +53,7 @@ class OpenSSLBuilder < Builder
    def make
       configure
       build
+      install
    end
 
 end
