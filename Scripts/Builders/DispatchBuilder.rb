@@ -93,7 +93,7 @@ class DispatchBuilder < Builder
    end
 
    def clean
-      execute "rm -rf \"#{@builds}\""
+      removeBuilds()
    end
 
    def checkout

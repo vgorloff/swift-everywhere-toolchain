@@ -92,7 +92,7 @@ class FoundationBuilder < Builder
 
    def clean
       configurePatches(false)
-      execute "rm -rf \"#{@builds}\""
+      removeBuilds()
    end
 
    def checkout

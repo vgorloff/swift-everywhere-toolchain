@@ -59,7 +59,7 @@ class LLVMBuilder < Builder
    end
 
    def clean
-      execute "rm -rf #{@builds}"
+      removeBuilds()
    end
 
 end

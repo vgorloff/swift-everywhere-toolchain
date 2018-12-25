@@ -119,7 +119,7 @@ class ICUBuilder < Builder
       if !@host.nil?
          @host.clean
       end
-      execute "rm -rf #{@builds}"
+      removeBuilds()
    end
 
 end
