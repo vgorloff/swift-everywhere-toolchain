@@ -7,6 +7,7 @@ class LLVMBuilder < Builder
    end
 
    def configure
+      prepare
       # See:
       # - LLVM Getting Started: https://llvm.org/docs/GettingStarted.html#requirements
       # - CLANG Getting Started: http://clang.llvm.org/get_started.html
@@ -25,17 +26,18 @@ class LLVMBuilder < Builder
    end
 
    def build
+      prepare
       execute "cd #{@builds} && ninja"
       logBuildCompleted()
    end
 
    def install
+      execute "rm -rf #{@installs}"
       execute "cd #{@builds} && ninja install"
       logInstallCompleted()
    end
 
    def make
-      prepare
       configure
       build
       install
@@ -58,7 +60,6 @@ class LLVMBuilder < Builder
 
    def clean
       execute "rm -rf #{@builds}"
-      execute "rm -rf #{@installs}"
    end
 
 end

@@ -104,6 +104,7 @@ class ICUBuilder < Builder
    end
 
    def install
+      execute "rm -rf #{@installs}"
       execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
       logInstallCompleted
    end
@@ -119,7 +120,6 @@ class ICUBuilder < Builder
          @host.clean
       end
       execute "rm -rf #{@builds}"
-      execute "rm -rf #{@installs}"
    end
 
 end

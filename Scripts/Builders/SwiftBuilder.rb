@@ -48,14 +48,8 @@ class SwiftBuilder < Builder
       return @builds + "/swift-linux-x86_64"
    end
 
-   def compileOLD
-      cmd = ["cd #{@sources} &&"]
-      # To avoid issue:
-      # /usr/bin/ld.gold: fatal error: /vagrant/Sources/ndk/platforms/android-21/arch-arm/usr/lib/../lib/crtbegin_so.o: unsupported ELF machine number 40
-      cmd << "env PATH=#{@ndk.install}/arm-linux-androideabi/bin:$PATH"
-   end
-
-   def configureOld
+   # Unused at the moment.
+   def configure
       # See: SWIFT_GIT_ROOT/docs/WindowsBuild.md
       cmd = []
       cmd << "cd #{@builds} &&"

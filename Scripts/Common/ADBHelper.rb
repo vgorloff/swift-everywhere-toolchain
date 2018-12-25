@@ -1,8 +1,5 @@
 require_relative "Tool.rb"
 
-# See also:
-# - Enable adb debugging on your device – https://developer.android.com/studio/command-line/adb#Enabling
-
 class ADBHelper < Tool
 
    def initialize()
@@ -17,6 +14,7 @@ class ADBHelper < Tool
    end
 
    def verify()
+      # See: Enable adb debugging on your device – https://developer.android.com/studio/command-line/adb#Enabling
       # On linux `execute "sudo apt-get install android-tools-adb"`
       execute "adb devices" # To run daemon.
       message "Make sure you are enabled \"USB debugging\" on Android device (See :https://developer.android.com/studio/command-line/adb#Enabling)"
