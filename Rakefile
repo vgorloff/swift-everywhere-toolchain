@@ -13,7 +13,8 @@ require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
-require_relative "Scripts/ADBHelper.rb"
+require_relative "Scripts/Common/ADBHelper.rb"
+require_relative "Scripts/Common/Tool.rb"
 
 # References:
 #
@@ -21,39 +22,6 @@ require_relative "Scripts/ADBHelper.rb"
 #
 
 task default: ['usage']
-
-task :usage do
-   help = <<EOM
-
-Building Swift Toolchain. Steps:
-
-Note: Every time you see host$ – this means that command should be executed on HOST macOS computer.
-      Every time you see box$ – this means that command should be executed on virtual GUEST Linux OS.
-
-1. Get Sources and Tools.
-   box$ rake checkout
-   box$ rake download
-
-   Alternatively you can download Android NDK manually form https://developer.android.com/ndk/downloads/ and put archive to Downloads folder.
-
-2. Setup and Build all Swift components and Sample project for armv7a:
-   box$ rake armv7a:setup
-   box$ rake armv7a:build
-   box$ rake armv7a:project:build
-
-3. Enable USB Debugging on Android device. Install Android Tools for macOS. Connect Android device and Verify ADB shell setup.
-   host$ rake verify
-
-   See: How to Install Android Tools for macOS: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
-   See: How to Enable USB Debugging on Android device: https://developer.android.com/studio/debug/dev-options
-
-4. Deploy and run Demo project to Android Device.
-   host$ rake armv7a:project:deploy
-
-EOM
-   puts help
-   system "rake -T | grep --invert-match develop"
-end
 
 desc "Verify ADB shell setup."
 task :verify do
@@ -95,10 +63,10 @@ namespace :armv7a do
    desc "Build Swift Toolchain."
    task :build do
       ICUBuilder.new(Arch.armv7a).make
-      SwiftBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.armv7a).make
+      SwiftBuilder.new(Arch.armv7a).make
       DispatchBuilder.new(Arch.armv7a).make
       FoundationBuilder.new(Arch.armv7a).make
    end
@@ -303,4 +271,51 @@ namespace :develop do
          task :project do ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executableName) end
       end
    end
+end
+
+task :usage do
+
+   tool = Tool.new()
+
+   tool.print("\nBuilding Swift Toolchain. Steps:\n", 32)
+   note = <<EOM
+Note: Every time you see host$ – this means that command should be executed on HOST macOS computer.
+      Every time you see box$ – this means that command should be executed on virtual GUEST Linux OS.
+EOM
+   tool.print(note, 33)
+
+   tool.print("1. Get Sources and Tools.", 32)
+   help = <<EOM
+   box$ rake checkout
+   box$ rake download
+
+   Alternatively you can download "Android NDK" manually form "https://developer.android.com/ndk/downloads/" and put archive to Downloads folder.
+EOM
+   tool.print(help, 36)
+
+   tool.print("2. Setup and Build all Swift components and Sample project for armv7a.", 32)
+help = <<EOM
+   box$ rake armv7a:setup
+   box$ rake armv7a:build
+   box$ rake armv7a:project:build
+EOM
+   tool.print(help, 36)
+
+   tool.print("3. Enable USB Debugging on Android device. Install Android Tools for macOS. Connect Android device and Verify ADB shell setup.", 32)
+   help = <<EOM
+   host$ rake verify
+
+   References:
+   - How to Install Android Tools for macOS: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
+   - How to Enable USB Debugging on Android device: https://developer.android.com/studio/debug/dev-options
+EOM
+   tool.print(help, 36)
+
+   tool.print("4. Deploy and run Demo project to Android Device.", 32)
+   help = <<EOM
+   host$ rake armv7a:project:deploy
+EOM
+
+   tool.print(help, 36)
+   system "rake -T | grep --invert-match develop"
 end

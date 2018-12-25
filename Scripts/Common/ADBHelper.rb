@@ -1,4 +1,4 @@
-require_relative "Common/Tool.rb"
+require_relative "Tool.rb"
 
 # See also:
 # - Enable adb debugging on your device – https://developer.android.com/studio/command-line/adb#Enabling
