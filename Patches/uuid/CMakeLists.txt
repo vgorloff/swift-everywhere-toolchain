@@ -55,5 +55,5 @@ target_include_directories(uuid PRIVATE ../../include)
 set_target_properties(uuid PROPERTIES PUBLIC_HEADER "uuid.h")
 install(TARGETS uuid
    LIBRARY DESTINATION lib
-   PUBLIC_HEADER DESTINATION include
+   PUBLIC_HEADER DESTINATION include/uuid
 )

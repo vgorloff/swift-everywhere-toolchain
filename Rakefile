@@ -24,11 +24,6 @@ require_relative "Scripts/Common/Tool.rb"
 
 task default: ['usage']
 
-desc "Verify ADB shell setup."
-task :verify do
-   ADBHelper.new().verify
-end
-
 namespace :more do
    desc "Show more actions for ARMv7a targets (for Developers)."
    task :armv7a do
@@ -54,7 +49,7 @@ task :checkout do
    XMLBuilder.new().checkout
    CurlBuilder.new().checkout
    OpenSSLBuilder.new().checkout
-   UUIDBuilder.new().checkout
+   # UUIDBuilder.new().checkout
 end
 
 desc "Download Android NDK"
@@ -73,6 +68,7 @@ namespace :armv7a do
    task :build do
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
+      # UUIDBuilder.new().make
       OpenSSLBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.armv7a).make
       SwiftBuilder.new(Arch.armv7a).make
@@ -81,6 +77,11 @@ namespace :armv7a do
    end
 
    namespace :project do
+
+      desc "Verify ADB shell setup."
+      task :verify do
+         ADBHelper.new().verify
+      end
 
       desc "Builds Sample project"
       task :build do
