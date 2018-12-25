@@ -143,8 +143,10 @@ class SwiftBuilder < Builder
       end
 
       cmd << "--install-swift"
-      cmd << "--libdispatch --install-libdispatch"
-      cmd << "--foundation --install-foundation"
+
+      # Even if the below is disables Swift build script still builds `libdispatch` and `foundation` for Linux.
+      # cmd << "--libdispatch --install-libdispatch"
+      # cmd << "--foundation --install-foundation"
 
       # Try without it.
       cmd << "--build-swift-static-stdlib --build-swift-static-sdk-overlay"

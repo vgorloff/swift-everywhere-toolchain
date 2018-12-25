@@ -9,6 +9,12 @@ class Tool
          message "Execution of command is failed:"
          error command
          puts
+         help = <<EOM
+If error was due Memory, CPU, or Disk peak resource usage (i.e. missed file while file exists),
+then try to run previous command again. Build process will perform `configure` step again,
+but most of compilation steps will be skipped.
+EOM
+         message help
          raise
       end
    end

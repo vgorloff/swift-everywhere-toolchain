@@ -66,14 +66,17 @@ namespace :armv7a do
 
    desc "Build Swift Toolchain."
    task :build do
+      tool = Tool.new()
+      swift = SwiftBuilder.new(Arch.armv7a)
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       # UUIDBuilder.new().make
       OpenSSLBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.armv7a).make
-      SwiftBuilder.new(Arch.armv7a).make
+      swift.make
       DispatchBuilder.new(Arch.armv7a).make
       FoundationBuilder.new(Arch.armv7a).make
+      tool.print("Swift toolchain for Android build is completed. It can be found in \"#{swift.lib}\"")
    end
 
    namespace :project do
