@@ -14,6 +14,7 @@ class DispatchBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
       swift = SwiftBuilder.new(@arch)
       ndk = AndroidBuilder.new(@arch)
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
@@ -76,11 +77,13 @@ class DispatchBuilder < Builder
    end
 
    def build
+      logBuildStarted
       execute "cd #{@builds} && ninja"
       logBuildCompleted
    end
 
    def install
+      logInstallStarted
       execute "cd #{@builds} && ninja install"
       logInstallCompleted
    end

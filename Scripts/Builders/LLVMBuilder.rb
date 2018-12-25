@@ -7,6 +7,7 @@ class LLVMBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
       prepare
       # See:
       # - LLVM Getting Started: https://llvm.org/docs/GettingStarted.html#requirements
@@ -26,12 +27,14 @@ class LLVMBuilder < Builder
    end
 
    def build
+      logBuildStarted
       prepare
       execute "cd #{@builds} && ninja"
       logBuildCompleted()
    end
 
    def install
+      logInstallStarted
       removeInstalls()
       execute "cd #{@builds} && ninja install"
       logInstallCompleted()

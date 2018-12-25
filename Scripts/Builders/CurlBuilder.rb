@@ -16,6 +16,7 @@ class CurlBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
       prepare
       # Arguments took from `swift/swift-corelibs-foundation/build-android`
       ndk = AndroidBuilder.new(@arch)
@@ -50,12 +51,14 @@ class CurlBuilder < Builder
    end
 
    def build
+      logBuildStarted
       prepare
       execute "cd #{@sources} && make"
       logBuildCompleted
    end
 
    def install
+      logInstallStarted
       execute "cd #{@sources} && make install"
       logInstallCompleted
    end

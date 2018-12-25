@@ -14,6 +14,7 @@ class HelloProjectBuilder < Builder
    end
 
    def build
+      logBuildStarted
       prepare
       swift = SwiftBuilder.new()
       ndk = AndroidBuilder.new()

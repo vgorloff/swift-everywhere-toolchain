@@ -7,6 +7,7 @@ class CMarkBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
       prepare
       # See: $SWIFT_REPO/docs/WindowsBuild.md
       cmd = []
@@ -24,12 +25,14 @@ class CMarkBuilder < Builder
    end
 
    def build
+      logBuildStarted
       prepare
       execute "cd #{@builds} && ninja"
       logBuildCompleted
    end
 
    def install
+      logInstallStarted
       removeInstalls()
       execute "cd #{@builds} && ninja install"
       logInstallCompleted

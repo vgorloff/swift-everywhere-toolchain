@@ -35,6 +35,7 @@ class OpenSSLBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
       prepare
       ndk = AndroidBuilder.new(@arch)
       # Seems `-D__ANDROID_API__` not needed. See: #{@sources}/NOTES.ANDROID
@@ -43,12 +44,14 @@ class OpenSSLBuilder < Builder
    end
 
    def build
+      logBuildStarted
       prepare
-      execute options.join(" ") + " make -j4"
+      execute options.join(" ") + " make"
       logBuildCompleted
    end
 
    def install
+      logInstallStarted
       execute options.join(" ") + " make install_sw install_ssldirs"
       logInstallCompleted
    end

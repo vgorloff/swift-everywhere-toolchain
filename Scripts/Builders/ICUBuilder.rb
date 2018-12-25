@@ -21,6 +21,7 @@ class ICUBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
       host = ICUBuilder.new(Arch.host)
       if @arch != Arch.host && !File.exist?(host.bin)
          message "Building Corss-Build Host."
@@ -92,12 +93,14 @@ class ICUBuilder < Builder
    end
 
    def build
+      logBuildStarted
       prepare
-      execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make -j4"
+      execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make"
       logBuildCompleted
    end
 
    def install
+      logInstallStarted()
       removeInstalls()
       execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
       logInstallCompleted

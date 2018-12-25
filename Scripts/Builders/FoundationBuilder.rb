@@ -19,6 +19,7 @@ class FoundationBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
       prepare
       configurePatches(false)
       configurePatches
@@ -67,6 +68,7 @@ class FoundationBuilder < Builder
    end
 
    def build
+      logBuildStarted
       prepare
 
       # For troubleshooting purpose.
@@ -77,6 +79,7 @@ class FoundationBuilder < Builder
    end
 
    def install
+      logInstallStarted
       removeInstalls()
       execute "cd #{@builds} && ninja install"
       logInstallCompleted

@@ -16,6 +16,7 @@ class XMLBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
       prepare
       # Arguments took from `swift/swift-corelibs-foundation/build-android`
       ndk = AndroidBuilder.new(@arch)
@@ -45,12 +46,14 @@ class XMLBuilder < Builder
    end
 
    def build
+      logBuildStarted
       prepare
       execute "cd #{@sources} && make libxml2.la"
       logBuildCompleted
    end
 
    def install
+      logInstallStarted
       execute "cd #{@sources} && make install-libLTLIBRARIES"
       execute "cd #{@sources}/include && make install"
       logInstallCompleted

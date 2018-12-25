@@ -50,6 +50,7 @@ class SwiftBuilder < Builder
 
    # Unused at the moment.
    def configure
+      logConfigureStarted
       # See: SWIFT_GIT_ROOT/docs/WindowsBuild.md
       cmd = []
       cmd << "cd #{@builds} &&"
@@ -119,6 +120,7 @@ class SwiftBuilder < Builder
    end
 
    def build
+      logBuildStarted
       cmd = ["cd #{@sources} &&"]
       cmd << "SKIP_BUILD_SWIFT_STATIC_LIBDISPATCH=1 SKIP_BUILD_STATIC_FOUNDATION=1"
       cmd << "./utils/build-script --release --skip-reconfigure"

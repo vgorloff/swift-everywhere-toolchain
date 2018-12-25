@@ -16,6 +16,8 @@ class Builder < Tool
       @patches = "#{Config.patches}/#{component}"
       @builds = "#{Config.build}/#{arch}/#{component}"
       @installs = "#{Config.install}/#{arch}/#{component}"
+      @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
    end
 
    def lib
@@ -34,21 +36,49 @@ class Builder < Tool
       return @installs + "/usr"
    end
 
+   # ------------------------------------
+
+   def logStarted(action)
+      print(@startSpacer, 35)
+      print("\"#{@component}\" #{action} is started.", 35)
+      print(@startSpacer, 35)
+   end
+
+   def logCompleted(action)
+      print(@endSpacer, 35)
+      print("\"#{@component}\" #{action} is completed.", 35)
+      print(@endSpacer, 35)
+   end
+
+   def logConfigureStarted
+      logStarted("Configure")
+   end
+
+   def logBuildStarted
+      logStarted("Build")
+   end
+
+   def logInstallStarted
+      logStarted("Install")
+   end
+
    def logSetupCompleted
-      message "\"#{@component}\" setup is completed."
+      logCompleted("Setup")
    end
 
    def logBuildCompleted
-      message "\"#{@component}\" build is completed."
+      logCompleted("Build")
    end
 
    def logConfigureCompleted
-      message "\"#{@component}\" configuring is completed."
+      logCompleted("Configure")
    end
 
    def logInstallCompleted
-      message "\"#{@component}\" install is completed."
+      logCompleted("Install")
    end
+
+   # ------------------------------------
 
    def removeInstalls()
       execute "rm -rf \"#{@installs}\""

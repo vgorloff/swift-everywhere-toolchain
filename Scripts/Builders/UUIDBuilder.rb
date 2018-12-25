@@ -8,6 +8,7 @@ class UUIDBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
       configurePatches()
       ndk = AndroidBuilder.new(@arch)
       prepare
@@ -31,6 +32,7 @@ class UUIDBuilder < Builder
    end
 
    def build
+      logBuildStarted
       prepare
       execute "cd #{@builds} && ninja"
       logBuildCompleted
@@ -43,6 +45,7 @@ class UUIDBuilder < Builder
    end
 
    def install
+      logInstallStarted
       removeInstalls()
       execute "cd #{@builds} && ninja install"
       configurePatches(false)
