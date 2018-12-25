@@ -1,8 +1,16 @@
 diff --git a/CoreFoundation/CMakeLists.txt b/CoreFoundation/CMakeLists.txt
-index 0aa9565e3c3930e7375cc548870003c1b8432653..f697862f4d970e628cf9aa896cb38f8f9357411a 100644
+index 0aa9565e3c3930e7375cc548870003c1b8432653..643e53a03e36477d71e3b0339f337a01e868c72b 100644
 --- a/CoreFoundation/CMakeLists.txt
 +++ b/CoreFoundation/CMakeLists.txt
-@@ -405,9 +405,9 @@ if(CF_DEPLOYMENT_SWIFT)
+@@ -194,6 +194,7 @@ add_framework(CoreFoundation
+                 URL.subproj/CFURLAccess.h
+                 URL.subproj/CFURLComponents.h
+               SOURCES
++                ../uuid/uuid.c
+                 # Base
+                 Base.subproj/CFBase.c
+                 Base.subproj/CFFileUtilities.c
+@@ -405,9 +406,9 @@ if(CF_DEPLOYMENT_SWIFT)
                             PRIVATE
                               /clang:-fcf-runtime-abi=swift)
    else()

@@ -132,36 +132,16 @@ class FoundationBuilder < Builder
       if @arch == Arch.host && shouldEnable
          return
       end
-      originalFile = "#{@sources}/cmake/modules/SwiftSupport.cmake"
-      patchFile = "#{@patches}/CmakeSystemProcessor.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
-
-      originalFile = "#{@sources}/CoreFoundation/CMakeLists.txt"
-      patchFile = "#{@patches}/CompileOptions.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
-
-      originalFile = "#{@sources}/CMakeLists.txt"
-      patchFile = "#{@patches}/CMakeLists.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
-
-      originalFile = "#{@sources}/Foundation/NSGeometry.swift"
-      patchFile = "#{@patches}/NSGeometry.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
-
-      originalFile = "#{@sources}/Tools/plutil/main.swift"
-      patchFile = "#{@patches}/plutil.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
+      configurePatch("#{@sources}/cmake/modules/SwiftSupport.cmake", "#{@patches}/CmakeSystemProcessor.patch", shouldEnable)
+      configurePatch("#{@sources}/CoreFoundation/CMakeLists.txt", "#{@patches}/CompileOptions.patch", shouldEnable)
+      configurePatch("#{@sources}/CMakeLists.txt", "#{@patches}/CMakeLists.patch", shouldEnable)
+      configurePatch("#{@sources}/Foundation/NSGeometry.swift", "#{@patches}/NSGeometry.patch", shouldEnable)
+      configurePatch("#{@sources}/Tools/plutil/main.swift", "#{@patches}/plutil.patch", shouldEnable)
+      # configurePatch("#{@sources}/uuid/uuid.h", "#{@patches}/uuid.h.patch", shouldEnable)
 
       # FIXME: Below patches may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
-
-      originalFile = "#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c"
-      patchFile = "#{@patches}/CFKnownLocations.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
-
-      originalFile = "#{@sources}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h"
-      patchFile = "#{@patches}/ForSwiftFoundationOnly.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
-
+      configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c", "#{@patches}/CFKnownLocations.patch", shouldEnable)
+      configurePatch("#{@sources}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h", "#{@patches}/ForSwiftFoundationOnly.patch", shouldEnable)
       configurePatch("#{@sources}/Foundation/FileManager.swift", "#{@patches}/FileManager.patch", shouldEnable)
       configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFRuntime.c", "#{@patches}/CFRuntime.c.patch", shouldEnable)
    end
