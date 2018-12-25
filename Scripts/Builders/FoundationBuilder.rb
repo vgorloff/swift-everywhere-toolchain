@@ -12,7 +12,6 @@ class FoundationBuilder < Builder
       @curl = CurlBuilder.new(arch)
       @icu = ICUBuilder.new(arch)
       @xml = XMLBuilder.new(arch)
-      @includes = "#{@builds}/external-includes"
    end
 
    def prepare
@@ -63,13 +62,12 @@ class FoundationBuilder < Builder
       cmd << @sources
       execute cmd.join(" ")
       fixNinjaBuild()
-      execute "cd #{@builds} && CFLAGS='-DDEPLOYMENT_TARGET_ANDROID -I#{@includes}' ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
+      execute "cd #{@builds} && CFLAGS='-DDEPLOYMENT_TARGET_ANDROID -I#{@sources}' ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
       logConfigureCompleted
    end
 
    def build
       prepare
-      setupSymLinks
 
       # For troubleshooting purpose.
       # execute "cd #{@builds} && ninja CoreFoundation"
@@ -116,16 +114,10 @@ class FoundationBuilder < Builder
          contents = contents.gsub("-o #{@builds}/plutil.dir/plutil", "-target armv7-none-linux-androideabi -o #{@builds}/plutil.dir/plutil")
          contents = contents.gsub('-target armv7-none-linux-androideabi', "-target armv7-none-linux-androideabi -tools-directory #{@ndk.installs}/bin")
          contents = contents.gsub('-Xcc -DDEPLOYMENT_TARGET_LINUX', '-Xcc -DDEPLOYMENT_TARGET_ANDROID')
+         # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
+         contents = contents.gsub('-emit-library', "-emit-library -Xlinker --defsym -Xlinker '__CFConstantStringClassReference=$$s10Foundation19_NSCFConstantStringCN'")
       end
       File.write(file, contents)
-   end
-
-   def setupSymLinks
-      if @arch == Arch.host
-         return
-      end
-      execute "mkdir -p #{@includes}"
-      execute "ln -fvs /usr/include/uuid #{@includes}"
    end
 
    def configurePatches(shouldEnable = true)
@@ -137,13 +129,13 @@ class FoundationBuilder < Builder
       configurePatch("#{@sources}/CMakeLists.txt", "#{@patches}/CMakeLists.patch", shouldEnable)
       configurePatch("#{@sources}/Foundation/NSGeometry.swift", "#{@patches}/NSGeometry.patch", shouldEnable)
       configurePatch("#{@sources}/Tools/plutil/main.swift", "#{@patches}/plutil.patch", shouldEnable)
-      # configurePatch("#{@sources}/uuid/uuid.h", "#{@patches}/uuid.h.patch", shouldEnable)
+      configurePatch("#{@sources}/uuid/uuid.h", "#{@patches}/uuid.h.patch", shouldEnable)
 
       # FIXME: Below patches may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
       configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c", "#{@patches}/CFKnownLocations.patch", shouldEnable)
       configurePatch("#{@sources}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h", "#{@patches}/ForSwiftFoundationOnly.patch", shouldEnable)
       configurePatch("#{@sources}/Foundation/FileManager.swift", "#{@patches}/FileManager.patch", shouldEnable)
-      configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFRuntime.c", "#{@patches}/CFRuntime.c.patch", shouldEnable)
+      # configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFRuntime.c", "#{@patches}/CFRuntime.c.patch", shouldEnable)
    end
 
 end
