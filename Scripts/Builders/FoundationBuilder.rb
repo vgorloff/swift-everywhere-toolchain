@@ -135,7 +135,6 @@ class FoundationBuilder < Builder
       configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c", "#{@patches}/CFKnownLocations.patch", shouldEnable)
       configurePatch("#{@sources}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h", "#{@patches}/ForSwiftFoundationOnly.patch", shouldEnable)
       configurePatch("#{@sources}/Foundation/FileManager.swift", "#{@patches}/FileManager.patch", shouldEnable)
-      # configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFRuntime.c", "#{@patches}/CFRuntime.c.patch", shouldEnable)
    end
 
 end
