@@ -13,6 +13,7 @@ require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
+require_relative "Scripts/Builders/UUIDBuilder.rb"
 require_relative "Scripts/Common/ADBHelper.rb"
 require_relative "Scripts/Common/Tool.rb"
 
@@ -53,6 +54,7 @@ task :checkout do
    XMLBuilder.new().checkout
    CurlBuilder.new().checkout
    OpenSSLBuilder.new().checkout
+   UUIDBuilder.new().checkout
 end
 
 desc "Download Android NDK"
@@ -106,6 +108,9 @@ namespace :develop do
 
          desc "Configure, Build and Install - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.host).make end
+
+         desc "Configure, Build and Install - UUID"
+         task :uuid do UUIDBuilder.new(Arch.host).make end
       end
       namespace :install do
          desc "Install - libDispatch"
@@ -256,6 +261,9 @@ namespace :develop do
 
          desc "Configure, Build and Install - OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).make end
+
+         desc "Configure, Build and Install - UUID"
+         task :uuid do UUIDBuilder.new(Arch.armv7a).make end
       end
 
       namespace :clean do
@@ -276,6 +284,9 @@ namespace :develop do
 
          desc "Clean - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.armv7a).clean end
+
+         desc "Clean - UUID"
+         task :uuid do UUIDBuilder.new(Arch.armv7a).clean end
       end
 
       namespace :run do

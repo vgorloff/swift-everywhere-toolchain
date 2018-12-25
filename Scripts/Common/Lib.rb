@@ -40,6 +40,10 @@ class Lib
       return "ssl"
    end
 
+   def self.uuid
+      return "uuid"
+   end
+
    def self.dispatch
       return "swift-corelibs-libdispatch"
    end

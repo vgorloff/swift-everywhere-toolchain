@@ -30,6 +30,7 @@ class CMarkBuilder < Builder
    end
 
    def install
+      removeInstalls()
       execute "cd #{@builds} && ninja install"
       logInstallCompleted
    end
