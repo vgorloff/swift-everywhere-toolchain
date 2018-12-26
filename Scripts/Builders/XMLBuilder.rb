@@ -7,7 +7,8 @@ class XMLBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/GNOME/libxml2.git", "6fc04d714a019cb3be351bc472f7a64a08f51008")
+      # v2.9.9-rc2: a71b98ec9dee2d44e16a74ab8472868891bbc7b4
+      checkoutIfNeeded(@sources, "https://github.com/GNOME/libxml2.git", "a71b98ec9dee2d44e16a74ab8472868891bbc7b4")
    end
 
    def prepare
