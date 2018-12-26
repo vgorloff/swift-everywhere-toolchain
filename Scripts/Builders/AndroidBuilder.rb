@@ -15,6 +15,8 @@ class AndroidBuilder < Builder
       downloader.bootstrap()
    end
 
+   # Fixme. Seems standalone toolchains has been deprecated. Update other builders and remove this step.
+   # See: https://github.com/android-ndk/ndk/wiki/Changelog-r19-beta2
    def setup
       cmd = []
       cmd << "#{@sources}/build/tools/make-standalone-toolchain.sh"
