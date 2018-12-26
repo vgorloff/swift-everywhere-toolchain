@@ -18,6 +18,7 @@ class Builder < Tool
       @installs = "#{Config.install}/#{arch}/#{component}"
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+      @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
    end
 
    def lib

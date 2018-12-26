@@ -93,14 +93,16 @@ class ICUBuilder < Builder
    def build
       logBuildStarted
       prepare
-      execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make"
+      cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make"
+      @dryRun ? message(cmd) : execute(cmd)
       logBuildCompleted
    end
 
    def install
       logInstallStarted()
       removeInstalls()
-      execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
+      cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
+      @dryRun ? message(cmd) : execute(cmd)
       logInstallCompleted
    end
 
