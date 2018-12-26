@@ -186,6 +186,7 @@ class SwiftBuilder < Builder
    def clean
       removeBuilds()
       removeInstalls()
+      cleanGitRepo()
    end
 
 end

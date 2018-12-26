@@ -95,6 +95,7 @@ class FoundationBuilder < Builder
    def clean
       configurePatches(false)
       removeBuilds()
+      cleanGitRepo()
    end
 
    def checkout

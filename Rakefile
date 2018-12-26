@@ -297,6 +297,9 @@ namespace :develop do
 
          desc "Clean - UUID"
          task :uuid do UUIDBuilder.new(Arch.armv7a).clean end
+
+         desc "Clean - libXML"
+         task :xml do XMLBuilder.new(Arch.armv7a).clean end
       end
 
       namespace :run do

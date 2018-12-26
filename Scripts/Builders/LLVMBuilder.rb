@@ -63,6 +63,7 @@ class LLVMBuilder < Builder
 
    def clean
       removeBuilds()
+      cleanGitRepo()
    end
 
 end

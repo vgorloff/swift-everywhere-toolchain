@@ -60,6 +60,7 @@ class UUIDBuilder < Builder
    def clean
       configurePatches(false)
       removeBuilds()
+      cleanGitRepo()
    end
 
    def prepare

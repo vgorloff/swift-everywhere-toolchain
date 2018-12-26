@@ -98,6 +98,7 @@ class DispatchBuilder < Builder
    def clean
       configurePatches(false)
       removeBuilds()
+      cleanGitRepo()
    end
 
    def checkout

@@ -93,6 +93,12 @@ class Builder < Tool
       execute "mkdir -p \"#{@builds}\""
    end
 
+   def cleanGitRepo
+      # See: https://stackoverflow.com/a/64966/1418981
+      execute "cd #{@sources} && git clean --quiet -f -x -d"
+      execute "cd #{@sources} && git clean --quiet -f -X"
+   end
+
    def setupLinkerSymLink(shouldCreate = true)
       ndk = AndroidBuilder.new(@arch)
       if @arch == Arch.armv7a
