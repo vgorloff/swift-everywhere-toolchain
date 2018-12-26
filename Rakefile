@@ -111,7 +111,18 @@ namespace :develop do
          desc "Configure, Build and Install - UUID"
          task :uuid do UUIDBuilder.new(Arch.host).make end
       end
+      namespace :configure do
+         desc "Configure - ICU"
+         task :icu do ICUBuilder.new(Arch.host).configure end
+      end
+      namespace :build do
+         desc "Build - ICU"
+         task :icu do ICUBuilder.new(Arch.host).build end
+      end
       namespace :install do
+         desc "Install - ICU"
+         task :icu do ICUBuilder.new(Arch.host).install end
+
          desc "Install - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.host).install end
 

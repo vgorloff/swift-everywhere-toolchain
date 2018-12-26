@@ -3,6 +3,22 @@
 
 class Tool
 
+   def self.isMacOS?
+      (/darwin/ =~ RUBY_PLATFORM) != nil
+   end
+
+   def self.suffix
+      isMacOS? ? "-macos" : ""
+   end
+
+   def isMacOS?
+      Tool.isMacOS?
+   end
+
+   def suffix
+      Tool.suffix
+   end
+
    def execute(command)
       print(command, 32) # Green color.
       if system(command) != true
