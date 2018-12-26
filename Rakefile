@@ -76,7 +76,10 @@ namespace :armv7a do
       swift.make
       DispatchBuilder.new(Arch.armv7a).make
       FoundationBuilder.new(Arch.armv7a).make
-      tool.print("Swift toolchain for Android build is completed. It can be found in \"#{swift.lib}\"")
+      puts ""
+      tool.print("\"Swift Toolchain for Android\" build is completed.")
+      tool.print("It can be found in \"#{swift.installs}\".")
+      puts ""
    end
 
    namespace :project do
