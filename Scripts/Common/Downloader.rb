@@ -37,6 +37,7 @@ class Downloader < Tool
    end
 
    def download()
+      execute "mkdir -p \"#{@downloads}\""
       execute "cd \"#{@downloads}\" && curl -O -J -L #{@url}"
    end
 
