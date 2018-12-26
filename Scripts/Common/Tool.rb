@@ -8,7 +8,7 @@ class Tool
    end
 
    def self.suffix
-      isMacOS? ? "-macos" : ""
+      isMacOS? ? "-macos" : "-linux"
    end
 
    def isMacOS?
