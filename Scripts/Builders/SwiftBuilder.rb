@@ -40,14 +40,17 @@ class SwiftBuilder < Builder
       @ndk = AndroidBuilder.new(arch)
    end
 
-   def compileOLD
-      cmd = ["cd #{@sources} &&"]
-      # To avoid issue:
-      # /usr/bin/ld.gold: fatal error: /vagrant/Sources/ndk/platforms/android-21/arch-arm/usr/lib/../lib/crtbegin_so.o: unsupported ELF machine number 40
-      cmd << "env PATH=#{@ndk.install}/arm-linux-androideabi/bin:$PATH"
+   def llvm
+      return @builds + "/llvm-linux-x86_64"
    end
 
-   def configureOld
+   def swift
+      return @builds + "/swift-linux-x86_64"
+   end
+
+   # Unused at the moment.
+   def configure
+      logConfigureStarted
       # See: SWIFT_GIT_ROOT/docs/WindowsBuild.md
       cmd = []
       cmd << "cd #{@builds} &&"
@@ -117,6 +120,7 @@ class SwiftBuilder < Builder
    end
 
    def build
+      logBuildStarted
       cmd = ["cd #{@sources} &&"]
       cmd << "SKIP_BUILD_SWIFT_STATIC_LIBDISPATCH=1 SKIP_BUILD_STATIC_FOUNDATION=1"
       cmd << "./utils/build-script --release --skip-reconfigure"
@@ -133,29 +137,21 @@ class SwiftBuilder < Builder
          cmd << "--android-icu-i18n #{@icu.lib}/libicui18nswift.so"
          cmd << "--android-icu-i18n-include #{@icu.sources}/source/i18n"
          cmd << "--android-icu-data #{@icu.lib}/libicudataswift.so"
+         cmd << '--llvm-targets-to-build="ARM;AArch64;X86"'
+      end
+
+      if @arch == Arch.host
+         cmd << '--llvm-targets-to-build="X86"'
       end
 
       cmd << "--install-swift"
-      cmd << "--libdispatch --install-libdispatch"
-      cmd << "--foundation --install-foundation"
+
+      # Even if the below is disables Swift build script still builds `libdispatch` and `foundation` for Linux.
+      # cmd << "--libdispatch --install-libdispatch"
+      # cmd << "--foundation --install-foundation"
 
       # Try without it.
       cmd << "--build-swift-static-stdlib --build-swift-static-sdk-overlay"
-
-      # Try it
-      # cmd << "--test false"
-      # cmd << "--skip-test-cmark --skip-test-lldb --skip-test-swift --skip-test-llbuild --skip-test-swiftpm --skip-test-xctest"
-      # cmd << "--skip-test-foundation --skip-test-libdispatch --skip-test-playgroundsupport --skip-test-libicu"
-
-      # TODO: Try it
-      cmd << '--llvm-targets-to-build="ARM;AArch64;X86"'
-      # TODO: Try it
-      # cmd << "--skip-test-android-host"
-
-      # cmd << "--llbuild --install-llbuild"
-      # cmd << "--lldb --install-lldb"
-      # cmd << "--swiftpm --install-swiftpm"
-      # cmd << "--xctest --install-xctest"
 
       # cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license;sourcekit-inproc'"
       cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license'"
@@ -165,40 +161,22 @@ class SwiftBuilder < Builder
       cmd << "--install-destdir=#{@installs}"
       cmd << "--build-dir #{@builds}"
       execute cmd.join(" ")
-      removeLinkerSymLink()
+      setupLinkerSymLink(false)
       logBuildCompleted()
    end
 
    def prepare
-      removeLinkerSymLink()
-      execute "mkdir -p #{@builds}"
+      setupLinkerSymLink(false)
+      prepareBuilds()
       # Fix for missed file: `CMake Error at cmake/modules/SwiftSharedCMakeConfig.cmake:196 (include):`
       # execute "touch \"#{@cmark.builds}/src/CMarkExports.cmake\""
       setupLinkerSymLink()
    end
 
-   def setupLinkerSymLink
-      if @arch == Arch.armv7a
-         targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
-         puts "Making symbolic link to \"#{targetFile}\"..."
-         execute "sudo ln -svf #{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold #{targetFile}"
-         execute "ls -al /usr/bin/*ld.gold"
-         # FIXME: Remove simlink once done.
-      end
-   end
-
-   def removeLinkerSymLink
-      if @arch == Arch.armv7a
-         message "Removing previously created symlink..."
-         targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
-         execute "sudo rm -fv #{targetFile}"
-         execute "ls -al /usr/bin/*ld.gold"
-      end
-   end
-
    def make
       prepare
       build
+      logInstallCompleted
    end
 
    def checkout
@@ -206,8 +184,8 @@ class SwiftBuilder < Builder
    end
 
    def clean
-      execute "rm -rf #{@builds}"
-      execute "rm -rf #{@installs}"
+      removeBuilds()
+      removeInstalls()
    end
 
 end

@@ -1,0 +1,19 @@
+diff --git a/Foundation/NSGeometry.swift b/Foundation/NSGeometry.swift
+index da860ff8b580483f27748cc98e8bfac3a1b2b4b8..4b26672dd07eab50ef83be0178572dab3381a447 100644
+--- a/Foundation/NSGeometry.swift
++++ b/Foundation/NSGeometry.swift
+@@ -682,10 +682,10 @@ public func NSEdgeInsetsEqual(_ aInsets: NSEdgeInsets, _ bInsets: NSEdgeInsets)
+ }
+ 
+ public func NSInsetRect(_ aRect: NSRect, _ dX: CGFloat, _ dY: CGFloat) -> NSRect {
+-    let x = aRect.origin.x.native + dX.native
+-    let y = aRect.origin.y.native + dY.native
+-    let w = aRect.size.width.native - (dX.native * 2)
+-    let h = aRect.size.height.native - (dY.native * 2)
++    let x = CGFloat(aRect.origin.x.native + dX.native)
++    let y = CGFloat(aRect.origin.y.native + dY.native)
++    let w = CGFloat(aRect.size.width.native - (dX.native * 2))
++    let h = CGFloat(aRect.size.height.native - (dY.native * 2))
+     return NSRect(x: x, y: y, width: w, height: h)
+ }
+ 

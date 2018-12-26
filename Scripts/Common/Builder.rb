@@ -16,6 +16,9 @@ class Builder < Tool
       @patches = "#{Config.patches}/#{component}"
       @builds = "#{Config.build}/#{arch}/#{component}"
       @installs = "#{Config.install}/#{arch}/#{component}"
+      @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+      @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
    end
 
    def lib
@@ -34,16 +37,110 @@ class Builder < Tool
       return @installs + "/usr"
    end
 
+   # ------------------------------------
+
+   def logStarted(action)
+      puts ""
+      print(@startSpacer, 33)
+      print("\"#{@component}\" #{action} is started.", 36)
+   end
+
+   def logCompleted(action)
+      print("\"#{@component}\" #{action} is completed.", 36)
+      print(@endSpacer, 33)
+      puts ""
+   end
+
+   def logConfigureStarted
+      logStarted("Configure")
+   end
+
+   def logBuildStarted
+      logStarted("Build")
+   end
+
+   def logInstallStarted
+      logStarted("Install")
+   end
+
+   def logSetupCompleted
+      logCompleted("Setup")
+   end
+
    def logBuildCompleted
-      message "\"#{@component}\" build is completed."
+      logCompleted("Build")
    end
 
    def logConfigureCompleted
-      message "\"#{@component}\" configuring is completed."
+      logCompleted("Configure")
    end
 
    def logInstallCompleted
-      message "\"#{@component}\" install is completed."
+      logCompleted("Install")
+   end
+
+   # ------------------------------------
+
+   def removeInstalls()
+      execute "rm -rf \"#{@installs}\""
+   end
+
+   def removeBuilds()
+      execute "rm -rf \"#{@builds}\""
+   end
+
+   def prepareBuilds()
+      execute "mkdir -p \"#{@builds}\""
+   end
+
+   def setupLinkerSymLink(shouldCreate = true)
+      ndk = AndroidBuilder.new(@arch)
+      if @arch == Arch.armv7a
+         targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
+         if shouldCreate
+            message "Making symbolic link to \"#{targetFile}\"..."
+            execute "sudo ln -svf #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold #{targetFile}"
+         else
+            message "Removing previously created symlink: \"#{targetFile}\"..."
+            execute "sudo rm -fv #{targetFile}"
+         end
+         execute "ls -al /usr/bin/*ld.gold"
+      end
+   end
+
+   def addFile(replacementFile, destinationFile, shouldApply = true)
+      if shouldApply
+         if !File.exist? destinationFile
+            puts "Applying fix \"#{@component}\"..."
+            execute "cp -vf \"#{replacementFile}\" \"#{destinationFile}\""
+         else
+            puts "File \"#{destinationFile}\" exists. Seems you already applied fix for \"#{@component}\". Skipping..."
+         end
+      else
+         message "Removing previously applied fix..."
+         if File.exist? destinationFile
+            execute "rm -fv #{destinationFile}"
+         end
+      end
+   end
+
+   def configurePatch(originalFile, patchFile, shouldApply = true)
+      gitRepoRoot = "#{Config.sources}/#{@component}"
+      backupFile = "#{originalFile}.orig"
+      if shouldApply
+         if !File.exist? backupFile
+            puts "Patching \"#{@component}\"..."
+            execute "patch --backup #{originalFile} #{patchFile}"
+         else
+            puts "Backup file \"#{backupFile}\" exists. Seems you already patched \"#{@component}\". Skipping..."
+         end
+      else
+         message "Removing previously applied patch..."
+         execute "cd \"#{gitRepoRoot}\" && git checkout #{originalFile}"
+         if File.exist? backupFile
+            execute "rm -fv #{backupFile}"
+         end
+      end
    end
 
    def checkoutIfNeeded(localPath, repoURL, revision)

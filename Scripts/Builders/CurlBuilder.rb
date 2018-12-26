@@ -7,34 +7,33 @@ class CurlBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/curl/curl.git")
+      checkoutIfNeeded(@sources, "https://github.com/curl/curl.git", "7608f9a2d57c26320a35f07d36fe20f6bde92fc4")
    end
 
    def prepare
-      execute "mkdir -p #{@builds}"
-   end
-
-   def commonArgs()
-
+      # Unused at the moment.
+      # prepareBuilds()
    end
 
    def configure
+      logConfigureStarted
+      prepare
       # Arguments took from `swift/swift-corelibs-foundation/build-android`
-      ndkToolchainPath = "#{Config.ndkInstallRoot}/#{@target}"
-      ndkToolchainBinPath = "#{ndkToolchainPath}/bin"
-      ndkToolchainSysPath = "#{ndkToolchainPath}/sysroot"
+      ndk = AndroidBuilder.new(@arch)
+      ssl = OpenSSLBuilder.new(@arch)
+
       archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
       ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"
-      cmd = ["cd #{@sourcesDir} &&"]
-      cmd << "PATH=#{ndkToolchainBinPath}:$PATH"
-      cmd << "CC=#{ndkToolchainBinPath}/arm-linux-androideabi-clang"
-      cmd << "CXX=#{ndkToolchainBinPath}/arm-linux-androideabi-clang++"
-      cmd << "AR=#{ndkToolchainBinPath}/arm-linux-androideabi-ar"
-      cmd << "AS=#{ndkToolchainBinPath}/arm-linux-androideabi-as"
-      cmd << "LD=#{ndkToolchainBinPath}/arm-linux-androideabi-ld"
-      cmd << "RANLIB=#{ndkToolchainBinPath}/arm-linux-androideabi-ranlib"
-      cmd << "NM=#{ndkToolchainBinPath}/arm-linux-androideabi-nm"
-      cmd << "STRIP=#{ndkToolchainBinPath}/arm-linux-androideabi-strip"
+      cmd = ["cd #{@sources} &&"]
+      cmd << "PATH=#{ndk.bin}:$PATH"
+      cmd << "CC=#{ndk.bin}/arm-linux-androideabi-clang"
+      cmd << "CXX=#{ndk.bin}/arm-linux-androideabi-clang++"
+      cmd << "AR=#{ndk.bin}/arm-linux-androideabi-ar"
+      cmd << "AS=#{ndk.bin}/arm-linux-androideabi-as"
+      cmd << "LD=#{ndk.bin}/arm-linux-androideabi-ld"
+      cmd << "RANLIB=#{ndk.bin}/arm-linux-androideabi-ranlib"
+      cmd << "NM=#{ndk.bin}/arm-linux-androideabi-nm"
+      cmd << "STRIP=#{ndk.bin}/arm-linux-androideabi-strip"
       cmd << "CHOST=arm-linux-androideabi"
       cmd << "CPPFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing\""
       cmd << "CXXFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing -frtti -fexceptions -std=c++11 -Wno-error=unused-command-line-argument\""
@@ -46,19 +45,28 @@ class CurlBuilder < Builder
       cmd << "--host=arm-linux-androideabi --enable-shared --disable-static --disable-dependency-tracking --without-ca-bundle --without-ca-path --enable-ipv6 --enable-http --enable-ftp"
       cmd << "--disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-proxy --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-manual"
       cmd << "--target=arm-linux-androideabi --build=x86_64-unknown-linux-gnu"
-      cmd << "--with-zlib=#{ndkToolchainSysPath}/usr --with-ssl=#{Config.opensslSourcesRoot} --prefix=#{@installDir}"
+      cmd << "--with-zlib=#{ndk.installs}/usr/sysroot --with-ssl=#{ssl.installs} --prefix=#{@installs}"
       execute cmd.join(" ")
+      logConfigureCompleted
    end
 
    def build
+      logBuildStarted
+      prepare
       execute "cd #{@sources} && make"
+      logBuildCompleted
+   end
+
+   def install
+      logInstallStarted
       execute "cd #{@sources} && make install"
+      logInstallCompleted
    end
 
    def make
-      prepare
       configure
       build
+      install
    end
 
 end

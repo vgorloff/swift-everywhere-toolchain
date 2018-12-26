@@ -1,0 +1,13 @@
+diff --git a/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h b/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h
+index 034dc502d839aafcab6c9f69e42e725ef02059d4..3950c48a2cacf16d0e5f6df64da98dd1684cfd0e 100644
+--- a/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h
++++ b/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h
+@@ -44,7 +44,7 @@
+ 
+ #include <CoreFoundation/CFCalendar_Internal.h>
+ 
+-#if __has_include(<execinfo.h>)
++#if __has_include(<execinfo.h>) && !DEPLOYMENT_TARGET_ANDROID
+ #include <execinfo.h>
+ #endif
+ 

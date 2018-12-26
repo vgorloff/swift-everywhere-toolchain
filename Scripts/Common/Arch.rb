@@ -4,6 +4,7 @@ class Arch
       return armv7a
    end
 
+   # Fixme. Seems `x86` can be used instead.
    def self.host
       return "host"
    end

@@ -1,57 +1,34 @@
-// This is primitive ever "Hello World"-like Project.
-// Project which uses Dispatch and Foundation frameworks will be added as soon,
-// as Workflow will support Dispatch and Foundation frameworks compilation.
-print("Hello, This Is Swift!")
+// ~~~~~~~~~~~~~~ CORE
+print("SA - SwiftCore: Works!")
 
-/*
-import Foundation
+
+// ~~~~~~~~~~~~~~ DISPATCH
 import Dispatch
-
-
-let op = BlockOperation {
-   print("Operation")
-}
-let opQueue = OperationQueue()
-opQueue.addOperations([op], waitUntilFinished: true)
-
 let sema = DispatchSemaphore(value: 0)
 
 let queue = DispatchQueue(label: "queueName")
 queue.async {
-   print("XYZ")
+   print("SA - DispatchQueue: Works!")
    sema.signal()
 }
 
 if sema.wait(timeout: .now() + 10) == .timedOut {
-   print("~~~~~~")
+   print("SA - DispatchQueue: Timeout.")
 }
 
-let config = URLSessionConfiguration()
-let session = URLSession(configuration: config)
-if let url = URL(string: "https://www.example.com") {
-   let sema2 = DispatchSemaphore(value: 0)
-   let task = session.dataTask(with: url) { data, response, error in
-      if let response = response {
-         print(response)
-      }
-      if let error = error {
-         print(error)
-      }
-      if let data = data {
-         print(data)
-      }
-      sema2.signal()
-   }
-   print(task)
-   task.resume()
-   if sema2.wait(timeout: .now() + 10) == .timedOut {
-      print("~~~~~~")
-   }
-} else {
-   print("bad url")
-}
 
-let json = ["name": "Sveta"]
+// ~~~~~~~~~~~~~~ FOUNDATION
+import Foundation
+
+let op = BlockOperation {
+   print("SA - BlockOperation: Works!")
+}
+let opQueue = OperationQueue()
+opQueue.addOperations([op], waitUntilFinished: true)
+
+// ~~~~~~~~~~~~~~~~ Serialization
+
+let json = ["name": "SA - JSONSerialization/JSONDecoder: Works!"]
 do {
    let data = try JSONSerialization.data(withJSONObject: json, options: [])
    struct Person: Decodable {
@@ -64,4 +41,34 @@ do {
 } catch {
    print(error)
 }
-*/
+
+// ~~~~~~~~~~ Networking
+
+print("SA - URLSession: Currently disabled. Will fail with `Segmentation fault`. Seems something in Foundation classes needs to be fixed.")
+
+// Still works strange. `Segmentation fault`
+
+// let config = URLSessionConfiguration()
+// let session = URLSession(configuration: config)
+// if let url = URL(string: "https://www.example.com") {
+//    let sema2 = DispatchSemaphore(value: 0)
+//    let task = session.dataTask(with: url) { data, response, error in
+//       if let response = response {
+//          print(response)
+//       }
+//       if let error = error {
+//          print(error)
+//       }
+//       if let data = data {
+//          print(data)
+//       }
+//       sema2.signal()
+//    }
+//    print(task)
+//    task.resume()
+//    if sema2.wait(timeout: .now() + 10) == .timedOut {
+//       print("~~~~~~")
+//    }
+// } else {
+//    print("bad url")
+// }
