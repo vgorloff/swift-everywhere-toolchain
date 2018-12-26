@@ -6,7 +6,9 @@ class Downloader < Tool
       @downloads = downloadsDirPath
       @destination = destinationDirPath
       @url = url
-      @fileNameMask = downloadedFileNameMask
+      @fileName = File.basename(url)
+      @archive = @downloads + "/" + @fileName
+      @downloadedFileNameMask = downloadedFileNameMask
    end
 
    def bootstrap()
@@ -15,16 +17,20 @@ class Downloader < Tool
    end
 
    def unpack()
-      if archive.end_with? ".tar.gz"
-         execute "cd #{@downloads} && tar -xzf \"#{archive}\""
-      elsif archive.end_with? ".zip"
-         execute "cd #{@downloads} && unzip -q -o \"#{archive}\""
-      else
-         raise "Don't know how to unpack file \"#{archive}\"."
+      message "Unpacking file #{@archive}"
+      if !unpackedDir.nil?
+         execute "rm -rf \"#{unpackedDir}\""
       end
-      unpackedDir = Dir[@downloads + "/" + @fileNameMask].select { |dir| File.directory?(dir) }.first
+      if @archive.end_with? ".tar.gz"
+         execute "cd #{@downloads} && tar -xzf \"#{@archive}\""
+      elsif @archive.end_with? ".zip"
+         execute "cd #{@downloads} && unzip -q -o \"#{@archive}\""
+      else
+         raise "Don't know how to unpack file \"#{@archive}\"."
+      end
       if !unpackedDir.nil?
          File.rename(unpackedDir, @destination)
+         message "Archive extracted to \"#{@destination}\""
       end
    end
 
@@ -36,24 +42,21 @@ class Downloader < Tool
       unpack()
    end
 
+   def unpackedDir
+      return Dir[@downloads + "/" + @downloadedFileNameMask].select { |dir| File.directory?(dir) }.first
+   end
+
    def download()
       execute "mkdir -p \"#{@downloads}\""
       execute "cd \"#{@downloads}\" && curl -O -J -L #{@url}"
    end
 
    def downloadIfNeeded()
-      if !archive.nil?
-         message "Seems URL \"#{@url}\" already downloaded to \"#{archive}\"."
+      if File.exist?(@archive)
+         message "Seems URL \"#{@url}\" already downloaded to \"#{@archive}\"."
          return
       end
       download()
-   end
-
-   def archive
-      if @archive.nil?
-         @archive = Dir[@downloads + "/" + @fileNameMask].select { |file| !File.directory?(file) }.first
-      end
-      return @archive
    end
 
 end

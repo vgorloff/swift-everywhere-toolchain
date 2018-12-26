@@ -12,9 +12,9 @@ class AndroidBuilder < Builder
    end
 
    def download()
-      fileName = Tool.isMacOS ? "android-ndk-r18b-darwin-x86_64.zip" : "android-ndk-r18b-linux-x86_64.zip"
+      fileName = Tool.isMacOS? ? "android-ndk-r18b-darwin-x86_64.zip" : "android-ndk-r18b-linux-x86_64.zip"
       url = "https://dl.google.com/android/repository/#{fileName}"
-      downloader = Downloader.new(Config.downloads, @sources, url, Tool.isMacOS? ? 'android-ndk-*-darwin*': 'android-ndk-*-linux*')
+      downloader = Downloader.new(Config.downloads, @sources, url, 'android-ndk-*')
       downloader.bootstrap()
    end
 
