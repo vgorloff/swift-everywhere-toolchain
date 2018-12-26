@@ -300,6 +300,12 @@ namespace :develop do
 
          desc "Clean - libXML"
          task :xml do XMLBuilder.new(Arch.armv7a).clean end
+
+         desc "Clean - OpenSSL"
+         task :ssl do OpenSSLBuilder.new(Arch.armv7a).clean end
+
+         desc "Clean - curl"
+         task :curl do CurlBuilder.new(Arch.armv7a).clean end
       end
 
       namespace :run do

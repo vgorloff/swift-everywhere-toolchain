@@ -100,6 +100,9 @@ class Builder < Tool
    end
 
    def setupLinkerSymLink(shouldCreate = true)
+      if isMacOS?
+         return
+      end
       ndk = AndroidBuilder.new(@arch)
       if @arch == Arch.armv7a
          targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
@@ -110,7 +113,7 @@ class Builder < Tool
             message "Removing previously created symlink: \"#{targetFile}\"..."
             execute "sudo rm -fv #{targetFile}"
          end
-         execute "ls -al /usr/bin/*ld.gold"
+         execute "ls -al /usr/bin/*ld.gold || true"
       end
    end
 
