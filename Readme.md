@@ -46,8 +46,8 @@ Setup and Build
 
     ```bash
     host$ vagrant up
-    # (Optionall) Take snapshot. Under the hood it will save VirtualBox snapshot.
 
+    # (Optionall) Take snapshot. Under the hood it will save VirtualBox snapshot.
     host$ vagrant snapshot save "Clean System"
 
     host$ vagrant ssh

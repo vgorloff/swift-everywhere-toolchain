@@ -1,0 +1,13 @@
+diff --git a/CoreFoundation/Base.subproj/CFKnownLocations.c b/CoreFoundation/Base.subproj/CFKnownLocations.c
+index c610813fdcc4ec0d0d43ba50c42f329534925fce..b2bc4550f42edffdeb6003eb35929cb43234b653 100644
+--- a/CoreFoundation/Base.subproj/CFKnownLocations.c
++++ b/CoreFoundation/Base.subproj/CFKnownLocations.c
+@@ -45,7 +45,7 @@ CFURLRef _Nullable _CFKnownLocationCreatePreferencesURLForUser(CFKnownLocationUs
+         }
+             
+     }
+-#elif !DEPLOYMENT_RUNTIME_OBJC && !DEPLOYMENT_TARGET_WINDOWS && !DEPLOYMENT_TARGET_ANDROID
++#elif !DEPLOYMENT_RUNTIME_OBJC && !DEPLOYMENT_TARGET_WINDOWS
+     
+ /*
+  Building for an OS that uses the FHS, BSD's hier(7), and/or the XDG specification for paths:

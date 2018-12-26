@@ -10,64 +10,94 @@ class DispatchBuilder < Builder
    end
 
    def prepare
-      execute "mkdir -p #{@builds}"
-   end
-
-   def args
-      @llvm = LLVMBuilder.new(arch)
-      @swift = SwiftBuilder.new(arch)
-      cmd = []
-      cmd << "CLANG=\"#{@llvm.bin}/clang\""
-      cmd << "CC=\"#{@llvm.bin}/clang\""
-      cmd << "CXX=\"#{@llvm.bin}/clang++\""
-      cmd << "SWIFT=\"#{@swift.bin}/swift\""
-      cmd << "SWIFTC=\"#{@swift.bin}/swiftc\""
-      return cmd
-   end
-
-   def options
-      @llvm = LLVMBuilder.new(arch)
-      @swift = SwiftBuilder.new(arch)
-      @ndk = AndroidBuilder.new(arch)
-      # See: /swift/swift-corelibs-libdispatch/INSTALL.md
-      cmd = []
-      cmd << "-DCMAKE_C_COMPILER=#{@llvm.bin}/clang -DCMAKE_CXX_COMPILER=#{@llvm.bin}/clang++"
-      cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
-      cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
-      cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
-      cmd << "-DCMAKE_BUILD_TYPE=Release"
-      cmd << "-DENABLE_SWIFT=true"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.bin}/swiftc\""
-      cmd << "-DCMAKE_PREFIX_PATH=\"#{@swift.lib}/cmake/swift\""
-      cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-      cmd << "-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=#{@ndk.api} -DCMAKE_ANDROID_NDK=#{@ndk.sources}"
-      return cmd
+      prepareBuilds()
    end
 
    def configure
+      logConfigureStarted
+      swift = SwiftBuilder.new(@arch)
+      ndk = AndroidBuilder.new(@arch)
+      # See: /swift/swift-corelibs-libdispatch/INSTALL.md
+      prepare
+      configurePatches(false)
+      configurePatches
+
       cmd = []
       cmd << "cd #{@builds} &&"
-      cmd += args
       cmd << "cmake -G Ninja"
-      cmd += options
+      if @arch == Arch.host
+         cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
+         cmd << "-DCMAKE_C_COMPILER=\"#{swift.llvm}/bin/clang\""
+      else
+         cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
+         cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
+         cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
+         cmd << "-DCMAKE_SYSTEM_NAME=Android"
+         cmd << "-DCMAKE_SYSTEM_VERSION=#{ndk.api}"
+         cmd << "-DCMAKE_ANDROID_NDK=#{ndk.sources}"
+         cmd << "-DCMAKE_INSTALL_PREFIX=#{swift.installs}/usr" # Applying Dispatch over existing file structure.
+      end
+      cmd << "-DCMAKE_BUILD_TYPE=Release"
+      cmd << "-DENABLE_SWIFT=true"
+      cmd << "-DENABLE_TESTING=false"
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{swift.swift}/bin/swiftc\""
+      cmd << "-DCMAKE_PREFIX_PATH=\"#{swift.swift}/lib/cmake/swift\""
       cmd << @sources
       execute cmd.join(" ")
+      fixNinjaBuild
+      logConfigureCompleted
+   end
+
+   def fixNinjaBuild
+      if @arch == Arch.host
+         return
+      end
+      ndk = AndroidBuilder.new(@arch)
+      file = "#{@builds}/build.ninja"
+      message "Applying fix for #{file}"
+      contents = File.readlines(file).join()
+      if !contents.include?('-tools-directory')
+         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -tools-directory #{ndk.installs}/bin")
+         contents = contents.gsub('-module-link-name swiftDispatch', "-module-link-name swiftDispatch -Xcc -I#{ndk.installs}/sysroot/usr/include")
+      end
+      File.write(file, contents)
+   end
+
+   def configurePatches(shouldEnable = true)
+      if @arch == Arch.host && shouldEnable
+         return
+      end
+      originalFile = "#{@sources}/cmake/modules/SwiftSupport.cmake"
+      patchFile = "#{@patches}/CmakeSystemProcessor.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
+
+      originalFile = "#{@sources}/cmake/modules/DispatchCompilerWarnings.cmake"
+      patchFile = "#{@patches}/DisableWarningsAsErrors.patch"
+      configurePatch(originalFile, patchFile, shouldEnable)
    end
 
    def build
-      # See: What is CMake equivalent of 'configure --prefix=DIR && make all install: https://stackoverflow.com/a/35753015/1418981
-      execute "cd #{@build} && cmake " + options.join(" ") + " . && " + args.join(" ") + " ninja install"
+      logBuildStarted
+      execute "cd #{@builds} && ninja"
+      logBuildCompleted
+   end
+
+   def install
+      logInstallStarted
+      execute "cd #{@builds} && ninja install"
+      logInstallCompleted
    end
 
    def make
-      prepare
       configure
       build
+      install
+      configurePatches(false)
    end
 
    def clean
-      execute "rm -rf \"#{@builds}\""
-      execute "rm -rf \"#{@installs}\""
+      configurePatches(false)
+      removeBuilds()
    end
 
    def checkout

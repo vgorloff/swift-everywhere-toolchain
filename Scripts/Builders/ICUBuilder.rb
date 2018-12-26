@@ -16,39 +16,24 @@ class ICUBuilder < Builder
       @gitRepoRoot = "#{Config.sources}/#{Lib.icu}"
       @sources = "#{@gitRepoRoot}/icu4c"
       @ndk = AndroidBuilder.new(arch)
-      if arch != Arch.host
-         @host = ICUBuilder.new(Arch.host)
-      end
-   end
-
-   def configureHost
-      prepare
-      applyPatchIfNeeded(false)
-      cmd = ["cd #{@builds} &&"]
-      cmd << 'CC="/usr/bin/clang"'
-      cmd << 'CXX="/usr/bin/clang++"'
-      cmd << 'CFLAGS="-Os"'
-      cmd << 'CXXFLAGS="--std=c++11"'
-      cmd << "#{@sources}/source/runConfigureICU Linux --prefix=#{@installs}"
-      cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
-      cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
-      execute cmd.join(" ")
    end
 
    def configure
-      if !@host.nil? && !File.exist?(@host.bin)
+      logConfigureStarted
+      host = ICUBuilder.new(Arch.host)
+      if @arch != Arch.host && !File.exist?(host.bin)
          message "Building Corss-Build Host."
-         @host.configureHost
-         @host.build
-         @host.install
+         host.make
          message "Corss-Build Host Build completed."
       end
 
       prepare
-      applyPatchIfNeeded(false)
-      applyPatchIfNeeded
+      configurePatches(false)
       cmd = ["cd #{@builds} &&"]
-      cmd << "PATH=#{@ndk.installs}/bin:$PATH"
+      if @arch != Arch.host
+         configurePatches()
+         cmd << "PATH=#{@ndk.installs}/bin:$PATH"
+      end
       if @arch == Arch.armv7a
          cmd << "CFLAGS='-Os -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
          cmd << "CXXFLAGS='--std=c++11 -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
@@ -77,12 +62,22 @@ class ICUBuilder < Builder
          cmd << "RINLIB=aarch64-linux-android-ranlib"
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=aarch64-linux-android"
+      elsif @arch == Arch.host
+         cmd << 'CC="/usr/bin/clang"'
+         cmd << 'CXX="/usr/bin/clang++"'
+         cmd << 'CFLAGS="-Os"'
+         cmd << 'CXXFLAGS="--std=c++11"'
+         cmd << "#{@sources}/source/runConfigureICU Linux --prefix=#{@installs}"
+         cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
+         cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       end
-      cmd << "--with-library-suffix=swift"
-      cmd << "--enable-static --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
-      cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
-      cmd << "--with-cross-build=#{@host.builds}"
-      cmd << "--with-data-packaging=archive"
+      if @arch != Arch.host
+         cmd << "--with-library-suffix=swift"
+         cmd << "--enable-static=no --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
+         cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
+         cmd << "--with-cross-build=#{host.builds}"
+         cmd << "--with-data-packaging=archive"
+      end
       execute cmd.join(" ")
       logConfigureCompleted
    end
@@ -92,37 +87,22 @@ class ICUBuilder < Builder
    end
 
    def prepare()
-      execute "mkdir -p #{@builds}"
-   end
-
-   def applyPatchIfNeeded(shouldApply = true)
-      originalFile = "#{@sources}/source/configure"
-      backupFile = "#{@sources}/source/configure.orig"
-      patchFile = "#{@patches}/configure.patch"
-      if shouldApply
-         if !File.exist? backupFile
-            puts "Patching ICU..."
-            execute "patch --backup #{originalFile} #{patchFile}"
-         else
-            puts "Backup file \"#{backupFile}\" exists. Seems you already patched ICU. Skipping..."
-         end
-      else
-         message "Removing previously applied patch..."
-         execute "cd \"#{@gitRepoRoot}\" && git checkout #{originalFile}"
-         if File.exist? backupFile
-            execute "rm -fv #{backupFile}"
-         end
-      end
+      prepareBuilds()
    end
 
    def build
+      logBuildStarted
       prepare
-      execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make -j4"
+      cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make"
+      @dryRun ? message(cmd) : execute(cmd)
       logBuildCompleted
    end
 
    def install
-      execute "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
+      logInstallStarted()
+      removeInstalls()
+      cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
+      @dryRun ? message(cmd) : execute(cmd)
       logInstallCompleted
    end
 
@@ -130,14 +110,21 @@ class ICUBuilder < Builder
       configure
       build
       install
+      if @arch != Arch.host
+         configurePatches(false)
+      end
+   end
+
+   def configurePatches(shouldEnable = true)
+      configurePatch("#{@sources}/source/configure", "#{@patches}/configure.patch", shouldEnable)
    end
 
    def clean
-      if !@host.nil?
-         @host.clean
+      if @arch != Arch.host
+         ICUBuilder.new(Arch.host).clean
+         configurePatches(false)
       end
-      execute "rm -rf #{@builds}"
-      execute "rm -rf #{@installs}"
+      removeBuilds()
    end
 
 end

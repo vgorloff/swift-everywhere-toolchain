@@ -68,6 +68,12 @@ Layout/EmptyLinesAroundClassBody:
 Layout/IndentationWidth:
   Width: 3
 
+Layout/IndentHeredoc:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
 Naming/VariableName:
   EnforcedStyle: camelCase
 

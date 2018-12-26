@@ -12,101 +12,133 @@ class FoundationBuilder < Builder
       @curl = CurlBuilder.new(arch)
       @icu = ICUBuilder.new(arch)
       @xml = XMLBuilder.new(arch)
-      @llvm = LLVMBuilder.new(arch)
    end
 
    def prepare
-      execute "mkdir -p #{@build}"
-      copyFiles
-   end
-
-   def copyFiles
-      usr = @ndk.install + "/sysroot/usr"
-      # Copy dispatch public and private headers to the directory foundation is expecting to get it
-      targetDir = "#{usr}/include/dispatch"
-      execute "mkdir -p #{targetDir}"
-      execute "cp -v #{@dispatch.sources}/dispatch/*.h #{targetDir}"
-      execute "cp -v #{@dispatch.sources}/private/*.h #{targetDir}"
-
-      # libFoundation script is not completely prepared to handle cross compilation yet.
-      execute "ln -svf #{@swift.lib}/swift #{usr}/lib/"
-      execute "cp -vr #{@swift.lib}/swift/android/armv7/* #{@swift.lib}/swift/android/"
-
-      # Search path for curl seems to be wrong in foundation
-      execute "cp -rv #{@curl.include}/curl #{usr}/include"
-      execute "ln -fvs #{usr}/include/curl #{usr}/include/curl/curl"
-
-      execute "cp -rv #{@xml.include}/libxml2 #{usr}/include"
-      execute "ln -fvs #{usr}/include/libxml2/libxml #{usr}/include/libxml"
-
-      execute "cp -vr /usr/include/uuid #{usr}/include"
-   end
-
-   def args
-      # Arguments took from `swift/swift-corelibs-foundation/build-android`
-      sysroot = @ndk.install + "/sysroot"
-      cmd = []
-      cmd << "cd #{@sources} && env"
-      cmd << "BUILD_DIR=#{@build}"
-      cmd << "DSTROOT=#{@install}"
-
-      cmd << "SWIFTC=\"#{@swift.bin}/swiftc\""
-      cmd << "CLANG=\"#{@llvm.bin}/clang\""
-      # cmd << "CLANGXX=\"#{@llvm.bin}/clang++\""
-      cmd << "SWIFT=\"#{@swift.bin}/swift\""
-      cmd << "SDKROOT=\"#{@swift.install}\""
-      cmd << "CFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH --sysroot=#{sysroot} -I#{@icu.include} -I#{@swift.lib}/swift -I#{@ndk.sources}/sources/android/support/include -I#{sysroot}/usr/include -I#{@sources}/closure\""
-      cmd << "SWIFTCFLAGS=\"-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH -Xcc -DDEPLOYMENT_TARGET_ANDROID -I#{sysroot}/usr/include\""
-      cmd << "LDFLAGS=\"-fuse-ld=gold --sysroot=#{sysroot} -L#{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x -L#{@icu.lib} -L#{sysroot}/usr/lib -ldispatch\""
-      return cmd
+      prepareBuilds()
    end
 
    def configure
-      sysroot = @ndk.install + "/sysroot"
-      cmd = args
-      cmd << "./configure Release --target=armv7-none-linux-androideabi --sysroot=#{sysroot}"
-      # cmd << "-DXCTEST_BUILD_DIR=#{swiftCCRoot}/xctest-linux-x86_64"
-      cmd << "-DLIBDISPATCH_SOURCE_DIR=#{@dispatch.sources}"
-      cmd << "-DLIBDISPATCH_BUILD_DIR=#{@dispatch.install}"
-      execute cmd.join(" ")
+      logConfigureStarted
+      prepare
+      configurePatches(false)
+      configurePatches
+      cmd = []
+      cmd << "cd #{@builds} &&"
+      cmd << "cmake -G Ninja"
+      cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
+      cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}" # Check later if we can use `@installs`
+      cmd << "-DCMAKE_BUILD_TYPE=Release"
+      if @arch == Arch.host
+         cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
+         cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
+      else
+         cmd << "-DCMAKE_SYSROOT=#{@ndk.installs}/sysroot"
+         cmd << "-DCMAKE_SYSTEM_NAME=Android"
+         cmd << "-DCMAKE_SYSTEM_VERSION=#{@ndk.api}"
+         cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
+         cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
+         cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
 
-      execute "cd #{@sourcesDir} && sed --in-place 's/-I\\/usr\\/include\\/x86_64-linux-gnu//' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-I\\/usr\\/include\\/libxml2//' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-I.\\///' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-licui18n/-licui18nswift/g' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-licuuc/-licuucswift/g' build.ninja"
-      execute "cd #{@sourcesDir} && sed --in-place 's/-licudata/-licudataswift/g' build.ninja"
+         # Seems not needed.
+         # cmd << "-DCMAKE_C_COMPILER=\"#{@ndk.bin}/clang\""
+         # cmd << "-DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=#{@ndk.installs}"
+         # cmd << "-DCMAKE_ANDROID_NDK=#{@ndk.sources}"
+
+         cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
+         cmd << "-DICU_LIBRARY=#{@icu.lib}"
+         cmd << "-DICU_I18N_LIBRARY_RELEASE=#{@icu.lib}/libicui18nswift.so"
+         cmd << "-DICU_UC_LIBRARY_RELEASE=#{@icu.lib}/libicuucswift.so"
+
+         cmd << "-DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2"
+         cmd << "-DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so"
+
+         cmd << "-DCURL_INCLUDE_DIR=#{@curl.include}"
+         cmd << "-DCURL_LIBRARY=#{@curl.lib}/libcurl.so"
+
+         cmd << "-DCMAKE_INSTALL_PREFIX=#{@swift.installs}/usr" # Applying Foundation over existing file structure.
+      end
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.swift}/bin/swiftc\""
+
+      cmd << @sources
+      execute cmd.join(" ")
+      fixNinjaBuild()
+      execute "cd #{@builds} && CFLAGS='-DDEPLOYMENT_TARGET_ANDROID -I#{@sources}' ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
+      logConfigureCompleted
    end
 
-   def compile
-      execute args.join(" ") + " ninja CopyHeaders"
+   def build
+      logBuildStarted
+      prepare
 
-      # Patching module.modulemap file.
-      message "Patching module.modulemap file."
-      headersPath = "#{@build}/Foundation/usr/lib/swift/CoreFoundation"
-      moduleMapPath = headersPath + "/module.modulemap"
-      contents = File.readlines(moduleMapPath).join()
-      contents = contents.sub('"CoreFoundation.h"', '"' + headersPath + '/CoreFoundation.h"')
-      contents = contents.sub('"CFPlugInCOM.h"', '"' + headersPath + '/CFPlugInCOM.h"')
-      File.write(moduleMapPath, contents)
+      # For troubleshooting purpose.
+      # execute "cd #{@builds} && ninja CoreFoundation"
 
-      # Running build.
-      execute args.join(" ") + " ninja"
+      execute "cd #{@builds} && ninja"
+      logBuildCompleted
+   end
+
+   def install
+      logInstallStarted
+      removeInstalls()
+      execute "cd #{@builds} && ninja install"
+      logInstallCompleted
    end
 
    def make
-      prepare
       configure
-      compile
+      build
+      install
+      configurePatches(false)
    end
 
    def clean
-      execute "rm -rf \"#{@build}\""
-      execute "rm -rf \"#{@install}\""
+      configurePatches(false)
+      removeBuilds()
    end
 
    def checkout
       checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-foundation", "a7f12d0851780b2c196733b2710a8ff2ae56bdcd")
+   end
+
+   def fixNinjaBuild
+      if @arch == Arch.host
+         return
+      end
+      file = "#{@builds}/build.ninja"
+      message "Applying fix for #{file}"
+      contents = File.readlines(file).join()
+      contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libicu', "#{@icu.lib}/libicu")
+      contents = contents.gsub('libicuuc.so', 'libicuucswift.so')
+      contents = contents.gsub('libicui18n.so', 'libicui18nswift.so')
+      includePath = "#{@ndk.installs}/sysroot/usr/include"
+      if !contents.include?(includePath)
+         contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -Xcc -I#{includePath}")
+         contents = contents.gsub('-module-name plutil', "-module-name plutil -target armv7-none-linux-androideabi")
+         contents = contents.gsub("-o #{@builds}/plutil.dir/plutil", "-target armv7-none-linux-androideabi -o #{@builds}/plutil.dir/plutil")
+         contents = contents.gsub('-target armv7-none-linux-androideabi', "-target armv7-none-linux-androideabi -tools-directory #{@ndk.installs}/bin")
+         contents = contents.gsub('-Xcc -DDEPLOYMENT_TARGET_LINUX', '-Xcc -DDEPLOYMENT_TARGET_ANDROID')
+         # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
+         contents = contents.gsub('-emit-library', "-emit-library -Xlinker --defsym -Xlinker '__CFConstantStringClassReference=$$s10Foundation19_NSCFConstantStringCN'")
+      end
+      File.write(file, contents)
+   end
+
+   def configurePatches(shouldEnable = true)
+      if @arch == Arch.host && shouldEnable
+         return
+      end
+      configurePatch("#{@sources}/cmake/modules/SwiftSupport.cmake", "#{@patches}/CmakeSystemProcessor.patch", shouldEnable)
+      configurePatch("#{@sources}/CoreFoundation/CMakeLists.txt", "#{@patches}/CompileOptions.patch", shouldEnable)
+      configurePatch("#{@sources}/CMakeLists.txt", "#{@patches}/CMakeLists.patch", shouldEnable)
+      configurePatch("#{@sources}/Foundation/NSGeometry.swift", "#{@patches}/NSGeometry.patch", shouldEnable)
+      configurePatch("#{@sources}/Tools/plutil/main.swift", "#{@patches}/plutil.patch", shouldEnable)
+      configurePatch("#{@sources}/uuid/uuid.h", "#{@patches}/uuid.h.patch", shouldEnable)
+
+      # FIXME: Below patches may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
+      configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c", "#{@patches}/CFKnownLocations.patch", shouldEnable)
+      configurePatch("#{@sources}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h", "#{@patches}/ForSwiftFoundationOnly.patch", shouldEnable)
+      configurePatch("#{@sources}/Foundation/FileManager.swift", "#{@patches}/FileManager.patch", shouldEnable)
    end
 
 end

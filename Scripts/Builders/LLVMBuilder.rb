@@ -7,6 +7,8 @@ class LLVMBuilder < Builder
    end
 
    def configure
+      logConfigureStarted
+      prepare
       # See:
       # - LLVM Getting Started: https://llvm.org/docs/GettingStarted.html#requirements
       # - CLANG Getting Started: http://clang.llvm.org/get_started.html
@@ -25,17 +27,20 @@ class LLVMBuilder < Builder
    end
 
    def build
+      logBuildStarted
+      prepare
       execute "cd #{@builds} && ninja"
       logBuildCompleted()
    end
 
    def install
+      logInstallStarted
+      removeInstalls()
       execute "cd #{@builds} && ninja install"
       logInstallCompleted()
    end
 
    def make
-      prepare
       configure
       build
       install
@@ -46,7 +51,7 @@ class LLVMBuilder < Builder
    end
 
    def prepare()
-      execute "mkdir -p #{@builds}"
+      prepareBuilds()
       # Making needed SymLinks. See: https://llvm.org/docs/GettingStarted.html#git-mirror
       message "Making symbolic links..."
       @clang = ClangBuilder.new()
@@ -57,8 +62,7 @@ class LLVMBuilder < Builder
    end
 
    def clean
-      execute "rm -rf #{@builds}"
-      execute "rm -rf #{@installs}"
+      removeBuilds()
    end
 
 end
