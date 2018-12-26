@@ -48,9 +48,17 @@ class SwiftBuilder < Builder
       return @builds + "/swift-linux-x86_64"
    end
 
+   def cmark
+      return @builds + "/cmark-linux-x86_64"
+   end
+
    # Unused at the moment.
    def configure
+      llvmBuilder = LLVMBuilder.new()
+      cmarkBuilder = CMarkBuilder.new()
+      dispatchBuilder = DispatchBuilder.new()
       logConfigureStarted
+      prepare
       # See: SWIFT_GIT_ROOT/docs/WindowsBuild.md
       cmd = []
       cmd << "cd #{@builds} &&"
@@ -85,21 +93,22 @@ class SwiftBuilder < Builder
       # Making Ninja verbose. See: https://github.com/ninja-build/ninja/issues/900#issuecomment-132346047
       # cmd << "-DCMAKE_VERBOSE_MAKEFILE=ON"
 
-      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{@llvm.sources}\""
-      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{@llvm.builds}\""
+      # cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=\"#{llvmBuilder.sources}\""
+      # cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=\"#{llvm}\""
 
-      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{@cmark.sources}\""
-      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{@cmark.builds}\""
-      cmd << "-DSWIFT_CMARK_LIBRARY_DIR=\"#{@cmark.lib}\""
+      # cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=\"#{cmarkBuilder.sources}\""
+      # cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=\"#{cmark}\""
+      # cmd << "-DSWIFT_CMARK_LIBRARY_DIR=\"#{@cmark.lib}\""
 
       cmd << "-DSWIFT_SDKS=LINUX"
+      cmd << "-DLLVM_DIR=#{llvmBuilder.sources}/cmake/modules"
 
       # Seems these vars is unused.
-      cmd << "-DSWIFT_EXEC=#{@builds}/bin/swiftc"
-      cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE=Release"
+      # cmd << "-DSWIFT_EXEC=#{@builds}/bin/swiftc"
+      # cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE=Release"
 
       # cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=\"#{@clang.sources}\""
-      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{@dispatch.sources}\""
+      # cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=\"#{dispatchBuilder.sources}\""
       # cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=\"#{@llvm.builds}\""
       # cmd << "-DLLVM_BUILD_LIBRARY_DIR=\"#{@llvm.lib}\""
       # cmd << "-DLLVM_BUILD_MAIN_INCLUDE_DIR=\"#{@llvm.include}\""
