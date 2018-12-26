@@ -14,8 +14,8 @@ class Builder < Tool
       @arch = arch
       @sources = "#{Config.sources}/#{component}"
       @patches = "#{Config.patches}/#{component}"
-      @builds = "#{Config.build}/#{arch}/#{component}" + suffix
-      @installs = "#{Config.install}/#{arch}/#{component}" + suffix
+      @builds = "#{Config.build}/#{arch}#{suffix}/#{component}"
+      @installs = "#{Config.install}/#{arch}#{suffix}/#{component}"
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false

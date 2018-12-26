@@ -147,13 +147,9 @@ class SwiftBuilder < Builder
       cmd << "--install-swift"
 
       # Even if the below is disables Swift build script still builds `libdispatch` and `foundation` for Linux.
-      # cmd << "--libdispatch --install-libdispatch"
-      # cmd << "--foundation --install-foundation"
+      cmd << "--libdispatch false"
+      cmd << "--foundation false"
 
-      # Try without it.
-      cmd << "--build-swift-static-stdlib --build-swift-static-sdk-overlay"
-
-      # cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license;sourcekit-inproc'"
       cmd << "'--swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license'"
 
       cmd << "'--llvm-install-components=llvm-cov;llvm-profdata;IndexStore'"

@@ -96,6 +96,7 @@ namespace :armv7a do
 
 end
 
+# Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
 namespace :develop do
    namespace :host do
       namespace :make do
@@ -237,11 +238,7 @@ namespace :develop do
          task :curl do CurlBuilder.new(Arch.armv7a).install end
 
          desc "Install - Hello project on Android"
-         task :project do
-            helper = ADBHelper.new()
-            helper.deployLibs
-            helper.deployProducts([HelloProjectBuilder.new(Arch.armv7a).executable])
-         end
+         task :project do ADBHelper.new().deploy(HelloProjectBuilder.new(Arch.armv7a).builds) end
       end
 
       namespace :make do
@@ -310,7 +307,7 @@ namespace :develop do
 
       namespace :run do
          desc "Run - Hello project on Android"
-         task :project do ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executableName) end
+         task :project do ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executable) end
       end
    end
 end
