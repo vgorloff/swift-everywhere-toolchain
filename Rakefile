@@ -53,16 +53,15 @@ task :checkout do
 end
 
 desc "Download Android NDK"
-task :download do
-   AndroidBuilder.new().download
-end
+task :download do AndroidBuilder.new().download end
+
+desc "Verify ADB shell setup."
+task :verify do ADBHelper.new().verify end
 
 namespace :armv7a do
 
    desc "Setup NDK Toolchain."
-   task :setup do
-      AndroidBuilder.new(Arch.armv7a).setup
-   end
+   task :setup do AndroidBuilder.new(Arch.armv7a).setup end
 
    desc "Build Swift Toolchain."
    task :build do
@@ -84,15 +83,8 @@ namespace :armv7a do
 
    namespace :project do
 
-      desc "Verify ADB shell setup."
-      task :verify do
-         ADBHelper.new().verify
-      end
-
       desc "Builds Sample project"
-      task :build do
-         HelloProjectBuilder.new(Arch.armv7a).build
-      end
+      task :build do HelloProjectBuilder.new(Arch.armv7a).build end
 
       desc "Deploy and Run on Android"
       task deploy: ["develop:armv7a:install:project", "develop:armv7a:run:project"] do

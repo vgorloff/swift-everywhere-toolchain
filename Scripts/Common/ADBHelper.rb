@@ -22,6 +22,7 @@ class ADBHelper < Tool
    end
 
    def deployLibs()
+      message "Deploy of Shared Objects started."
       execute "adb shell rm -rf #{@destinationDirPath}"
       execute "adb shell mkdir -p #{@destinationDirPath}"
       Dir["#{@swift.installs}/usr/lib/swift/android" + "/*.so"].each { |lib|
@@ -43,6 +44,7 @@ class ADBHelper < Tool
       }
       cxxLibPath = "#{@ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
       execute "adb push #{cxxLibPath} #{@destinationDirPath}"
+      message "Deploy of Shared Objects completed."
    end
 
    def deployProducts(products)
@@ -54,7 +56,10 @@ class ADBHelper < Tool
 
    def run(binary)
       execute "adb shell ls -l #{@destinationDirPath}"
-      execute "adb shell LD_LIBRARY_PATH=#{@destinationDirPath} #{@destinationDirPath}/#{binary}"
+      fullPath = "#{@destinationDirPath}/#{binary}"
+      message "Starting execution of \"#{fullPath}\"..."
+      execute "adb shell LD_LIBRARY_PATH=#{@destinationDirPath} #{fullPath}"
+      message "Execution of \"#{fullPath}\" completed."
    end
 
    def clean

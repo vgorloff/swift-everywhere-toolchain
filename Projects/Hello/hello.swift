@@ -1,5 +1,5 @@
 // ~~~~~~~~~~~~~~ CORE
-print("Hello, This Is Swift!")
+print("SA - SwiftCore: Works!")
 
 
 // ~~~~~~~~~~~~~~ DISPATCH
@@ -8,12 +8,12 @@ let sema = DispatchSemaphore(value: 0)
 
 let queue = DispatchQueue(label: "queueName")
 queue.async {
-   print("Hello from DispatchQueue")
+   print("SA - DispatchQueue: Works!")
    sema.signal()
 }
 
 if sema.wait(timeout: .now() + 10) == .timedOut {
-   print("~~~~~~")
+   print("SA - DispatchQueue: Timeout.")
 }
 
 
@@ -21,14 +21,14 @@ if sema.wait(timeout: .now() + 10) == .timedOut {
 import Foundation
 
 let op = BlockOperation {
-   print("Operation")
+   print("SA - BlockOperation: Works!")
 }
 let opQueue = OperationQueue()
 opQueue.addOperations([op], waitUntilFinished: true)
 
 // ~~~~~~~~~~~~~~~~ Serialization
 
-let json = ["name": "Sveta"]
+let json = ["name": "SA - JSONSerialization/JSONDecoder: Works!"]
 do {
    let data = try JSONSerialization.data(withJSONObject: json, options: [])
    struct Person: Decodable {
@@ -43,6 +43,8 @@ do {
 }
 
 // ~~~~~~~~~~ Networking
+
+print("SA - URLSession: Currently disabled. Will fail with `Segmentation fault`. Seems something in Foundation classes needs to be fixed.")
 
 // Still works strange. `Segmentation fault`
 
