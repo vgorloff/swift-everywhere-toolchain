@@ -96,6 +96,7 @@ class DispatchBuilder < Builder
    end
 
    def clean
+      configurePatches(false)
       removeBuilds()
    end
 

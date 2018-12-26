@@ -9,6 +9,7 @@ class UUIDBuilder < Builder
 
    def configure
       logConfigureStarted
+      configurePatches(false)
       configurePatches()
       ndk = AndroidBuilder.new(@arch)
       prepare

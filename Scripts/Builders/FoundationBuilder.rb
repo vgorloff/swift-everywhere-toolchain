@@ -89,6 +89,7 @@ class FoundationBuilder < Builder
       configure
       build
       install
+      configurePatches(false)
    end
 
    def clean

@@ -16,8 +16,6 @@ class ICUBuilder < Builder
       @gitRepoRoot = "#{Config.sources}/#{Lib.icu}"
       @sources = "#{@gitRepoRoot}/icu4c"
       @ndk = AndroidBuilder.new(arch)
-      @originalFile = "#{@sources}/source/configure"
-      @patchFile = "#{@patches}/configure.patch"
    end
 
    def configure
@@ -30,10 +28,10 @@ class ICUBuilder < Builder
       end
 
       prepare
-      configurePatch(@originalFile, @patchFile, false)
+      configurePatches(false)
       cmd = ["cd #{@builds} &&"]
       if @arch != Arch.host
-         configurePatch(@originalFile, @patchFile)
+         configurePatches()
          cmd << "PATH=#{@ndk.installs}/bin:$PATH"
       end
       if @arch == Arch.armv7a
@@ -110,11 +108,19 @@ class ICUBuilder < Builder
       configure
       build
       install
+      if @arch != Arch.host
+         configurePatches(false)
+      end
+   end
+
+   def configurePatches(shouldEnable = true)
+      configurePatch("#{@sources}/source/configure", "#{@patches}/configure.patch", shouldEnable)
    end
 
    def clean
       if @arch != Arch.host
          ICUBuilder.new(Arch.host).clean
+         configurePatches(false)
       end
       removeBuilds()
    end
