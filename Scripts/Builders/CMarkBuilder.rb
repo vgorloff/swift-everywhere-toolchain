@@ -15,6 +15,7 @@ class CMarkBuilder < Builder
       cmd << "cmake -G Ninja"
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
+      cmd << "-DCMARK_TESTS=false"
       cmd << @sources
       execute cmd.join(" ")
       logConfigureCompleted

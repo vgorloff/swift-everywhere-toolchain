@@ -17,6 +17,9 @@ class LLVMBuilder < Builder
       cmd << "cmake -G Ninja"
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
+      cmd << "-DLLVM_INCLUDE_EXAMPLES=false"
+      cmd << "-DLLVM_INCLUDE_TESTS=false"
+      cmd << "-DLLVM_INCLUDE_DOCS=false"
       # See: https://stackoverflow.com/questions/40122657/build-llvm-clang4-0-for-android-armeabi
       # Line below still cause build failure.
       cmd << "-DLLVM_TARGETS_TO_BUILD=\"ARM;AArch64;X86\""
