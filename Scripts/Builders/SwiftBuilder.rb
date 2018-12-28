@@ -62,7 +62,6 @@ class SwiftBuilder < Builder
       cmd << "-DCLANG_VERSION_MAJOR:STRING=7"
       cmd << "-DCLANG_VERSION_MINOR:STRING=0"
       cmd << "-DCLANG_VERSION_PATCH:STRING=0"
-      # cmd << "-DCMAKE_MAKE_PROGRAM=/usr/bin/ninja"
       cmd << "-DSWIFT_STDLIB_ENABLE_SIL_OWNERSHIP=FALSE"
       cmd << "-DSWIFT_ENABLE_GUARANTEED_NORMAL_ARGUMENTS=TRUE"
       cmd << "-DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE"
@@ -80,8 +79,6 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES:STRING=armv7"
       cmd << "-DCMAKE_C_FLAGS=' -Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector'"
       cmd << "-DCMAKE_CXX_FLAGS=' -Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector'"
-      # cmd << "-DCMAKE_C_FLAGS_RELWITHDEBINFO='-O2 -DNDEBUG'"
-      # cmd << "-DCMAKE_CXX_FLAGS_RELWITHDEBINFO='-O2 -DNDEBUG'"
       cmd << "-DCMAKE_BUILD_TYPE:STRING=Release"
       cmd << "-DLLVM_ENABLE_ASSERTIONS:BOOL=TRUE"
       cmd << "-DSWIFT_ANALYZE_CODE_COVERAGE:STRING=FALSE"
@@ -158,11 +155,6 @@ class SwiftBuilder < Builder
    def install
       logInstallStarted()
       removeInstalls()
-      # >>>
-      # Probably can be moved to LLVM
-      llvm = LLVMBuilder.new()
-      execute "env DESTDIR=#{@installs} cmake --build #{llvm.builds} -- install-llvm-cov install-llvm-profdata install-IndexStore"
-      # >>>
       execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
       logInstallCompleted
    end
