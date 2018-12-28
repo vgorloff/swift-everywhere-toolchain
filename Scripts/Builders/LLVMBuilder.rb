@@ -26,7 +26,7 @@ class LLVMBuilder < Builder
       cmd << "-DLLVM_TARGETS_TO_BUILD=\"ARM;AArch64;X86\""
       # cmd << "-DLLVM_DEFAULT_TARGET_TRIPLE=\"arm-linux-androideabi\""
 
-      # New way
+      # New settings
 
       cmd << "-DCMAKE_C_COMPILER:PATH=/usr/bin/clang"
       cmd << "-DCMAKE_CXX_COMPILER:PATH=/usr/bin/clang++"
