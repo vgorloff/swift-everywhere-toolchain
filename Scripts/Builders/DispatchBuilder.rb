@@ -16,6 +16,7 @@ class DispatchBuilder < Builder
    def configure
       logConfigureStarted
       swift = SwiftBuilder.new(@arch)
+      llvm = LLVMBuilder.new(@arch)
       ndk = AndroidBuilder.new(@arch)
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
       prepare
@@ -27,7 +28,7 @@ class DispatchBuilder < Builder
       cmd << "cmake -G Ninja"
       if @arch == Arch.host
          cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-         cmd << "-DCMAKE_C_COMPILER=\"#{swift.llvm}/bin/clang\""
+         cmd << "-DCMAKE_C_COMPILER=\"#{llvm.builds}/bin/clang\""
       else
          cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
          cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
@@ -40,8 +41,8 @@ class DispatchBuilder < Builder
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DENABLE_SWIFT=true"
       cmd << "-DENABLE_TESTING=false"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{swift.swift}/bin/swiftc\""
-      cmd << "-DCMAKE_PREFIX_PATH=\"#{swift.swift}/lib/cmake/swift\""
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{swift.builds}/bin/swiftc\""
+      cmd << "-DCMAKE_PREFIX_PATH=\"#{swift.builds}/lib/cmake/swift\""
       cmd << @sources
       execute cmd.join(" ")
       fixNinjaBuild

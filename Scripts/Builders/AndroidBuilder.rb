@@ -6,6 +6,10 @@ class AndroidBuilder < Builder
       return "21"
    end
 
+   def gcc
+      return "4.9"
+   end
+
    def initialize(arch = Arch.default)
       super(Lib.ndk, arch)
       @sources = "#{Config.sources}/#{@component}" + suffix

@@ -72,6 +72,8 @@ namespace :armv7a do
       # UUIDBuilder.new().make
       OpenSSLBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.armv7a).make
+      CMarkBuilder.new(Arch.armv7a).make
+      LLVMBuilder.new(Arch.armv7a).make
       swift.make
       DispatchBuilder.new(Arch.armv7a).make
       FoundationBuilder.new(Arch.armv7a).make

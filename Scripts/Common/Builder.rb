@@ -99,6 +99,16 @@ class Builder < Tool
       execute "cd #{@sources} && git clean --quiet -f -X"
    end
 
+   def setupSymLink(from, to, shouldCreate = true)
+      if File.exist? to
+         execute "rm -vf \"#{to}\""
+      end
+      if shouldCreate
+         execute "mkdir -p \"#{File.dirname(to)}\""
+         execute "ln -svf \"#{from}\" \"#{to}\""
+      end
+   end
+
    def setupLinkerSymLink(shouldCreate = true)
       if isMacOS?
          return
