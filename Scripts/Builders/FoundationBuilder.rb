@@ -9,6 +9,7 @@ class FoundationBuilder < Builder
       @ndk = AndroidBuilder.new(arch)
       @dispatch = DispatchBuilder.new(arch)
       @swift = SwiftBuilder.new(arch)
+      @llvm = LLVMBuilder.new(arch)
       @curl = CurlBuilder.new(arch)
       @icu = ICUBuilder.new(arch)
       @xml = XMLBuilder.new(arch)
@@ -30,7 +31,7 @@ class FoundationBuilder < Builder
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}" # Check later if we can use `@installs`
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       if @arch == Arch.host
-         cmd << "-DCMAKE_C_COMPILER=\"#{@swift.llvm}/bin/clang\""
+         cmd << "-DCMAKE_C_COMPILER=\"#{@llvm.builds}/bin/clang\""
          cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       else
          cmd << "-DCMAKE_SYSROOT=#{@ndk.installs}/sysroot"
@@ -58,7 +59,7 @@ class FoundationBuilder < Builder
 
          cmd << "-DCMAKE_INSTALL_PREFIX=#{@swift.installs}/usr" # Applying Foundation over existing file structure.
       end
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.swift}/bin/swiftc\""
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
 
       cmd << @sources
       execute cmd.join(" ")
@@ -95,6 +96,7 @@ class FoundationBuilder < Builder
    def clean
       configurePatches(false)
       removeBuilds()
+      cleanGitRepo()
    end
 
    def checkout

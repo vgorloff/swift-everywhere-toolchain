@@ -126,6 +126,7 @@ class ICUBuilder < Builder
          configurePatches(false)
       end
       removeBuilds()
+      cleanGitRepo()
    end
 
 end

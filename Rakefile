@@ -72,6 +72,8 @@ namespace :armv7a do
       # UUIDBuilder.new().make
       OpenSSLBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.armv7a).make
+      CMarkBuilder.new(Arch.armv7a).make
+      LLVMBuilder.new(Arch.armv7a).make
       swift.make
       DispatchBuilder.new(Arch.armv7a).make
       FoundationBuilder.new(Arch.armv7a).make
@@ -96,6 +98,7 @@ namespace :armv7a do
 
 end
 
+# Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
 namespace :develop do
    namespace :host do
       namespace :make do
@@ -111,7 +114,18 @@ namespace :develop do
          desc "Configure, Build and Install - UUID"
          task :uuid do UUIDBuilder.new(Arch.host).make end
       end
+      namespace :configure do
+         desc "Configure - ICU"
+         task :icu do ICUBuilder.new(Arch.host).configure end
+      end
+      namespace :build do
+         desc "Build - ICU"
+         task :icu do ICUBuilder.new(Arch.host).build end
+      end
       namespace :install do
+         desc "Install - ICU"
+         task :icu do ICUBuilder.new(Arch.host).install end
+
          desc "Install - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.host).install end
 
@@ -226,11 +240,7 @@ namespace :develop do
          task :curl do CurlBuilder.new(Arch.armv7a).install end
 
          desc "Install - Hello project on Android"
-         task :project do
-            helper = ADBHelper.new()
-            helper.deployLibs
-            helper.deployProducts([HelloProjectBuilder.new(Arch.armv7a).executable])
-         end
+         task :project do ADBHelper.new().deploy(HelloProjectBuilder.new(Arch.armv7a).builds) end
       end
 
       namespace :make do
@@ -286,11 +296,20 @@ namespace :develop do
 
          desc "Clean - UUID"
          task :uuid do UUIDBuilder.new(Arch.armv7a).clean end
+
+         desc "Clean - libXML"
+         task :xml do XMLBuilder.new(Arch.armv7a).clean end
+
+         desc "Clean - OpenSSL"
+         task :ssl do OpenSSLBuilder.new(Arch.armv7a).clean end
+
+         desc "Clean - curl"
+         task :curl do CurlBuilder.new(Arch.armv7a).clean end
       end
 
       namespace :run do
          desc "Run - Hello project on Android"
-         task :project do ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executableName) end
+         task :project do ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executable) end
       end
    end
 end

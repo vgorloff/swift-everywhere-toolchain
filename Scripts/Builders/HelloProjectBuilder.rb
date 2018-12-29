@@ -4,12 +4,12 @@ require_relative "../Common/Builder.rb"
 # -  Build error: No such module "SwiftGlibc" – https://lists.swift.org/pipermail/swift-dev/Week-of-Mon-20160919/002955.html
 class HelloProjectBuilder < Builder
 
-   attr_reader :executable, :executableName
+   attr_reader :executable
 
    def initialize(arch = Arch.default)
       super("Hello", arch)
-      @executableName = "hello"
-      @executable = @builds + "/" + @executableName
+      @builds = "#{Config.build}/#{arch}/#{@component}"
+      @executable = "hello"
       @projectRoot = "#{Config.projects}/Hello"
    end
 
@@ -35,8 +35,39 @@ class HelloProjectBuilder < Builder
       end
       cmd << "#{@projectRoot}/hello.swift"
       execute cmd.join(" ")
-      execute "readelf -h #{@executable}"
+      copyLibs
+      execute "readelf -h #{@builds}/#{@executable}"
       logBuildCompleted
+   end
+
+   def copyLibs()
+      swift = SwiftBuilder.new()
+      ndk = AndroidBuilder.new()
+      icu = ICUBuilder.new()
+      curl = CurlBuilder.new()
+      ssl = OpenSSLBuilder.new()
+      xml = XMLBuilder.new()
+      message "Copying Shared Objects started."
+      Dir["#{swift.installs}/usr/lib/swift/android" + "/*.so"].each { |lib|
+         execute "cp -vf #{lib} #{@builds}"
+      }
+      Dir[icu.lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
+         destName = File.basename(lib)
+         destName = destName.sub("63.1", "63") # Fix for error: CANNOT LINK EXECUTABLE ... library "libicudataswift.so.63" not found
+         execute "cp -vf #{lib} #{@builds}/#{destName}"
+      }
+      Dir[curl.lib + "/*.so"].each { |lib|
+         execute "cp -vf #{lib} #{@builds}"
+      }
+      Dir[xml.lib + "/*.so"].each { |lib|
+         execute "cp -vf #{lib} #{@builds}"
+      }
+      Dir[ssl.lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
+         execute "cp -vf #{lib} #{@builds}"
+      }
+      cxxLibPath = "#{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
+      execute "cp -vf #{cxxLibPath} #{@builds}"
+      message "Copying Shared Objects completed."
    end
 
    def prepare()

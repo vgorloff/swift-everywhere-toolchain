@@ -14,8 +14,8 @@ class Builder < Tool
       @arch = arch
       @sources = "#{Config.sources}/#{component}"
       @patches = "#{Config.patches}/#{component}"
-      @builds = "#{Config.build}/#{arch}/#{component}"
-      @installs = "#{Config.install}/#{arch}/#{component}"
+      @builds = "#{Config.build}/#{arch}#{suffix}/#{component}"
+      @installs = "#{Config.install}/#{arch}#{suffix}/#{component}"
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
@@ -93,7 +93,26 @@ class Builder < Tool
       execute "mkdir -p \"#{@builds}\""
    end
 
+   def cleanGitRepo
+      # See: https://stackoverflow.com/a/64966/1418981
+      execute "cd #{@sources} && git clean --quiet -f -x -d"
+      execute "cd #{@sources} && git clean --quiet -f -X"
+   end
+
+   def setupSymLink(from, to, shouldCreate = true)
+      if File.exist? to
+         execute "rm -vf \"#{to}\""
+      end
+      if shouldCreate
+         execute "mkdir -p \"#{File.dirname(to)}\""
+         execute "ln -svf \"#{from}\" \"#{to}\""
+      end
+   end
+
    def setupLinkerSymLink(shouldCreate = true)
+      if isMacOS?
+         return
+      end
       ndk = AndroidBuilder.new(@arch)
       if @arch == Arch.armv7a
          targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
@@ -104,7 +123,7 @@ class Builder < Tool
             message "Removing previously created symlink: \"#{targetFile}\"..."
             execute "sudo rm -fv #{targetFile}"
          end
-         execute "ls -al /usr/bin/*ld.gold"
+         execute "ls -al /usr/bin/*ld.gold || true"
       end
    end
 

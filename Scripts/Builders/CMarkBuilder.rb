@@ -13,8 +13,11 @@ class CMarkBuilder < Builder
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
+      cmd << "-DCMAKE_C_COMPILER:PATH=/usr/bin/clang"
+      cmd << "-DCMAKE_CXX_COMPILER:PATH=/usr/bin/clang++"
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-      cmd << "-DCMAKE_BUILD_TYPE=Release"
+      cmd << "-DCMAKE_BUILD_TYPE:STRING=Release"
+      cmd << "-DCMARK_TESTS=false"
       cmd << @sources
       execute cmd.join(" ")
       logConfigureCompleted

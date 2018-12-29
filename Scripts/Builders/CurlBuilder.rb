@@ -70,4 +70,9 @@ class CurlBuilder < Builder
       install
    end
 
+   def clean
+      removeBuilds()
+      cleanGitRepo()
+   end
+
 end

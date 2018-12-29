@@ -66,4 +66,9 @@ class XMLBuilder < Builder
       install
    end
 
+   def clean
+      removeBuilds()
+      cleanGitRepo()
+   end
+
 end
