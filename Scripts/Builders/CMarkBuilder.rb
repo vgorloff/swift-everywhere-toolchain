@@ -13,11 +13,19 @@ class CMarkBuilder < Builder
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
-      cmd << "-DCMAKE_C_COMPILER:PATH=/usr/bin/clang"
-      cmd << "-DCMAKE_CXX_COMPILER:PATH=/usr/bin/clang++"
+      cmd << "-DCMAKE_C_COMPILER=#{clang}"
+      cmd << "-DCMAKE_CXX_COMPILER=#{clang}++"
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-      cmd << "-DCMAKE_BUILD_TYPE:STRING=Release"
+      cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DCMARK_TESTS=false"
+      if isMacOS?
+         cFlags = '-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector'
+         cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
+         cmd << "-DCMAKE_CXX_FLAGS='#{cFlags}'"
+         # cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
+         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
+         cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
+      end
       cmd << @sources
       execute cmd.join(" ")
       logConfigureCompleted
@@ -49,6 +57,11 @@ class CMarkBuilder < Builder
 
    def prepare
       prepareBuilds()
+   end
+
+   def clean
+      removeBuilds()
+      cleanGitRepo()
    end
 
 end

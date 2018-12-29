@@ -305,6 +305,9 @@ namespace :develop do
 
          desc "Clean - curl"
          task :curl do CurlBuilder.new(Arch.armv7a).clean end
+
+         desc "Clean - CMark"
+         task :cmark do CMarkBuilder.new(Arch.armv7a).clean end
       end
 
       namespace :run do
