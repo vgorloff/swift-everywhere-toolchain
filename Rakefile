@@ -102,6 +102,12 @@ end
 namespace :develop do
    namespace :host do
       namespace :make do
+         desc "Configure, Build and Install - CMark"
+         task :cmark do CMarkBuilder.new(Arch.host).make end
+
+         desc "Configure, Build and Install - LLVM"
+         task :llvm do LLVMBuilder.new(Arch.host).make end
+
          desc "Configure, Build and Install - Swift"
          task :swift do SwiftBuilder.new(Arch.host).make end
 
@@ -146,7 +152,7 @@ namespace :develop do
          desc "Deploy and Run on Android"
          task :run do
             builder = HelloProjectBuilder.new(Arch.host)
-            builder.execute(builder.executable)
+            builder.execute(builder.builds + "/" + builder.executable)
          end
       end
    end

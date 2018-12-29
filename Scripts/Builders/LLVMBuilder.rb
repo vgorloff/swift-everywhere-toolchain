@@ -51,7 +51,7 @@ class LLVMBuilder < Builder
       cmd << "-DLLVM_BUILD_EXTERNAL_COMPILER_RT=TRUE"
       cmd << "-DLLVM_LIT_ARGS=-sv"
       # cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-      cmd << "-DCMAKE_INSTALL_PREFIX=/usr/"
+      cmd << "-DCMAKE_INSTALL_PREFIX=/usr"
       cmd << "-DINTERNAL_INSTALL_PREFIX=local"
 
       cmd << @sources

@@ -53,9 +53,16 @@ class SwiftBuilder < Builder
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
 
-      cmd << "-DCMAKE_C_COMPILER:PATH=/usr/bin/clang"
-      cmd << "-DCMAKE_CXX_COMPILER:PATH=/usr/bin/clang++"
-      cmd << "-DCMAKE_LIBTOOL:PATH="
+      cmd << "-DCMAKE_C_COMPILER:PATH=#{clang}"
+      cmd << "-DCMAKE_CXX_COMPILER:PATH=#{clang}++"
+      if isMacOS?
+         cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
+         cmd << "-DSWIFT_LIPO=#{toolchainPath}/usr/bin/lipo"
+         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
+         cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
+         cmd << "-DSWIFT_DARWIN_DEPLOYMENT_VERSION_OSX=10.12"
+      end
+      # cmd << "-DCMAKE_LIBTOOL:PATH="
       cmd << "-DLLVM_VERSION_MAJOR:STRING=7"
       cmd << "-DLLVM_VERSION_MINOR:STRING=0"
       cmd << "-DLLVM_VERSION_PATCH:STRING=0"
@@ -67,18 +74,22 @@ class SwiftBuilder < Builder
       cmd << "-DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE"
       cmd << "-DSWIFT_FORCE_OPTIMIZED_TYPECHECKER=FALSE"
       cmd << "-DSWIFT_STDLIB_ENABLE_STDLIBCORE_EXCLUSIVITY_CHECKING=FALSE"
-      cmd << "-DSWIFT_ANDROID_NDK_PATH:STRING=#{ndk.sources}"
-      cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION:STRING=#{ndk.gcc}"
-      cmd << "-DSWIFT_ANDROID_API_LEVEL:STRING=#{ndk.api}"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC:STRING=#{icu.lib}/libicuucswift.so"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE:STRING=#{icu.sources}/source/common"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N:STRING=#{icu.lib}/libicui18nswift.so"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE:STRING=#{icu.sources}/source/i18n"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA:STRING=#{icu.lib}/libicudataswift.so"
-      cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH:STRING=/data/local/tmp"
-      cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES:STRING=armv7"
-      cmd << "-DCMAKE_C_FLAGS=' -Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector'"
-      cmd << "-DCMAKE_CXX_FLAGS=' -Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector'"
+
+      if @arch != Arch.host
+         cmd << "-DSWIFT_ANDROID_NDK_PATH:STRING=#{ndk.sources}"
+         cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION:STRING=#{ndk.gcc}"
+         cmd << "-DSWIFT_ANDROID_API_LEVEL:STRING=#{ndk.api}"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC:STRING=#{icu.lib}/libicuucswift.so"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE:STRING=#{icu.sources}/source/common"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N:STRING=#{icu.lib}/libicui18nswift.so"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE:STRING=#{icu.sources}/source/i18n"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA:STRING=#{icu.lib}/libicudataswift.so"
+         cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH:STRING=/data/local/tmp"
+         cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES:STRING=armv7"
+      end
+      cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
+      cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
+      cmd << "-DCMAKE_CXX_FLAGS='#{cFlags}'"
       cmd << "-DCMAKE_BUILD_TYPE:STRING=Release"
       cmd << "-DLLVM_ENABLE_ASSERTIONS:BOOL=TRUE"
       cmd << "-DSWIFT_ANALYZE_CODE_COVERAGE:STRING=FALSE"
@@ -98,17 +109,35 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_BUILD_STATIC_STDLIB:BOOL=FALSE"
       cmd << "-DSWIFT_BUILD_DYNAMIC_SDK_OVERLAY:BOOL=TRUE"
       cmd << "-DSWIFT_BUILD_STATIC_SDK_OVERLAY:BOOL=FALSE"
-      cmd << "-DSWIFT_BUILD_PERF_TESTSUITE:BOOL=TRUE"
-      cmd << "-DSWIFT_BUILD_EXTERNAL_PERF_TESTSUITE:BOOL=FALSE"
+      cmd << "-DSWIFT_BUILD_PERF_TESTSUITE=FALSE"
+      cmd << "-DSWIFT_BUILD_EXTERNAL_PERF_TESTSUITE=FALSE"
+      # >> Seems can be false
       cmd << "-DSWIFT_BUILD_EXAMPLES:BOOL=TRUE"
       cmd << "-DSWIFT_INCLUDE_TESTS:BOOL=TRUE"
+      # <<
       cmd << "-DSWIFT_INSTALL_COMPONENTS:STRING='autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license'"
       cmd << "-DSWIFT_EMBED_BITCODE_SECTION:BOOL=FALSE"
       cmd << "-DSWIFT_TOOLS_ENABLE_LTO:STRING="
       cmd << "-DSWIFT_BUILD_RUNTIME_WITH_HOST_COMPILER:BOOL=FALSE"
       cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE:STRING=Release"
-      cmd << "-DSWIFT_HOST_VARIANT=linux"
-      cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
+      if isMacOS?
+         cmd << "-DSWIFT_HOST_VARIANT=macosx"
+         cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
+         if @arch == Arch.host
+            cmd << "-DSWIFT_SDKS:STRING='OSX'"
+         else
+            cmd << "-DSWIFT_SDKS:STRING='ANDROID;OSX'"
+         end
+         cmd << "-DSWIFT_HOST_TRIPLE:STRING=x86_64-apple-macosx10.12"
+      else
+         cmd << "-DSWIFT_HOST_VARIANT=linux"
+         cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
+         if @arch == Arch.host
+            cmd << "-DSWIFT_SDKS:STRING='LINUX'"
+         else
+            cmd << "-DSWIFT_SDKS:STRING='ANDROID;LINUX'"
+         end
+      end
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
       cmd << "-DLLVM_LIT_ARGS=-sv"
       cmd << "-DCOVERAGE_DB="
@@ -117,7 +146,7 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_AST_VERIFIER:BOOL=FALSE"
       cmd << "-DSWIFT_SIL_VERIFY_ALL:BOOL=FALSE"
       cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER:BOOL=FALSE"
-      cmd << "-DCMAKE_INSTALL_PREFIX:PATH=/usr/"
+      cmd << "-DCMAKE_INSTALL_PREFIX:PATH=/usr"
       cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE:PATH=#{llvm.sources}/tools/clang"
       cmd << "-DSWIFT_PATH_TO_CLANG_BUILD:PATH=#{llvm.builds}"
       cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE:PATH=#{llvm.sources}"
@@ -126,7 +155,6 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD:PATH=#{cmark.builds}"
       cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE:PATH=#{dispatch.sources}"
       cmd << "-DSWIFT_CMARK_LIBRARY_DIR:PATH=#{cmark.builds}/src"
-      cmd << "-DSWIFT_SDKS:STRING='ANDROID;LINUX'"
       cmd << "-DSWIFT_EXEC:STRING=#{@builds}/bin/swiftc"
 
       cmd << @sources
@@ -136,7 +164,15 @@ class SwiftBuilder < Builder
 
    def build
       logBuildStarted
-      execute "cd #{@builds} && ninja all swift-test-stdlib-linux-x86_64 swift-test-stdlib-android-armv7"
+      if isMacOS?
+         if @arch == Arch.host
+            execute "cd #{@builds} && ninja all"
+         else
+            execute "cd #{@builds} && ninja all swift-test-stdlib-macosx-x86_64 swift-test-stdlib-android-armv7"
+         end
+      else
+         execute "cd #{@builds} && ninja all swift-test-stdlib-linux-x86_64 swift-test-stdlib-android-armv7"
+      end
       logBuildCompleted()
    end
 

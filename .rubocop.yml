@@ -74,6 +74,9 @@ Layout/IndentHeredoc:
 Metrics/BlockLength:
   Enabled: false
 
+Style/ConditionalAssignment:
+  Enabled: false
+
 Naming/VariableName:
   EnforcedStyle: camelCase
 

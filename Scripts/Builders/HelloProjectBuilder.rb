@@ -35,8 +35,10 @@ class HelloProjectBuilder < Builder
       end
       cmd << "#{@projectRoot}/hello.swift"
       execute cmd.join(" ")
-      copyLibs
-      execute "readelf -h #{@builds}/#{@executable}"
+      if !isMacOS?
+         copyLibs
+         execute "readelf -h #{@builds}/#{@executable}"
+      end
       logBuildCompleted
    end
 
