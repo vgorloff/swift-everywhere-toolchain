@@ -26,7 +26,6 @@ class LLVMBuilder < Builder
 
       cmd << "-DCMAKE_C_COMPILER:PATH=#{clang}"
       cmd << "-DCMAKE_CXX_COMPILER:PATH=#{clang}++"
-      # cmd << "-DCMAKE_LIBTOOL:PATH="
       if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
          cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
@@ -46,11 +45,9 @@ class LLVMBuilder < Builder
       cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
       cmd << "-DCMAKE_CXX_FLAGS='#{cFlags}'"
       cmd << "-DLLVM_TOOL_SWIFT_BUILD=NO"
-      # cmd << "-DLLVM_ENABLE_LTO:STRING="
       cmd << "-DLLVM_TOOL_COMPILER_RT_BUILD=TRUE"
       cmd << "-DLLVM_BUILD_EXTERNAL_COMPILER_RT=TRUE"
       cmd << "-DLLVM_LIT_ARGS=-sv"
-      # cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       cmd << "-DCMAKE_INSTALL_PREFIX=/usr"
       cmd << "-DINTERNAL_INSTALL_PREFIX=local"
 
