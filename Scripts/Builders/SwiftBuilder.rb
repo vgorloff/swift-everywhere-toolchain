@@ -151,19 +151,19 @@ class SwiftBuilder < Builder
       # cmd << "--graphviz=#{@builds}/graph.dot"
       cmd << @sources
       execute cmd.join(" ")
+      fixNinjaBuild()
       logConfigureCompleted
    end
 
    def build
       logBuildStarted
+      execute "cd #{@builds} && ninja"
       if isMacOS?
-         if @arch == Arch.host
-            execute "cd #{@builds} && ninja all"
-         else
-            execute "cd #{@builds} && ninja all swift-stdlib-macosx-x86_64 swift-stdlib-android-armv7"
+         if @arch != Arch.host
+            execute "cd #{@builds} && ninja swift-stdlib-android-armv7"
          end
       else
-         execute "cd #{@builds} && ninja all swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
+         execute "cd #{@builds} && ninja swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
       end
       logBuildCompleted()
    end
@@ -184,7 +184,7 @@ class SwiftBuilder < Builder
    def install
       logInstallStarted()
       removeInstalls()
-      execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      execute "cd #{@builds} env DESTDIR=#{@installs} && ninja install"
       logInstallCompleted
    end
 
@@ -197,6 +197,19 @@ class SwiftBuilder < Builder
       removeBuilds()
       removeInstalls()
       cleanGitRepo()
+   end
+
+   def fixNinjaBuild
+      if @arch == Arch.host
+         return
+      end
+      file = "#{@builds}/build.ninja"
+      message "Applying fix for #{file}"
+      contents = File.readlines(file).join()
+      if isMacOS?
+         contents = contents.gsub('-D__ANDROID_API__=21  -fobjc-arc', '-D__ANDROID_API__=21')
+      end
+      File.write(file, contents)
    end
 
    def configurePatches(shouldEnable = true)
