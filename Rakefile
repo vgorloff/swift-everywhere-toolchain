@@ -60,11 +60,9 @@ task :verify do ADBHelper.new().verify end
 
 namespace :armv7a do
 
-   desc "Setup NDK Toolchain."
-   task :setup do AndroidBuilder.new(Arch.armv7a).setup end
-
    desc "Build Swift Toolchain."
    task :build do
+      AndroidBuilder.new(Arch.armv7a).setup
       tool = Tool.new()
       swift = SwiftBuilder.new(Arch.armv7a)
       ICUBuilder.new(Arch.armv7a).make
@@ -343,9 +341,8 @@ EOM
 EOM
    tool.print(help, 36)
 
-   tool.print("2. Setup and Build all Swift components and Sample project for armv7a.", 32)
+   tool.print("2. Build all Swift components and Sample project for armv7a.", 32)
 help = <<EOM
-   box$ rake armv7a:setup
    box$ rake armv7a:build
    box$ rake armv7a:project:build
 EOM

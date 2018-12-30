@@ -25,6 +25,10 @@ class AndroidBuilder < Builder
    # Fixme. Seems standalone toolchains has been deprecated. Update other builders and remove this step.
    # See: https://github.com/android-ndk/ndk/wiki/Changelog-r19-beta2
    def setup
+      if File.exist?(@installs + "/bin/clang")
+         message "You already have Standalone NDK installed at #{@installs}. Skipping."
+         return
+      end
       cmd = []
       cmd << "#{@sources}/build/tools/make-standalone-toolchain.sh"
       cmd << "--platform=android-#{api}"
