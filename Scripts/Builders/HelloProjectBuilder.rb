@@ -16,8 +16,8 @@ class HelloProjectBuilder < Builder
    def build
       logBuildStarted
       prepare
-      swift = SwiftBuilder.new()
-      ndk = AndroidBuilder.new()
+      swift = SwiftBuilder.new(@arch)
+      ndk = AndroidBuilder.new(@arch)
       cmd = ["cd #{@builds} &&"]
       cmd << "PATH=#{swift.installs}/usr/bin:$PATH"
       cmd << "swiftc"
@@ -43,12 +43,12 @@ class HelloProjectBuilder < Builder
    end
 
    def copyLibs()
-      swift = SwiftBuilder.new()
-      ndk = AndroidBuilder.new()
-      icu = ICUBuilder.new()
-      curl = CurlBuilder.new()
-      ssl = OpenSSLBuilder.new()
-      xml = XMLBuilder.new()
+      swift = SwiftBuilder.new(@arch)
+      ndk = AndroidBuilder.new(@arch)
+      icu = ICUBuilder.new(@arch)
+      curl = CurlBuilder.new(@arch)
+      ssl = OpenSSLBuilder.new(@arch)
+      xml = XMLBuilder.new(@arch)
       message "Copying Shared Objects started."
       Dir["#{swift.installs}/usr/lib/swift/android" + "/*.so"].each { |lib|
          execute "cp -vf #{lib} #{@builds}"

@@ -44,17 +44,20 @@ class SwiftBuilder < Builder
       logConfigureStarted
       prepare
 
-      dispatch = DispatchBuilder.new()
-      llvm = LLVMBuilder.new()
-      ndk = AndroidBuilder.new()
-      icu = ICUBuilder.new()
-      cmark = CMarkBuilder.new()
+      dispatch = DispatchBuilder.new(@arch)
+      llvm = LLVMBuilder.new(@arch)
+      ndk = AndroidBuilder.new(@arch)
+      icu = ICUBuilder.new(@arch)
+      cmark = CMarkBuilder.new(@arch)
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
 
-      cmd << "-DCMAKE_C_COMPILER:PATH=#{clang}"
-      cmd << "-DCMAKE_CXX_COMPILER:PATH=#{clang}++"
+      cmd << "-DCMAKE_C_COMPILER=\"#{llvm.builds}/bin/clang\""
+      cmd << "-DCMAKE_CXX_COMPILER=\"#{llvm.builds}/bin/clang++\""
+
+      # cmd << "-DCMAKE_C_COMPILER:PATH=#{clang}"
+      # cmd << "-DCMAKE_CXX_COMPILER:PATH=#{clang}++"
       if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
          cmd << "-DSWIFT_LIPO=#{toolchainPath}/usr/bin/lipo"
@@ -128,8 +131,8 @@ class SwiftBuilder < Builder
             cmd << "-DSWIFT_SDKS:STRING='OSX'"
          else
             cmd << "-DSWIFT_SDKS:STRING='ANDROID;OSX'"
+            cmd << "-DSWIFT_HOST_TRIPLE:STRING=x86_64-apple-macosx10.9"
          end
-         cmd << "-DSWIFT_HOST_TRIPLE:STRING=x86_64-apple-macosx10.9"
       else
          cmd << "-DSWIFT_HOST_VARIANT=linux"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
@@ -147,15 +150,15 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_AST_VERIFIER=FALSE"
       # cmd << "-DSWIFT_SIL_VERIFY_ALL=FALSE"
       cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER:BOOL=FALSE"
-      cmd << "-DCMAKE_INSTALL_PREFIX:PATH=/usr"
-      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE:PATH=#{llvm.sources}/tools/clang"
-      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD:PATH=#{llvm.builds}"
-      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE:PATH=#{llvm.sources}"
-      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD:PATH=#{llvm.builds}"
-      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE:PATH=#{cmark.sources}"
-      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD:PATH=#{cmark.builds}"
-      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE:PATH=#{dispatch.sources}"
-      cmd << "-DSWIFT_CMARK_LIBRARY_DIR:PATH=#{cmark.builds}/src"
+      cmd << "-DCMAKE_INSTALL_PREFIX=/usr"
+      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{llvm.sources}/tools/clang"
+      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{llvm.builds}"
+      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{llvm.sources}"
+      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{llvm.builds}"
+      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=#{cmark.sources}"
+      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=#{cmark.builds}"
+      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=#{dispatch.sources}"
+      cmd << "-DSWIFT_CMARK_LIBRARY_DIR=#{cmark.builds}/src"
       cmd << "-DSWIFT_EXEC:STRING=#{@builds}/bin/swiftc"
 
       # See: https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/Graphviz

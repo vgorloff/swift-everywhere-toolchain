@@ -69,8 +69,7 @@ class LLVMBuilder < Builder
    def install
       logInstallStarted
       removeInstalls()
-      swift = SwiftBuilder.new()
-      execute "env DESTDIR=#{swift.installs} cmake --build #{@builds} -- install-llvm-cov install-llvm-profdata install-IndexStore"
+      execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install-llvm-cov install-llvm-profdata install-IndexStore"
       logInstallCompleted()
    end
 
@@ -91,8 +90,8 @@ class LLVMBuilder < Builder
    def setupSymLinks
       # Making needed SymLinks. See: https://llvm.org/docs/GettingStarted.html#git-mirror
       message "Making symbolic links..."
-      clang = ClangBuilder.new()
-      crt = CompilerRTBuilder.new()
+      clang = ClangBuilder.new(@arch)
+      crt = CompilerRTBuilder.new(@arch)
       setupSymLink(clang.sources, "#{@sources}/tools/clang")
       setupSymLink(crt.sources, "#{@sources}/projects/compiler-rt")
       if isMacOS?
