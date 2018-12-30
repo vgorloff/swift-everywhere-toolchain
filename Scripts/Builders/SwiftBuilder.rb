@@ -58,9 +58,9 @@ class SwiftBuilder < Builder
       if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
          cmd << "-DSWIFT_LIPO=#{toolchainPath}/usr/bin/lipo"
-         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
+         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
          cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
-         cmd << "-DSWIFT_DARWIN_DEPLOYMENT_VERSION_OSX=10.12"
+         cmd << "-DSWIFT_DARWIN_DEPLOYMENT_VERSION_OSX=10.9"
       end
       # cmd << "-DCMAKE_LIBTOOL:PATH="
       # cmd << "-DLLVM_VERSION_MAJOR:STRING=7"
@@ -129,7 +129,7 @@ class SwiftBuilder < Builder
          else
             cmd << "-DSWIFT_SDKS:STRING='ANDROID;OSX'"
          end
-         cmd << "-DSWIFT_HOST_TRIPLE:STRING=x86_64-apple-macosx10.12"
+         cmd << "-DSWIFT_HOST_TRIPLE:STRING=x86_64-apple-macosx10.9"
       else
          cmd << "-DSWIFT_HOST_VARIANT=linux"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"

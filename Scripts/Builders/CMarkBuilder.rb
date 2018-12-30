@@ -23,7 +23,7 @@ class CMarkBuilder < Builder
          cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
          cmd << "-DCMAKE_CXX_FLAGS='#{cFlags}'"
          # cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
-         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
+         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
          cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
       end
       cmd << @sources

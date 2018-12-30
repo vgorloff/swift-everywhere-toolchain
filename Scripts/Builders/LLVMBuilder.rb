@@ -29,11 +29,11 @@ class LLVMBuilder < Builder
       # cmd << "-DCMAKE_LIBTOOL:PATH="
       if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
-         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
+         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
          cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
-         cmd << "-DSANITIZER_MIN_OSX_VERSION=10.12"
+         cmd << "-DSANITIZER_MIN_OSX_VERSION=10.9"
          cmd << "-DLLVM_ENABLE_MODULES:BOOL=FALSE"
-         cmd << "-DLLVM_HOST_TRIPLE:STRING=x86_64-apple-macosx10.12"
+         cmd << "-DLLVM_HOST_TRIPLE:STRING=x86_64-apple-macosx10.9"
       end
       cmd << "-DLLVM_VERSION_MAJOR:STRING=7"
       cmd << "-DLLVM_VERSION_MINOR:STRING=0"

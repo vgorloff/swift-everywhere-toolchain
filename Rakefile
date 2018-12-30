@@ -82,7 +82,6 @@ namespace :armv7a do
    end
 
    namespace :project do
-
       desc "Builds Sample project"
       task :build do HelloProjectBuilder.new(Arch.armv7a).build end
 
@@ -100,6 +99,20 @@ end
 namespace :develop do
    namespace :host do
       namespace :make do
+         desc "Build Swift Toolchain."
+         task :all do
+            tool = Tool.new()
+            swift = SwiftBuilder.new(Arch.host)
+            CMarkBuilder.new(Arch.host).make
+            LLVMBuilder.new(Arch.host).make
+            swift.make
+            DispatchBuilder.new(Arch.host).make
+            FoundationBuilder.new(Arch.host).make
+            puts ""
+            tool.print("\"Swift Toolchain for Host\" build is completed.")
+            tool.print("It can be found in \"#{swift.installs}\".")
+            puts ""
+         end
          desc "Configure, Build and Install - CMark"
          task :cmark do CMarkBuilder.new(Arch.host).make end
 
@@ -215,7 +228,6 @@ namespace :develop do
       end
 
       namespace :install do
-
          desc "Install - ICU"
          task :icu do ICUBuilder.new(Arch.armv7a).install end
 
