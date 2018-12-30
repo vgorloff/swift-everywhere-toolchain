@@ -60,11 +60,9 @@ task :verify do ADBHelper.new().verify end
 
 namespace :armv7a do
 
-   desc "Setup NDK Toolchain."
-   task :setup do AndroidBuilder.new(Arch.armv7a).setup end
-
    desc "Build Swift Toolchain."
    task :build do
+      AndroidBuilder.new(Arch.armv7a).setup
       tool = Tool.new()
       swift = SwiftBuilder.new(Arch.armv7a)
       ICUBuilder.new(Arch.armv7a).make
@@ -84,7 +82,6 @@ namespace :armv7a do
    end
 
    namespace :project do
-
       desc "Builds Sample project"
       task :build do HelloProjectBuilder.new(Arch.armv7a).build end
 
@@ -102,6 +99,26 @@ end
 namespace :develop do
    namespace :host do
       namespace :make do
+         desc "Build Swift Toolchain."
+         task :all do
+            tool = Tool.new()
+            swift = SwiftBuilder.new(Arch.host)
+            CMarkBuilder.new(Arch.host).make
+            LLVMBuilder.new(Arch.host).make
+            swift.make
+            DispatchBuilder.new(Arch.host).make
+            FoundationBuilder.new(Arch.host).make
+            puts ""
+            tool.print("\"Swift Toolchain for Host\" build is completed.")
+            tool.print("It can be found in \"#{swift.installs}\".")
+            puts ""
+         end
+         desc "Configure, Build and Install - CMark"
+         task :cmark do CMarkBuilder.new(Arch.host).make end
+
+         desc "Configure, Build and Install - LLVM"
+         task :llvm do LLVMBuilder.new(Arch.host).make end
+
          desc "Configure, Build and Install - Swift"
          task :swift do SwiftBuilder.new(Arch.host).make end
 
@@ -146,7 +163,7 @@ namespace :develop do
          desc "Deploy and Run on Android"
          task :run do
             builder = HelloProjectBuilder.new(Arch.host)
-            builder.execute(builder.executable)
+            builder.execute(builder.builds + "/" + builder.executable)
          end
       end
    end
@@ -211,7 +228,6 @@ namespace :develop do
       end
 
       namespace :install do
-
          desc "Install - ICU"
          task :icu do ICUBuilder.new(Arch.armv7a).install end
 
@@ -305,6 +321,9 @@ namespace :develop do
 
          desc "Clean - curl"
          task :curl do CurlBuilder.new(Arch.armv7a).clean end
+
+         desc "Clean - CMark"
+         task :cmark do CMarkBuilder.new(Arch.armv7a).clean end
       end
 
       namespace :run do
@@ -334,9 +353,8 @@ EOM
 EOM
    tool.print(help, 36)
 
-   tool.print("2. Setup and Build all Swift components and Sample project for armv7a.", 32)
+   tool.print("2. Build all Swift components and Sample project for armv7a.", 32)
 help = <<EOM
-   box$ rake armv7a:setup
    box$ rake armv7a:build
    box$ rake armv7a:project:build
 EOM

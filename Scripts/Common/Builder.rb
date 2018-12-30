@@ -37,6 +37,26 @@ class Builder < Tool
       return @installs + "/usr"
    end
 
+   def developerDir
+      return `xcode-select --print-path`.strip
+   end
+
+   def macOSSDK
+      return "#{developerDir}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+   end
+
+   def toolchainPath
+      if isMacOS?
+         return "#{developerDir}/Toolchains/XcodeDefault.xctoolchain"
+      else
+         return ""
+      end
+   end
+
+   def clang
+      return toolchainPath + "/usr/bin/clang"
+   end
+
    # ------------------------------------
 
    def logStarted(action)
