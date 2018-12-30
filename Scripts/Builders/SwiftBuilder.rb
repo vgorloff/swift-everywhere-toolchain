@@ -43,6 +43,8 @@ class SwiftBuilder < Builder
    def configure
       logConfigureStarted
       prepare
+      configurePatches(false)
+      configurePatches
 
       dispatch = DispatchBuilder.new(@arch)
       llvm = LLVMBuilder.new(@arch)
@@ -69,16 +71,16 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_STDLIB_ENABLE_STDLIBCORE_EXCLUSIVITY_CHECKING=FALSE"
 
       if @arch != Arch.host
-         cmd << "-DSWIFT_ANDROID_NDK_PATH:STRING=#{ndk.sources}"
-         cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION:STRING=#{ndk.gcc}"
-         cmd << "-DSWIFT_ANDROID_API_LEVEL:STRING=#{ndk.api}"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC:STRING=#{icu.lib}/libicuucswift.so"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE:STRING=#{icu.sources}/source/common"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N:STRING=#{icu.lib}/libicui18nswift.so"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE:STRING=#{icu.sources}/source/i18n"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA:STRING=#{icu.lib}/libicudataswift.so"
-         cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH:STRING=/data/local/tmp"
-         cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES:STRING=armv7"
+         cmd << "-DSWIFT_ANDROID_NDK_PATH=#{ndk.sources}"
+         cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{ndk.gcc}"
+         cmd << "-DSWIFT_ANDROID_API_LEVEL=#{ndk.api}"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{icu.lib}/libicuucswift.so"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE=#{icu.sources}/source/common"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{icu.lib}/libicui18nswift.so"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{icu.sources}/source/i18n"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{icu.lib}/libicudataswift.so"
+         cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
+         cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=armv7"
       end
       cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
@@ -90,42 +92,50 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_INCLUDE_TOOLS=TRUE"
       cmd << "-DSWIFT_BUILD_REMOTE_MIRROR=TRUE"
       cmd << "-DSWIFT_STDLIB_SIL_DEBUGGING=FALSE"
-      cmd << "-DSWIFT_BUILD_DYNAMIC_STDLIB:BOOL=TRUE"
-      cmd << "-DSWIFT_BUILD_STATIC_STDLIB:BOOL=FALSE"
+      cmd << "-DSWIFT_BUILD_DYNAMIC_STDLIB=TRUE"
+      cmd << "-DSWIFT_BUILD_STATIC_STDLIB=FALSE"
+
       cmd << "-DSWIFT_BUILD_DYNAMIC_SDK_OVERLAY=TRUE"
       cmd << "-DSWIFT_BUILD_STATIC_SDK_OVERLAY=FALSE"
+
+      # Disable Benchmarks
       cmd << "-DSWIFT_BUILD_PERF_TESTSUITE=FALSE"
       cmd << "-DSWIFT_BUILD_EXTERNAL_PERF_TESTSUITE=FALSE"
+
       cmd << "-DSWIFT_BUILD_EXAMPLES=FALSE"
       cmd << "-DSWIFT_INCLUDE_TESTS=FALSE"
       cmd << "-DSWIFT_INCLUDE_DOCS=FALSE"
       cmd << "-DSWIFT_ENABLE_SOURCEKIT_TESTS=FALSE"
-      cmd << "-DSWIFT_INSTALL_COMPONENTS:STRING='autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license'"
-      cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE:STRING=Release"
+      cmd << "-DSWIFT_INSTALL_COMPONENTS='autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license'"
+      cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE=Release"
+
       if isMacOS?
+         # cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
          cmd << "-DSWIFT_HOST_VARIANT=macosx"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
+         cmd << "-DSWIFT_ENABLE_IOS32=false"
+         cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
          if @arch == Arch.host
-            cmd << "-DSWIFT_SDKS:STRING='OSX'"
+            cmd << "-DSWIFT_SDKS='OSX'"
          else
-            cmd << "-DSWIFT_SDKS:STRING='ANDROID;OSX'"
-            cmd << "-DSWIFT_HOST_TRIPLE:STRING=x86_64-apple-macosx10.9"
+            cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
+            cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
          end
       else
          cmd << "-DSWIFT_HOST_VARIANT=linux"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
          if @arch == Arch.host
-            cmd << "-DSWIFT_SDKS:STRING='LINUX'"
+            cmd << "-DSWIFT_SDKS='LINUX'"
          else
-            cmd << "-DSWIFT_SDKS:STRING='ANDROID;LINUX'"
+            cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
          end
       end
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
       cmd << "-DLLVM_LIT_ARGS=-sv"
       cmd << "-DCOVERAGE_DB="
-      cmd << "-DSWIFT_SOURCEKIT_USE_INPROC_LIBRARY:BOOL=TRUE"
+      cmd << "-DSWIFT_SOURCEKIT_USE_INPROC_LIBRARY=TRUE"
       cmd << "-DSWIFT_AST_VERIFIER=FALSE"
-      cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER:BOOL=FALSE"
+      cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER=FALSE"
       cmd << "-DCMAKE_INSTALL_PREFIX=/usr"
       cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{llvm.sources}/tools/clang"
       cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{llvm.builds}"
@@ -135,7 +145,7 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=#{cmark.builds}"
       cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=#{dispatch.sources}"
       cmd << "-DSWIFT_CMARK_LIBRARY_DIR=#{cmark.builds}/src"
-      cmd << "-DSWIFT_EXEC:STRING=#{@builds}/bin/swiftc"
+      cmd << "-DSWIFT_EXEC=#{@builds}/bin/swiftc"
 
       # See: https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/Graphviz
       # cmd << "--graphviz=#{@builds}/graph.dot"
@@ -150,10 +160,10 @@ class SwiftBuilder < Builder
          if @arch == Arch.host
             execute "cd #{@builds} && ninja all"
          else
-            execute "cd #{@builds} && ninja all swift-test-stdlib-macosx-x86_64 swift-test-stdlib-android-armv7"
+            execute "cd #{@builds} && ninja all swift-stdlib-macosx-x86_64 swift-stdlib-android-armv7"
          end
       else
-         execute "cd #{@builds} && ninja all swift-test-stdlib-linux-x86_64 swift-test-stdlib-android-armv7"
+         execute "cd #{@builds} && ninja all swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
       end
       logBuildCompleted()
    end
@@ -168,6 +178,7 @@ class SwiftBuilder < Builder
       configure
       build
       install
+      configurePatches(false)
    end
 
    def install
@@ -182,9 +193,18 @@ class SwiftBuilder < Builder
    end
 
    def clean
+      configurePatches(false)
       removeBuilds()
       removeInstalls()
       cleanGitRepo()
+   end
+
+   def configurePatches(shouldEnable = true)
+      if @arch == Arch.host && shouldEnable
+         return
+      end
+      # configurePatch("#{@sources}/stdlib/private/CMakeLists.txt", "#{@patches}/stdlib-private-CMakeLists.patch", shouldEnable)
+      # configurePatch("#{@sources}/stdlib/public/stubs/CMakeLists.txt", "#{@patches}/stdlib-public-stubs-CMakeLists.txt.patch", shouldEnable)
    end
 
 end
