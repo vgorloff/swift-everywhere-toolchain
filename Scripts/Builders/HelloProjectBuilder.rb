@@ -20,13 +20,14 @@ class HelloProjectBuilder < Builder
       ndk = AndroidBuilder.new(@arch)
       cmd = ["cd #{@builds} &&"]
       cmd << "PATH=#{swift.installs}/usr/bin:$PATH"
-      cmd << "swiftc"
+      cmd << "swiftc -v"
       if @arch != Arch.host
          cmd << "-tools-directory #{ndk.installs}/bin"
          cmd << "-target armv7-none-linux-androideabi" # Targeting android-armv7.
          cmd << "-Xcc -I#{ndk.installs}/sysroot/usr/include"
          cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID"
          cmd << "-Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
+         cmd << "-Xlinker -v"
 
          # Below seems not needed.
          # cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.
