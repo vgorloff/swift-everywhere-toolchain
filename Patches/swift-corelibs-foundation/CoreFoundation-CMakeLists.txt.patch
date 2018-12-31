@@ -1,5 +1,5 @@
 diff --git a/CoreFoundation/CMakeLists.txt b/CoreFoundation/CMakeLists.txt
-index 0aa9565e3c3930e7375cc548870003c1b8432653..643e53a03e36477d71e3b0339f337a01e868c72b 100644
+index 0aa9565e3c3930e7375cc548870003c1b8432653..ce74ea3eb2cf06f6ad0a6f3e2d1b5d45b8d70b9e 100644
 --- a/CoreFoundation/CMakeLists.txt
 +++ b/CoreFoundation/CMakeLists.txt
 @@ -194,6 +194,7 @@ add_framework(CoreFoundation
@@ -10,6 +10,20 @@ index 0aa9565e3c3930e7375cc548870003c1b8432653..643e53a03e36477d71e3b0339f337a01
                  # Base
                  Base.subproj/CFBase.c
                  Base.subproj/CFFileUtilities.c
+@@ -368,11 +369,11 @@ if(CF_ENABLE_LIBDISPATCH)
+                              PRIVATE
+                                ${CF_PATH_TO_LIBDISPATCH_SOURCE}
+                                ${CF_PATH_TO_LIBDISPATCH_BUILD}/tests)
+-  if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
++#   if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
+     target_include_directories(CoreFoundation
+                                SYSTEM PRIVATE
+                                  ${CF_PATH_TO_LIBDISPATCH_SOURCE}/src/BlocksRuntime)
+-  endif()
++#   endif()
+ endif()
+ 
+ if("${CMAKE_C_SIMULATE_ID}" STREQUAL "MSVC")
 @@ -405,9 +406,9 @@ if(CF_DEPLOYMENT_SWIFT)
                             PRIVATE
                               /clang:-fcf-runtime-abi=swift)
