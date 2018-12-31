@@ -110,7 +110,7 @@ class SwiftBuilder < Builder
       cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE=Release"
 
       if isMacOS?
-         # cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
+         cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
          cmd << "-DSWIFT_HOST_VARIANT=macosx"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
          cmd << "-DSWIFT_ENABLE_IOS32=false"
@@ -152,6 +152,7 @@ class SwiftBuilder < Builder
       cmd << @sources
       execute cmd.join(" ")
       fixNinjaBuild()
+      fixNinjaRules()
       logConfigureCompleted
    end
 
@@ -160,7 +161,9 @@ class SwiftBuilder < Builder
       execute "cd #{@builds} && ninja"
       if isMacOS?
          if @arch != Arch.host
-            execute "cd #{@builds} && ninja swift-stdlib-android-armv7"
+            # Workaround: Should be `swift-stdlib-android-armv7` only.
+            targets = "swiftGlibc-android swiftCore-android swiftSIMDOperators-android swiftSwiftOnoneSupport-android swiftRemoteMirror-android"
+            execute "cd #{@builds} && ninja #{targets}"
          end
       else
          execute "cd #{@builds} && ninja swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
@@ -184,7 +187,8 @@ class SwiftBuilder < Builder
    def install
       logInstallStarted()
       removeInstalls()
-      execute "cd #{@builds} env DESTDIR=#{@installs} && ninja install"
+      fixInstallScript()
+      execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
       logInstallCompleted
    end
 
@@ -205,19 +209,110 @@ class SwiftBuilder < Builder
       end
       file = "#{@builds}/build.ninja"
       message "Applying fix for #{file}"
-      contents = File.readlines(file).join()
+      lines = File.readlines(file)
+      if isMacOS?
+         result = []
+         # >> Fixes non NDK Linker options.
+         shouldFixLinker = false
+         lines.each { |line|
+            if line.start_with?("build") && line.include?('CXX_SHARED_LIBRARY_LINKER') && line.include?("android")
+               shouldFixLinker = true
+            elsif line.strip() == ""
+               shouldFixLinker = false
+            elsif shouldFixLinker && line.include?('LINK_LIBRARIES')
+               # See also: Build/armv7a-macos/swift/lib/cmake/swift/SwiftExports.cmake and Build/armv7a-macos/swift/lib/cmake/swift/SwiftConfig.cmake
+               line = line.gsub('-framework Foundation', '')
+               line = line.gsub('-framework CoreFoundation', '')
+               line = line.gsub('-licucore', '')
+            elsif shouldFixLinker && line.include?('LINK_FLAGS')
+               line = line.gsub('-all_load', '')
+            end
+            result << line
+         }
+         # <<
+         lines = result
+      end
+      contents = lines.join()
       if isMacOS?
          contents = contents.gsub('-D__ANDROID_API__=21  -fobjc-arc', '-D__ANDROID_API__=21')
       end
       File.write(file, contents)
    end
 
+   def fixNinjaRules
+      if @arch == Arch.host || !isMacOS?
+         return
+      end
+      ndk = AndroidBuilder.new(@arch)
+      file = "#{@builds}/rules.ninja"
+      message "Applying fix for #{file}"
+      lines = File.readlines(file)
+      result = []
+      # >> Fixes non NDK Dynamic Linker options.
+      shouldFixLinker = false
+      lines.each { |line|
+         if line.start_with?("rule") && line.include?('CXX_SHARED_LIBRARY_LINKER') && line.include?("android")
+            shouldFixLinker = true
+         elsif line.strip() == ""
+            shouldFixLinker = false
+         elsif shouldFixLinker && line.include?('command')
+            line = line.gsub('-dynamiclib', '-shared')
+            line = line.gsub('$SONAME_FLAG $INSTALLNAME_DIR$SONAME', '')
+         end
+         result << line
+      }
+      lines = result
+      # <<
+      # >> Fixes non NDK Static Linker options.
+      shouldFixLinker = false
+      result = []
+      lines.each { |line|
+         if line.start_with?("rule") && line.include?('CXX_STATIC_LIBRARY_LINKER') && line.include?("android")
+            shouldFixLinker = true
+         elsif line.strip() == ""
+            shouldFixLinker = false
+         elsif shouldFixLinker && line.include?('command')
+            line = line.gsub('/usr/bin/ar', "#{ndk.bin}/arm-linux-androideabi-ar")
+         end
+         result << line
+      }
+      lines = result
+      # <<
+      File.write(file, lines.join() + "\n")
+   end
+
+   def fixInstallScript
+      file = "#{@builds}/cmake_install.cmake"
+      message "Applying fix for #{file}"
+      lines = File.readlines(file)
+      contents = lines.join
+      if contents.include?("libswiftGlibc.so")
+         message "Seems you already applied fix for #{file}"
+         return
+      end
+      result = []
+      # >> Fixes non NDK Dynamic Linker options.
+      filesToInstall = Dir["#{builds}/lib/swift/android/armv7/*.so"].map { |so| " \"#{so}\"" }.join("\n")
+      commands = 'if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)' + "\n"
+      commands += ' file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/swift/android" TYPE FILE FILES' + "\n"
+      commands += filesToInstall
+      commands += ")\nendif()\n"
+      lines.each { |line|
+         if line.include?('if(CMAKE_INSTALL_COMPONENT)')
+            line = commands + "\n" + line
+         end
+         result << line
+      }
+      lines = result
+      File.write(file, lines.join() + "\n")
+   end
+
    def configurePatches(shouldEnable = true)
       if @arch == Arch.host && shouldEnable
          return
       end
-      # configurePatch("#{@sources}/stdlib/private/CMakeLists.txt", "#{@patches}/stdlib-private-CMakeLists.patch", shouldEnable)
-      # configurePatch("#{@sources}/stdlib/public/stubs/CMakeLists.txt", "#{@patches}/stdlib-public-stubs-CMakeLists.txt.patch", shouldEnable)
+      configurePatch("#{@sources}/stdlib/private/CMakeLists.txt", "#{@patches}/stdlib-private-CMakeLists.txt.patch", shouldEnable)
+      configurePatch("#{@sources}/stdlib/public/stubs/CMakeLists.txt", "#{@patches}/stdlib-public-stubs-CMakeLists.txt.patch", shouldEnable)
    end
 
 end
