@@ -165,6 +165,10 @@ class SwiftBuilder < Builder
             targets = "swiftGlibc-android swiftCore-android swiftSIMDOperators-android swiftSwiftOnoneSupport-android swiftRemoteMirror-android"
             execute "cd #{@builds} && ninja #{targets}"
          end
+         message "Copying Shared objects"
+         Dir["#{@builds}/lib/swift/android/armv7/*.so"].each { |so|
+            execute "cp -vfr \"#{so}\" \"#{@builds}/lib/swift/android/\""
+         }
       else
          execute "cd #{@builds} && ninja swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
       end
