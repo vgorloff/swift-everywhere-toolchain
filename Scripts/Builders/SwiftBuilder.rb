@@ -286,6 +286,9 @@ class SwiftBuilder < Builder
    end
 
    def fixInstallScript
+      if !isMacOS?
+         return
+      end
       file = "#{@builds}/cmake_install.cmake"
       message "Applying fix for #{file}"
       lines = File.readlines(file)
