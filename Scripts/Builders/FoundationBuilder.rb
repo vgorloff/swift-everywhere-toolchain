@@ -61,10 +61,15 @@ class FoundationBuilder < Builder
       end
       cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
 
+      # if isMacOS?
+      #    cmd << "-DCMAKE_AR=#{@ndk.bin}/arm-linux-androideabi-ar"
+      # end
+
       cmd << @sources
       execute cmd.join(" ")
       fixNinjaBuild()
-      execute "cd #{@builds} && CFLAGS='-DDEPLOYMENT_TARGET_ANDROID -I#{@sources}' ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
+      execute "cd #{@builds} && CFLAGS='-DDEPLOYMENT_TARGET_ANDROID -I#{@icu.include} -I#{@xml.include}/libxml2 -I#{@curl.include} -I#{@sources}' ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
+      fixCoreFoundationNinjaBuild()
       logConfigureCompleted
    end
 
@@ -103,6 +108,25 @@ class FoundationBuilder < Builder
       checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-foundation", "a7f12d0851780b2c196733b2710a8ff2ae56bdcd")
    end
 
+   def fixCoreFoundationNinjaBuild
+      if !isMacOS?
+         return
+      end
+      ndk = AndroidBuilder.new(@arch)
+      file = "#{@builds}/CoreFoundation-prefix/src/CoreFoundation-build/build.ninja"
+      message "Applying fix for #{file}"
+      contents = File.readlines(file).join()
+      contents = contents.gsub('-DDEPLOYMENT_TARGET_MACOSX', "-DDEPLOYMENT_TARGET_LINUX")
+      File.write(file, contents)
+
+      file = "#{@builds}/CoreFoundation-prefix/src/CoreFoundation-build/rules.ninja"
+      message "Applying fix for #{file}"
+      contents = File.readlines(file).join()
+      contents = contents.gsub('/usr/bin/ar', "#{ndk.bin}/arm-linux-androideabi-ar")
+      contents = contents.gsub('/usr/bin/ranlib', "#{ndk.bin}/arm-linux-androideabi-ranlib")
+      File.write(file, contents)
+   end
+
    def fixNinjaBuild
       if @arch == Arch.host
          return
@@ -131,7 +155,7 @@ class FoundationBuilder < Builder
          return
       end
       configurePatch("#{@sources}/cmake/modules/SwiftSupport.cmake", "#{@patches}/CmakeSystemProcessor.patch", shouldEnable)
-      configurePatch("#{@sources}/CoreFoundation/CMakeLists.txt", "#{@patches}/CompileOptions.patch", shouldEnable)
+      configurePatch("#{@sources}/CoreFoundation/CMakeLists.txt", "#{@patches}/CoreFoundation-CMakeLists.txt.patch", shouldEnable)
       configurePatch("#{@sources}/CMakeLists.txt", "#{@patches}/CMakeLists.patch", shouldEnable)
       configurePatch("#{@sources}/Foundation/NSGeometry.swift", "#{@patches}/NSGeometry.patch", shouldEnable)
       configurePatch("#{@sources}/Tools/plutil/main.swift", "#{@patches}/plutil.patch", shouldEnable)

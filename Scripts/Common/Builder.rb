@@ -130,20 +130,24 @@ class Builder < Tool
    end
 
    def setupLinkerSymLink(shouldCreate = true)
-      if isMacOS?
-         return
-      end
       ndk = AndroidBuilder.new(@arch)
-      if @arch == Arch.armv7a
+      llvm = LLVMBuilder.new(@arch)
+      if isMacOS?
+         targetFile = "#{llvm.builds}/bin/ld.gold"
+         sourceFile = "#{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/bin/ld.gold"
+      else
          targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
+         sourceFile = "#{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold"
+      end
+      if @arch == Arch.armv7a
+         sudo = isMacOS? ? "" : "sudo "
          if shouldCreate
             message "Making symbolic link to \"#{targetFile}\"..."
-            execute "sudo ln -svf #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold #{targetFile}"
+            execute "#{sudo}ln -svf #{sourceFile} #{targetFile}"
          else
             message "Removing previously created symlink: \"#{targetFile}\"..."
-            execute "sudo rm -fv #{targetFile}"
+            execute "#{sudo}rm -fv #{targetFile}"
          end
-         execute "ls -al /usr/bin/*ld.gold || true"
       end
    end
 

@@ -1,7 +1,7 @@
 // ~~~~~~~~~~~~~~ CORE
 print("SA - SwiftCore: Works!")
 
-
+#if true
 // ~~~~~~~~~~~~~~ DISPATCH
 import Dispatch
 let sema = DispatchSemaphore(value: 0)
@@ -15,8 +15,10 @@ queue.async {
 if sema.wait(timeout: .now() + 10) == .timedOut {
    print("SA - DispatchQueue: Timeout.")
 }
+#endif
 
 
+#if true
 // ~~~~~~~~~~~~~~ FOUNDATION
 import Foundation
 
@@ -25,9 +27,11 @@ let op = BlockOperation {
 }
 let opQueue = OperationQueue()
 opQueue.addOperations([op], waitUntilFinished: true)
+#endif
 
+
+#if true
 // ~~~~~~~~~~~~~~~~ Serialization
-
 let json = ["name": "SA - JSONSerialization/JSONDecoder: Works!"]
 do {
    let data = try JSONSerialization.data(withJSONObject: json, options: [])
@@ -41,7 +45,10 @@ do {
 } catch {
    print(error)
 }
+#endif
 
+
+#if true
 // ~~~~~~~~~~ Networking
 
 print("SA - URLSession: Currently disabled. Will fail with `Segmentation fault`. Seems something in Foundation classes needs to be fixed.")
@@ -72,3 +79,4 @@ print("SA - URLSession: Currently disabled. Will fail with `Segmentation fault`.
 // } else {
 //    print("bad url")
 // }
+#endif
