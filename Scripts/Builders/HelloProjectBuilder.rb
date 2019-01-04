@@ -16,28 +16,41 @@ class HelloProjectBuilder < Builder
    def build
       logBuildStarted
       prepare
+      copyLibs
       swift = SwiftBuilder.new(@arch)
       ndk = AndroidBuilder.new(@arch)
+      mainFile = "#{@builds}/hello-main.o"
+      outFile = "#{@builds}/hello"
+
+      # Swift
       cmd = ["cd #{@builds} &&"]
-      cmd << "PATH=#{swift.installs}/usr/bin:$PATH"
-      cmd << "swiftc -v"
       if @arch != Arch.host
-         cmd << "-tools-directory #{ndk.installs}/bin"
-         cmd << "-target armv7-none-linux-androideabi" # Targeting android-armv7.
+         cmd << "#{swift.installs}/usr/bin/swift -frontend -c"
+         cmd << "-primary-file #{@projectRoot}/hello.swift"
+         cmd << "-target armv7-none-linux-android -disable-objc-interop"
+         cmd << "-color-diagnostics -module-name hello -o #{mainFile}"
          cmd << "-Xcc -I#{ndk.installs}/sysroot/usr/include"
          cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID"
          cmd << "-Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
-         cmd << "-Xlinker -v"
-
-         # Below seems not needed.
-         # cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.
-         # cmd << "-L #{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a"  # Link the Android NDK's libc++ and libgcc.
-         # cmd << "-L #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x"
       end
-      cmd << "#{@projectRoot}/hello.swift"
       execute cmd.join(" ")
+      execute "file #{mainFile}"
+
+      # Clang
+      cmd = ["cd #{@builds} &&"]
+      cmd << "#{ndk.bin}/clang++ -fuse-ld=gold"
+      # cmd << "-v"
+      cmd << "-B #{ndk.bin} -pie -target armv7-none-linux-androideabi"
+      cmd << "#{swift.installs}/usr/lib/swift/android/armv7/swiftrt.o"
+      cmd << mainFile
+      cmd << "-l#{swift.installs}/usr/lib/swift/android/libswiftCore.so"
+      cmd << "-l#{swift.installs}/usr/lib/swift/android/libswiftSwiftOnoneSupport.so"
+      cmd << "--target=armv7-none-linux-android"
+      cmd << "-o #{outFile}"
+      execute cmd.join(" ")
+      execute "file #{outFile}"
+
       if !isMacOS?
-         copyLibs
          execute "readelf -h #{@builds}/#{@executable}"
       end
       logBuildCompleted
