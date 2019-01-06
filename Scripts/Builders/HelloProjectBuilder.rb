@@ -19,6 +19,7 @@ class HelloProjectBuilder < Builder
       copyLibs
       swift = SwiftBuilder.new(@arch)
       ndk = AndroidBuilder.new(@arch)
+      llvm = LLVMBuilder.new(@arch)
       mainFile = "#{@builds}/hello-main.o"
       outFile = "#{@builds}/hello"
 
@@ -38,14 +39,25 @@ class HelloProjectBuilder < Builder
 
       # Clang
       cmd = ["cd #{@builds} &&"]
-      cmd << "#{ndk.bin}/clang++ -fuse-ld=gold"
-      # cmd << "-v"
+      cmd << "#{llvm.builds}/bin/clang++ -fuse-ld=gold"
+      cmd << "-v"
       cmd << "-B #{ndk.bin} -pie -target armv7-none-linux-androideabi"
       cmd << "#{swift.installs}/usr/lib/swift/android/armv7/swiftrt.o"
       cmd << mainFile
-      cmd << "-l#{swift.installs}/usr/lib/swift/android/libswiftCore.so"
-      cmd << "-l#{swift.installs}/usr/lib/swift/android/libswiftSwiftOnoneSupport.so"
+      cmd << "-l#{@builds}/libswiftCore.so"
+      cmd << "-l#{@builds}/libswiftSwiftOnoneSupport.so"
+      cmd << "-l#{@builds}/libswiftDispatch.so"
+      cmd << "-l#{@builds}/libBlocksRuntime.so"
+      cmd << "-l#{@builds}/libc++_shared.so"
+      cmd << "-l#{@builds}/libFoundation.so"
       cmd << "--target=armv7-none-linux-android"
+             # cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.
+      cmd << "-L #{ndk.installs}/lib/gcc/arm-linux-androideabi/4.9.x"  # Link the Android NDK's libc++ and libgcc.
+      # cmd << "-L #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x"
+      cmd << "-L #{ndk.installs}/sysroot/usr/lib"
+      # cmd << "#{ndk.installs}/sysroot/usr/lib/crtbegin_dynamic.o"
+      # cmd << "#{ndk.installs}/sysroot/usr/lib/crtend_android.o"
+
       cmd << "-o #{outFile}"
       execute cmd.join(" ")
       execute "file #{outFile}"
