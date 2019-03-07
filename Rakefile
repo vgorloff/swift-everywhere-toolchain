@@ -15,6 +15,7 @@ require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 require_relative "Scripts/Common/ADBHelper.rb"
 require_relative "Scripts/Common/Tool.rb"
+require_relative "Scripts/Common/Checkout.rb"
 
 # References:
 #
@@ -34,20 +35,9 @@ namespace :more do
    end
 end
 
-
 desc "Checkout Sources of all Components from Git."
 task :checkout do
-   SwiftBuilder.new().checkout
-   DispatchBuilder.new().checkout
-   FoundationBuilder.new().checkout
-   CMarkBuilder.new().checkout
-   ICUBuilder.new().checkout
-   LLVMBuilder.new().checkout
-   ClangBuilder.new().checkout
-   CompilerRTBuilder.new().checkout
-   XMLBuilder.new().checkout
-   CurlBuilder.new().checkout
-   OpenSSLBuilder.new().checkout
+   Checkout.checkout
 end
 
 desc "Download Android NDK"
