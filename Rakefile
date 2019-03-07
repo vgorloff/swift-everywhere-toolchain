@@ -13,7 +13,6 @@ require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
-require_relative "Scripts/Builders/UUIDBuilder.rb"
 require_relative "Scripts/Common/ADBHelper.rb"
 require_relative "Scripts/Common/Tool.rb"
 
@@ -49,7 +48,6 @@ task :checkout do
    XMLBuilder.new().checkout
    CurlBuilder.new().checkout
    OpenSSLBuilder.new().checkout
-   # UUIDBuilder.new().checkout
 end
 
 desc "Download Android NDK"
@@ -66,7 +64,6 @@ namespace :armv7a do
       AndroidBuilder.new(Arch.armv7a).setup
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
-      # UUIDBuilder.new().make
       OpenSSLBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.armv7a).make
       CMarkBuilder.new(Arch.armv7a).make
@@ -130,9 +127,6 @@ namespace :develop do
 
          desc "Configure, Build and Install - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.host).make end
-
-         desc "Configure, Build and Install - UUID"
-         task :uuid do UUIDBuilder.new(Arch.host).make end
       end
       namespace :configure do
          desc "Configure - ICU"
@@ -289,9 +283,6 @@ namespace :develop do
 
          desc "Configure, Build and Install - OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).make end
-
-         desc "Configure, Build and Install - UUID"
-         task :uuid do UUIDBuilder.new(Arch.armv7a).make end
       end
 
       namespace :clean do
@@ -312,9 +303,6 @@ namespace :develop do
 
          desc "Clean - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.armv7a).clean end
-
-         desc "Clean - UUID"
-         task :uuid do UUIDBuilder.new(Arch.armv7a).clean end
 
          desc "Clean - libXML"
          task :xml do XMLBuilder.new(Arch.armv7a).clean end

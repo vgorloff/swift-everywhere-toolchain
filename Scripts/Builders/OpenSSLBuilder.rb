@@ -10,8 +10,7 @@ class OpenSSLBuilder < Builder
    end
 
    def checkout
-      # OpenSSL_1_1_1a: d1c28d791a7391a8dc101713cd8646df96491d03
-      checkoutIfNeeded(@sources, "https://github.com/openssl/openssl.git", "d1c28d791a7391a8dc101713cd8646df96491d03")
+      checkoutIfNeeded(@sources, "https://github.com/openssl/openssl.git", Revision.ssl)
    end
 
    def prepare

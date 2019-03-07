@@ -77,7 +77,7 @@ class LLVMBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-llvm.git", "f63b283c7143aef31863d5915c28ee79ed390be3")
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift-llvm.git", Revision.llvm)
    end
 
    def prepare()

@@ -108,7 +108,7 @@ class FoundationBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-foundation", "a7f12d0851780b2c196733b2710a8ff2ae56bdcd")
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-foundation", Revision.foundation)
    end
 
    def configurePatches(shouldEnable = true)

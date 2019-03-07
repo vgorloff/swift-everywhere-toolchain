@@ -83,8 +83,7 @@ class ICUBuilder < Builder
    end
 
    def checkout
-      # v63.1: 46895456ad1b6660d17eaeba2c101600ad8d8eb8
-      checkoutIfNeeded(@gitRepoRoot, "https://github.com/unicode-org/icu.git", "46895456ad1b6660d17eaeba2c101600ad8d8eb8")
+      checkoutIfNeeded(@gitRepoRoot, "https://github.com/unicode-org/icu.git", Revision.icu)
    end
 
    def prepare()

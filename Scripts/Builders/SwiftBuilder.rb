@@ -195,7 +195,7 @@ class SwiftBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift.git", "8e38b67d66b41af9062627653963384db0a799eb")
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift.git", Revision.swift)
    end
 
    def clean

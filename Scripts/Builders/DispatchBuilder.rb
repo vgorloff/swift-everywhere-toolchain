@@ -102,7 +102,7 @@ class DispatchBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-libdispatch.git", "afa6cc3d1c42935c5a1016ec7ae13ddcbb1853d4")
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-libdispatch.git", Revision.dispatch)
    end
 
 end

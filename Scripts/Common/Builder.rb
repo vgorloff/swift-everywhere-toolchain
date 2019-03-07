@@ -3,6 +3,7 @@ require_relative "Lib.rb"
 require_relative "Arch.rb"
 require_relative "Config.rb"
 require_relative "Location.rb"
+require_relative "Revision.rb"
 require_relative "Downloader.rb"
 
 class Builder < Tool
