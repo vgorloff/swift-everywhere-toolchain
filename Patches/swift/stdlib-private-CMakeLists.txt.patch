@@ -1,5 +1,5 @@
 diff --git a/stdlib/private/CMakeLists.txt b/stdlib/private/CMakeLists.txt
-index d03a0ad1737b408700d5595498b2934c3b065b40..e1f20ba818dba29dc6e34737b7e93ba192cc1ab9 100644
+index fa67fc55b5..dffc340c47 100644
 --- a/stdlib/private/CMakeLists.txt
 +++ b/stdlib/private/CMakeLists.txt
 @@ -2,7 +2,7 @@ if(SWIFT_BUILD_STDLIB OR SWIFT_BUILD_SDK_OVERLAY)
@@ -8,6 +8,6 @@ index d03a0ad1737b408700d5595498b2934c3b065b40..e1f20ba818dba29dc6e34737b7e93ba1
  
 -if(SWIFT_BUILD_SDK_OVERLAY)
 +if(SWIFT_BUILD_SDK_OVERLAY AND NOT SWIFT_OVERLAY_TARGETS STREQUAL "")
-   # SwiftPrivateThreadExtras makes use of Darwin/Glibc, which is part of the
+   # SwiftPrivatePthreadExtras makes use of Darwin/Glibc, which is part of the
    # SDK overlay. It can't be built separately from the SDK overlay.
    add_subdirectory(RuntimeUnittest)

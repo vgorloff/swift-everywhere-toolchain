@@ -47,7 +47,6 @@ class SwiftBuilder < Builder
       configurePatches
 
       dispatch = DispatchBuilder.new(@arch)
-      llvm = LLVMBuilder.new(@arch)
       ndk = AndroidBuilder.new(@arch)
       icu = ICUBuilder.new(@arch)
       cmark = CMarkBuilder.new(@arch)
@@ -55,8 +54,8 @@ class SwiftBuilder < Builder
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
 
-      cmd << "-DCMAKE_C_COMPILER=\"#{llvm.builds}/bin/clang\""
-      cmd << "-DCMAKE_CXX_COMPILER=\"#{llvm.builds}/bin/clang++\""
+      cmd << "-DCMAKE_C_COMPILER=\"#{llvm}/bin/clang\""
+      cmd << "-DCMAKE_CXX_COMPILER=\"#{llvm}/bin/clang++\""
 
       if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
@@ -130,6 +129,7 @@ class SwiftBuilder < Builder
             cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
          end
       end
+      llvm = LLVMBuilder.new(@arch)
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
       cmd << "-DLLVM_LIT_ARGS=-sv"
       cmd << "-DCOVERAGE_DB="
@@ -176,9 +176,7 @@ class SwiftBuilder < Builder
    end
 
    def prepare
-      setupLinkerSymLink(false)
       prepareBuilds()
-      setupLinkerSymLink()
    end
 
    def make
@@ -276,7 +274,7 @@ class SwiftBuilder < Builder
          elsif line.strip() == ""
             shouldFixLinker = false
          elsif shouldFixLinker && line.include?('command')
-            line = line.gsub('/usr/bin/ar', "#{ndk.bin}/arm-linux-androideabi-ar")
+            line = line.gsub('/usr/bin/ar', "#{ndk.toolchain}/bin/arm-linux-androideabi-ar")
          end
          result << line
       }

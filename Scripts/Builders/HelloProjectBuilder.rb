@@ -30,8 +30,8 @@ class HelloProjectBuilder < Builder
          cmd << "-primary-file #{@projectRoot}/hello.swift"
          cmd << "-target armv7-none-linux-android -disable-objc-interop"
          cmd << "-color-diagnostics -module-name hello -o #{mainFile}"
-         cmd << "-Xcc -I#{ndk.installs}/sysroot/usr/include"
-         cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID"
+         cmd << "-Xcc -I#{ndk.toolchain}/sysroot/usr/include -I#{ndk.toolchain}/sysroot/usr/include/arm-linux-androideabi"
+         cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX"
          cmd << "-Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
       end
       execute cmd.join(" ")
@@ -39,9 +39,9 @@ class HelloProjectBuilder < Builder
 
       # Clang
       cmd = ["cd #{@builds} &&"]
-      cmd << "#{llvm.builds}/bin/clang++ -fuse-ld=gold"
+      cmd << "#{ndk.toolchain}/bin/armv7a-linux-androideabi21-clang -fuse-ld=gold"
       cmd << "-v"
-      cmd << "-B #{ndk.bin} -pie -target armv7-none-linux-androideabi"
+      cmd << "-B #{ndk.bin} -pie"
       cmd << "#{swift.installs}/usr/lib/swift/android/armv7/swiftrt.o"
       cmd << mainFile
       cmd << "-l#{@builds}/libswiftCore.so"
@@ -50,7 +50,6 @@ class HelloProjectBuilder < Builder
       cmd << "-l#{@builds}/libBlocksRuntime.so"
       cmd << "-l#{@builds}/libc++_shared.so"
       cmd << "-l#{@builds}/libFoundation.so"
-      cmd << "--target=armv7-none-linux-android"
              # cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.
       cmd << "-L #{ndk.installs}/lib/gcc/arm-linux-androideabi/4.9.x"  # Link the Android NDK's libc++ and libgcc.
       # cmd << "-L #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x"
@@ -95,6 +94,10 @@ class HelloProjectBuilder < Builder
       }
       cxxLibPath = "#{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
       execute "cp -vf #{cxxLibPath} #{@builds}"
+      execute "cp -vf #{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtbegin_so.o #{@builds}"
+      execute "cp -vf #{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtend_so.o #{@builds}"
+      execute "cp -vf #{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtend_android.o #{@builds}"
+      execute "cp -vf #{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtbegin_dynamic.o #{@builds}"
       message "Copying Shared Objects completed."
    end
 

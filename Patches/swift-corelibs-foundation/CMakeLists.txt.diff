@@ -1,0 +1,62 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index caa241e1..ed58c7ae 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -33,6 +33,7 @@ ExternalProject_Add(CoreFoundation
+                     CMAKE_COMMAND
+                       ${CMAKE_COMMAND}
+                     CMAKE_ARGS
++                      -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+                       -DBUILD_SHARED_LIBS=NO
+                       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                       -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+@@ -287,6 +288,7 @@ add_swift_library(Foundation
+                     ${deployment_enable_libdispatch}
+                     -F${install_dir}/System/Library/Frameworks
+                     -D_DLL
++                    ${ADDITIONAL_SWIFT_CFLAGS}
+                   LINK_FLAGS
+                     -L${install_dir}/usr/lib
+                     -lCoreFoundation
+@@ -297,6 +299,7 @@ add_swift_library(Foundation
+                     -L${CMAKE_CURRENT_BINARY_DIR}
+                     -luuid
+                     ${Foundation_rpath_flags}
++                    ${ADDITIONAL_SWIFT_LINK_FLAGS}
+                   SWIFT_FLAGS
+                     -DDEPLOYMENT_RUNTIME_SWIFT
+                     ${deployment_enable_libdispatch}
+@@ -304,6 +307,7 @@ add_swift_library(Foundation
+                     ${libdispatch_cflags}
+                     ${swift_enable_testing}
+                     ${swift_optimization_flags}
++                    ${ADDITIONAL_SWIFT_FLAGS}
+                   DEPENDS
+                     CoreFoundation)
+ 
+@@ -319,6 +323,7 @@ if(NOT BUILD_SHARED_LIBS)
+       ${LIBXML2_LIBRARIES})
+ endif()
+ 
++if(NOT CMAKE_SYSTEM_NAME STREQUAL Android)
+ add_swift_executable(plutil
+                      SOURCES
+                        Tools/plutil/main.swift
+@@ -344,6 +349,7 @@ add_swift_executable(plutil
+                        uuid
+                        Foundation
+                        CoreFoundation)
++endif()
+ 
+ if(ENABLE_TESTING)
+   add_swift_executable(xdgTestHelper
+@@ -554,7 +560,9 @@ install(FILES
+           CoreFoundation/Base.subproj/module.map
+         DESTINATION
+           lib/swift/CoreFoundation)
++if(NOT CMAKE_SYSTEM_NAME STREQUAL Android)
+ install(PROGRAMS
+           ${CMAKE_CURRENT_BINARY_DIR}/plutil
+         DESTINATION
+           ${CMAKE_INSTALL_FULL_BINDIR})
++endif()

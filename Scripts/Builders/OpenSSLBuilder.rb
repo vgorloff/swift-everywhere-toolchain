@@ -22,8 +22,8 @@ class OpenSSLBuilder < Builder
    def options()
       ndk = AndroidBuilder.new(@arch)
       cmd = ["cd #{@sources} &&"]
-      cmd << "ANDROID_NDK=#{ndk.installs}"
-      cmd << "PATH=#{ndk.bin}:$PATH"
+      cmd << "ANDROID_NDK=#{ndk.sources}"
+      cmd << "PATH=#{ndk.toolchain}/bin:$PATH"
       # >> Seems not needed
       # archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
       # ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"

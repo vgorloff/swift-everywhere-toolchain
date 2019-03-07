@@ -66,7 +66,7 @@ class LLVMBuilder < Builder
    def install
       logInstallStarted
       removeInstalls()
-      execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install-llvm-cov install-llvm-profdata install-IndexStore"
+      execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
       logInstallCompleted()
    end
 

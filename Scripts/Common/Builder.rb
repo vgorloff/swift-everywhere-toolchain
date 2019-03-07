@@ -8,6 +8,7 @@ require_relative "Downloader.rb"
 class Builder < Tool
 
    attr_reader :builds, :installs, :sources
+   attr_writer :llvm
 
    def initialize(component, arch)
       @component = component
@@ -19,6 +20,7 @@ class Builder < Tool
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
+      @llvm = nil
    end
 
    def lib
@@ -55,6 +57,13 @@ class Builder < Tool
 
    def clang
       return toolchainPath + "/usr/bin/clang"
+   end
+
+   def llvm
+      if @llvm.nil?
+         @llvm = LLVMBuilder.new(@arch).installs + "/usr"
+      end
+      return @llvm
    end
 
    # ------------------------------------
@@ -129,28 +138,6 @@ class Builder < Tool
       end
    end
 
-   def setupLinkerSymLink(shouldCreate = true)
-      ndk = AndroidBuilder.new(@arch)
-      llvm = LLVMBuilder.new(@arch)
-      if isMacOS?
-         targetFile = "#{llvm.builds}/bin/ld.gold"
-         sourceFile = "#{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/bin/ld.gold"
-      else
-         targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
-         sourceFile = "#{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold"
-      end
-      if @arch == Arch.armv7a
-         sudo = isMacOS? ? "" : "sudo "
-         if shouldCreate
-            message "Making symbolic link to \"#{targetFile}\"..."
-            execute "#{sudo}ln -svf #{sourceFile} #{targetFile}"
-         else
-            message "Removing previously created symlink: \"#{targetFile}\"..."
-            execute "#{sudo}rm -fv #{targetFile}"
-         end
-      end
-   end
-
    def addFile(replacementFile, destinationFile, shouldApply = true)
       if shouldApply
          if !File.exist? destinationFile
@@ -165,6 +152,11 @@ class Builder < Tool
             execute "rm -fv #{destinationFile}"
          end
       end
+   end
+
+   def configurePatchFile(patchFile, shouldApply = true)
+      originalFile = patchFile.sub(@patches, @sources).sub('.diff', '')
+      configurePatch(originalFile, patchFile, shouldApply)
    end
 
    def configurePatch(originalFile, patchFile, shouldApply = true)

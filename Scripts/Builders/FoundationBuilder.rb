@@ -34,17 +34,21 @@ class FoundationBuilder < Builder
          cmd << "-DCMAKE_C_COMPILER=\"#{@llvm.builds}/bin/clang\""
          cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       else
-         cmd << "-DCMAKE_SYSROOT=#{@ndk.installs}/sysroot"
+         includePath = "#{@ndk.sources}/sysroot/usr/include"
+         cFlags = "-D__ANDROID__"
+         # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
+         cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
+         cmd << "-DANDROID_STL=c++_static"
+         cmd << "-DANDROID_TOOLCHAIN=clang"
+         cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
+         cmd << "-DANDROID_ABI=armeabi-v7a"
          cmd << "-DCMAKE_SYSTEM_NAME=Android"
-         cmd << "-DCMAKE_SYSTEM_VERSION=#{@ndk.api}"
-         cmd << "-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a"
-         cmd << "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang"
-         cmd << "-DCMAKE_ANDROID_STL_TYPE=\"c++_static\""
+         cmd << "-DCMAKE_C_FLAGS=\"#{cFlags}\""
+         cmd << "-DCMAKE_CXX_FLAGS=\"#{cFlags}\""
 
-         # Seems not needed.
-         # cmd << "-DCMAKE_C_COMPILER=\"#{@ndk.bin}/clang\""
-         # cmd << "-DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=#{@ndk.installs}"
-         # cmd << "-DCMAKE_ANDROID_NDK=#{@ndk.sources}"
+         cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/arm-linux-androideabi'"
+         cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/arm-linux-androideabi/bin\;-L\;/vagrant/Sources/ndk-linux/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/arm-linux-androideabi/21\;-L\;/vagrant/Sources/ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x'"
+         cmd << "-DADDITIONAL_SWIFT_CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
 
          cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
          cmd << "-DICU_LIBRARY=#{@icu.lib}"
@@ -67,9 +71,6 @@ class FoundationBuilder < Builder
 
       cmd << @sources
       execute cmd.join(" ")
-      fixNinjaBuild()
-      execute "cd #{@builds} && CFLAGS='-DDEPLOYMENT_TARGET_ANDROID -I#{@icu.include} -I#{@xml.include}/libxml2 -I#{@curl.include} -I#{@sources}' ninja CoreFoundation-prefix/src/CoreFoundation-stamp/CoreFoundation-configure"
-      fixCoreFoundationNinjaBuild()
       logConfigureCompleted
    end
 
@@ -80,6 +81,8 @@ class FoundationBuilder < Builder
       # For troubleshooting purpose.
       # execute "cd #{@builds} && ninja CoreFoundation"
 
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtbegin_so.o #{@builds}"
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtend_so.o #{@builds}"
       execute "cd #{@builds} && ninja"
       logBuildCompleted
    end
@@ -108,58 +111,15 @@ class FoundationBuilder < Builder
       checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-foundation", "a7f12d0851780b2c196733b2710a8ff2ae56bdcd")
    end
 
-   def fixCoreFoundationNinjaBuild
-      if !isMacOS?
-         return
-      end
-      ndk = AndroidBuilder.new(@arch)
-      file = "#{@builds}/CoreFoundation-prefix/src/CoreFoundation-build/build.ninja"
-      message "Applying fix for #{file}"
-      contents = File.readlines(file).join()
-      contents = contents.gsub('-DDEPLOYMENT_TARGET_MACOSX', "-DDEPLOYMENT_TARGET_LINUX")
-      File.write(file, contents)
-
-      file = "#{@builds}/CoreFoundation-prefix/src/CoreFoundation-build/rules.ninja"
-      message "Applying fix for #{file}"
-      contents = File.readlines(file).join()
-      contents = contents.gsub('/usr/bin/ar', "#{ndk.bin}/arm-linux-androideabi-ar")
-      contents = contents.gsub('/usr/bin/ranlib', "#{ndk.bin}/arm-linux-androideabi-ranlib")
-      File.write(file, contents)
-   end
-
-   def fixNinjaBuild
-      if @arch == Arch.host
-         return
-      end
-      file = "#{@builds}/build.ninja"
-      message "Applying fix for #{file}"
-      contents = File.readlines(file).join()
-      contents = contents.gsub('/usr/lib/x86_64-linux-gnu/libicu', "#{@icu.lib}/libicu")
-      contents = contents.gsub('libicuuc.so', 'libicuucswift.so')
-      contents = contents.gsub('libicui18n.so', 'libicui18nswift.so')
-      includePath = "#{@ndk.installs}/sysroot/usr/include"
-      if !contents.include?(includePath)
-         contents = contents.gsub('-module-link-name Foundation', "-module-link-name Foundation -Xcc -I#{includePath}")
-         contents = contents.gsub('-module-name plutil', "-module-name plutil -target armv7-none-linux-androideabi")
-         contents = contents.gsub("-o #{@builds}/plutil.dir/plutil", "-target armv7-none-linux-androideabi -o #{@builds}/plutil.dir/plutil")
-         contents = contents.gsub('-target armv7-none-linux-androideabi', "-target armv7-none-linux-androideabi -tools-directory #{@ndk.installs}/bin")
-         contents = contents.gsub('-Xcc -DDEPLOYMENT_TARGET_LINUX', '-Xcc -DDEPLOYMENT_TARGET_ANDROID')
-         # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
-         contents = contents.gsub('-emit-library', "-emit-library -Xlinker --defsym -Xlinker '__CFConstantStringClassReference=$$s10Foundation19_NSCFConstantStringCN'")
-      end
-      File.write(file, contents)
-   end
-
    def configurePatches(shouldEnable = true)
       if @arch == Arch.host && shouldEnable
          return
       end
-      configurePatch("#{@sources}/cmake/modules/SwiftSupport.cmake", "#{@patches}/CmakeSystemProcessor.patch", shouldEnable)
-      configurePatch("#{@sources}/CoreFoundation/CMakeLists.txt", "#{@patches}/CoreFoundation-CMakeLists.txt.patch", shouldEnable)
-      configurePatch("#{@sources}/CMakeLists.txt", "#{@patches}/CMakeLists.patch", shouldEnable)
+      configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/Data.swift.diff", shouldEnable)
+      configurePatchFile("#{@patches}/CoreFoundation/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
       configurePatch("#{@sources}/Foundation/NSGeometry.swift", "#{@patches}/NSGeometry.patch", shouldEnable)
-      configurePatch("#{@sources}/Tools/plutil/main.swift", "#{@patches}/plutil.patch", shouldEnable)
-      configurePatch("#{@sources}/uuid/uuid.h", "#{@patches}/uuid.h.patch", shouldEnable)
 
       # FIXME: Below patches may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
       configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c", "#{@patches}/CFKnownLocations.patch", shouldEnable)
