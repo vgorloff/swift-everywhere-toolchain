@@ -51,7 +51,6 @@ namespace :armv7a do
    desc "Build Swift Toolchain."
    task :build do
       LLVMBuilder.new(Arch.armv7a).make
-      AndroidBuilder.new(Arch.armv7a).setup
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make

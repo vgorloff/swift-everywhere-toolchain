@@ -2,18 +2,6 @@ require_relative "../Common/Builder.rb"
 
 class AndroidBuilder < Builder
 
-   def api
-      return "21"
-   end
-
-   def gcc
-      return "4.9"
-   end
-
-   def toolchain
-      return "#{@sources}/toolchains/llvm/prebuilt/linux-x86_64"
-   end
-
    def initialize(arch = Arch.default)
       super(Lib.ndk, arch)
       @sources = "#{Config.sources}/#{@component}" + suffix
@@ -27,30 +15,16 @@ class AndroidBuilder < Builder
       downloader.bootstrap()
    end
 
-   # Fixme. Seems standalone toolchains has been deprecated. Update other builders and remove this step.
-   # See: https://github.com/android-ndk/ndk/wiki/Changelog-r19-beta2
-   def setup
-      if File.exist?(@installs + "/bin/clang")
-         message "You already have Standalone NDK installed at #{@installs}. Skipping."
-         return
-      end
-      cmd = []
-      cmd << "#{@sources}/build/tools/make-standalone-toolchain.sh"
-      cmd << "--platform=android-#{api}"
-      cmd << "--install-dir=#{@installs}"
-      if @arch == Arch.armv7a
-         cmd << "--toolchain=arm-linux-androideabi-4.9"
-      elsif @arch == Arch.x86
-         cmd << "--toolchain=x86-4.9"
-      elsif @arch == Arch.aarch64
-         cmd << "--toolchain=aarch64-linux-android-4.9"
-      end
-      execute cmd.join(" ")
-      logSetupCompleted
+   def api
+      return "21"
    end
 
-   def clean()
-      removeInstalls()
+   def gcc
+      return "4.9"
+   end
+
+   def toolchain
+      return "#{@sources}/toolchains/llvm/prebuilt/linux-x86_64"
    end
 
 end
