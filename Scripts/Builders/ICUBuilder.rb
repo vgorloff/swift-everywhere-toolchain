@@ -13,8 +13,7 @@ class ICUBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.icu, arch)
-      @gitRepoRoot = "#{Config.sources}/#{Lib.icu}"
-      @sources = "#{@gitRepoRoot}/icu4c"
+      @sources = "#{Config.sources}/#{Lib.icu}/icu4c"
       @ndk = AndroidBuilder.new(arch)
    end
 
@@ -80,10 +79,6 @@ class ICUBuilder < Builder
       end
       execute cmd.join(" ")
       logConfigureCompleted
-   end
-
-   def checkout
-      checkoutIfNeeded(@gitRepoRoot, "https://github.com/unicode-org/icu.git", Revision.icu)
    end
 
    def build
