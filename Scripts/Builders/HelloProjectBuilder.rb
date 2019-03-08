@@ -44,13 +44,14 @@ class HelloProjectBuilder < Builder
       cmd << "-B #{ndk.toolchain}/bin -pie"
       cmd << "#{swift.installs}/usr/lib/swift/android/armv7/swiftrt.o"
       cmd << mainFile
-      cmd << "-l#{@builds}/libswiftCore.so"
-      cmd << "-l#{@builds}/libswiftGlibc.so"
-      cmd << "-l#{@builds}/libswiftSwiftOnoneSupport.so"
-      cmd << "-l#{@builds}/libswiftDispatch.so"
-      cmd << "-l#{@builds}/libBlocksRuntime.so"
-      cmd << "-l#{@builds}/libc++_shared.so"
-      cmd << "-l#{@builds}/libFoundation.so"
+      cmd << "-L #{@builds}"
+      cmd << "-lswiftCore"
+      cmd << "-lswiftGlibc"
+      cmd << "-lswiftSwiftOnoneSupport"
+      cmd << "-lswiftDispatch"
+      cmd << "-lBlocksRuntime"
+      cmd << "-lc++_shared"
+      cmd << "-lFoundation"
              # cmd << "-sdk #{ndk.sources}/platforms/android-#{ndk.api}/arch-arm"  # Use the same NDK path and API version as you used to build the stdlib in the previous step.
       cmd << "-L #{ndk.installs}/lib/gcc/arm-linux-androideabi/4.9.x"  # Link the Android NDK's libc++ and libgcc.
       # cmd << "-L #{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x"
@@ -82,7 +83,7 @@ class HelloProjectBuilder < Builder
       }
       Dir[icu.lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
          destName = File.basename(lib)
-         destName = destName.sub("63.1", "63") # Fix for error: CANNOT LINK EXECUTABLE ... library "libicudataswift.so.63" not found
+         destName = destName.sub("64.1", "64") # Fix for error: CANNOT LINK EXECUTABLE ... library "libicudataswift.so.63" not found
          execute "cp -vf #{lib} #{@builds}/#{destName}"
       }
       Dir[curl.lib + "/*.so"].each { |lib|
