@@ -11,10 +11,8 @@ class LLVMBuilder < Builder
       super(Lib.llvm, arch)
    end
 
-   def configure
-      logConfigureStarted()
+   def executeConfigure
       setupSymLinks()
-      prepare()
       cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd = []
       cmd << "cd #{@builds} &&"
@@ -45,21 +43,14 @@ class LLVMBuilder < Builder
 
       cmd << @sources
       execute cmd.join(" ")
-      logConfigureCompleted()
    end
 
-   def build
-      logBuildStarted()
-      prepare()
+   def executeBuild
       execute "cd #{@builds} && ninja"
-      logBuildCompleted()
    end
 
-   def install
-      logInstallStarted()
-      removeInstalls()
+   def executeInstall
       execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
-      logInstallCompleted()
    end
 
    def setupSymLinks

@@ -62,11 +62,14 @@ class ICUBuilder < Builder
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=aarch64-linux-android"
       elsif @arch == Arch.host
-         cmd << "CC='#{llvm}/bin/clang'"
-         cmd << "CXX='#{llvm}/bin/clang++'"
-         cmd << 'CFLAGS="-Os"'
-         cmd << 'CXXFLAGS="--std=c++11"'
-         cmd << "#{@sources}/source/runConfigureICU Linux --prefix=#{@installs}"
+         if !isMacOS?
+            cmd << "CC='#{llvm}/bin/clang'"
+            cmd << "CXX='#{llvm}/bin/clang++'"
+         end
+         cmd << "CFLAGS='-Os'"
+         cmd << "CXXFLAGS='--std=c++11'"
+         hostSystem = isMacOS? ? "MacOSX" : "Linux"
+         cmd << "#{@sources}/source/runConfigureICU #{hostSystem} --prefix=#{@installs}"
          cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
          cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       end
@@ -81,20 +84,14 @@ class ICUBuilder < Builder
       logConfigureCompleted()
    end
 
-   def build
-      logBuildStarted()
-      prepare()
+   def executeBuild
       cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make"
       @dryRun ? message(cmd) : execute(cmd)
-      logBuildCompleted()
    end
 
-   def install
-      logInstallStarted()
-      removeInstalls()
+   def executeInstall
       cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
       @dryRun ? message(cmd) : execute(cmd)
-      logInstallCompleted()
    end
 
    def make

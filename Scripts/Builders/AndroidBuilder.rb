@@ -25,7 +25,8 @@ class AndroidBuilder < Builder
    end
 
    def toolchain
-      return "#{@sources}/toolchains/llvm/prebuilt/linux-x86_64"
+      prefix = "#{@sources}/toolchains/llvm/prebuilt"
+      return isMacOS? ? "#{prefix}/darwin-x86_64" : "#{prefix}/linux-x86_64"
    end
 
 end
