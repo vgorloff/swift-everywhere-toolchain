@@ -16,10 +16,10 @@ class FoundationBuilder < Builder
    end
 
    def configure
-      logConfigureStarted
-      prepare
+      logConfigureStarted()
+      prepare()
       configurePatches(false)
-      configurePatches
+      configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
@@ -68,12 +68,12 @@ class FoundationBuilder < Builder
 
       cmd << @sources
       execute cmd.join(" ")
-      logConfigureCompleted
+      logConfigureCompleted()
    end
 
    def build
-      logBuildStarted
-      prepare
+      logBuildStarted()
+      prepare()
 
       # For troubleshooting purpose.
       # execute "cd #{@builds} && ninja CoreFoundation"
@@ -81,7 +81,7 @@ class FoundationBuilder < Builder
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtbegin_so.o #{@builds}"
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtend_so.o #{@builds}"
       execute "cd #{@builds} && ninja"
-      logBuildCompleted
+      logBuildCompleted()
    end
 
    def install

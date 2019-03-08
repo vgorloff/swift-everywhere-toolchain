@@ -38,18 +38,15 @@ class SwiftBuilder < Builder
       super(Lib.swift, arch)
       @icu = ICUBuilder.new(arch)
       @ndk = AndroidBuilder.new(arch)
+      @cmark = CMarkBuilder.new(@arch)
+      @dispatch = DispatchBuilder.new(@arch)
    end
 
    def configure
-      logConfigureStarted
-      prepare
+      logConfigureStarted()
+      prepare()
       configurePatches(false)
-      configurePatches
-
-      dispatch = DispatchBuilder.new(@arch)
-      ndk = AndroidBuilder.new(@arch)
-      icu = ICUBuilder.new(@arch)
-      cmark = CMarkBuilder.new(@arch)
+      configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
@@ -70,14 +67,14 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_STDLIB_ENABLE_STDLIBCORE_EXCLUSIVITY_CHECKING=FALSE"
 
       if @arch != Arch.host
-         cmd << "-DSWIFT_ANDROID_NDK_PATH=#{ndk.sources}"
-         cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{ndk.gcc}"
-         cmd << "-DSWIFT_ANDROID_API_LEVEL=#{ndk.api}"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{icu.lib}/libicuucswift.so"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE=#{icu.sources}/source/common"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{icu.lib}/libicui18nswift.so"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{icu.sources}/source/i18n"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{icu.lib}/libicudataswift.so"
+         cmd << "-DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}"
+         cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}"
+         cmd << "-DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{@icu.lib}/libicuucswift.so"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE=#{@icu.sources}/source/common"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{@icu.lib}/libicui18nswift.so"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{@icu.sources}/source/i18n"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{@icu.lib}/libicudataswift.so"
          cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
          cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=armv7"
       end
@@ -142,10 +139,10 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{llvm.builds}"
       cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{llvm.sources}"
       cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{llvm.builds}"
-      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=#{cmark.sources}"
-      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=#{cmark.builds}"
-      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=#{dispatch.sources}"
-      cmd << "-DSWIFT_CMARK_LIBRARY_DIR=#{cmark.builds}/src"
+      cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=#{@cmark.sources}"
+      cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=#{@cmark.builds}"
+      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
+      cmd << "-DSWIFT_CMARK_LIBRARY_DIR=#{@cmark.builds}/src"
       cmd << "-DSWIFT_EXEC=#{@builds}/bin/swiftc"
 
       # See: https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/Graphviz
@@ -154,11 +151,11 @@ class SwiftBuilder < Builder
       execute cmd.join(" ")
       fixNinjaBuild()
       fixNinjaRules()
-      logConfigureCompleted
+      logConfigureCompleted()
    end
 
    def build
-      logBuildStarted
+      logBuildStarted()
       execute "cd #{@builds} && ninja"
       if isMacOS?
          if @arch != Arch.host
@@ -234,7 +231,6 @@ class SwiftBuilder < Builder
       if @arch == Arch.host || !isMacOS?
          return
       end
-      ndk = AndroidBuilder.new(@arch)
       file = "#{@builds}/rules.ninja"
       message "Applying fix for #{file}"
       lines = File.readlines(file)
@@ -263,7 +259,7 @@ class SwiftBuilder < Builder
          elsif line.strip() == ""
             shouldFixLinker = false
          elsif shouldFixLinker && line.include?('command')
-            line = line.gsub('/usr/bin/ar', "#{ndk.toolchain}/bin/arm-linux-androideabi-ar")
+            line = line.gsub('/usr/bin/ar', "#{@ndk.toolchain}/bin/arm-linux-androideabi-ar")
          end
          result << line
       }
