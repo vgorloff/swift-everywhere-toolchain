@@ -92,9 +92,7 @@ class FoundationBuilder < Builder
    end
 
    def make
-      configure
-      build
-      install
+      super()
       configurePatches(false)
    end
 

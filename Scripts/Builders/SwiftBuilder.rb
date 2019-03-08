@@ -177,9 +177,7 @@ class SwiftBuilder < Builder
    end
 
    def make
-      configure
-      build
-      install
+      super()
       configurePatches(false)
    end
 

@@ -18,7 +18,7 @@ class ICUBuilder < Builder
    end
 
    def configure
-      logConfigureStarted
+      logConfigureStarted()
       host = ICUBuilder.new(Arch.host)
       if @arch != Arch.host && !File.exist?(host.bin)
          message "Building Corss-Build Host."
@@ -27,7 +27,7 @@ class ICUBuilder < Builder
          message "Corss-Build Host Build completed."
       end
 
-      prepare
+      prepare()
       configurePatches(false)
       cmd = ["cd #{@builds} &&"]
       if @arch != Arch.host
@@ -78,15 +78,15 @@ class ICUBuilder < Builder
          cmd << "--with-data-packaging=archive"
       end
       execute cmd.join(" ")
-      logConfigureCompleted
+      logConfigureCompleted()
    end
 
    def build
-      logBuildStarted
-      prepare
+      logBuildStarted()
+      prepare()
       cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make"
       @dryRun ? message(cmd) : execute(cmd)
-      logBuildCompleted
+      logBuildCompleted()
    end
 
    def install
@@ -94,13 +94,11 @@ class ICUBuilder < Builder
       removeInstalls()
       cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
       @dryRun ? message(cmd) : execute(cmd)
-      logInstallCompleted
+      logInstallCompleted()
    end
 
    def make
-      configure
-      build
-      install
+      super()
       if @arch != Arch.host
          configurePatches(false)
       end
