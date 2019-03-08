@@ -30,17 +30,16 @@ class HelloProjectBuilder < Builder
          cmd << "-target armv7-none-linux-android -disable-objc-interop"
          cmd << "-color-diagnostics -module-name hello -o #{mainFile}"
          cmd << "-Xcc -I#{ndk.toolchain}/sysroot/usr/include -I#{ndk.toolchain}/sysroot/usr/include/arm-linux-androideabi"
-         cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX"
-         cmd << "-Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
+         cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX -Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
       end
       execute cmd.join(" ")
       execute "file #{mainFile}"
 
       # Clang
       cmd = ["cd #{@builds} &&"]
-      cmd << "#{ndk.toolchain}/bin/armv7a-linux-androideabi#{ndk.api}-clang -fuse-ld=gold"
+      cmd << "#{ndk.toolchain}/bin/armv7a-linux-androideabi#{ndk.api}-clang -fuse-ld=gold -pie"
       cmd << "-v"
-      cmd << "-B #{ndk.toolchain}/bin -pie"
+      cmd << "-B #{ndk.toolchain}/bin"
       cmd << "#{swift.installs}/usr/lib/swift/android/armv7/swiftrt.o"
       cmd << mainFile
       # cmd << "-Xlinker --verbose"
@@ -67,30 +66,25 @@ class HelloProjectBuilder < Builder
    end
 
    def copyLibs()
-      swift = SwiftBuilder.new(@arch)
-      ndk = AndroidBuilder.new(@arch)
-      icu = ICUBuilder.new(@arch)
-      curl = CurlBuilder.new(@arch)
-      ssl = OpenSSLBuilder.new(@arch)
-      xml = XMLBuilder.new(@arch)
       message "Copying Shared Objects started."
-      Dir["#{swift.installs}/usr/lib/swift/android" + "/*.so"].each { |lib|
+      Dir["#{SwiftBuilder.new(@arch).installs}/usr/lib/swift/android" + "/*.so"].each { |lib|
          execute "cp -vf #{lib} #{@builds}"
       }
-      Dir[icu.lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
+      Dir[ICUBuilder.new(@arch).lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
          destName = File.basename(lib)
          destName = destName.sub("64.1", "64") # Fix for error: CANNOT LINK EXECUTABLE ... library "libicudataswift.so.63" not found
          execute "cp -vf #{lib} #{@builds}/#{destName}"
       }
-      Dir[curl.lib + "/*.so"].each { |lib|
+      Dir[CurlBuilder.new(@arch).lib + "/*.so"].each { |lib|
          execute "cp -vf #{lib} #{@builds}"
       }
-      Dir[xml.lib + "/*.so"].each { |lib|
+      Dir[XMLBuilder.new(@arch).lib + "/*.so"].each { |lib|
          execute "cp -vf #{lib} #{@builds}"
       }
-      Dir[ssl.lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
+      Dir[OpenSSLBuilder.new(@arch).lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
          execute "cp -vf #{lib} #{@builds}"
       }
+      ndk = AndroidBuilder.new(@arch)
       cxxLibPath = "#{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
       execute "cp -vf #{cxxLibPath} #{@builds}"
       execute "cp -vf #{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{ndk.api}/crtbegin_so.o #{@builds}"
