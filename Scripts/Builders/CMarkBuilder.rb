@@ -54,10 +54,6 @@ class CMarkBuilder < Builder
       install
    end
 
-   def prepare
-      prepareBuilds()
-   end
-
    def clean
       removeBuilds()
       cleanGitRepo()

@@ -9,10 +9,6 @@ class DispatchBuilder < Builder
       super(Lib.dispatch, arch)
    end
 
-   def prepare
-      prepareBuilds()
-   end
-
    def configure
       logConfigureStarted
       swift = SwiftBuilder.new(@arch)

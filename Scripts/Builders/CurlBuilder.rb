@@ -12,7 +12,6 @@ class CurlBuilder < Builder
 
    def prepare
       # Unused at the moment.
-      # prepareBuilds()
    end
 
    def configure

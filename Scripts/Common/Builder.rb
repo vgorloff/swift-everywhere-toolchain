@@ -120,7 +120,7 @@ class Builder < Tool
       execute "rm -rf \"#{@builds}\""
    end
 
-   def prepareBuilds()
+   def prepare()
       execute "mkdir -p \"#{@builds}\""
    end
 

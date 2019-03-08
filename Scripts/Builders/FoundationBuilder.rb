@@ -15,10 +15,6 @@ class FoundationBuilder < Builder
       @xml = XMLBuilder.new(arch)
    end
 
-   def prepare
-      prepareBuilds()
-   end
-
    def configure
       logConfigureStarted
       prepare

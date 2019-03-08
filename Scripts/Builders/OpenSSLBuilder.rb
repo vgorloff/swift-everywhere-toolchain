@@ -15,7 +15,6 @@ class OpenSSLBuilder < Builder
 
    def prepare
       # Not used at the moment
-      # prepareBuilds()
    end
 
    def options()

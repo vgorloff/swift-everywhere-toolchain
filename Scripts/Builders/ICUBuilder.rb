@@ -86,10 +86,6 @@ class ICUBuilder < Builder
       checkoutIfNeeded(@gitRepoRoot, "https://github.com/unicode-org/icu.git", Revision.icu)
    end
 
-   def prepare()
-      prepareBuilds()
-   end
-
    def build
       logBuildStarted
       prepare

@@ -90,8 +90,4 @@ class HelloProjectBuilder < Builder
       message "Copying Shared Objects completed."
    end
 
-   def prepare()
-      prepareBuilds()
-   end
-
 end

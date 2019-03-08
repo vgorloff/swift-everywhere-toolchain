@@ -176,10 +176,6 @@ class SwiftBuilder < Builder
       logBuildCompleted()
    end
 
-   def prepare
-      prepareBuilds()
-   end
-
    def make
       configure
       build

@@ -80,10 +80,6 @@ class LLVMBuilder < Builder
       checkoutIfNeeded(@sources, "https://github.com/apple/swift-llvm.git", Revision.llvm)
    end
 
-   def prepare()
-      prepareBuilds()
-   end
-
    def setupSymLinks
       # Making needed SymLinks. See: https://llvm.org/docs/GettingStarted.html#git-mirror
       message "Making symbolic links..."

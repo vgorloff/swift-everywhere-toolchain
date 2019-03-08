@@ -12,7 +12,6 @@ class XMLBuilder < Builder
 
    def prepare
       # Not used at the moment.
-      # prepareBuilds()
    end
 
    def configure
