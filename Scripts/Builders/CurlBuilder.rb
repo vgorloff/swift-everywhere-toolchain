@@ -7,8 +7,7 @@ class CurlBuilder < Builder
    end
 
    def checkout
-      # 7.63.0: 4258dc02d86e7e4de9f795a1af3a0bc6732d4ab5
-      checkoutIfNeeded(@sources, "https://github.com/curl/curl.git", "4258dc02d86e7e4de9f795a1af3a0bc6732d4ab5")
+      checkoutIfNeeded(@sources, "https://github.com/curl/curl.git", Revision.curl)
    end
 
    def prepare
@@ -26,15 +25,14 @@ class CurlBuilder < Builder
       archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
       ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"
       cmd = ["cd #{@sources} &&"]
-      cmd << "PATH=#{ndk.bin}:$PATH"
-      cmd << "CC=#{ndk.bin}/arm-linux-androideabi-clang"
-      cmd << "CXX=#{ndk.bin}/arm-linux-androideabi-clang++"
-      cmd << "AR=#{ndk.bin}/arm-linux-androideabi-ar"
-      cmd << "AS=#{ndk.bin}/arm-linux-androideabi-as"
-      cmd << "LD=#{ndk.bin}/arm-linux-androideabi-ld"
-      cmd << "RANLIB=#{ndk.bin}/arm-linux-androideabi-ranlib"
-      cmd << "NM=#{ndk.bin}/arm-linux-androideabi-nm"
-      cmd << "STRIP=#{ndk.bin}/arm-linux-androideabi-strip"
+      cmd << "CC=#{ndk.toolchain}/bin/armv7a-linux-androideabi#{ndk.api}-clang"
+      cmd << "CXX=#{ndk.toolchain}/bin/armv7a-linux-androideabi#{ndk.api}-clang++"
+      cmd << "AR=#{ndk.toolchain}/bin/arm-linux-androideabi-ar"
+      cmd << "AS=#{ndk.toolchain}/bin/arm-linux-androideabi-as"
+      cmd << "LD=#{ndk.toolchain}/bin/arm-linux-androideabi-ld"
+      cmd << "RANLIB=#{ndk.toolchain}/bin/arm-linux-androideabi-ranlib"
+      cmd << "NM=#{ndk.toolchain}/bin/arm-linux-androideabi-nm"
+      cmd << "STRIP=#{ndk.toolchain}/bin/arm-linux-androideabi-strip"
       cmd << "CHOST=arm-linux-androideabi"
       cmd << "CPPFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing\""
       cmd << "CXXFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing -frtti -fexceptions -std=c++11 -Wno-error=unused-command-line-argument\""

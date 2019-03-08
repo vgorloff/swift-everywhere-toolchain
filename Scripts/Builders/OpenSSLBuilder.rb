@@ -10,8 +10,7 @@ class OpenSSLBuilder < Builder
    end
 
    def checkout
-      # OpenSSL_1_1_1a: d1c28d791a7391a8dc101713cd8646df96491d03
-      checkoutIfNeeded(@sources, "https://github.com/openssl/openssl.git", "d1c28d791a7391a8dc101713cd8646df96491d03")
+      checkoutIfNeeded(@sources, "https://github.com/openssl/openssl.git", Revision.ssl)
    end
 
    def prepare
@@ -22,8 +21,8 @@ class OpenSSLBuilder < Builder
    def options()
       ndk = AndroidBuilder.new(@arch)
       cmd = ["cd #{@sources} &&"]
-      cmd << "ANDROID_NDK=#{ndk.installs}"
-      cmd << "PATH=#{ndk.bin}:$PATH"
+      cmd << "ANDROID_NDK=#{ndk.sources}"
+      cmd << "PATH=#{ndk.toolchain}/bin:$PATH"
       # >> Seems not needed
       # archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
       # ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"

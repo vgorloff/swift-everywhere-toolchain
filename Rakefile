@@ -13,9 +13,9 @@ require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
-require_relative "Scripts/Builders/UUIDBuilder.rb"
 require_relative "Scripts/Common/ADBHelper.rb"
 require_relative "Scripts/Common/Tool.rb"
+require_relative "Scripts/Common/Checkout.rb"
 
 # References:
 #
@@ -35,21 +35,9 @@ namespace :more do
    end
 end
 
-
 desc "Checkout Sources of all Components from Git."
 task :checkout do
-   SwiftBuilder.new().checkout
-   DispatchBuilder.new().checkout
-   FoundationBuilder.new().checkout
-   CMarkBuilder.new().checkout
-   ICUBuilder.new().checkout
-   LLVMBuilder.new().checkout
-   ClangBuilder.new().checkout
-   CompilerRTBuilder.new().checkout
-   XMLBuilder.new().checkout
-   CurlBuilder.new().checkout
-   OpenSSLBuilder.new().checkout
-   # UUIDBuilder.new().checkout
+   Checkout.checkout
 end
 
 desc "Download Android NDK"
@@ -62,18 +50,16 @@ namespace :armv7a do
 
    desc "Build Swift Toolchain."
    task :build do
-      AndroidBuilder.new(Arch.armv7a).setup
-      tool = Tool.new()
-      swift = SwiftBuilder.new(Arch.armv7a)
+      LLVMBuilder.new(Arch.armv7a).make
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
-      # UUIDBuilder.new().make
       OpenSSLBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.armv7a).make
       CMarkBuilder.new(Arch.armv7a).make
-      LLVMBuilder.new(Arch.armv7a).make
+      swift = SwiftBuilder.new(Arch.armv7a)
       swift.make
       DispatchBuilder.new(Arch.armv7a).make
+      tool = Tool.new()
       if !tool.isMacOS?
          # Foundation build on macOS host still broken.
          FoundationBuilder.new(Arch.armv7a).make
@@ -130,9 +116,6 @@ namespace :develop do
 
          desc "Configure, Build and Install - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.host).make end
-
-         desc "Configure, Build and Install - UUID"
-         task :uuid do UUIDBuilder.new(Arch.host).make end
       end
       namespace :configure do
          desc "Configure - ICU"
@@ -289,9 +272,6 @@ namespace :develop do
 
          desc "Configure, Build and Install - OpenSSL"
          task :ssl do OpenSSLBuilder.new(Arch.armv7a).make end
-
-         desc "Configure, Build and Install - UUID"
-         task :uuid do UUIDBuilder.new(Arch.armv7a).make end
       end
 
       namespace :clean do
@@ -312,9 +292,6 @@ namespace :develop do
 
          desc "Clean - libFoundation"
          task :foundation do FoundationBuilder.new(Arch.armv7a).clean end
-
-         desc "Clean - UUID"
-         task :uuid do UUIDBuilder.new(Arch.armv7a).clean end
 
          desc "Clean - libXML"
          task :xml do XMLBuilder.new(Arch.armv7a).clean end

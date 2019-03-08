@@ -23,6 +23,7 @@ class ICUBuilder < Builder
       host = ICUBuilder.new(Arch.host)
       if @arch != Arch.host && !File.exist?(host.bin)
          message "Building Corss-Build Host."
+         host.llvm = llvm
          host.make
          message "Corss-Build Host Build completed."
       end
@@ -32,16 +33,15 @@ class ICUBuilder < Builder
       cmd = ["cd #{@builds} &&"]
       if @arch != Arch.host
          configurePatches()
-         cmd << "PATH=#{@ndk.installs}/bin:$PATH"
       end
       if @arch == Arch.armv7a
          cmd << "CFLAGS='-Os -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
          cmd << "CXXFLAGS='--std=c++11 -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
          cmd << "LDFLAGS='-march=armv7-a -Wl,--fix-cortex-a8'"
-         cmd << "CC=arm-linux-androideabi-clang"
-         cmd << "CXX=arm-linux-androideabi-clang++"
-         cmd << "AR=arm-linux-androideabi-ar"
-         cmd << "RINLIB=arm-linux-androideabi-ranlib"
+         cmd << "CC=#{@ndk.toolchain}/bin/armv7a-linux-androideabi#{@ndk.api}-clang"
+         cmd << "CXX=#{@ndk.toolchain}/bin/armv7a-linux-androideabi#{@ndk.api}-clang++"
+         cmd << "AR=#{@ndk.toolchain}/bin/arm-linux-androideabi-ar"
+         cmd << "RINLIB=#{@ndk.toolchain}/bin/arm-linux-androideabi-ranlib"
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=arm-linux-androideabi"
       elsif @arch == Arch.x86
@@ -63,8 +63,8 @@ class ICUBuilder < Builder
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=aarch64-linux-android"
       elsif @arch == Arch.host
-         cmd << 'CC="/usr/bin/clang"'
-         cmd << 'CXX="/usr/bin/clang++"'
+         cmd << "CC='#{llvm}/bin/clang'"
+         cmd << "CXX='#{llvm}/bin/clang++'"
          cmd << 'CFLAGS="-Os"'
          cmd << 'CXXFLAGS="--std=c++11"'
          cmd << "#{@sources}/source/runConfigureICU Linux --prefix=#{@installs}"
@@ -83,8 +83,7 @@ class ICUBuilder < Builder
    end
 
    def checkout
-      # v63.1: 46895456ad1b6660d17eaeba2c101600ad8d8eb8
-      checkoutIfNeeded(@gitRepoRoot, "https://github.com/unicode-org/icu.git", "46895456ad1b6660d17eaeba2c101600ad8d8eb8")
+      checkoutIfNeeded(@gitRepoRoot, "https://github.com/unicode-org/icu.git", Revision.icu)
    end
 
    def prepare()

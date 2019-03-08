@@ -3,11 +3,14 @@ require_relative "Lib.rb"
 require_relative "Arch.rb"
 require_relative "Config.rb"
 require_relative "Location.rb"
+require_relative "Revision.rb"
 require_relative "Downloader.rb"
+require_relative "Checkout.rb"
 
 class Builder < Tool
 
    attr_reader :builds, :installs, :sources
+   attr_writer :llvm
 
    def initialize(component, arch)
       @component = component
@@ -19,6 +22,7 @@ class Builder < Tool
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
+      @llvm = nil
    end
 
    def lib
@@ -55,6 +59,13 @@ class Builder < Tool
 
    def clang
       return toolchainPath + "/usr/bin/clang"
+   end
+
+   def llvm
+      if @llvm.nil?
+         @llvm = LLVMBuilder.new(@arch).installs + "/usr"
+      end
+      return @llvm
    end
 
    # ------------------------------------
@@ -129,28 +140,6 @@ class Builder < Tool
       end
    end
 
-   def setupLinkerSymLink(shouldCreate = true)
-      ndk = AndroidBuilder.new(@arch)
-      llvm = LLVMBuilder.new(@arch)
-      if isMacOS?
-         targetFile = "#{llvm.builds}/bin/ld.gold"
-         sourceFile = "#{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/bin/ld.gold"
-      else
-         targetFile = "/usr/bin/armv7-none-linux-androideabi-ld.gold"
-         sourceFile = "#{ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold"
-      end
-      if @arch == Arch.armv7a
-         sudo = isMacOS? ? "" : "sudo "
-         if shouldCreate
-            message "Making symbolic link to \"#{targetFile}\"..."
-            execute "#{sudo}ln -svf #{sourceFile} #{targetFile}"
-         else
-            message "Removing previously created symlink: \"#{targetFile}\"..."
-            execute "#{sudo}rm -fv #{targetFile}"
-         end
-      end
-   end
-
    def addFile(replacementFile, destinationFile, shouldApply = true)
       if shouldApply
          if !File.exist? destinationFile
@@ -165,6 +154,11 @@ class Builder < Tool
             execute "rm -fv #{destinationFile}"
          end
       end
+   end
+
+   def configurePatchFile(patchFile, shouldApply = true)
+      originalFile = patchFile.sub(@patches, @sources).sub('.diff', '')
+      configurePatch(originalFile, patchFile, shouldApply)
    end
 
    def configurePatch(originalFile, patchFile, shouldApply = true)
@@ -187,18 +181,7 @@ class Builder < Tool
    end
 
    def checkoutIfNeeded(localPath, repoURL, revision)
-      if File.exist?(localPath)
-         message "Repository \"#{repoURL}\" seems already checked out to \"#{localPath}\"."
-      else
-         execute "mkdir -p \"#{localPath}\""
-         # Checking out specific SHA - https://stackoverflow.com/a/43136160/1418981
-         execute "cd \"#{localPath}\" && git init && git remote add origin \"#{repoURL}\""
-         execute "cd \"#{localPath}\" && git config --local uploadpack.allowReachableSHA1InWant true"
-         execute "cd \"#{localPath}\" && git fetch --depth 10 origin #{revision}"
-         # Disable warning about detached HEAD - https://stackoverflow.com/a/45652159/1418981
-         execute "cd \"#{localPath}\" && git -c advice.detachedHead=false checkout FETCH_HEAD"
-         message "#{repoURL} checkout to \"#{localPath}\" is completed."
-      end
+      Checkout.new().checkoutIfNeeded(localPath, repoURL, revision)
    end
 
 end

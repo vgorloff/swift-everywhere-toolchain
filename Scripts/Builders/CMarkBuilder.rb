@@ -13,8 +13,8 @@ class CMarkBuilder < Builder
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
-      cmd << "-DCMAKE_C_COMPILER=#{clang}"
-      cmd << "-DCMAKE_CXX_COMPILER=#{clang}++"
+      cmd << "-DCMAKE_C_COMPILER=#{llvm}/bin/clang"
+      cmd << "-DCMAKE_CXX_COMPILER=#{llvm}/bin/clang++"
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DCMARK_TESTS=false"
@@ -31,7 +31,7 @@ class CMarkBuilder < Builder
    end
 
    def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-cmark.git", "32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27")
+      checkoutIfNeeded(@sources, "https://github.com/apple/swift-cmark.git", Revision.cmark)
    end
 
    def build
