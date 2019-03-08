@@ -87,10 +87,6 @@ class HelloProjectBuilder < Builder
       ndk = AndroidBuilder.new(@arch)
       cxxLibPath = "#{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
       execute "cp -vf #{cxxLibPath} #{@builds}"
-      execute "cp -vf #{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{ndk.api}/crtbegin_so.o #{@builds}"
-      execute "cp -vf #{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{ndk.api}/crtend_so.o #{@builds}"
-      execute "cp -vf #{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{ndk.api}/crtend_android.o #{@builds}"
-      execute "cp -vf #{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{ndk.api}/crtbegin_dynamic.o #{@builds}"
       message "Copying Shared Objects completed."
    end
 
