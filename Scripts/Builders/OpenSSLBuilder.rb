@@ -9,10 +9,6 @@ class OpenSSLBuilder < Builder
       super(Lib.ssl, arch)
    end
 
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/openssl/openssl.git", Revision.ssl)
-   end
-
    def prepare
       # Not used at the moment
    end

@@ -104,10 +104,6 @@ class FoundationBuilder < Builder
       cleanGitRepo()
    end
 
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-foundation", Revision.foundation)
-   end
-
    def configurePatches(shouldEnable = true)
       if @arch == Arch.host && shouldEnable
          return

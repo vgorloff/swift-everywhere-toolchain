@@ -30,10 +30,6 @@ class CMarkBuilder < Builder
       logConfigureCompleted
    end
 
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-cmark.git", Revision.cmark)
-   end
-
    def build
       logBuildStarted
       prepare

@@ -1,4 +1,5 @@
 require_relative "../Common/Builder.rb"
+require_relative "../Common/Downloader.rb"
 
 class AndroidBuilder < Builder
 

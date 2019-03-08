@@ -6,10 +6,6 @@ class CurlBuilder < Builder
       super(Lib.curl, arch)
    end
 
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/curl/curl.git", Revision.curl)
-   end
-
    def prepare
       # Unused at the moment.
    end

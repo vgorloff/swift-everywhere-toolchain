@@ -6,8 +6,4 @@ class CompilerRTBuilder < Builder
       super(Lib.crt, arch)
    end
 
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-compiler-rt.git", Revision.compilerRT)
-   end
-
 end

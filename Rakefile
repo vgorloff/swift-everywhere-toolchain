@@ -37,7 +37,7 @@ end
 
 desc "Checkout Sources of all Components from Git."
 task :checkout do
-   Checkout.checkout
+   Checkout.new().checkout()
 end
 
 desc "Download Android NDK"

@@ -191,10 +191,6 @@ class SwiftBuilder < Builder
       logInstallCompleted
    end
 
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift.git", Revision.swift)
-   end
-
    def clean
       configurePatches(false)
       removeBuilds()

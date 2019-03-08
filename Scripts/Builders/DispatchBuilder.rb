@@ -97,8 +97,4 @@ class DispatchBuilder < Builder
       cleanGitRepo()
    end
 
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-libdispatch.git", Revision.dispatch)
-   end
-
 end

@@ -6,10 +6,6 @@ class XMLBuilder < Builder
       super(Lib.xml, arch)
    end
 
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/GNOME/libxml2.git", Revision.xml)
-   end
-
    def prepare
       # Not used at the moment.
    end
