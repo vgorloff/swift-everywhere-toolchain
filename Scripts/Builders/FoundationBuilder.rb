@@ -85,10 +85,10 @@ class FoundationBuilder < Builder
    end
 
    def install
-      logInstallStarted
+      logInstallStarted()
       removeInstalls()
       execute "cd #{@builds} && ninja install"
-      logInstallCompleted
+      logInstallCompleted()
    end
 
    def make
@@ -98,8 +98,7 @@ class FoundationBuilder < Builder
 
    def clean
       configurePatches(false)
-      removeBuilds()
-      cleanGitRepo()
+      super()
    end
 
    def configurePatches(shouldEnable = true)

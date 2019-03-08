@@ -113,8 +113,7 @@ class ICUBuilder < Builder
          ICUBuilder.new(Arch.host).clean
          configurePatches(false)
       end
-      removeBuilds()
-      cleanGitRepo()
+      super()
    end
 
 end

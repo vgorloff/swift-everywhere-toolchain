@@ -186,14 +186,12 @@ class SwiftBuilder < Builder
       removeInstalls()
       fixInstallScript()
       execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
-      logInstallCompleted
+      logInstallCompleted()
    end
 
    def clean
       configurePatches(false)
-      removeBuilds()
-      removeInstalls()
-      cleanGitRepo()
+      super()
    end
 
    def fixNinjaBuild

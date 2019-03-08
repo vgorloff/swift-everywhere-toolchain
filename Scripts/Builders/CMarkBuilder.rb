@@ -38,10 +38,10 @@ class CMarkBuilder < Builder
    end
 
    def install
-      logInstallStarted
+      logInstallStarted()
       removeInstalls()
       execute "cd #{@builds} && ninja install"
-      logInstallCompleted
+      logInstallCompleted()
    end
 
 end
