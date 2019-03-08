@@ -107,6 +107,7 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_ENABLE_SOURCEKIT_TESTS=FALSE"
       cmd << "-DSWIFT_INSTALL_COMPONENTS='autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license'"
       cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE=Release"
+      cmd << "-DSWIFT_ENABLE_LLD_LINKER=FALSE"
 
       if isMacOS?
          cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
