@@ -41,10 +41,11 @@ class HelloProjectBuilder < Builder
       cmd = ["cd #{@builds} &&"]
       cmd << "#{ndk.toolchain}/bin/armv7a-linux-androideabi21-clang -fuse-ld=gold"
       cmd << "-v"
-      cmd << "-B #{ndk.bin} -pie"
+      cmd << "-B #{ndk.toolchain}/bin -pie"
       cmd << "#{swift.installs}/usr/lib/swift/android/armv7/swiftrt.o"
       cmd << mainFile
       cmd << "-l#{@builds}/libswiftCore.so"
+      cmd << "-l#{@builds}/libswiftGlibc.so"
       cmd << "-l#{@builds}/libswiftSwiftOnoneSupport.so"
       cmd << "-l#{@builds}/libswiftDispatch.so"
       cmd << "-l#{@builds}/libBlocksRuntime.so"
@@ -56,6 +57,7 @@ class HelloProjectBuilder < Builder
       cmd << "-L #{ndk.installs}/sysroot/usr/lib"
       # cmd << "#{ndk.installs}/sysroot/usr/lib/crtbegin_dynamic.o"
       # cmd << "#{ndk.installs}/sysroot/usr/lib/crtend_android.o"
+      # cmd << "-Xlinker --verbose"
 
       cmd << "-o #{outFile}"
       execute cmd.join(" ")
