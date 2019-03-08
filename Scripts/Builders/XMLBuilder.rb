@@ -11,9 +11,7 @@ class XMLBuilder < Builder
       # Not used at the moment.
    end
 
-   def configure
-      logConfigureStarted()
-      prepare()
+   def executeConfigure
       # Arguments took from `swift/swift-corelibs-foundation/build-android`
       archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
       ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"
@@ -36,21 +34,15 @@ class XMLBuilder < Builder
 
       args = "--with-sysroot=#{@ndk.sources}/sysroot --with-zlib=#{@ndk.sources}/sysroot/usr --prefix=#{@installs} --host=arm-linux-androideabi --without-lzma --disable-static --enable-shared --without-http --without-html --without-ftp"
       execute cmd.join(" ") + " ./configure " + args
-      logConfigureCompleted()
    end
 
-   def build
-      logBuildStarted()
-      prepare()
+   def executeBuild
       execute "cd #{@sources} && make libxml2.la"
-      logBuildCompleted()
    end
 
-   def install
-      logInstallStarted()
+   def executeInstall
       execute "cd #{@sources} && make install-libLTLIBRARIES"
       execute "cd #{@sources}/include && make install"
-      logInstallCompleted()
    end
 
 end

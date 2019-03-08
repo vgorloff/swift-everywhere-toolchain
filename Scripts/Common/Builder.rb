@@ -77,6 +77,14 @@ class Builder < Tool
       # Base class does nothing
    end
 
+   def executeConfigure()
+      # Base class does nothing
+   end
+
+   def executeInstall()
+      # Base class does nothing
+   end
+
    def install
       logInstallStarted()
       removeInstalls()
@@ -84,19 +92,11 @@ class Builder < Tool
       logInstallCompleted()
    end
 
-   def executeInstall()
-      # Base class does nothing
-   end
-
    def configure()
       logConfigureStarted()
       prepare()
       executeConfigure()
       logConfigureCompleted()
-   end
-
-   def executeConfigure()
-      # Base class does nothing
    end
 
    # ------------------------------------

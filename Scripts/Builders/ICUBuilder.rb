@@ -85,12 +85,12 @@ class ICUBuilder < Builder
    end
 
    def executeBuild
-      cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make"
+      cmd = "cd #{@builds} && make"
       @dryRun ? message(cmd) : execute(cmd)
    end
 
    def executeInstall
-      cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
+      cmd = "cd #{@builds} && make install"
       @dryRun ? message(cmd) : execute(cmd)
    end
 

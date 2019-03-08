@@ -12,9 +12,7 @@ class CurlBuilder < Builder
       # Unused at the moment.
    end
 
-   def configure
-      logConfigureStarted()
-      prepare()
+   def executeConfigure
       # Arguments took from `swift/swift-corelibs-foundation/build-android`
       archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
       ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"
@@ -40,20 +38,14 @@ class CurlBuilder < Builder
       cmd << "--target=arm-linux-androideabi --build=x86_64-unknown-linux-gnu"
       cmd << "--with-zlib=#{@ndk.installs}/usr/sysroot --with-ssl=#{@ssl.installs} --prefix=#{@installs}"
       execute cmd.join(" ")
-      logConfigureCompleted()
    end
 
-   def build
-      logBuildStarted()
-      prepare()
+   def executeBuild
       execute "cd #{@sources} && make"
-      logBuildCompleted()
    end
 
-   def install
-      logInstallStarted()
+   def executeInstall
       execute "cd #{@sources} && make install"
-      logInstallCompleted()
    end
 
 end

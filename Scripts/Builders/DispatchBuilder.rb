@@ -8,17 +8,13 @@ class DispatchBuilder < Builder
    def initialize(arch = Arch.default)
       super(Lib.dispatch, arch)
       @ndk = AndroidBuilder.new(@arch)
-      @swift = SwiftBuilder.new(@arch)
    end
 
-   def configure
-      logConfigureStarted()
-
+   def executeConfigure
+      swift = SwiftBuilder.new(@arch)
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
-      prepare()
       configurePatches(false)
       configurePatches()
-
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja" # --debug-output
@@ -26,7 +22,7 @@ class DispatchBuilder < Builder
          cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
          cmd << "-DCMAKE_C_COMPILER=\"#{llvm}/bin/clang\""
       else
-         cmd << "-DCMAKE_INSTALL_PREFIX=#{@swift.installs}/usr" # Applying Dispatch over existing file structure.
+         cmd << "-DCMAKE_INSTALL_PREFIX=#{swift.installs}/usr" # Applying Dispatch over existing file structure.
          # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
          cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
          cmd << "-DANDROID_STL=c++_static"
@@ -37,12 +33,11 @@ class DispatchBuilder < Builder
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DENABLE_SWIFT=true"
       cmd << "-DENABLE_TESTING=false"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
-      cmd << "-DCMAKE_PREFIX_PATH=\"#{@swift.builds}/lib/cmake/swift\""
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{swift.builds}/bin/swiftc\""
+      cmd << "-DCMAKE_PREFIX_PATH=\"#{swift.builds}/lib/cmake/swift\""
       cmd << @sources
       execute cmd.join(" ")
-      fixNinjaBuild
-      logConfigureCompleted
+      fixNinjaBuild()
    end
 
    def fixNinjaBuild
@@ -72,16 +67,12 @@ class DispatchBuilder < Builder
       configurePatch(originalFile, patchFile, shouldEnable)
    end
 
-   def build
-      logBuildStarted()
+   def executeBuild
       execute "cd #{@builds} && ninja"
-      logBuildCompleted()
    end
 
-   def install
-      logInstallStarted()
+   def executeInstall
       execute "cd #{@builds} && ninja install"
-      logInstallCompleted()
    end
 
    def make

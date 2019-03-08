@@ -21,25 +21,17 @@ class OpenSSLBuilder < Builder
       return cmd
    end
 
-   def configure
-      logConfigureStarted()
-      prepare()
+   def executeConfigure
       # Seems `-D__ANDROID_API__` not needed. See: #{@sources}/NOTES.ANDROID
       execute options.join(" ") + " ./Configure -D__ANDROID_API__=#{@ndk.api} --prefix=#{@installs} android-arm"
-      logConfigureCompleted()
    end
 
-   def build
-      logBuildStarted()
-      prepare()
+   def executeBuild
       execute options.join(" ") + " make"
-      logBuildCompleted()
    end
 
-   def install
-      logInstallStarted()
+   def executeInstall
       execute options.join(" ") + " make install_sw install_ssldirs"
-      logInstallCompleted()
    end
 
 end

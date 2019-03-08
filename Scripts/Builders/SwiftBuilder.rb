@@ -42,17 +42,16 @@ class SwiftBuilder < Builder
       @dispatch = DispatchBuilder.new(@arch)
    end
 
-   def configure
-      logConfigureStarted()
-      prepare()
+   def executeConfigure
       configurePatches(false)
       configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
 
-      cmd << "-DCMAKE_C_COMPILER=\"#{llvm}/bin/clang\""
-      cmd << "-DCMAKE_CXX_COMPILER=\"#{llvm}/bin/clang++\""
+      if !isMacOS?
+         cmd << "-DCMAKE_C_COMPILER=\"#{llvm}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvm}/bin/clang++\""
+      end
 
       if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
@@ -151,11 +150,9 @@ class SwiftBuilder < Builder
       execute cmd.join(" ")
       fixNinjaBuild()
       fixNinjaRules()
-      logConfigureCompleted()
    end
 
-   def build
-      logBuildStarted()
+   def executeBuild
       execute "cd #{@builds} && ninja"
       if isMacOS?
          if @arch != Arch.host
@@ -170,7 +167,6 @@ class SwiftBuilder < Builder
       else
          execute "cd #{@builds} && ninja swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
       end
-      logBuildCompleted()
    end
 
    def make
@@ -178,12 +174,9 @@ class SwiftBuilder < Builder
       configurePatches(false)
    end
 
-   def install
-      logInstallStarted()
-      removeInstalls()
+   def executeInstall
       fixInstallScript()
       execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
-      logInstallCompleted()
    end
 
    def clean

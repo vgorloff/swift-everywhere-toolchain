@@ -44,7 +44,10 @@ namespace :armv7a do
 
    desc "Build Swift Toolchain."
    task :build do
-      LLVMBuilder.new(Arch.armv7a).make
+      tool = Tool.new()
+      if !tool.isMacOS?
+         LLVMBuilder.new(Arch.armv7a).make
+      end
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make
@@ -53,7 +56,6 @@ namespace :armv7a do
       swift = SwiftBuilder.new(Arch.armv7a)
       swift.make
       DispatchBuilder.new(Arch.armv7a).make
-      tool = Tool.new()
       if !tool.isMacOS?
          # Foundation build on macOS host still broken.
          FoundationBuilder.new(Arch.armv7a).make
