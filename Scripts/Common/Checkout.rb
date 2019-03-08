@@ -3,12 +3,12 @@ require_relative "Tool.rb"
 class Checkout < Tool
 
    def self.checkout()
+      Checkout.new().everything()
       SwiftBuilder.new().checkout
       DispatchBuilder.new().checkout
       FoundationBuilder.new().checkout
       CMarkBuilder.new().checkout
       ICUBuilder.new().checkout
-      LLVMBuilder.new().checkout
       ClangBuilder.new().checkout
       CompilerRTBuilder.new().checkout
       XMLBuilder.new().checkout
@@ -21,7 +21,7 @@ class Checkout < Tool
          cmd = "cd \"#{localPath}\" && git rev-parse --verify HEAD"
          sha = `#{cmd}`.strip()
          if revision == sha
-            message "Repository \"#{repoURL}\" seems already checked out to \"#{localPath}\" and have needed revision #{revision}."
+            message "Repository \"#{repoURL}\" already checked out to \"#{localPath}\"."
          else
             checkoutRevision(localPath, revision)
             message "#{localPath} updated to revision #{revision}."
@@ -43,6 +43,14 @@ class Checkout < Tool
       execute "cd \"#{localPath}\" && git fetch --depth 10 origin #{revision}"
       # Disable warning about detached HEAD - https://stackoverflow.com/a/45652159/1418981
       execute "cd \"#{localPath}\" && git -c advice.detachedHead=false checkout FETCH_HEAD"
+   end
+
+   def llvm()
+      checkoutIfNeeded(LLVMBuilder.new().sources, "https://github.com/apple/swift-llvm.git", Revision.llvm)
+   end
+
+   def everything()
+      llvm()
    end
 
 end

@@ -124,6 +124,17 @@ class Builder < Tool
       execute "mkdir -p \"#{@builds}\""
    end
 
+   def clean
+      removeBuilds()
+      cleanGitRepo()
+   end
+
+   def make
+      configure()
+      build()
+      install()
+   end
+
    def cleanGitRepo
       # See: https://stackoverflow.com/a/64966/1418981
       execute "cd #{@sources} && git clean --quiet -f -x -d"

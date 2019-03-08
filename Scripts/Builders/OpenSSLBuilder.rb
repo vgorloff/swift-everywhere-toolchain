@@ -55,15 +55,4 @@ class OpenSSLBuilder < Builder
       logInstallCompleted
    end
 
-   def make
-      configure
-      build
-      install
-   end
-
-   def clean
-      removeBuilds()
-      cleanGitRepo()
-   end
-
 end
