@@ -65,10 +65,8 @@ class LLVMBuilder < Builder
    def setupSymLinks
       # Making needed SymLinks. See: https://llvm.org/docs/GettingStarted.html#git-mirror
       message "Making symbolic links..."
-      clang = ClangBuilder.new(@arch)
-      crt = CompilerRTBuilder.new(@arch)
-      setupSymLink(clang.sources, "#{@sources}/tools/clang")
-      setupSymLink(crt.sources, "#{@sources}/projects/compiler-rt")
+      setupSymLink(ClangBuilder.new(@arch).sources, "#{@sources}/tools/clang")
+      setupSymLink(CompilerRTBuilder.new(@arch).sources, "#{@sources}/projects/compiler-rt")
       if isMacOS?
          setupSymLink("#{toolchainPath}/usr/include/c++", "#{@builds}/include/c++")
       else
