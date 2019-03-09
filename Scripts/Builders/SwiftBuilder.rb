@@ -252,7 +252,7 @@ class SwiftBuilder < Builder
          elsif line.strip() == ""
             shouldFixLinker = false
          elsif shouldFixLinker && line.include?('command')
-            line = line.gsub('/usr/bin/ar', "#{@ndk.toolchain}/bin/arm-linux-androideabi-ar")
+            line = line.gsub('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar', "#{@ndk.toolchain}/bin/arm-linux-androideabi-ar")
          end
          result << line
       }
