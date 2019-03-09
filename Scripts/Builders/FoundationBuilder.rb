@@ -44,15 +44,8 @@ class FoundationBuilder < Builder
 
          cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/arm-linux-androideabi'"
          # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
-         linkFlags = ["-v", "-use-ld=gold",
-            "-tools-directory", "#{@ndk.toolchain}/arm-linux-androideabi/bin",
-            "-L", "#{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi",
-            "-L", "#{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}",
-            "-L", "#{@ndk.toolchain}/lib/gcc/arm-linux-androideabi/4.9.x",
-            "-Xlinker", "--defsym", "-Xlinker", "\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\""
-         ]
-         linkFlags = linkFlags.join(";")
-         cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='#{linkFlags}'"
+         platformPathComponent = isMacOS? ? "darwin-x86_64" : "linux-x86_64"
+         cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/arm-linux-androideabi/bin\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/#{platformPathComponent}/lib/gcc/arm-linux-androideabi/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
          cmd << "-DADDITIONAL_SWIFT_CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
 
          cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
