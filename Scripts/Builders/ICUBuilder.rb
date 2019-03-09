@@ -13,13 +13,12 @@ class ICUBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.icu, arch)
-      @gitRepoRoot = "#{Config.sources}/#{Lib.icu}"
-      @sources = "#{@gitRepoRoot}/icu4c"
+      @sources = "#{Config.sources}/#{Lib.icu}/icu4c"
       @ndk = AndroidBuilder.new(arch)
    end
 
    def configure
-      logConfigureStarted
+      logConfigureStarted()
       host = ICUBuilder.new(Arch.host)
       if @arch != Arch.host && !File.exist?(host.bin)
          message "Building Corss-Build Host."
@@ -28,7 +27,7 @@ class ICUBuilder < Builder
          message "Corss-Build Host Build completed."
       end
 
-      prepare
+      prepare()
       configurePatches(false)
       cmd = ["cd #{@builds} &&"]
       if @arch != Arch.host
@@ -63,11 +62,14 @@ class ICUBuilder < Builder
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=aarch64-linux-android"
       elsif @arch == Arch.host
-         cmd << "CC='#{llvm}/bin/clang'"
-         cmd << "CXX='#{llvm}/bin/clang++'"
-         cmd << 'CFLAGS="-Os"'
-         cmd << 'CXXFLAGS="--std=c++11"'
-         cmd << "#{@sources}/source/runConfigureICU Linux --prefix=#{@installs}"
+         if !isMacOS?
+            cmd << "CC='#{llvm}/bin/clang'"
+            cmd << "CXX='#{llvm}/bin/clang++'"
+         end
+         cmd << "CFLAGS='-Os'"
+         cmd << "CXXFLAGS='--std=c++11'"
+         hostSystem = isMacOS? ? "MacOSX" : "Linux"
+         cmd << "#{@sources}/source/runConfigureICU #{hostSystem} --prefix=#{@installs}"
          cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
          cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       end
@@ -79,37 +81,21 @@ class ICUBuilder < Builder
          cmd << "--with-data-packaging=archive"
       end
       execute cmd.join(" ")
-      logConfigureCompleted
+      logConfigureCompleted()
    end
 
-   def checkout
-      checkoutIfNeeded(@gitRepoRoot, "https://github.com/unicode-org/icu.git", Revision.icu)
-   end
-
-   def prepare()
-      prepareBuilds()
-   end
-
-   def build
-      logBuildStarted
-      prepare
-      cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make"
+   def executeBuild
+      cmd = "cd #{@builds} && make"
       @dryRun ? message(cmd) : execute(cmd)
-      logBuildCompleted
    end
 
-   def install
-      logInstallStarted()
-      removeInstalls()
-      cmd = "cd #{@builds} && PATH=#{@ndk.installs}/bin:$PATH make install"
+   def executeInstall
+      cmd = "cd #{@builds} && make install"
       @dryRun ? message(cmd) : execute(cmd)
-      logInstallCompleted
    end
 
    def make
-      configure
-      build
-      install
+      super()
       if @arch != Arch.host
          configurePatches(false)
       end
@@ -124,8 +110,7 @@ class ICUBuilder < Builder
          ICUBuilder.new(Arch.host).clean
          configurePatches(false)
       end
-      removeBuilds()
-      cleanGitRepo()
+      super()
    end
 
 end

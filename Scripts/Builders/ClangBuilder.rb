@@ -6,8 +6,4 @@ class ClangBuilder < Builder
       super(Lib.clang, arch)
    end
 
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-clang.git", Revision.clang)
-   end
-
 end

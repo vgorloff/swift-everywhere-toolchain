@@ -2,26 +2,28 @@ require_relative "Tool.rb"
 
 class Checkout < Tool
 
-   def self.checkout()
-      SwiftBuilder.new().checkout
-      DispatchBuilder.new().checkout
-      FoundationBuilder.new().checkout
-      CMarkBuilder.new().checkout
-      ICUBuilder.new().checkout
-      LLVMBuilder.new().checkout
-      ClangBuilder.new().checkout
-      CompilerRTBuilder.new().checkout
-      XMLBuilder.new().checkout
-      CurlBuilder.new().checkout
-      OpenSSLBuilder.new().checkout
+   def checkout()
+      checkoutIfNeeded("#{Config.sources}/#{Lib.swift}", "https://github.com/apple/swift.git", Revision.swift)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.llvm}", "https://github.com/apple/swift-llvm.git", Revision.llvm)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.clang}", "https://github.com/apple/swift-clang.git", Revision.clang)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.crt}", "https://github.com/apple/swift-compiler-rt.git", Revision.crt)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.foundation}", "https://github.com/apple/swift-corelibs-foundation", Revision.foundation)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.dispatch}", "https://github.com/apple/swift-corelibs-libdispatch.git", Revision.dispatch)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.cmark}", "https://github.com/apple/swift-cmark.git", Revision.cmark)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.icu}", "https://github.com/unicode-org/icu.git", Revision.icu)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.ssl}", "https://github.com/openssl/openssl.git", Revision.ssl)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.curl}", "https://github.com/curl/curl.git", Revision.curl)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.xml}", "https://github.com/GNOME/libxml2.git", Revision.xml)
    end
+
+   # Private
 
    def checkoutIfNeeded(localPath, repoURL, revision)
       if File.exist?(localPath)
          cmd = "cd \"#{localPath}\" && git rev-parse --verify HEAD"
          sha = `#{cmd}`.strip()
          if revision == sha
-            message "Repository \"#{repoURL}\" seems already checked out to \"#{localPath}\" and have needed revision #{revision}."
+            message "Repository \"#{repoURL}\" already checked out to \"#{localPath}\"."
          else
             checkoutRevision(localPath, revision)
             message "#{localPath} updated to revision #{revision}."
@@ -34,8 +36,6 @@ class Checkout < Tool
          message "#{repoURL} checkout to \"#{localPath}\" is completed."
       end
    end
-
-   # Private
 
    def checkoutRevision(localPath, revision)
       message "Checking out revision #{revision}"

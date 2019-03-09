@@ -15,15 +15,11 @@ class FoundationBuilder < Builder
       @xml = XMLBuilder.new(arch)
    end
 
-   def prepare
-      prepareBuilds()
-   end
-
    def configure
-      logConfigureStarted
-      prepare
+      logConfigureStarted()
+      prepare()
       configurePatches(false)
-      configurePatches
+      configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
@@ -48,7 +44,15 @@ class FoundationBuilder < Builder
 
          cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/arm-linux-androideabi'"
          # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
-         cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/arm-linux-androideabi/bin\;-L\;/vagrant/Sources/ndk-linux/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/arm-linux-androideabi/21\;-L\;/vagrant/Sources/ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
+         linkFlags = ["-v", "-use-ld=gold",
+            "-tools-directory", "#{@ndk.toolchain}/arm-linux-androideabi/bin",
+            "-L", "#{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi",
+            "-L", "#{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}",
+            "-L", "#{@ndk.toolchain}/lib/gcc/arm-linux-androideabi/4.9.x",
+            "-Xlinker", "--defsym", "-Xlinker", "\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\""
+         ]
+         linkFlags = linkFlags.join(";")
+         cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='#{linkFlags}'"
          cmd << "-DADDITIONAL_SWIFT_CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
 
          cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
@@ -72,12 +76,12 @@ class FoundationBuilder < Builder
 
       cmd << @sources
       execute cmd.join(" ")
-      logConfigureCompleted
+      logConfigureCompleted()
    end
 
    def build
-      logBuildStarted
-      prepare
+      logBuildStarted()
+      prepare()
 
       # For troubleshooting purpose.
       # execute "cd #{@builds} && ninja CoreFoundation"
@@ -85,31 +89,24 @@ class FoundationBuilder < Builder
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtbegin_so.o #{@builds}"
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtend_so.o #{@builds}"
       execute "cd #{@builds} && ninja"
-      logBuildCompleted
+      logBuildCompleted()
    end
 
    def install
-      logInstallStarted
+      logInstallStarted()
       removeInstalls()
       execute "cd #{@builds} && ninja install"
-      logInstallCompleted
+      logInstallCompleted()
    end
 
    def make
-      configure
-      build
-      install
+      super()
       configurePatches(false)
    end
 
    def clean
       configurePatches(false)
-      removeBuilds()
-      cleanGitRepo()
-   end
-
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-foundation", Revision.foundation)
+      super()
    end
 
    def configurePatches(shouldEnable = true)

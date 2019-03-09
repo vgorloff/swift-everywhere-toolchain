@@ -20,7 +20,7 @@ class Revision
       return "3207a50965a98cdc2f42a934f158c38182be7257"
    end
 
-   def self.compilerRT
+   def self.crt
       return "b7035fda6caf881c33e3a346a6c76d10a499e6b2"
    end
 

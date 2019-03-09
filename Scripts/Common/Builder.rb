@@ -4,8 +4,6 @@ require_relative "Arch.rb"
 require_relative "Config.rb"
 require_relative "Location.rb"
 require_relative "Revision.rb"
-require_relative "Downloader.rb"
-require_relative "Checkout.rb"
 
 class Builder < Tool
 
@@ -68,6 +66,39 @@ class Builder < Tool
       return @llvm
    end
 
+   def build
+      logBuildStarted()
+      prepare()
+      executeBuild()
+      logBuildCompleted()
+   end
+
+   def executeBuild()
+      # Base class does nothing
+   end
+
+   def executeConfigure()
+      # Base class does nothing
+   end
+
+   def executeInstall()
+      # Base class does nothing
+   end
+
+   def install
+      logInstallStarted()
+      removeInstalls()
+      executeInstall()
+      logInstallCompleted()
+   end
+
+   def configure()
+      logConfigureStarted()
+      prepare()
+      executeConfigure()
+      logConfigureCompleted()
+   end
+
    # ------------------------------------
 
    def logStarted(action)
@@ -120,8 +151,19 @@ class Builder < Tool
       execute "rm -rf \"#{@builds}\""
    end
 
-   def prepareBuilds()
+   def prepare()
       execute "mkdir -p \"#{@builds}\""
+   end
+
+   def clean
+      removeBuilds()
+      cleanGitRepo()
+   end
+
+   def make
+      configure()
+      build()
+      install()
    end
 
    def cleanGitRepo
@@ -178,10 +220,6 @@ class Builder < Tool
             execute "rm -fv #{backupFile}"
          end
       end
-   end
-
-   def checkoutIfNeeded(localPath, repoURL, revision)
-      Checkout.new().checkoutIfNeeded(localPath, repoURL, revision)
    end
 
 end

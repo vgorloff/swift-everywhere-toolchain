@@ -7,21 +7,14 @@ class DispatchBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.dispatch, arch)
+      @ndk = AndroidBuilder.new(@arch)
    end
 
-   def prepare
-      prepareBuilds()
-   end
-
-   def configure
-      logConfigureStarted
+   def executeConfigure
       swift = SwiftBuilder.new(@arch)
-      ndk = AndroidBuilder.new(@arch)
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
-      prepare
       configurePatches(false)
-      configurePatches
-
+      configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja" # --debug-output
@@ -31,10 +24,10 @@ class DispatchBuilder < Builder
       else
          cmd << "-DCMAKE_INSTALL_PREFIX=#{swift.installs}/usr" # Applying Dispatch over existing file structure.
          # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
-         cmd << "-DCMAKE_TOOLCHAIN_FILE=#{ndk.sources}/build/cmake/android.toolchain.cmake"
+         cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
          cmd << "-DANDROID_STL=c++_static"
          cmd << "-DANDROID_TOOLCHAIN=clang"
-         cmd << "-DANDROID_PLATFORM=android-#{ndk.api}"
+         cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
          cmd << "-DANDROID_ABI=armeabi-v7a"
       end
       cmd << "-DCMAKE_BUILD_TYPE=Release"
@@ -44,21 +37,19 @@ class DispatchBuilder < Builder
       cmd << "-DCMAKE_PREFIX_PATH=\"#{swift.builds}/lib/cmake/swift\""
       cmd << @sources
       execute cmd.join(" ")
-      fixNinjaBuild
-      logConfigureCompleted
+      fixNinjaBuild()
    end
 
    def fixNinjaBuild
       if @arch == Arch.host
          return
       end
-      ndk = AndroidBuilder.new(@arch)
       file = "#{@builds}/build.ninja"
       message "Applying fix for #{file}"
       contents = File.readlines(file).join()
       if !contents.include?('-tools-directory')
-         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -tools-directory #{ndk.toolchain}/bin")
-         contents = contents.gsub('-module-link-name swiftDispatch', "-module-link-name swiftDispatch -Xcc -I#{ndk.sources}/sysroot/usr/include -Xcc -I#{ndk.sources}/sysroot/usr/include/arm-linux-androideabi")
+         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -tools-directory #{@ndk.toolchain}/bin")
+         contents = contents.gsub('-module-link-name swiftDispatch', "-module-link-name swiftDispatch -Xcc -I#{@ndk.sources}/sysroot/usr/include -Xcc -I#{@ndk.sources}/sysroot/usr/include/arm-linux-androideabi")
       end
       File.write(file, contents)
    end
@@ -76,33 +67,22 @@ class DispatchBuilder < Builder
       configurePatch(originalFile, patchFile, shouldEnable)
    end
 
-   def build
-      logBuildStarted
+   def executeBuild
       execute "cd #{@builds} && ninja"
-      logBuildCompleted
    end
 
-   def install
-      logInstallStarted
+   def executeInstall
       execute "cd #{@builds} && ninja install"
-      logInstallCompleted
    end
 
    def make
-      configure
-      build
-      install
+      super()
       configurePatches(false)
    end
 
    def clean
       configurePatches(false)
-      removeBuilds()
-      cleanGitRepo()
-   end
-
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/apple/swift-corelibs-libdispatch.git", Revision.dispatch)
+      super()
    end
 
 end

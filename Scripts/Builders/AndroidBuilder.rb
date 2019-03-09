@@ -1,15 +1,16 @@
 require_relative "../Common/Builder.rb"
+require_relative "../Common/Downloader.rb"
 
 class AndroidBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.ndk, arch)
-      @sources = "#{Config.sources}/#{@component}" + suffix
+      @ndkVersion = "r19b"
+      @sources = "#{Config.sources}/#{@component}" + "#{suffix}-#{@ndkVersion}"
    end
 
    def download()
-      version = "r19b"
-      fileName = Tool.isMacOS? ? "android-ndk-#{version}-darwin-x86_64.zip" : "android-ndk-#{version}-linux-x86_64.zip"
+      fileName = Tool.isMacOS? ? "android-ndk-#{@ndkVersion}-darwin-x86_64.zip" : "android-ndk-#{@ndkVersion}-linux-x86_64.zip"
       url = "https://dl.google.com/android/repository/#{fileName}"
       downloader = Downloader.new(Config.downloads, @sources, url, 'android-ndk-*')
       downloader.bootstrap()
@@ -24,7 +25,8 @@ class AndroidBuilder < Builder
    end
 
    def toolchain
-      return "#{@sources}/toolchains/llvm/prebuilt/linux-x86_64"
+      prefix = "#{@sources}/toolchains/llvm/prebuilt"
+      return isMacOS? ? "#{prefix}/darwin-x86_64" : "#{prefix}/linux-x86_64"
    end
 
 end

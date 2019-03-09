@@ -24,20 +24,14 @@ require_relative "Scripts/Common/Checkout.rb"
 
 task default: ['usage']
 
-namespace :more do
-   desc "Show more actions for ARMv7a targets (for Developers)."
-   task :armv7a do
-      system "rake -T | grep develop | grep armv7a"
-   end
-   desc "Show more actions for Host targets (for Developers)."
-   task :host do
-      system "rake -T | grep develop | grep host"
-   end
+desc "Show more actions for ARMv7a targets (for Developers)."
+task :more do
+   system "rake -T | grep develop | grep armv7a"
 end
 
 desc "Checkout Sources of all Components from Git."
 task :checkout do
-   Checkout.checkout
+   Checkout.new().checkout()
 end
 
 desc "Download Android NDK"
@@ -50,7 +44,10 @@ namespace :armv7a do
 
    desc "Build Swift Toolchain."
    task :build do
-      LLVMBuilder.new(Arch.armv7a).make
+      tool = Tool.new()
+      if !tool.isMacOS?
+         LLVMBuilder.new(Arch.armv7a).make
+      end
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make
@@ -59,7 +56,6 @@ namespace :armv7a do
       swift = SwiftBuilder.new(Arch.armv7a)
       swift.make
       DispatchBuilder.new(Arch.armv7a).make
-      tool = Tool.new()
       if !tool.isMacOS?
          # Foundation build on macOS host still broken.
          FoundationBuilder.new(Arch.armv7a).make
@@ -86,73 +82,6 @@ end
 
 # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
 namespace :develop do
-   namespace :host do
-      namespace :make do
-         desc "Build Swift Toolchain."
-         task :all do
-            tool = Tool.new()
-            swift = SwiftBuilder.new(Arch.host)
-            CMarkBuilder.new(Arch.host).make
-            LLVMBuilder.new(Arch.host).make
-            swift.make
-            DispatchBuilder.new(Arch.host).make
-            FoundationBuilder.new(Arch.host).make
-            puts ""
-            tool.print("\"Swift Toolchain for Host\" build is completed.")
-            tool.print("It can be found in \"#{swift.installs}\".")
-            puts ""
-         end
-         desc "Configure, Build and Install - CMark"
-         task :cmark do CMarkBuilder.new(Arch.host).make end
-
-         desc "Configure, Build and Install - LLVM"
-         task :llvm do LLVMBuilder.new(Arch.host).make end
-
-         desc "Configure, Build and Install - Swift"
-         task :swift do SwiftBuilder.new(Arch.host).make end
-
-         desc "Configure, Build and Install - libDispatch"
-         task :dispatch do DispatchBuilder.new(Arch.host).make end
-
-         desc "Configure, Build and Install - libFoundation"
-         task :foundation do FoundationBuilder.new(Arch.host).make end
-      end
-      namespace :configure do
-         desc "Configure - ICU"
-         task :icu do ICUBuilder.new(Arch.host).configure end
-      end
-      namespace :build do
-         desc "Build - ICU"
-         task :icu do ICUBuilder.new(Arch.host).build end
-      end
-      namespace :install do
-         desc "Install - ICU"
-         task :icu do ICUBuilder.new(Arch.host).install end
-
-         desc "Install - libDispatch"
-         task :dispatch do DispatchBuilder.new(Arch.host).install end
-
-         desc "Install - libFoundation"
-         task :foundation do FoundationBuilder.new(Arch.host).install end
-      end
-      namespace :clean do
-         desc "Clean - libDispatch"
-         task :dispatch do DispatchBuilder.new(Arch.host).clean end
-
-         desc "Clean - libFoundation"
-         task :foundation do FoundationBuilder.new(Arch.host).clean end
-      end
-      namespace :project do
-         desc "Builds Sample project"
-         task :build do HelloProjectBuilder.new(Arch.host).build end
-
-         desc "Deploy and Run on Android"
-         task :run do
-            builder = HelloProjectBuilder.new(Arch.host)
-            builder.execute(builder.builds + "/" + builder.executable)
-         end
-      end
-   end
 
    namespace :armv7a do
       namespace :configure do

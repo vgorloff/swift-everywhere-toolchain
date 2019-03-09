@@ -7,64 +7,31 @@ class OpenSSLBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.ssl, arch)
-   end
-
-   def checkout
-      checkoutIfNeeded(@sources, "https://github.com/openssl/openssl.git", Revision.ssl)
+      @ndk = AndroidBuilder.new(@arch)
    end
 
    def prepare
       # Not used at the moment
-      # prepareBuilds()
    end
 
    def options()
-      ndk = AndroidBuilder.new(@arch)
       cmd = ["cd #{@sources} &&"]
-      cmd << "ANDROID_NDK=#{ndk.sources}"
-      cmd << "PATH=#{ndk.toolchain}/bin:$PATH"
-      # >> Seems not needed
-      # archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
-      # ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"
-      # cmd << "CPPFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing\""
-      # cmd << "CXXFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing -frtti -fexceptions -std=c++11 -Wno-error=unused-command-line-argument\""
-      # cmd << "CFLAGS=\"#{archFlags} -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-strict-aliasing\""
-      # cmd << "LDFLAGS=\"#{ldFlags}\""
-      # <<
+      cmd << "ANDROID_NDK=#{@ndk.sources}"
+      cmd << "PATH=#{@ndk.toolchain}/bin:$PATH"
       return cmd
    end
 
-   def configure
-      logConfigureStarted
-      prepare
-      ndk = AndroidBuilder.new(@arch)
+   def executeConfigure
       # Seems `-D__ANDROID_API__` not needed. See: #{@sources}/NOTES.ANDROID
-      execute options.join(" ") + " ./Configure -D__ANDROID_API__=#{ndk.api} --prefix=#{@installs} android-arm"
-      logConfigureCompleted
+      execute options.join(" ") + " ./Configure -D__ANDROID_API__=#{@ndk.api} --prefix=#{@installs} android-arm"
    end
 
-   def build
-      logBuildStarted
-      prepare
+   def executeBuild
       execute options.join(" ") + " make"
-      logBuildCompleted
    end
 
-   def install
-      logInstallStarted
+   def executeInstall
       execute options.join(" ") + " make install_sw install_ssldirs"
-      logInstallCompleted
-   end
-
-   def make
-      configure
-      build
-      install
-   end
-
-   def clean
-      removeBuilds()
-      cleanGitRepo()
    end
 
 end
