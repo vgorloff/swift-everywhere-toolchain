@@ -45,9 +45,10 @@ class SwiftBuilder < Builder
    end
 
    def executeConfigure
+      cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd = []
       cmd << "cd #{@builds} &&"
-      cmd << "cmake -G Ninja"
+      cmd << "cmake -G Ninja" #  --trace --debug-output"
 
       if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
@@ -63,12 +64,14 @@ class SwiftBuilder < Builder
          cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
          cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
          cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
-      else
-         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvmToolchain}/bin/clang++\""
 
+         # cFlags += " -isystem #{toolchainPath}/usr/include/c++/v1"
+      else
          cmd << "-DSWIFT_HOST_VARIANT=linux"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
          cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
+
+         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvmToolchain}/bin/clang++\""
       end
 
       cmd << "-DSWIFT_STDLIB_ENABLE_SIL_OWNERSHIP=FALSE"
@@ -88,7 +91,6 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
       cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=armv7"
 
-      cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
       cmd << "-DCMAKE_CXX_FLAGS='#{cFlags}'"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
@@ -140,8 +142,8 @@ class SwiftBuilder < Builder
       # cmd << "--graphviz=#{@builds}/graph.dot"
       cmd << @sources
       execute cmd.join(" ")
-      # fixNinjaBuild()
-      # fixNinjaRules()
+      fixNinjaBuild()
+      fixNinjaRules()
    end
 
    def executeBuild
