@@ -45,9 +45,7 @@ namespace :armv7a do
    desc "Build Swift Toolchain."
    task :build do
       tool = Tool.new()
-      if !tool.isMacOS?
-         LLVMBuilder.new(Arch.armv7a).make
-      end
+      LLVMBuilder.new(Arch.armv7a).make
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make

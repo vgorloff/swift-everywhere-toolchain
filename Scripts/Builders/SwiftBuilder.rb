@@ -41,6 +41,7 @@ class SwiftBuilder < Builder
       @cmark = CMarkBuilder.new(@arch)
       @dispatch = DispatchBuilder.new(@arch)
       @llvm = LLVMBuilder.new(@arch)
+      @clang = ClangBuilder.new(@arch)
    end
 
    def executeConfigure
@@ -48,32 +49,45 @@ class SwiftBuilder < Builder
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
 
-      if !isMacOS?
-         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvmToolchain}/bin/clang++\""
-      else
+      if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
          cmd << "-DSWIFT_LIPO=#{toolchainPath}/usr/bin/lipo"
          cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
          cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
          cmd << "-DSWIFT_DARWIN_DEPLOYMENT_VERSION_OSX=10.9"
+
+         cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
+         cmd << "-DSWIFT_HOST_VARIANT=macosx"
+         cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
+         cmd << "-DSWIFT_ENABLE_IOS32=false"
+         cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
+         cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
+         cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
+      else
+         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvmToolchain}/bin/clang++\""
+
+         cmd << "-DSWIFT_HOST_VARIANT=linux"
+         cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
+         cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
       end
+
       cmd << "-DSWIFT_STDLIB_ENABLE_SIL_OWNERSHIP=FALSE"
       cmd << "-DSWIFT_ENABLE_GUARANTEED_NORMAL_ARGUMENTS=TRUE"
       cmd << "-DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE"
       cmd << "-DSWIFT_STDLIB_ENABLE_STDLIBCORE_EXCLUSIVITY_CHECKING=FALSE"
 
-      if @arch != Arch.host
-         cmd << "-DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}"
-         cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}"
-         cmd << "-DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{@icu.lib}/libicuucswift.so"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE=#{@icu.sources}/source/common"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{@icu.lib}/libicui18nswift.so"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{@icu.sources}/source/i18n"
-         cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{@icu.lib}/libicudataswift.so"
-         cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
-         cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=armv7"
-      end
+      # Android settings
+      cmd << "-DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}"
+      cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}"
+      cmd << "-DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}"
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{@icu.lib}/libicuucswift.so"
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE=#{@icu.sources}/source/common"
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{@icu.lib}/libicui18nswift.so"
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{@icu.sources}/source/i18n"
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{@icu.lib}/libicudataswift.so"
+      cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
+      cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=armv7"
+
       cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
       cmd << "-DCMAKE_CXX_FLAGS='#{cFlags}'"
@@ -102,27 +116,6 @@ class SwiftBuilder < Builder
       cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE=Release"
       cmd << "-DSWIFT_ENABLE_LLD_LINKER=FALSE"
 
-      if isMacOS?
-         cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
-         cmd << "-DSWIFT_HOST_VARIANT=macosx"
-         cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
-         cmd << "-DSWIFT_ENABLE_IOS32=false"
-         cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
-         if @arch == Arch.host
-            cmd << "-DSWIFT_SDKS='OSX'"
-         else
-            cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
-            cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
-         end
-      else
-         cmd << "-DSWIFT_HOST_VARIANT=linux"
-         cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
-         if @arch == Arch.host
-            cmd << "-DSWIFT_SDKS='LINUX'"
-         else
-            cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
-         end
-      end
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
       cmd << "-DLLVM_LIT_ARGS=-sv"
       cmd << "-DCOVERAGE_DB="
@@ -130,7 +123,10 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_AST_VERIFIER=FALSE"
       cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER=FALSE"
       cmd << "-DCMAKE_INSTALL_PREFIX=/usr"
-      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@llvm.sources}/tools/clang"
+
+      # cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@llvm.sources}/tools/clang" Check if on Linux OK, then remove this line.
+      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@clang.sources}"
+
       cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
       cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
       cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"
@@ -144,8 +140,8 @@ class SwiftBuilder < Builder
       # cmd << "--graphviz=#{@builds}/graph.dot"
       cmd << @sources
       execute cmd.join(" ")
-      fixNinjaBuild()
-      fixNinjaRules()
+      # fixNinjaBuild()
+      # fixNinjaRules()
    end
 
    def executeBuild
@@ -281,7 +277,7 @@ class SwiftBuilder < Builder
          return
       end
       configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diffs", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
    end
 
 end
