@@ -66,23 +66,18 @@ class Builder < Tool
       return @llvm
    end
 
+   def configure()
+      logConfigureStarted()
+      prepare()
+      executeConfigure()
+      logConfigureCompleted()
+   end
+
    def build
       logBuildStarted()
       prepare()
       executeBuild()
       logBuildCompleted()
-   end
-
-   def executeBuild()
-      # Base class does nothing
-   end
-
-   def executeConfigure()
-      # Base class does nothing
-   end
-
-   def executeInstall()
-      # Base class does nothing
    end
 
    def install
@@ -92,11 +87,16 @@ class Builder < Tool
       logInstallCompleted()
    end
 
-   def configure()
-      logConfigureStarted()
-      prepare()
-      executeConfigure()
-      logConfigureCompleted()
+   def executeConfigure()
+      # Base class does nothing
+   end
+
+   def executeBuild()
+      # Base class does nothing
+   end
+
+   def executeInstall()
+      # Base class does nothing
    end
 
    # ------------------------------------
