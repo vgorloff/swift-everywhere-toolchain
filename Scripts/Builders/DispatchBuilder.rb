@@ -13,8 +13,6 @@ class DispatchBuilder < Builder
    def executeConfigure
       swift = SwiftBuilder.new(@arch)
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
-      configurePatches(false)
-      configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja" # --debug-output
@@ -73,16 +71,6 @@ class DispatchBuilder < Builder
 
    def executeInstall
       execute "cd #{@builds} && ninja install"
-   end
-
-   def make
-      super()
-      configurePatches(false)
-   end
-
-   def clean
-      configurePatches(false)
-      super()
    end
 
 end

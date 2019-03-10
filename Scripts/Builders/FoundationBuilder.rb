@@ -16,8 +16,6 @@ class FoundationBuilder < Builder
    end
 
    def executeConfigure
-      configurePatches(false)
-      configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
@@ -79,16 +77,6 @@ class FoundationBuilder < Builder
 
    def executeInstall
       execute "cd #{@builds} && ninja install"
-   end
-
-   def make
-      super()
-      configurePatches(false)
-   end
-
-   def clean
-      configurePatches(false)
-      super()
    end
 
    def configurePatches(shouldEnable = true)
