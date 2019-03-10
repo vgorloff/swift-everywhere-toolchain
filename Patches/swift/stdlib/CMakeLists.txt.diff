@@ -1,0 +1,14 @@
+diff --git a/stdlib/CMakeLists.txt b/stdlib/CMakeLists.txt
+index 36c58919c1..3633ce7f30 100644
+--- a/stdlib/CMakeLists.txt
++++ b/stdlib/CMakeLists.txt
+@@ -98,7 +98,9 @@ swift_create_stdlib_targets("swift-stdlib" "" TRUE)
+ swift_create_stdlib_targets("swift-stdlib" "sib" TRUE)
+ swift_create_stdlib_targets("swift-stdlib" "sibopt" TRUE)
+ swift_create_stdlib_targets("swift-stdlib" "sibgen" TRUE)
++if (SWIFT_INCLUDE_TESTS)
+ swift_create_stdlib_targets("swift-test-stdlib" "" FALSE)
++endif()
+ 
+ add_subdirectory(public)
+ add_subdirectory(private)
