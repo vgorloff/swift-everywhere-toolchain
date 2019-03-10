@@ -277,11 +277,11 @@ class SwiftBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      if @arch == Arch.host && shouldEnable
+      if @arch == Arch.host
          return
       end
-      configurePatch("#{@sources}/stdlib/private/CMakeLists.txt", "#{@patches}/stdlib-private-CMakeLists.txt.patch", shouldEnable)
-      configurePatch("#{@sources}/stdlib/public/stubs/CMakeLists.txt", "#{@patches}/stdlib-public-stubs-CMakeLists.txt.patch", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diffs", shouldEnable)
    end
 
 end
