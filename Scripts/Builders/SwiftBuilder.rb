@@ -40,20 +40,17 @@ class SwiftBuilder < Builder
       @ndk = AndroidBuilder.new(arch)
       @cmark = CMarkBuilder.new(@arch)
       @dispatch = DispatchBuilder.new(@arch)
+      @llvm = LLVMBuilder.new(@arch)
    end
 
    def executeConfigure
-      configurePatches(false)
-      configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
 
       if !isMacOS?
-         cmd << "-DCMAKE_C_COMPILER=\"#{llvm}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvm}/bin/clang++\""
-      end
-
-      if isMacOS?
+         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvmToolchain}/bin/clang++\""
+      else
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
          cmd << "-DSWIFT_LIPO=#{toolchainPath}/usr/bin/lipo"
          cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
@@ -126,7 +123,6 @@ class SwiftBuilder < Builder
             cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
          end
       end
-      llvm = LLVMBuilder.new(@arch)
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
       cmd << "-DLLVM_LIT_ARGS=-sv"
       cmd << "-DCOVERAGE_DB="
@@ -134,10 +130,10 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_AST_VERIFIER=FALSE"
       cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER=FALSE"
       cmd << "-DCMAKE_INSTALL_PREFIX=/usr"
-      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{llvm.sources}/tools/clang"
-      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{llvm.builds}"
-      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{llvm.sources}"
-      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{llvm.builds}"
+      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@llvm.sources}/tools/clang"
+      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
+      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
+      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"
       cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=#{@cmark.sources}"
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=#{@cmark.builds}"
       cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
@@ -169,19 +165,9 @@ class SwiftBuilder < Builder
       end
    end
 
-   def make
-      super()
-      configurePatches(false)
-   end
-
    def executeInstall
       fixInstallScript()
       execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
-   end
-
-   def clean
-      configurePatches(false)
-      super()
    end
 
    def fixNinjaBuild

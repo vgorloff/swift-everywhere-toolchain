@@ -8,7 +8,7 @@ require_relative "Revision.rb"
 class Builder < Tool
 
    attr_reader :builds, :installs, :sources
-   attr_writer :llvm
+   attr_writer :llvmToolchain
 
    def initialize(component, arch)
       @component = component
@@ -20,7 +20,7 @@ class Builder < Tool
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
-      @llvm = nil
+      @llvmToolchain = nil
    end
 
    def lib
@@ -59,16 +59,18 @@ class Builder < Tool
       return toolchainPath + "/usr/bin/clang"
    end
 
-   def llvm
-      if @llvm.nil?
-         @llvm = LLVMBuilder.new(@arch).installs + "/usr"
+   def llvmToolchain
+      if @llvmToolchain.nil?
+         @llvmToolchain = LLVMBuilder.new(@arch).installs + "/usr"
       end
-      return @llvm
+      return @llvmToolchain
    end
 
    def configure()
       logConfigureStarted()
       prepare()
+      configurePatches(false)
+      configurePatches()
       executeConfigure()
       logConfigureCompleted()
    end
@@ -96,6 +98,10 @@ class Builder < Tool
    end
 
    def executeInstall()
+      # Base class does nothing
+   end
+
+   def configurePatches(shouldEnable = true)
       # Base class does nothing
    end
 
@@ -156,6 +162,7 @@ class Builder < Tool
    end
 
    def clean
+      configurePatches(false)
       removeBuilds()
       cleanGitRepo()
    end
@@ -164,6 +171,7 @@ class Builder < Tool
       configure()
       build()
       install()
+      configurePatches(false)
    end
 
    def cleanGitRepo

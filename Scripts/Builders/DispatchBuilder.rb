@@ -20,7 +20,7 @@ class DispatchBuilder < Builder
       cmd << "cmake -G Ninja" # --debug-output
       if @arch == Arch.host
          cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-         cmd << "-DCMAKE_C_COMPILER=\"#{llvm}/bin/clang\""
+         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\""
       else
          cmd << "-DCMAKE_INSTALL_PREFIX=#{swift.installs}/usr" # Applying Dispatch over existing file structure.
          # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739

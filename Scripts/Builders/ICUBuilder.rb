@@ -22,7 +22,7 @@ class ICUBuilder < Builder
       host = ICUBuilder.new(Arch.host)
       if @arch != Arch.host && !File.exist?(host.bin)
          message "Building Corss-Build Host."
-         host.llvm = llvm
+         host.llvmToolchain = llvmToolchain
          host.make
          message "Corss-Build Host Build completed."
       end
@@ -63,8 +63,8 @@ class ICUBuilder < Builder
          cmd << "--host=aarch64-linux-android"
       elsif @arch == Arch.host
          if !isMacOS?
-            cmd << "CC='#{llvm}/bin/clang'"
-            cmd << "CXX='#{llvm}/bin/clang++'"
+            cmd << "CC='#{llvmToolchain}/bin/clang'"
+            cmd << "CXX='#{llvmToolchain}/bin/clang++'"
          end
          cmd << "CFLAGS='-Os'"
          cmd << "CXXFLAGS='--std=c++11'"
