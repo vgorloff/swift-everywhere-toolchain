@@ -15,11 +15,7 @@ class FoundationBuilder < Builder
       @xml = XMLBuilder.new(arch)
    end
 
-   def configure
-      logConfigureStarted()
-      prepare()
-      configurePatches(false)
-      configurePatches()
+   def executeConfigure
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
@@ -69,37 +65,18 @@ class FoundationBuilder < Builder
 
       cmd << @sources
       execute cmd.join(" ")
-      logConfigureCompleted()
    end
 
-   def build
-      logBuildStarted()
-      prepare()
-
+   def executeBuild
       # For troubleshooting purpose.
       # execute "cd #{@builds} && ninja CoreFoundation"
-
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtbegin_so.o #{@builds}"
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtend_so.o #{@builds}"
       execute "cd #{@builds} && ninja"
-      logBuildCompleted()
    end
 
-   def install
-      logInstallStarted()
-      removeInstalls()
+   def executeInstall
       execute "cd #{@builds} && ninja install"
-      logInstallCompleted()
-   end
-
-   def make
-      super()
-      configurePatches(false)
-   end
-
-   def clean
-      configurePatches(false)
-      super()
    end
 
    def configurePatches(shouldEnable = true)

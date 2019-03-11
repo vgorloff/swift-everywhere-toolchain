@@ -13,14 +13,12 @@ class DispatchBuilder < Builder
    def executeConfigure
       swift = SwiftBuilder.new(@arch)
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
-      configurePatches(false)
-      configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja" # --debug-output
       if @arch == Arch.host
          cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-         cmd << "-DCMAKE_C_COMPILER=\"#{llvm}/bin/clang\""
+         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\""
       else
          cmd << "-DCMAKE_INSTALL_PREFIX=#{swift.installs}/usr" # Applying Dispatch over existing file structure.
          # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
@@ -46,6 +44,7 @@ class DispatchBuilder < Builder
       end
       file = "#{@builds}/build.ninja"
       message "Applying fix for #{file}"
+      execute "cp -vf #{file} #{file}.orig"
       contents = File.readlines(file).join()
       if !contents.include?('-tools-directory')
          contents = contents.gsub('-use-ld=gold', "-use-ld=gold -tools-directory #{@ndk.toolchain}/bin")
@@ -73,16 +72,6 @@ class DispatchBuilder < Builder
 
    def executeInstall
       execute "cd #{@builds} && ninja install"
-   end
-
-   def make
-      super()
-      configurePatches(false)
-   end
-
-   def clean
-      configurePatches(false)
-      super()
    end
 
 end

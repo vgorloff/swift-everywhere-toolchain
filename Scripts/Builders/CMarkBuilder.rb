@@ -11,8 +11,8 @@ class CMarkBuilder < Builder
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja"
-      cmd << "-DCMAKE_C_COMPILER=#{llvm}/bin/clang"
-      cmd << "-DCMAKE_CXX_COMPILER=#{llvm}/bin/clang++"
+      cmd << "-DCMAKE_C_COMPILER=#{llvmToolchain}/bin/clang"
+      cmd << "-DCMAKE_CXX_COMPILER=#{llvmToolchain}/bin/clang++"
       cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DCMARK_TESTS=false"

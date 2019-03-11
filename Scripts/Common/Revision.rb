@@ -9,7 +9,7 @@ class Revision
    end
 
    def self.swift
-      return "624112d528f38b36614b9d976ae339f9396d0b50"
+      return "4d6e741e32d68e9e035b2171768cf002561d8878"
    end
 
    def self.clang
@@ -34,8 +34,8 @@ class Revision
    end
 
    def self.icu
-      # v63.1: 46895456ad1b6660d17eaeba2c101600ad8d8eb8
-      return "f66f0454e58a52e0054d22e1832ff8bd6abf2a2b"
+      # v64-rc2: 67d218f2476ac543de2ed843fa080892972c604a
+      return "67d218f2476ac543de2ed843fa080892972c604a"
    end
 
    def self.curl

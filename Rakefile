@@ -45,9 +45,7 @@ namespace :armv7a do
    desc "Build Swift Toolchain."
    task :build do
       tool = Tool.new()
-      if !tool.isMacOS?
-         LLVMBuilder.new(Arch.armv7a).make
-      end
+      LLVMBuilder.new(Arch.armv7a).make
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make
@@ -56,10 +54,7 @@ namespace :armv7a do
       swift = SwiftBuilder.new(Arch.armv7a)
       swift.make
       DispatchBuilder.new(Arch.armv7a).make
-      if !tool.isMacOS?
-         # Foundation build on macOS host still broken.
-         FoundationBuilder.new(Arch.armv7a).make
-      end
+      FoundationBuilder.new(Arch.armv7a).make
       puts ""
       tool.print("\"Swift Toolchain for Android\" build is completed.")
       tool.print("It can be found in \"#{swift.installs}\".")

@@ -4,11 +4,12 @@ require_relative "Arch.rb"
 require_relative "Config.rb"
 require_relative "Location.rb"
 require_relative "Revision.rb"
+require 'pathname'
 
 class Builder < Tool
 
-   attr_reader :builds, :installs, :sources
-   attr_writer :llvm
+   attr_reader :builds, :installs, :sources, :numberOfJobs
+   attr_writer :llvmToolchain
 
    def initialize(component, arch)
       @component = component
@@ -20,7 +21,13 @@ class Builder < Tool
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
-      @llvm = nil
+      @llvmToolchain = nil
+      if isMacOS?
+         physicalCPUs = `sysctl -n hw.physicalcpu`.to_i
+      else
+         physicalCPUs = `grep -c ^processor /proc/cpuinfo`.to_i
+      end
+      @numberOfJobs = [physicalCPUs - 2, 1].max
    end
 
    def lib
@@ -59,11 +66,20 @@ class Builder < Tool
       return toolchainPath + "/usr/bin/clang"
    end
 
-   def llvm
-      if @llvm.nil?
-         @llvm = LLVMBuilder.new(@arch).installs + "/usr"
+   def llvmToolchain
+      if @llvmToolchain.nil?
+         @llvmToolchain = LLVMBuilder.new(@arch).installs + "/usr"
       end
-      return @llvm
+      return @llvmToolchain
+   end
+
+   def configure()
+      logConfigureStarted()
+      prepare()
+      configurePatches(false)
+      configurePatches()
+      executeConfigure()
+      logConfigureCompleted()
    end
 
    def build
@@ -73,18 +89,6 @@ class Builder < Tool
       logBuildCompleted()
    end
 
-   def executeBuild()
-      # Base class does nothing
-   end
-
-   def executeConfigure()
-      # Base class does nothing
-   end
-
-   def executeInstall()
-      # Base class does nothing
-   end
-
    def install
       logInstallStarted()
       removeInstalls()
@@ -92,11 +96,20 @@ class Builder < Tool
       logInstallCompleted()
    end
 
-   def configure()
-      logConfigureStarted()
-      prepare()
-      executeConfigure()
-      logConfigureCompleted()
+   def executeConfigure()
+      # Base class does nothing
+   end
+
+   def executeBuild()
+      # Base class does nothing
+   end
+
+   def executeInstall()
+      # Base class does nothing
+   end
+
+   def configurePatches(shouldEnable = true)
+      # Base class does nothing
    end
 
    # ------------------------------------
@@ -156,6 +169,7 @@ class Builder < Tool
    end
 
    def clean
+      configurePatches(false)
       removeBuilds()
       cleanGitRepo()
    end
@@ -164,6 +178,7 @@ class Builder < Tool
       configure()
       build()
       install()
+      configurePatches(false)
    end
 
    def cleanGitRepo
@@ -172,12 +187,16 @@ class Builder < Tool
       execute "cd #{@sources} && git clean --quiet -f -X"
    end
 
-   def setupSymLink(from, to, shouldCreate = true)
+   def setupSymLink(from, to, isRelative = false)
       if File.exist? to
          execute "rm -vf \"#{to}\""
       end
-      if shouldCreate
-         execute "mkdir -p \"#{File.dirname(to)}\""
+      dirname = File.dirname(to)
+      execute "mkdir -p \"#{dirname}\""
+      if isRelative
+         relativePath = Pathname.new(from).relative_path_from(Pathname.new(dirname))
+         execute "cd \"#{dirname}\" && ln -svf \"#{relativePath}\""
+      else
          execute "ln -svf \"#{from}\" \"#{to}\""
       end
    end

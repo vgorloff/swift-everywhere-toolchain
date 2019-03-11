@@ -40,17 +40,17 @@ class SwiftBuilder < Builder
       @ndk = AndroidBuilder.new(arch)
       @cmark = CMarkBuilder.new(@arch)
       @dispatch = DispatchBuilder.new(@arch)
+      @llvm = LLVMBuilder.new(@arch)
+      @clang = ClangBuilder.new(@arch)
    end
 
    def executeConfigure
-      configurePatches(false)
-      configurePatches()
       cmd = []
       cmd << "cd #{@builds} &&"
-      cmd << "cmake -G Ninja"
+      cmd << "cmake -G Ninja"  #  --trace --debug-output"
 
       if !isMacOS?
-         cmd << "-DCMAKE_C_COMPILER=\"#{llvm}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvm}/bin/clang++\""
+         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvmToolchain}/bin/clang++\""
       end
 
       if isMacOS?
@@ -126,7 +126,6 @@ class SwiftBuilder < Builder
             cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
          end
       end
-      llvm = LLVMBuilder.new(@arch)
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
       cmd << "-DLLVM_LIT_ARGS=-sv"
       cmd << "-DCOVERAGE_DB="
@@ -134,10 +133,10 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_AST_VERIFIER=FALSE"
       cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER=FALSE"
       cmd << "-DCMAKE_INSTALL_PREFIX=/usr"
-      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{llvm.sources}/tools/clang"
-      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{llvm.builds}"
-      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{llvm.sources}"
-      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{llvm.builds}"
+      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@clang.sources}"
+      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
+      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
+      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"
       cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=#{@cmark.sources}"
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=#{@cmark.builds}"
       cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
@@ -153,35 +152,25 @@ class SwiftBuilder < Builder
    end
 
    def executeBuild
-      execute "cd #{@builds} && ninja"
+      execute "cd #{@builds} && ninja -j#{numberOfJobs}"
       if isMacOS?
          if @arch != Arch.host
             # Workaround: Should be `swift-stdlib-android-armv7` only.
             targets = "swiftGlibc-android swiftCore-android swiftSIMDOperators-android swiftSwiftOnoneSupport-android swiftRemoteMirror-android"
-            execute "cd #{@builds} && ninja #{targets}"
+            execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
          end
          message "Copying Shared objects"
          Dir["#{@builds}/lib/swift/android/armv7/*.so"].each { |so|
             execute "cp -vfr \"#{so}\" \"#{@builds}/lib/swift/android/\""
          }
       else
-         execute "cd #{@builds} && ninja swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
+         execute "cd #{@builds} && ninja -j#{numberOfJobs} swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
       end
-   end
-
-   def make
-      super()
-      configurePatches(false)
    end
 
    def executeInstall
       fixInstallScript()
       execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
-   end
-
-   def clean
-      configurePatches(false)
-      super()
    end
 
    def fixNinjaBuild
@@ -190,6 +179,7 @@ class SwiftBuilder < Builder
       end
       file = "#{@builds}/build.ninja"
       message "Applying fix for #{file}"
+      execute "cp -vf #{file} #{file}.orig"
       lines = File.readlines(file)
       if isMacOS?
          result = []
@@ -226,6 +216,7 @@ class SwiftBuilder < Builder
       end
       file = "#{@builds}/rules.ninja"
       message "Applying fix for #{file}"
+      execute "cp -vf #{file} #{file}.orig"
       lines = File.readlines(file)
       result = []
       # >> Fixes non NDK Dynamic Linker options.
@@ -267,6 +258,7 @@ class SwiftBuilder < Builder
       end
       file = "#{@builds}/cmake_install.cmake"
       message "Applying fix for #{file}"
+      execute "cp -vf #{file} #{file}.orig"
       lines = File.readlines(file)
       contents = lines.join
       if contents.include?("libswiftGlibc.so")
@@ -291,11 +283,9 @@ class SwiftBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      if @arch == Arch.host && shouldEnable
-         return
-      end
-      configurePatch("#{@sources}/stdlib/private/CMakeLists.txt", "#{@patches}/stdlib-private-CMakeLists.txt.patch", shouldEnable)
-      configurePatch("#{@sources}/stdlib/public/stubs/CMakeLists.txt", "#{@patches}/stdlib-public-stubs-CMakeLists.txt.patch", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
+      # configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
    end
 
 end
