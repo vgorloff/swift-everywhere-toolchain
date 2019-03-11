@@ -44,6 +44,7 @@ class DispatchBuilder < Builder
       end
       file = "#{@builds}/build.ninja"
       message "Applying fix for #{file}"
+      execute "cp -vf #{file} #{file}.orig"
       contents = File.readlines(file).join()
       if !contents.include?('-tools-directory')
          contents = contents.gsub('-use-ld=gold', "-use-ld=gold -tools-directory #{@ndk.toolchain}/bin")

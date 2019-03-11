@@ -45,65 +45,40 @@ class SwiftBuilder < Builder
    end
 
    def executeConfigure
-      cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd = []
       cmd << "cd #{@builds} &&"
-      cmd << "cmake -G Ninja" #  --trace --debug-output"
+      cmd << "cmake -G Ninja"  #  --trace --debug-output"
 
-      cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvmToolchain}/bin/clang++\""
+      if !isMacOS?
+         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{llvmToolchain}/bin/clang++\""
+      end
 
       if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
          cmd << "-DSWIFT_LIPO=#{toolchainPath}/usr/bin/lipo"
          # cmd << "-DCMAKE_AR=#{@ndk.toolchain}/bin/arm-linux-androideabi-ar"
-         # cmd << "-DCMAKE_RANLIB=#{@ndk.toolchain}/bin/arm-linux-androideabi-ranlib"
-         # cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
-         # cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
-         # cmd << "-DSWIFT_DARWIN_DEPLOYMENT_VERSION_OSX=10.9"
-
-         cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
-         cmd << "-DSWIFT_HOST_VARIANT=macosx"
-         cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
-         cmd << "-DSWIFT_ENABLE_IOS32=false"
-         cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
-         cmd << "-DSWIFT_SDKS='ANDROID'"
-         # cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
-         cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
-         cFlags += " -isystem #{toolchainPath}/usr/include/c++/v1"
-
-         # cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
-         # cmd << "-DANDROID_STL=c++_static"
-         # cmd << "-DANDROID_TOOLCHAIN=clang"
-         # cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
-         # cmd << "-DANDROID_ABI=armeabi-v7a"
-
-         cmd << "-DLLVM_VERSION_MAJOR:STRING=7 -DLLVM_VERSION_MINOR:STRING=0 -DLLVM_VERSION_PATCH:STRING=0"
-         cmd << "-DCLANG_VERSION_MAJOR:STRING=7 -DCLANG_VERSION_MINOR:STRING=0 -DCLANG_VERSION_PATCH:STRING=0"
-      else
-         cmd << "-DSWIFT_HOST_VARIANT=linux"
-         cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
-         cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
-
-
+         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+         cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
+         cmd << "-DSWIFT_DARWIN_DEPLOYMENT_VERSION_OSX=10.9"
       end
-
       cmd << "-DSWIFT_STDLIB_ENABLE_SIL_OWNERSHIP=FALSE"
       cmd << "-DSWIFT_ENABLE_GUARANTEED_NORMAL_ARGUMENTS=TRUE"
       cmd << "-DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE"
       cmd << "-DSWIFT_STDLIB_ENABLE_STDLIBCORE_EXCLUSIVITY_CHECKING=FALSE"
 
-      # Android settings
-      cmd << "-DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}"
-      cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}"
-      cmd << "-DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{@icu.lib}/libicuucswift.so"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE=#{@icu.sources}/source/common"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{@icu.lib}/libicui18nswift.so"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{@icu.sources}/source/i18n"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{@icu.lib}/libicudataswift.so"
-      cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
-      cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=armv7"
-
+      if @arch != Arch.host
+         cmd << "-DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}"
+         cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}"
+         cmd << "-DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{@icu.lib}/libicuucswift.so"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE=#{@icu.sources}/source/common"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{@icu.lib}/libicui18nswift.so"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{@icu.sources}/source/i18n"
+         cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{@icu.lib}/libicudataswift.so"
+         cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
+         cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=armv7"
+      end
+      cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
       cmd << "-DCMAKE_CXX_FLAGS='#{cFlags}'"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
@@ -119,13 +94,31 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_BUILD_DYNAMIC_SDK_OVERLAY=TRUE"
       cmd << "-DSWIFT_BUILD_STATIC_SDK_OVERLAY=FALSE"
 
-      cmd << "-DSWIFT_BUILD_PERF_TESTSUITE=FALSE -DSWIFT_BUILD_EXTERNAL_PERF_TESTSUITE=FALSE -DSWIFT_BUILD_EXAMPLES=FALSE"
-      cmd << "-DSWIFT_INCLUDE_TESTS=FALSE -DSWIFT_INCLUDE_DOCS=FALSE -DSWIFT_ENABLE_SOURCEKIT_TESTS=FALSE"
+      # Disable Benchmarks
+      cmd << "-DSWIFT_BUILD_PERF_TESTSUITE=FALSE"
+      cmd << "-DSWIFT_BUILD_EXTERNAL_PERF_TESTSUITE=FALSE"
 
+      cmd << "-DSWIFT_BUILD_EXAMPLES=FALSE"
+      cmd << "-DSWIFT_INCLUDE_TESTS=FALSE"
+      cmd << "-DSWIFT_INCLUDE_DOCS=FALSE"
+      cmd << "-DSWIFT_ENABLE_SOURCEKIT_TESTS=FALSE"
       cmd << "-DSWIFT_INSTALL_COMPONENTS='autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license'"
       cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE=Release"
       cmd << "-DSWIFT_ENABLE_LLD_LINKER=FALSE"
 
+      if isMacOS?
+         cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
+         cmd << "-DSWIFT_HOST_VARIANT=macosx"
+         cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
+         cmd << "-DSWIFT_ENABLE_IOS32=false"
+         cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
+         cmd << "-DSWIFT_SDKS='ANDROID'"
+         cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
+      else
+         cmd << "-DSWIFT_HOST_VARIANT=linux"
+         cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
+         cmd << "-DSWIFT_SDKS='LINUX;ANDROID'"
+      end
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
       cmd << "-DLLVM_LIT_ARGS=-sv"
       cmd << "-DCOVERAGE_DB="
@@ -133,10 +126,7 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_AST_VERIFIER=FALSE"
       cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER=FALSE"
       cmd << "-DCMAKE_INSTALL_PREFIX=/usr"
-
-      # cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@llvm.sources}/tools/clang" Check if on Linux OK, then remove this line.
       cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@clang.sources}"
-
       cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
       cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
       cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"
@@ -155,19 +145,15 @@ class SwiftBuilder < Builder
    end
 
    def executeBuild
-      execute "cd #{@builds} && ninja"
+      execute "cd #{@builds} && ninja -j#{numberOfJobs}"
       if isMacOS?
-         if @arch != Arch.host
-            # Workaround: Should be `swift-stdlib-android-armv7` only.
-            targets = "swiftGlibc-android swiftCore-android swiftSIMDOperators-android swiftSwiftOnoneSupport-android swiftRemoteMirror-android"
-            execute "cd #{@builds} && ninja #{targets}"
-         end
-         message "Copying Shared objects"
+         execute "cd #{@builds} && ninja -j#{numberOfJobs} swift-stdlib-android-armv7"
+         message "Copying Shared objects" # Workaround.
          Dir["#{@builds}/lib/swift/android/armv7/*.so"].each { |so|
             execute "cp -vfr \"#{so}\" \"#{@builds}/lib/swift/android/\""
          }
       else
-         execute "cd #{@builds} && ninja swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
+         execute "cd #{@builds} && ninja -j#{numberOfJobs} swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
       end
    end
 
@@ -238,19 +224,19 @@ class SwiftBuilder < Builder
       lines = result
       # <<
       # >> Fixes non NDK Static Linker options.
-      # shouldFixLinker = false
-      # result = []
-      # lines.each { |line|
-      #    if line.start_with?("rule") && line.include?('CXX_STATIC_LIBRARY_LINKER') && line.include?("android")
-      #       shouldFixLinker = true
-      #    elsif line.strip() == ""
-      #       shouldFixLinker = false
-      #    elsif shouldFixLinker && line.include?('command')
-      #       line = line.gsub('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar', "#{@ndk.toolchain}/bin/arm-linux-androideabi-ar")
-      #    end
-      #    result << line
-      # }
-      # lines = result
+      shouldFixLinker = false
+      result = []
+      lines.each { |line|
+         if line.start_with?("rule") && line.include?('CXX_STATIC_LIBRARY_LINKER') && line.include?("android")
+            shouldFixLinker = true
+         elsif line.strip() == ""
+            shouldFixLinker = false
+         elsif shouldFixLinker && line.include?('command')
+            line = line.gsub('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar', "#{@ndk.toolchain}/bin/arm-linux-androideabi-ar")
+         end
+         result << line
+      }
+      lines = result
       # <<
       File.write(file, lines.join() + "\n")
    end
@@ -261,6 +247,7 @@ class SwiftBuilder < Builder
       end
       file = "#{@builds}/cmake_install.cmake"
       message "Applying fix for #{file}"
+      execute "cp -vf #{file} #{file}.orig"
       lines = File.readlines(file)
       contents = lines.join
       if contents.include?("libswiftGlibc.so")

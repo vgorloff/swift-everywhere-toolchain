@@ -4,10 +4,11 @@ require_relative "Arch.rb"
 require_relative "Config.rb"
 require_relative "Location.rb"
 require_relative "Revision.rb"
+require 'pathname'
 
 class Builder < Tool
 
-   attr_reader :builds, :installs, :sources
+   attr_reader :builds, :installs, :sources, :numberOfJobs
    attr_writer :llvmToolchain
 
    def initialize(component, arch)
@@ -21,6 +22,12 @@ class Builder < Tool
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
       @llvmToolchain = nil
+      if isMacOS?
+         physicalCPUs = `sysctl -n hw.physicalcpu`.to_i
+      else
+         physicalCPUs = `grep -c ^processor /proc/cpuinfo`.to_i
+      end
+      @numberOfJobs = [physicalCPUs - 2, 1].max
    end
 
    def lib
@@ -180,12 +187,16 @@ class Builder < Tool
       execute "cd #{@sources} && git clean --quiet -f -X"
    end
 
-   def setupSymLink(from, to, shouldCreate = true)
+   def setupSymLink(from, to, isRelative = false)
       if File.exist? to
          execute "rm -vf \"#{to}\""
       end
-      if shouldCreate
-         execute "mkdir -p \"#{File.dirname(to)}\""
+      dirname = File.dirname(to)
+      execute "mkdir -p \"#{dirname}\""
+      if isRelative
+         relativePath = Pathname.new(from).relative_path_from(Pathname.new(dirname))
+         execute "cd \"#{dirname}\" && ln -svf \"#{relativePath}\""
+      else
          execute "ln -svf \"#{from}\" \"#{to}\""
       end
    end

@@ -46,7 +46,7 @@ class LLVMBuilder < Builder
    end
 
    def executeBuild
-      execute "cd #{@builds} && ninja"
+      execute "cd #{@builds} && ninja -j#{numberOfJobs}"
    end
 
    def executeInstall
@@ -56,8 +56,8 @@ class LLVMBuilder < Builder
    def setupSymLinks
       # Making needed SymLinks. See: https://llvm.org/docs/GettingStarted.html#git-mirror
       message "Making symbolic links..."
-      setupSymLink(ClangBuilder.new(@arch).sources, "#{@sources}/tools/clang")
-      setupSymLink(CompilerRTBuilder.new(@arch).sources, "#{@sources}/projects/compiler-rt")
+      setupSymLink(ClangBuilder.new(@arch).sources, "#{@sources}/tools/clang", true)
+      setupSymLink(CompilerRTBuilder.new(@arch).sources, "#{@sources}/projects/compiler-rt", true)
       if isMacOS?
          setupSymLink("#{toolchainPath}/usr/include/c++", "#{@builds}/include/c++")
       else
