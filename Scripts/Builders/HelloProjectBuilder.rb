@@ -45,13 +45,13 @@ class HelloProjectBuilder < Builder
       # cmd << "-Xlinker --verbose"
       if isMacOS?
          # Need to use full paths. See: https://forums.swift.org/t/android-crosscompilation-on-macos-swiftc-fails-due-missed-symbol-swift-addnewdsoimage/19210/5?u=v.gorlov
-         cmd << "-l#{@builds}/swiftCore.so"
-         cmd << "-l#{@builds}/swiftGlibc.so"
-         cmd << "-l#{@builds}/swiftSwiftOnoneSupport.so"
-         cmd << "-l#{@builds}/swiftDispatch.so"
-         cmd << "-l#{@builds}/BlocksRuntime.so"
-         cmd << "-l#{@builds}/c++_shared.so"
-         cmd << "-l#{@builds}/Foundation.so"
+         cmd << "-l#{@builds}/libswiftCore.so"
+         cmd << "-l#{@builds}/libswiftGlibc.so"
+         cmd << "-l#{@builds}/libswiftSwiftOnoneSupport.so"
+         cmd << "-l#{@builds}/libswiftDispatch.so"
+         cmd << "-l#{@builds}/libBlocksRuntime.so"
+         cmd << "-l#{@builds}/libc++_shared.so"
+         cmd << "-l#{@builds}/libFoundation.so"
       else
          cmd << "-lswiftCore"
          cmd << "-lswiftGlibc"
