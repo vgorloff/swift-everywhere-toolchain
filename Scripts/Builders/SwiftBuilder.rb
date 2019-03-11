@@ -56,7 +56,6 @@ class SwiftBuilder < Builder
       if isMacOS?
          cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
          cmd << "-DSWIFT_LIPO=#{toolchainPath}/usr/bin/lipo"
-         # cmd << "-DCMAKE_AR=#{@ndk.toolchain}/bin/arm-linux-androideabi-ar"
          cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
          cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
          cmd << "-DSWIFT_DARWIN_DEPLOYMENT_VERSION_OSX=10.9"
@@ -112,12 +111,20 @@ class SwiftBuilder < Builder
          cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
          cmd << "-DSWIFT_ENABLE_IOS32=false"
          cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
-         cmd << "-DSWIFT_SDKS='ANDROID'"
-         cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
+         if @arch == Arch.host
+            cmd << "-DSWIFT_SDKS='OSX'"
+         else
+            cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
+            cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
+         end
       else
          cmd << "-DSWIFT_HOST_VARIANT=linux"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
-         cmd << "-DSWIFT_SDKS='LINUX;ANDROID'"
+         if @arch == Arch.host
+            cmd << "-DSWIFT_SDKS='LINUX'"
+         else
+            cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
+         end
       end
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
       cmd << "-DLLVM_LIT_ARGS=-sv"
@@ -147,8 +154,12 @@ class SwiftBuilder < Builder
    def executeBuild
       execute "cd #{@builds} && ninja -j#{numberOfJobs}"
       if isMacOS?
-         execute "cd #{@builds} && ninja -j#{numberOfJobs} swift-stdlib-android-armv7"
-         message "Copying Shared objects" # Workaround.
+         if @arch != Arch.host
+            # Workaround: Should be `swift-stdlib-android-armv7` only.
+            targets = "swiftGlibc-android swiftCore-android swiftSIMDOperators-android swiftSwiftOnoneSupport-android swiftRemoteMirror-android"
+            execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
+         end
+         message "Copying Shared objects"
          Dir["#{@builds}/lib/swift/android/armv7/*.so"].each { |so|
             execute "cp -vfr \"#{so}\" \"#{@builds}/lib/swift/android/\""
          }
@@ -272,12 +283,9 @@ class SwiftBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      if @arch == Arch.host
-         return
-      end
       configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
+      # configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
    end
 
 end
