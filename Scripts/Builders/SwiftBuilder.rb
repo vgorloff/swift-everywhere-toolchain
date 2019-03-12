@@ -228,7 +228,8 @@ class SwiftBuilder < Builder
             shouldFixLinker = false
          elsif shouldFixLinker && line.include?('command')
             line = line.gsub('-dynamiclib', '-shared')
-            line = line.gsub('$SONAME_FLAG $INSTALLNAME_DIR$SONAME', '')
+            line = line.gsub('$SONAME_FLAG $INSTALLNAME_DIR$SONAME', '-Wl,-soname,$SONAME')
+            line = line.gsub('-Wl,-headerpad_max_install_names', '')
          end
          result << line
       }
