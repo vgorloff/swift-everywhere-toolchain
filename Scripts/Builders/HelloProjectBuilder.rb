@@ -52,8 +52,6 @@ class HelloProjectBuilder < Builder
       cmd << "-lc++_shared"
       cmd << "-lFoundation"
       cmd << "-L #{ndk.toolchain}/lib/gcc/arm-linux-androideabi/4.9.x" # Link the Android NDK's libc++ and libgcc.
-      # cmd << "#{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtbegin_dynamic.o"
-      # cmd << "#{ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtend_android.o"
 
       cmd << "-o #{outFile}"
       execute cmd.join(" ")
