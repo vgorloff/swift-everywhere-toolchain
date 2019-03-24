@@ -24,6 +24,12 @@ class Automation
       Checkout.new().checkout()
    end
 
+   def build()
+      buildLLVM()
+      buildDeps()
+      buildSwift()
+   end
+
    def buildLLVM()
       LLVMBuilder.new().make
       CMarkBuilder.new().make
@@ -64,7 +70,7 @@ EOM
 
       tool.print("2. Build all Swift components and Sample projects for armv7a.", 32)
       help = <<EOM
-   $ rake armv7a:build
+   $ rake build
    $ rake armv7a:project:buildExe
    $ rake armv7a:project:buildLib
 EOM

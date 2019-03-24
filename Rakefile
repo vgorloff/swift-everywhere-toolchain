@@ -14,11 +14,7 @@ task :verify do ADB.verify() end
 
 # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
 desc "Build Swift Toolchain."
-task :build do
-   automation.buildLLVM()
-   automation.buildDeps()
-   automation.buildSwift()
-end
+task :build do automation.build() end
 
 task :usage do automation.usage() end
 
