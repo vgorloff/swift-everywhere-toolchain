@@ -6,7 +6,7 @@ class FoundationBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.foundation, arch)
-      @ndk = AndroidBuilder.new(arch)
+      @ndk = NDK.new()
       @dispatch = DispatchBuilder.new(arch)
       @swift = SwiftBuilder.new(arch)
       @llvm = LLVMBuilder.new()

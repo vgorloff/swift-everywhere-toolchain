@@ -1,21 +1,23 @@
 #!/usr/bin/env ruby
 
+require_relative "Scripts/Common/ADBHelper.rb"
+require_relative "Scripts/Common/Tool.rb"
+require_relative "Scripts/Common/Checkout.rb"
+require_relative "Scripts/Common/NDK.rb"
+
 require_relative "Scripts/Builders/ICUBuilder.rb"
-require_relative "Scripts/Builders/AndroidBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
 require_relative "Scripts/Builders/DispatchBuilder.rb"
 require_relative "Scripts/Builders/CurlBuilder.rb"
 require_relative "Scripts/Builders/OpenSSLBuilder.rb"
 require_relative "Scripts/Builders/XMLBuilder.rb"
-require_relative "Scripts/Builders/HelloProjectBuilder.rb"
 require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
-require_relative "Scripts/Common/ADBHelper.rb"
-require_relative "Scripts/Common/Tool.rb"
-require_relative "Scripts/Common/Checkout.rb"
+
+require_relative "Scripts/Builders/HelloProjectBuilder.rb"
 
 # References:
 #
@@ -33,9 +35,6 @@ desc "Checkout Sources of all Components from Git."
 task :checkout do
    Checkout.new().checkout()
 end
-
-desc "Download Android NDK"
-task :download do AndroidBuilder.new().download end
 
 desc "Verify ADB shell setup."
 task :verify do ADBHelper.new().verify end
@@ -201,9 +200,6 @@ namespace :develop do
       namespace :clean do
          desc "Clean - ICU."
          task :icu do ICUBuilder.new(Arch.armv7a).clean end
-
-         desc "Clean - NDK."
-         task :ndk do AndroidBuilder.new(Arch.armv7a).clean end
 
          desc "Clean - Swift."
          task :swift do SwiftBuilder.new(Arch.armv7a).clean end

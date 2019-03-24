@@ -4,7 +4,7 @@ class XMLBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.xml, arch)
-      @ndk = AndroidBuilder.new(@arch)
+      @ndk = NDK.new()
    end
 
    def prepare

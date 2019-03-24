@@ -18,7 +18,7 @@ class HelloProjectBuilder < Builder
       prepare
       copyLibs
       swift = SwiftBuilder.new(@arch)
-      ndk = AndroidBuilder.new(@arch)
+      ndk = NDK.new()
       mainFile = "#{@builds}/hello-main.o"
       outFile = "#{@builds}/hello"
 
@@ -82,7 +82,7 @@ class HelloProjectBuilder < Builder
       Dir[OpenSSLBuilder.new(@arch).lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
          execute "cp -vf #{lib} #{@builds}"
       }
-      ndk = AndroidBuilder.new(@arch)
+      ndk = NDK.new()
       cxxLibPath = "#{ndk.sources}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so"
       execute "cp -vf #{cxxLibPath} #{@builds}"
       message "Copying Shared Objects completed."
