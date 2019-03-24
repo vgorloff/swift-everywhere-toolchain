@@ -1,6 +1,6 @@
 require_relative "Tool.rb"
 
-class ADBHelper < Tool
+class ADB < Tool
 
    def initialize()
       super()

@@ -1,21 +1,23 @@
 #!/usr/bin/env ruby
 
+require_relative "Scripts/Common/ADB.rb"
+require_relative "Scripts/Common/Tool.rb"
+require_relative "Scripts/Common/Checkout.rb"
+require_relative "Scripts/Common/NDK.rb"
+
 require_relative "Scripts/Builders/ICUBuilder.rb"
-require_relative "Scripts/Builders/AndroidBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
 require_relative "Scripts/Builders/DispatchBuilder.rb"
 require_relative "Scripts/Builders/CurlBuilder.rb"
 require_relative "Scripts/Builders/OpenSSLBuilder.rb"
 require_relative "Scripts/Builders/XMLBuilder.rb"
-require_relative "Scripts/Builders/HelloProjectBuilder.rb"
 require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
-require_relative "Scripts/Common/ADBHelper.rb"
-require_relative "Scripts/Common/Tool.rb"
-require_relative "Scripts/Common/Checkout.rb"
+
+require_relative "Scripts/Builders/HelloProjectBuilder.rb"
 
 # References:
 #
@@ -34,18 +36,15 @@ task :checkout do
    Checkout.new().checkout()
 end
 
-desc "Download Android NDK"
-task :download do AndroidBuilder.new().download end
-
 desc "Verify ADB shell setup."
-task :verify do ADBHelper.new().verify end
+task :verify do ADB.new().verify end
 
 namespace :armv7a do
 
    desc "Build Swift Toolchain."
    task :build do
       tool = Tool.new()
-      LLVMBuilder.new(Arch.armv7a).make
+      LLVMBuilder.new().make
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make
@@ -70,7 +69,7 @@ namespace :armv7a do
       end
 
       desc "Clean Hello project."
-      task :clean do ADBHelper.new().clean end
+      task :clean do ADB.new().clean end
    end
 
 end
@@ -87,7 +86,7 @@ namespace :develop do
          task :swift do SwiftBuilder.new(Arch.armv7a).configure end
 
          desc "Configure - LLVM"
-         task :llvm do LLVMBuilder.new(Arch.armv7a).configure end
+         task :llvm do LLVMBuilder.new().configure end
 
          desc "Configure - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).configure end
@@ -116,7 +115,7 @@ namespace :develop do
          task :swift do SwiftBuilder.new(Arch.armv7a).build end
 
          desc "Build - LLVM"
-         task :llvm do LLVMBuilder.new(Arch.armv7a).build end
+         task :llvm do LLVMBuilder.new().build end
 
          desc "Build - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).build end
@@ -145,7 +144,7 @@ namespace :develop do
          task :swift do SwiftBuilder.new(Arch.armv7a).install end
 
          desc "Install - LLVM"
-         task :llvm do LLVMBuilder.new(Arch.armv7a).install end
+         task :llvm do LLVMBuilder.new().install end
 
          desc "Install - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).install end
@@ -166,7 +165,7 @@ namespace :develop do
          task :curl do CurlBuilder.new(Arch.armv7a).install end
 
          desc "Install - Hello project on Android"
-         task :project do ADBHelper.new().deploy(HelloProjectBuilder.new(Arch.armv7a).builds) end
+         task :project do ADB.new().deploy(HelloProjectBuilder.new(Arch.armv7a).builds) end
       end
 
       namespace :make do
@@ -177,7 +176,7 @@ namespace :develop do
          task :swift do SwiftBuilder.new(Arch.armv7a).make end
 
          desc "Configure, Build and Install - LLVM"
-         task :llvm do LLVMBuilder.new(Arch.armv7a).make end
+         task :llvm do LLVMBuilder.new().make end
 
          desc "Configure, Build and Install - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).make end
@@ -202,14 +201,11 @@ namespace :develop do
          desc "Clean - ICU."
          task :icu do ICUBuilder.new(Arch.armv7a).clean end
 
-         desc "Clean - NDK."
-         task :ndk do AndroidBuilder.new(Arch.armv7a).clean end
-
          desc "Clean - Swift."
          task :swift do SwiftBuilder.new(Arch.armv7a).clean end
 
          desc "Clean - LLVM."
-         task :llvm do  LLVMBuilder.new(Arch.armv7a).clean end
+         task :llvm do  LLVMBuilder.new().clean end
 
          desc "Clean - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).clean end
@@ -232,7 +228,7 @@ namespace :develop do
 
       namespace :run do
          desc "Run - Hello project on Android"
-         task :project do ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executable) end
+         task :project do ADB.new().run(HelloProjectBuilder.new(Arch.armv7a).executable) end
       end
    end
 end
@@ -242,18 +238,10 @@ task :usage do
    tool = Tool.new()
 
    tool.print("\nBuilding Swift Toolchain. Steps:\n", 32)
-   note = <<EOM
-Note: Every time you see host$ – this means that command should be executed on HOST macOS computer.
-      Every time you see box$ – this means that command should be executed on virtual GUEST Linux OS.
-EOM
-   tool.print(note, 33)
 
    tool.print("1. Get Sources and Tools.", 32)
    help = <<EOM
-   box$ rake checkout
-   box$ rake download
-
-   Alternatively you can download "Android NDK" manually from "https://developer.android.com/ndk/downloads/" and put archive to Downloads folder.
+   $ rake checkout
 EOM
    tool.print(help, 36)
 

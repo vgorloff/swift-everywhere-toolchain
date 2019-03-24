@@ -1,75 +1,37 @@
+Requirements
+============
+
+- Xcode 10.1
+- Android Studio 3.3
+- Android NDK 19 (Comes with Android Studio as downloadable package).
+- Ruby 2.5 (Comes with macOS)
+
+
 Setup and Build
 ===============
 
-**Note**: Every time you see `host$` – this means that command should be executed on **HOST** macOS computer. Every time you see `box$` – this means that command should be executed on virtual **GUEST** Linux OS.
+1. Copy file `local.properties.yml.template` to `local.properties.yml`
+2. Edit file `local.properties.yml` and configure following settings:
 
-1. Download and install software.
+   - `ndk.dir`: Path to NDK installation directory.
 
-    - Vagrant: https://www.vagrantup.com
-    - VirtualBox: https://www.virtualbox.org
+3. Install Rake (Make-like program implemented in Ruby).
 
-    **Note**: If you have troubles with VirtualBox installation addressed blocked Kernel Extensions, then have a look on this SE question: [VirtualBox 5.1.28 fails to install on MacOS 10.13 due to KEXT security](https://apple.stackexchange.com/questions/301303/virtualbox-5-1-28-fails-to-install-on-macos-10-13-due-to-kext-security)
-
-2. Verify Vagrant installation.
-
-    ```bash
-    host$ vagrant --version
-    ```
-
-3. Download Ubuntu image.
-
-    **Note**: Usually you need to download box image once.
-
-    ```bash
-    host$ vagrant box add ubuntu/bionic64
-    ```
-
-    **Note**: You can explore trending boxes here:
-
-    - https://app.vagrantup.com/boxes/search
-    - https://app.vagrantup.com/ubuntu/boxes/bionic64
+   ```bash
+   $ gem install rake
+   ```
 
 4. Clone this repository.
 
     ```bash
-    host$ git clone https://github.com/vgorloff/Android-On-Swift.git
-    host$ cd Android-On-Swift
+    $ git clone https://github.com/vgorloff/Android-On-Swift.git
+    $ cd Android-On-Swift
     ```
 
-5. (Optionall) Verify downloaded Ubuntu image in local folder.
-
-    ```bash
-    host$ ls -l ~/.vagrant.d/boxes
-    ```
-
-6. Start box and connect via SSH.
-
-    ```bash
-    host$ vagrant up
-
-    # (Optionall) Take snapshot. Under the hood it will save VirtualBox snapshot.
-    host$ vagrant snapshot save "Clean System"
-
-    host$ vagrant ssh
-
-    # (Optionall) Explore synced folders. You should see this `Readme.md` file inside Ubuntu Box.
-    box$ ls -l /vagrant
-    ```
-
-    **Note**: Box will be created in directory specified in VirtualBox settings. Detalis in [this post](http://www.thisprogrammingthing.com/2013/changing-the-directory-vagrant-stores-the-vms-in/).
-
-7. (Optional) Setting Up Visual Studio Code
-
-    If you going to edit Ruby files, then it worth to install Visual Studio Code for macOS and Ruby plugin.
-
-    - Visual Studio Code: https://code.visualstudio.com
-    - Ruby language support: https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby
-
-8. Start a build.
-
-   **Note**: Process of compilling Swift Toolchain, building and deploying sample projects automated via Rakefile.
+5. Start a build.
 
    ```bash
-   box$ cd /vagrant/
-   box$ rake | more
+   $ rake
    ```
+
+6. Once build completed, open sample project `Projects/Hello-NDK` in Android Studio, update file `local.properties` with actual paths and launch sample app on ARMv7 Android Device.

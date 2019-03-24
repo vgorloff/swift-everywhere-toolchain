@@ -37,10 +37,10 @@ class SwiftBuilder < Builder
    def initialize(arch = Arch.default)
       super(Lib.swift, arch)
       @icu = ICUBuilder.new(arch)
-      @ndk = AndroidBuilder.new(arch)
+      @ndk = NDK.new()
       @cmark = CMarkBuilder.new(@arch)
       @dispatch = DispatchBuilder.new(@arch)
-      @llvm = LLVMBuilder.new(@arch)
+      @llvm = LLVMBuilder.new()
       @clang = ClangBuilder.new(@arch)
    end
 

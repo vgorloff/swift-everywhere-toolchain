@@ -4,7 +4,7 @@ class CurlBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.curl, arch)
-      @ndk = AndroidBuilder.new(@arch)
+      @ndk = NDK.new()
       @ssl = OpenSSLBuilder.new(@arch)
    end
 
@@ -36,7 +36,7 @@ class CurlBuilder < Builder
       cmd << "--host=arm-linux-androideabi --enable-shared --disable-static --disable-dependency-tracking --without-ca-bundle --without-ca-path --enable-ipv6 --enable-http --enable-ftp"
       cmd << "--disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-proxy --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-manual"
       cmd << "--target=arm-linux-androideabi --build=x86_64-unknown-linux-gnu"
-      cmd << "--with-zlib=#{@ndk.installs}/usr/sysroot --with-ssl=#{@ssl.installs} --prefix=#{@installs}"
+      cmd << "--with-zlib=#{@ndk.sources}/usr/sysroot --with-ssl=#{@ssl.installs} --prefix=#{@installs}"
       execute cmd.join(" ")
    end
 

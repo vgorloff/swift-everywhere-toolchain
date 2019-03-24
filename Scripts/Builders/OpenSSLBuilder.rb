@@ -7,7 +7,7 @@ class OpenSSLBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.ssl, arch)
-      @ndk = AndroidBuilder.new(@arch)
+      @ndk = NDK.new()
    end
 
    def prepare

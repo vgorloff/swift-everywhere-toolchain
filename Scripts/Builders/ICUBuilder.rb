@@ -14,7 +14,7 @@ class ICUBuilder < Builder
    def initialize(arch = Arch.default)
       super(Lib.icu, arch)
       @sources = "#{Config.sources}/#{Lib.icu}/icu4c"
-      @ndk = AndroidBuilder.new(arch)
+      @ndk = NDK.new()
    end
 
    def configure

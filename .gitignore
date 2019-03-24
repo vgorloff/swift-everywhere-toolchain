@@ -3,7 +3,6 @@
 .DS_Store
 
 /Build
-/Downloads
 /Install
 /Sources
-/Temp
+/local.properties.yml
