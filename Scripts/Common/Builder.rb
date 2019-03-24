@@ -68,7 +68,7 @@ class Builder < Tool
 
    def llvmToolchain
       if @llvmToolchain.nil?
-         @llvmToolchain = LLVMBuilder.new(@arch).installs + "/usr"
+         @llvmToolchain = LLVMBuilder.new().installs
       end
       return @llvmToolchain
    end

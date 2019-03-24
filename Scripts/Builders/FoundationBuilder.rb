@@ -9,7 +9,7 @@ class FoundationBuilder < Builder
       @ndk = AndroidBuilder.new(arch)
       @dispatch = DispatchBuilder.new(arch)
       @swift = SwiftBuilder.new(arch)
-      @llvm = LLVMBuilder.new(arch)
+      @llvm = LLVMBuilder.new()
       @curl = CurlBuilder.new(arch)
       @icu = ICUBuilder.new(arch)
       @xml = XMLBuilder.new(arch)

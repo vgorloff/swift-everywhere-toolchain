@@ -4,11 +4,12 @@ require_relative "../Common/Builder.rb"
 # - https://stackoverflow.com/questions/40122657/build-llvm-clang4-0-for-android-armeabi
 # - LLVM Getting Started: https://llvm.org/docs/GettingStarted.html#requirements
 # - CLANG Getting Started: http://clang.llvm.org/get_started.html
+# - Building LLVM with CMake — LLVM 9 documentation: https://llvm.org/docs/CMake.html
 
 class LLVMBuilder < Builder
 
-   def initialize(arch = Arch.default)
-      super(Lib.llvm, arch)
+   def initialize()
+      super(Lib.llvm, Arch.host)
    end
 
    def executeConfigure
@@ -29,7 +30,7 @@ class LLVMBuilder < Builder
       cmd << "-DLLVM_TOOL_COMPILER_RT_BUILD=TRUE"
       cmd << "-DLLVM_BUILD_EXTERNAL_COMPILER_RT=TRUE"
       cmd << "-DLLVM_LIT_ARGS=-sv"
-      cmd << "-DCMAKE_INSTALL_PREFIX=/usr"
+      cmd << "-DCMAKE_INSTALL_PREFIX=/"
       cmd << "-DINTERNAL_INSTALL_PREFIX=local"
 
       if isMacOS?
@@ -50,7 +51,7 @@ class LLVMBuilder < Builder
    end
 
    def executeInstall
-      execute "env DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
    end
 
    def setupSymLinks

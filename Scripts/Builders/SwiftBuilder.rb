@@ -40,7 +40,7 @@ class SwiftBuilder < Builder
       @ndk = AndroidBuilder.new(arch)
       @cmark = CMarkBuilder.new(@arch)
       @dispatch = DispatchBuilder.new(@arch)
-      @llvm = LLVMBuilder.new(@arch)
+      @llvm = LLVMBuilder.new()
       @clang = ClangBuilder.new(@arch)
    end
 

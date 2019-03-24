@@ -45,7 +45,7 @@ namespace :armv7a do
    desc "Build Swift Toolchain."
    task :build do
       tool = Tool.new()
-      LLVMBuilder.new(Arch.armv7a).make
+      LLVMBuilder.new().make
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make
@@ -87,7 +87,7 @@ namespace :develop do
          task :swift do SwiftBuilder.new(Arch.armv7a).configure end
 
          desc "Configure - LLVM"
-         task :llvm do LLVMBuilder.new(Arch.armv7a).configure end
+         task :llvm do LLVMBuilder.new().configure end
 
          desc "Configure - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).configure end
@@ -116,7 +116,7 @@ namespace :develop do
          task :swift do SwiftBuilder.new(Arch.armv7a).build end
 
          desc "Build - LLVM"
-         task :llvm do LLVMBuilder.new(Arch.armv7a).build end
+         task :llvm do LLVMBuilder.new().build end
 
          desc "Build - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).build end
@@ -145,7 +145,7 @@ namespace :develop do
          task :swift do SwiftBuilder.new(Arch.armv7a).install end
 
          desc "Install - LLVM"
-         task :llvm do LLVMBuilder.new(Arch.armv7a).install end
+         task :llvm do LLVMBuilder.new().install end
 
          desc "Install - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).install end
@@ -177,7 +177,7 @@ namespace :develop do
          task :swift do SwiftBuilder.new(Arch.armv7a).make end
 
          desc "Configure, Build and Install - LLVM"
-         task :llvm do LLVMBuilder.new(Arch.armv7a).make end
+         task :llvm do LLVMBuilder.new().make end
 
          desc "Configure, Build and Install - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).make end
@@ -209,7 +209,7 @@ namespace :develop do
          task :swift do SwiftBuilder.new(Arch.armv7a).clean end
 
          desc "Clean - LLVM."
-         task :llvm do  LLVMBuilder.new(Arch.armv7a).clean end
+         task :llvm do  LLVMBuilder.new().clean end
 
          desc "Clean - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).clean end
