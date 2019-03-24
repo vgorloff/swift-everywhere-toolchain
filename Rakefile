@@ -238,18 +238,10 @@ task :usage do
    tool = Tool.new()
 
    tool.print("\nBuilding Swift Toolchain. Steps:\n", 32)
-   note = <<EOM
-Note: Every time you see host$ – this means that command should be executed on HOST macOS computer.
-      Every time you see box$ – this means that command should be executed on virtual GUEST Linux OS.
-EOM
-   tool.print(note, 33)
 
    tool.print("1. Get Sources and Tools.", 32)
    help = <<EOM
-   box$ rake checkout
-   box$ rake download
-
-   Alternatively you can download "Android NDK" manually from "https://developer.android.com/ndk/downloads/" and put archive to Downloads folder.
+   $ rake checkout
 EOM
    tool.print(help, 36)
 
