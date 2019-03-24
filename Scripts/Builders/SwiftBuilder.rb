@@ -39,7 +39,6 @@ class SwiftBuilder < Builder
       @icu = ICUBuilder.new(arch)
       @ndk = NDK.new()
       @cmark = CMarkBuilder.new(@arch)
-      @dispatch = DispatchBuilder.new(@arch)
       @llvm = LLVMBuilder.new()
       @clang = ClangBuilder.new(@arch)
    end
@@ -115,15 +114,15 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_AST_VERIFIER=FALSE"
       cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER=FALSE"
       cmd << "-DCMAKE_INSTALL_PREFIX=/"
+
       cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@clang.sources}"
       cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
+
       cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
       cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"
+
       cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=#{@cmark.sources}"
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=#{@cmark.builds}"
-      cmd << "-DSWIFT_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
-      cmd << "-DSWIFT_CMARK_LIBRARY_DIR=#{@cmark.builds}/src"
-      cmd << "-DSWIFT_EXEC=#{@builds}/bin/swiftc"
 
       # See: https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/Graphviz
       # cmd << "--graphviz=#{@builds}/graph.dot"
@@ -268,7 +267,7 @@ class SwiftBuilder < Builder
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
-      # configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
    end
 
 end
