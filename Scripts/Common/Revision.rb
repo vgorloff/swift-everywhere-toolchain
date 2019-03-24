@@ -44,8 +44,8 @@ class Revision
    end
 
    def self.xml
-      # v2.9.9-rc2: a71b98ec9dee2d44e16a74ab8472868891bbc7b4
-      return "09797c139e5b0168c87f41b2cea1078d7244638d"
+      # v2.9.9: f8a8c1f59db355b46962577e7b74f1a1e8149dc6
+      return "f8a8c1f59db355b46962577e7b74f1a1e8149dc6"
    end
 
 end

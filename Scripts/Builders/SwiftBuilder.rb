@@ -114,7 +114,7 @@ class SwiftBuilder < Builder
          if @arch == Arch.host
             cmd << "-DSWIFT_SDKS='OSX'"
          else
-            cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
+            cmd << "-DSWIFT_SDKS='ANDROID'"
             cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
          end
       else

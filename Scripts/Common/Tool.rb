@@ -1,5 +1,3 @@
-# See:
-# -
 
 class Tool
 
