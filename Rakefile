@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require_relative "Scripts/Common/ADBHelper.rb"
+require_relative "Scripts/Common/ADB.rb"
 require_relative "Scripts/Common/Tool.rb"
 require_relative "Scripts/Common/Checkout.rb"
 require_relative "Scripts/Common/NDK.rb"
@@ -37,7 +37,7 @@ task :checkout do
 end
 
 desc "Verify ADB shell setup."
-task :verify do ADBHelper.new().verify end
+task :verify do ADB.new().verify end
 
 namespace :armv7a do
 
@@ -69,7 +69,7 @@ namespace :armv7a do
       end
 
       desc "Clean Hello project."
-      task :clean do ADBHelper.new().clean end
+      task :clean do ADB.new().clean end
    end
 
 end
@@ -165,7 +165,7 @@ namespace :develop do
          task :curl do CurlBuilder.new(Arch.armv7a).install end
 
          desc "Install - Hello project on Android"
-         task :project do ADBHelper.new().deploy(HelloProjectBuilder.new(Arch.armv7a).builds) end
+         task :project do ADB.new().deploy(HelloProjectBuilder.new(Arch.armv7a).builds) end
       end
 
       namespace :make do
@@ -228,7 +228,7 @@ namespace :develop do
 
       namespace :run do
          desc "Run - Hello project on Android"
-         task :project do ADBHelper.new().run(HelloProjectBuilder.new(Arch.armv7a).executable) end
+         task :project do ADB.new().run(HelloProjectBuilder.new(Arch.armv7a).executable) end
       end
    end
 end
