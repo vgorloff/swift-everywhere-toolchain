@@ -2,35 +2,40 @@ require_relative "Tool.rb"
 
 class ADB < Tool
 
-   def initialize()
+   def initialize(libs, executable)
       super()
-      @destinationDirPath = "/data/local/tmp/hello"
+      component = File.basename(executable)
+      @executable = executable
+      @libs = libs
+      @destinationDirPath = "/data/local/tmp/project-#{component}"
+      @binary = "#{@destinationDirPath}/#{component}"
    end
 
-   def verify()
+   def self.verify()
       # See: Enable adb debugging on your device – https://developer.android.com/studio/command-line/adb#Enabling
       # On linux `execute "sudo apt-get install android-tools-adb"`
-      execute "adb devices" # To run daemon.
-      message "Make sure you are enabled \"USB debugging\" on Android device (See :https://developer.android.com/studio/command-line/adb#Enabling)"
-      execute "adb devices" # To list devices.
+      tool = Tool.new()
+      tool.execute "adb devices" # To run daemon.
+      tool.message "Make sure you are enabled \"USB debugging\" on Android device (See :https://developer.android.com/studio/command-line/adb#Enabling)"
+      tool.execute "adb devices" # To list devices.
    end
 
-   def deploy(folder)
+   def deploy
+      clean()
       message "Deploy of Shared Objects started."
-      execute "adb shell rm -rf #{@destinationDirPath}"
       execute "adb shell mkdir -p #{@destinationDirPath}"
-      Dir["#{folder}/*"].each { |lib|
+      @libs.each { |lib|
          execute "adb push #{lib} #{@destinationDirPath}"
       }
+      execute "adb push #{@executable} #{@destinationDirPath}"
       message "Deploy of Shared Objects completed."
    end
 
-   def run(binary)
+   def run
       execute "adb shell ls -l #{@destinationDirPath}"
-      fullPath = "#{@destinationDirPath}/#{binary}"
-      message "Starting execution of \"#{fullPath}\"..."
-      execute "adb shell LD_LIBRARY_PATH=#{@destinationDirPath} #{fullPath}"
-      message "Execution of \"#{fullPath}\" completed."
+      message "Starting execution of \"#{@binary}\"..."
+      execute "adb shell LD_LIBRARY_PATH=#{@destinationDirPath} #{@binary}"
+      message "Execution of \"#{@binary}\" completed."
    end
 
    def clean

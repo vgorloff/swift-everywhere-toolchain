@@ -17,7 +17,8 @@ require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 
-require_relative "Scripts/Builders/HelloProjectBuilder.rb"
+require_relative "Projects/HelloExeBuilder.rb"
+require_relative "Projects/HelloLibBuilder.rb"
 
 # References:
 #
@@ -37,7 +38,7 @@ task :checkout do
 end
 
 desc "Verify ADB shell setup."
-task :verify do ADB.new().verify end
+task :verify do ADB.verify end
 
 namespace :armv7a do
 
@@ -61,15 +62,37 @@ namespace :armv7a do
    end
 
    namespace :project do
-      desc "Builds Sample project"
-      task :build do HelloProjectBuilder.new(Arch.armv7a).build end
 
-      desc "Deploy and Run on Android"
-      task deploy: ["develop:armv7a:install:project", "develop:armv7a:run:project"] do
+      helloExe = HelloExeBuilder.new(Arch.armv7a)
+      helloLib = HelloLibBuilder.new(Arch.armv7a)
+
+      desc "Builds Hello-Exe project"
+      task :buildExe do helloExe.build end
+
+      desc "Builds Hello-Lib project"
+      task :buildLib do helloLib.build end
+
+      desc "Deploy and Run Hello-Exe project on Android"
+      task :deployExe do
+         helloExe.copyLibs()
+         adb = ADB.new(helloExe.libs, helloExe.binary)
+         adb.deploy()
+         adb.run()
       end
 
-      desc "Clean Hello project."
-      task :clean do ADB.new().clean end
+      desc "Deploy and Run Hello-Lib project on Android"
+      task :deployLib do
+         helloLib.copyLibs()
+         adb = ADB.new(helloLib.libs, helloLib.binary)
+         adb.deploy()
+         adb.run()
+      end
+
+      desc "Clean Hello-Exe project."
+      task :cleanExe do ADB.new(helloExe.libs, helloExe.binary).clean end
+
+      desc "Clean Hello-Lib project."
+      task :cleanLib do ADB.new(helloLib.libs, helloLib.binary).clean end
    end
 
 end
@@ -163,9 +186,6 @@ namespace :develop do
 
          desc "Install - curl"
          task :curl do CurlBuilder.new(Arch.armv7a).install end
-
-         desc "Install - Hello project on Android"
-         task :project do ADB.new().deploy(HelloProjectBuilder.new(Arch.armv7a).builds) end
       end
 
       namespace :make do
@@ -225,11 +245,6 @@ namespace :develop do
          desc "Clean - CMark"
          task :cmark do CMarkBuilder.new(Arch.armv7a).clean end
       end
-
-      namespace :run do
-         desc "Run - Hello project on Android"
-         task :project do ADB.new().run(HelloProjectBuilder.new(Arch.armv7a).executable) end
-      end
    end
 end
 
@@ -245,10 +260,11 @@ task :usage do
 EOM
    tool.print(help, 36)
 
-   tool.print("2. Build all Swift components and Sample project for armv7a.", 32)
+   tool.print("2. Build all Swift components and Sample projects for armv7a.", 32)
 help = <<EOM
    $ rake armv7a:build
-   $ rake armv7a:project:build
+   $ rake armv7a:project:buildExe
+   $ rake armv7a:project:buildLib
 EOM
    tool.print(help, 36)
 
@@ -262,9 +278,10 @@ EOM
 EOM
    tool.print(help, 36)
 
-   tool.print("4. Deploy and run Demo project to Android Device.", 32)
+   tool.print("4. Deploy and run Demo projects to Android Device.", 32)
    help = <<EOM
-   $ rake armv7a:project:deploy
+   $ rake armv7a:project:deployExe
+   $ rake armv7a:project:deployLib
 EOM
 
    tool.print(help, 36)
