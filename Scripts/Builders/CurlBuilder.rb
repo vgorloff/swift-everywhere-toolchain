@@ -13,6 +13,7 @@ class CurlBuilder < Builder
    end
 
    def executeConfigure
+      clean()
       # Arguments took from `swift/swift-corelibs-foundation/build-android`
       archFlags = "-march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
       ldFlags = "-march=armv7-a -Wl,--fix-cortex-a8"

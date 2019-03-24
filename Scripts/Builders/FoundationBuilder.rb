@@ -22,46 +22,37 @@ class FoundationBuilder < Builder
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
       cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}" # Check later if we can use `@installs`
       cmd << "-DCMAKE_BUILD_TYPE=Release"
-      if @arch == Arch.host
-         cmd << "-DCMAKE_C_COMPILER=\"#{@llvm.builds}/bin/clang\""
-         cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-      else
-         includePath = "#{@ndk.sources}/sysroot/usr/include"
-         cFlags = "-D__ANDROID__"
-         # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
-         cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
-         cmd << "-DANDROID_STL=c++_static"
-         cmd << "-DANDROID_TOOLCHAIN=clang"
-         cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
-         cmd << "-DANDROID_ABI=armeabi-v7a"
-         cmd << "-DCMAKE_SYSTEM_NAME=Android"
-         cmd << "-DCMAKE_C_FLAGS=\"#{cFlags}\""
-         cmd << "-DCMAKE_CXX_FLAGS=\"#{cFlags}\""
+      includePath = "#{@ndk.sources}/sysroot/usr/include"
+      cFlags = "-D__ANDROID__"
+      # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
+      cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
+      cmd << "-DANDROID_STL=c++_static"
+      cmd << "-DANDROID_TOOLCHAIN=clang"
+      cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
+      cmd << "-DANDROID_ABI=armeabi-v7a"
+      cmd << "-DCMAKE_SYSTEM_NAME=Android"
+      cmd << "-DCMAKE_C_FLAGS=\"#{cFlags}\""
+      cmd << "-DCMAKE_CXX_FLAGS=\"#{cFlags}\""
 
-         cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/arm-linux-androideabi'"
-         # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
-         platformPathComponent = isMacOS? ? "darwin-x86_64" : "linux-x86_64"
-         cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/arm-linux-androideabi/bin\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/#{platformPathComponent}/lib/gcc/arm-linux-androideabi/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
-         cmd << "-DADDITIONAL_SWIFT_CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
+      cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/arm-linux-androideabi'"
+      # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
+      platformPathComponent = isMacOS? ? "darwin-x86_64" : "linux-x86_64"
+      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/arm-linux-androideabi/bin\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/#{platformPathComponent}/lib/gcc/arm-linux-androideabi/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
+      cmd << "-DADDITIONAL_SWIFT_CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
 
-         cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
-         cmd << "-DICU_LIBRARY=#{@icu.lib}"
-         cmd << "-DICU_I18N_LIBRARY_RELEASE=#{@icu.lib}/libicui18nswift.so"
-         cmd << "-DICU_UC_LIBRARY_RELEASE=#{@icu.lib}/libicuucswift.so"
+      cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
+      cmd << "-DICU_LIBRARY=#{@icu.lib}"
+      cmd << "-DICU_I18N_LIBRARY_RELEASE=#{@icu.lib}/libicui18nswift.so"
+      cmd << "-DICU_UC_LIBRARY_RELEASE=#{@icu.lib}/libicuucswift.so"
 
-         cmd << "-DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2"
-         cmd << "-DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so"
+      cmd << "-DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2"
+      cmd << "-DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so"
 
-         cmd << "-DCURL_INCLUDE_DIR=#{@curl.include}"
-         cmd << "-DCURL_LIBRARY=#{@curl.lib}/libcurl.so"
+      cmd << "-DCURL_INCLUDE_DIR=#{@curl.include}"
+      cmd << "-DCURL_LIBRARY=#{@curl.lib}/libcurl.so"
 
-         cmd << "-DCMAKE_INSTALL_PREFIX=#{@swift.installs}/usr" # Applying Foundation over existing file structure.
-      end
+      cmd << "-DCMAKE_INSTALL_PREFIX=/"
       cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
-
-      # if isMacOS?
-      #    cmd << "-DCMAKE_AR=#{@ndk.bin}/arm-linux-androideabi-ar"
-      # end
 
       cmd << @sources
       execute cmd.join(" ")
@@ -76,7 +67,7 @@ class FoundationBuilder < Builder
    end
 
    def executeInstall
-      execute "cd #{@builds} && ninja install"
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
    end
 
    def configurePatches(shouldEnable = true)

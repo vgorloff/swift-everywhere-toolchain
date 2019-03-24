@@ -247,14 +247,14 @@ EOM
 
    tool.print("2. Build all Swift components and Sample project for armv7a.", 32)
 help = <<EOM
-   box$ rake armv7a:build
-   box$ rake armv7a:project:build
+   $ rake armv7a:build
+   $ rake armv7a:project:build
 EOM
    tool.print(help, 36)
 
    tool.print("3. Enable USB Debugging on Android device. Install Android Tools for macOS. Connect Android device and Verify ADB shell setup.", 32)
    help = <<EOM
-   host$ rake verify
+   $ rake verify
 
    References:
    - How to Install Android Tools for macOS: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
@@ -264,7 +264,7 @@ EOM
 
    tool.print("4. Deploy and run Demo project to Android Device.", 32)
    help = <<EOM
-   host$ rake armv7a:project:deploy
+   $ rake armv7a:project:deploy
 EOM
 
    tool.print(help, 36)

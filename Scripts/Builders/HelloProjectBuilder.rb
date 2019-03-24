@@ -11,6 +11,8 @@ class HelloProjectBuilder < Builder
       @builds = "#{Config.build}/#{arch}/#{@component}"
       @executable = "hello"
       @projectRoot = "#{Config.projects}/Hello"
+      @dispatch = DispatchBuilder.new(@arch)
+      @foundation = FoundationBuilder.new(@arch)
    end
 
    def build
@@ -24,14 +26,18 @@ class HelloProjectBuilder < Builder
 
       # Swift
       cmd = ["cd #{@builds} &&"]
-      if @arch != Arch.host
-         cmd << "#{swift.installs}/usr/bin/swift -frontend -c"
-         cmd << "-primary-file #{@projectRoot}/hello.swift"
-         cmd << "-target armv7-none-linux-android -disable-objc-interop"
-         cmd << "-color-diagnostics -module-name hello -o #{mainFile}"
-         cmd << "-Xcc -I#{ndk.toolchain}/sysroot/usr/include -I#{ndk.toolchain}/sysroot/usr/include/arm-linux-androideabi"
-         cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX -Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
-      end
+      cmd << "#{swift.installs}/bin/swift -frontend -c"
+      cmd << "-primary-file #{@projectRoot}/hello.swift"
+      cmd << "-target armv7-none-linux-android -disable-objc-interop"
+      cmd << "-color-diagnostics -module-name hello -o #{mainFile}"
+      cmd << "-Xcc -I#{ndk.toolchain}/sysroot/usr/include -I#{ndk.toolchain}/sysroot/usr/include/arm-linux-androideabi"
+      cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX -Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
+      cmd << "-I #{@dispatch.installs}/lib/swift/dispatch"
+      cmd << "-I #{@dispatch.installs}/lib/swift/android/armv7"
+      cmd << "-I #{@dispatch.installs}/lib/swift"
+      cmd << "-I #{@foundation.installs}/lib/swift/android/armv7"
+      cmd << "-I #{@foundation.installs}/lib/swift/CoreFoundation"
+      cmd << "-I #{@foundation.installs}/lib/swift"
       execute cmd.join(" ")
       execute "file #{mainFile}"
 
@@ -40,7 +46,7 @@ class HelloProjectBuilder < Builder
       cmd << "#{ndk.toolchain}/bin/armv7a-linux-androideabi#{ndk.api}-clang -fuse-ld=gold -pie"
       cmd << "-v"
       cmd << "-B #{ndk.toolchain}/bin"
-      cmd << "#{swift.installs}/usr/lib/swift/android/armv7/swiftrt.o"
+      cmd << "#{swift.installs}/lib/swift/android/armv7/swiftrt.o"
       cmd << mainFile
       # cmd << "-Xlinker --verbose"
       cmd << "-L #{@builds}"
@@ -56,16 +62,18 @@ class HelloProjectBuilder < Builder
       cmd << "-o #{outFile}"
       execute cmd.join(" ")
       execute "file #{outFile}"
-
-      if !isMacOS?
-         execute "readelf -h #{@builds}/#{@executable}"
-      end
       logBuildCompleted
    end
 
    def copyLibs()
       message "Copying Shared Objects started."
-      Dir["#{SwiftBuilder.new(@arch).installs}/usr/lib/swift/android" + "/*.so"].each { |lib|
+      Dir["#{SwiftBuilder.new(@arch).installs}/lib/swift/android" + "/*.so"].each { |lib|
+         execute "cp -vf #{lib} #{@builds}"
+      }
+      Dir["#{@dispatch.installs}/lib/swift/android" + "/*.so"].each { |lib|
+         execute "cp -vf #{lib} #{@builds}"
+      }
+      Dir["#{@foundation.installs}/lib/swift/android" + "/*.so"].each { |lib|
          execute "cp -vf #{lib} #{@builds}"
       }
       Dir[ICUBuilder.new(@arch).lib + "/*.so*"].select { |lib| !File.symlink?(lib) }.each { |lib|
