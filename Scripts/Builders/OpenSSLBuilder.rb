@@ -28,11 +28,11 @@ class OpenSSLBuilder < Builder
    end
 
    def executeBuild
-      execute options.join(" ") + " make"
+      execute options.join(" ") + " make SHLIB_VERSION_NUMBER= SHLIB_EXT=.so"
    end
 
    def executeInstall
-      execute options.join(" ") + " make install_sw install_ssldirs"
+      execute options.join(" ") + " make SHLIB_VERSION_NUMBER= SHLIB_EXT=.so install_sw install_ssldirs"
    end
 
 end
