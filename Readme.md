@@ -18,20 +18,20 @@ Setup and Build
 3. Install Rake (Make-like program implemented in Ruby).
 
    ```bash
-   bash$ gem install rake
+   $ gem install rake
    ```
 
 4. Clone this repository.
 
     ```bash
-    bash$ git clone https://github.com/vgorloff/Android-On-Swift.git
-    bash$ cd Android-On-Swift
+    $ git clone https://github.com/vgorloff/Android-On-Swift.git
+    $ cd Android-On-Swift
     ```
 
 5. Start a build.
 
    ```bash
-   bash$ rake
+   $ rake
    ```
 
 6. Once build completed, open sample project `Projects/Hello-NDK` in Android Studio, update file `local.properties` with actual paths and launch sample app on ARMv7 Android Device.
