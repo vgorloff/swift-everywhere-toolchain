@@ -62,14 +62,9 @@ class ICUBuilder < Builder
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=aarch64-linux-android"
       elsif @arch == Arch.host
-         if !isMacOS?
-            cmd << "CC='#{llvmToolchain}/bin/clang'"
-            cmd << "CXX='#{llvmToolchain}/bin/clang++'"
-         end
          cmd << "CFLAGS='-Os'"
          cmd << "CXXFLAGS='--std=c++11'"
-         hostSystem = isMacOS? ? "MacOSX" : "Linux"
-         cmd << "#{@sources}/source/runConfigureICU #{hostSystem} --prefix=#{@installs}"
+         cmd << "#{@sources}/source/runConfigureICU MacOSX --prefix=#{@installs}"
          cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
          cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       end
@@ -92,6 +87,13 @@ class ICUBuilder < Builder
    def executeInstall
       cmd = "cd #{@builds} && make install"
       @dryRun ? message(cmd) : execute(cmd)
+      Dir[lib + "/**.so*"].each { |f|
+         if File.symlink?(f)
+            File.delete(f)
+         else
+            File.rename(f, f.sub(/\.so.*/, '.so'))
+         end
+      }
    end
 
    def make
@@ -103,6 +105,7 @@ class ICUBuilder < Builder
 
    def configurePatches(shouldEnable = true)
       configurePatch("#{@sources}/source/configure", "#{@patches}/configure.patch", shouldEnable)
+      configurePatch("#{@sources}/source/config/mh-linux", "#{@patches}/mh-linux.diff", shouldEnable)
    end
 
    def clean
