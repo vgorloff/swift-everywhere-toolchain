@@ -38,7 +38,7 @@ class SwiftBuilder < Builder
       super(Lib.swift, arch)
       @icu = ICUBuilder.new(arch)
       @ndk = NDK.new()
-      @cmark = CMarkBuilder.new(@arch)
+      @cmark = CMarkBuilder.new()
       @llvm = LLVMBuilder.new()
       @clang = ClangBuilder.new(@arch)
    end

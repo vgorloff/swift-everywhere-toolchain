@@ -46,11 +46,12 @@ namespace :armv7a do
    task :build do
       tool = Tool.new()
       LLVMBuilder.new().make
+      CMarkBuilder.new().make
+      ICUHostBuilder.new().make
       ICUBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.armv7a).make
-      CMarkBuilder.new(Arch.armv7a).make
       swift = SwiftBuilder.new(Arch.armv7a)
       swift.make
       DispatchBuilder.new(Arch.armv7a).make
@@ -112,7 +113,7 @@ namespace :develop do
          task :llvm do LLVMBuilder.new().configure end
 
          desc "Configure - CMark"
-         task :cmark do CMarkBuilder.new(Arch.armv7a).configure end
+         task :cmark do CMarkBuilder.new().configure end
 
          desc "Configure - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).configure end
@@ -141,7 +142,7 @@ namespace :develop do
          task :llvm do LLVMBuilder.new().build end
 
          desc "Build - CMark"
-         task :cmark do CMarkBuilder.new(Arch.armv7a).build end
+         task :cmark do CMarkBuilder.new().build end
 
          desc "Build - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).build end
@@ -170,7 +171,7 @@ namespace :develop do
          task :llvm do LLVMBuilder.new().install end
 
          desc "Install - CMark"
-         task :cmark do CMarkBuilder.new(Arch.armv7a).install end
+         task :cmark do CMarkBuilder.new().install end
 
          desc "Install - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).install end
@@ -199,7 +200,7 @@ namespace :develop do
          task :llvm do LLVMBuilder.new().make end
 
          desc "Configure, Build and Install - CMark"
-         task :cmark do CMarkBuilder.new(Arch.armv7a).make end
+         task :cmark do CMarkBuilder.new().make end
 
          desc "Configure, Build and Install - libDispatch"
          task :dispatch do DispatchBuilder.new(Arch.armv7a).make end
@@ -243,7 +244,7 @@ namespace :develop do
          task :curl do CurlBuilder.new(Arch.armv7a).clean end
 
          desc "Clean - CMark"
-         task :cmark do CMarkBuilder.new(Arch.armv7a).clean end
+         task :cmark do CMarkBuilder.new().clean end
       end
    end
 end

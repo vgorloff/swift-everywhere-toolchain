@@ -2,8 +2,8 @@ require_relative "../Common/Builder.rb"
 
 class CMarkBuilder < Builder
 
-   def initialize(arch = Arch.default)
-      super(Lib.cmark, arch)
+   def initialize()
+      super(Lib.cmark, Arch.host)
    end
 
    def executeConfigure
