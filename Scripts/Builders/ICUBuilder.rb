@@ -17,22 +17,9 @@ class ICUBuilder < Builder
       @ndk = NDK.new()
    end
 
-   def configure
-      logConfigureStarted()
-      host = ICUBuilder.new(Arch.host)
-      if @arch != Arch.host && !File.exist?(host.bin)
-         message "Building Corss-Build Host."
-         host.llvmToolchain = llvmToolchain
-         host.make
-         message "Corss-Build Host Build completed."
-      end
-
-      prepare()
-      configurePatches(false)
+   def executeConfigure
+      host = ICUHostBuilder.new()
       cmd = ["cd #{@builds} &&"]
-      if @arch != Arch.host
-         configurePatches()
-      end
       if @arch == Arch.armv7a
          cmd << "CFLAGS='-Os -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
          cmd << "CXXFLAGS='--std=c++11 -march=armv7-a -mfloat-abi=softfp -mfpu=neon'"
@@ -61,27 +48,13 @@ class ICUBuilder < Builder
          cmd << "RINLIB=aarch64-linux-android-ranlib"
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=aarch64-linux-android"
-      elsif @arch == Arch.host
-         if !isMacOS?
-            cmd << "CC='#{llvmToolchain}/bin/clang'"
-            cmd << "CXX='#{llvmToolchain}/bin/clang++'"
-         end
-         cmd << "CFLAGS='-Os'"
-         cmd << "CXXFLAGS='--std=c++11'"
-         hostSystem = isMacOS? ? "MacOSX" : "Linux"
-         cmd << "#{@sources}/source/runConfigureICU #{hostSystem} --prefix=#{@installs}"
-         cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
-         cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       end
-      if @arch != Arch.host
-         cmd << "--with-library-suffix=swift"
-         cmd << "--enable-static=no --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
-         cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
-         cmd << "--with-cross-build=#{host.builds}"
-         cmd << "--with-data-packaging=archive"
-      end
+      cmd << "--with-library-suffix=swift"
+      cmd << "--enable-static=no --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
+      cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
+      cmd << "--with-cross-build=#{host.builds}"
+      cmd << "--with-data-packaging=archive"
       execute cmd.join(" ")
-      logConfigureCompleted()
    end
 
    def executeBuild
@@ -92,25 +65,18 @@ class ICUBuilder < Builder
    def executeInstall
       cmd = "cd #{@builds} && make install"
       @dryRun ? message(cmd) : execute(cmd)
-   end
-
-   def make
-      super()
-      if @arch != Arch.host
-         configurePatches(false)
-      end
+      Dir[lib + "/**.so*"].each { |f|
+         if File.symlink?(f)
+            File.delete(f)
+         else
+            File.rename(f, f.sub(/\.so.*/, '.so'))
+         end
+      }
    end
 
    def configurePatches(shouldEnable = true)
       configurePatch("#{@sources}/source/configure", "#{@patches}/configure.patch", shouldEnable)
-   end
-
-   def clean
-      if @arch != Arch.host
-         ICUBuilder.new(Arch.host).clean
-         configurePatches(false)
-      end
-      super()
+      configurePatch("#{@sources}/source/config/mh-linux", "#{@patches}/mh-linux.diff", shouldEnable)
    end
 
 end

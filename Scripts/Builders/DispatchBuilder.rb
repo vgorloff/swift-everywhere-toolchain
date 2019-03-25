@@ -16,18 +16,13 @@ class DispatchBuilder < Builder
       cmd = []
       cmd << "cd #{@builds} &&"
       cmd << "cmake -G Ninja" # --debug-output
-      if @arch == Arch.host
-         cmd << "-DCMAKE_INSTALL_PREFIX=#{@installs}"
-         cmd << "-DCMAKE_C_COMPILER=\"#{llvmToolchain}/bin/clang\""
-      else
-         cmd << "-DCMAKE_INSTALL_PREFIX=#{swift.installs}/usr" # Applying Dispatch over existing file structure.
-         # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
-         cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
-         cmd << "-DANDROID_STL=c++_static"
-         cmd << "-DANDROID_TOOLCHAIN=clang"
-         cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
-         cmd << "-DANDROID_ABI=armeabi-v7a"
-      end
+      cmd << "-DCMAKE_INSTALL_PREFIX=/"
+      # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
+      cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
+      cmd << "-DANDROID_STL=c++_static"
+      cmd << "-DANDROID_TOOLCHAIN=clang"
+      cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
+      cmd << "-DANDROID_ABI=armeabi-v7a"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DENABLE_SWIFT=true"
       cmd << "-DENABLE_TESTING=false"
@@ -71,7 +66,7 @@ class DispatchBuilder < Builder
    end
 
    def executeInstall
-      execute "cd #{@builds} && ninja install"
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
    end
 
 end

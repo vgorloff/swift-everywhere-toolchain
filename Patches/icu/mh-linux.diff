@@ -1,0 +1,13 @@
+diff --git a/icu4c/source/config/mh-linux b/icu4c/source/config/mh-linux
+index 53d6780d68..ee19d7d943 100644
+--- a/icu4c/source/config/mh-linux
++++ b/icu4c/source/config/mh-linux
+@@ -27,7 +27,7 @@ LDFLAGSICUDT=-nodefaultlibs -nostdlib
+ 
+ ## Compiler switch to embed a library name
+ # The initial tab in the next line is to prevent icu-config from reading it.
+-	LD_SONAME = -Wl,-soname -Wl,$(notdir $(MIDDLE_SO_TARGET))
++	LD_SONAME = -Wl,-soname -Wl,$(notdir $(SO_TARGET))
+ #SH# # We can't depend on MIDDLE_SO_TARGET being set.
+ #SH# LD_SONAME=
+ 

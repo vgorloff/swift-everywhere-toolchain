@@ -16,33 +16,25 @@ class LLVMBuilder < Builder
       setupSymLinks()
       cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd = []
-      cmd << "cd #{@builds} &&"
-      cmd << "cmake -G Ninja"
+      cmd << "cd #{@builds} && cmake -G Ninja -S #{@sources} -B #{@builds}"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DLLVM_INCLUDE_EXAMPLES=false -DLLVM_INCLUDE_TESTS=false -DLLVM_INCLUDE_DOCS=false"
+      cmd << "-DLLVM_BUILD_TOOLS=false -DLLVM_INSTALL_BINUTILS_SYMLINKS=false"
       cmd << "-DLLVM_TARGETS_TO_BUILD=\"ARM;AArch64;X86\""
       cmd << "-DCMAKE_C_COMPILER:PATH=#{clang} -DCMAKE_CXX_COMPILER:PATH=#{clang}++"
       cmd << "-DLLVM_VERSION_MAJOR:STRING=7 -DLLVM_VERSION_MINOR:STRING=0 -DLLVM_VERSION_PATCH:STRING=0"
-      cmd << "-DCLANG_VERSION_MAJOR:STRING=7 -DCLANG_VERSION_MINOR:STRING=0 -DCLANG_VERSION_PATCH:STRING=0"
       cmd << "-DLLVM_ENABLE_ASSERTIONS=TRUE"
       cmd << "-DCMAKE_C_FLAGS='#{cFlags}' -DCMAKE_CXX_FLAGS='#{cFlags}'"
-      cmd << "-DLLVM_TOOL_SWIFT_BUILD=NO"
-      cmd << "-DLLVM_TOOL_COMPILER_RT_BUILD=TRUE"
       cmd << "-DLLVM_BUILD_EXTERNAL_COMPILER_RT=TRUE"
-      cmd << "-DLLVM_LIT_ARGS=-sv"
       cmd << "-DCMAKE_INSTALL_PREFIX=/"
-      cmd << "-DINTERNAL_INSTALL_PREFIX=local"
+      cmd << "-DLLVM_ENABLE_PROJECTS=\"clang;compiler-rt\""
 
-      if isMacOS?
-         cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
-         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
-         cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
-         cmd << "-DSANITIZER_MIN_OSX_VERSION=10.9"
-         cmd << "-DLLVM_ENABLE_MODULES=FALSE"
-         cmd << "-DLLVM_HOST_TRIPLE=x86_64-apple-macosx10.9"
-      end
+      cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+      cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
+      cmd << "-DLLVM_ENABLE_MODULES=FALSE"
+      cmd << "-DLLVM_HOST_TRIPLE=x86_64-apple-macosx10.9"
 
-      cmd << @sources
+      message "Running cmake..."
       execute cmd.join(" ")
    end
 

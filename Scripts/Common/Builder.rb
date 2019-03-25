@@ -9,7 +9,6 @@ require 'pathname'
 class Builder < Tool
 
    attr_reader :builds, :installs, :sources, :numberOfJobs
-   attr_writer :llvmToolchain
 
    def initialize(component, arch)
       @component = component
@@ -21,7 +20,6 @@ class Builder < Tool
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
-      @llvmToolchain = nil
       if isMacOS?
          physicalCPUs = `sysctl -n hw.physicalcpu`.to_i
       else
@@ -64,13 +62,6 @@ class Builder < Tool
 
    def clang
       return toolchainPath + "/usr/bin/clang"
-   end
-
-   def llvmToolchain
-      if @llvmToolchain.nil?
-         @llvmToolchain = LLVMBuilder.new().installs
-      end
-      return @llvmToolchain
    end
 
    def configure()
