@@ -15,9 +15,10 @@ Setup and Build
 
    - `ndk.dir`: Path to NDK installation directory.
 
-3. Install Rake (Make-like program implemented in Ruby).
+3. Check that Rake is installed. Install Rake if Needed.
 
    ```bash
+   $ which rake
    $ gem install rake
    ```
 
