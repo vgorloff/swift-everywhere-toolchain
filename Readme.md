@@ -9,38 +9,38 @@ Requirements
 Setup and Build
 ===============
 
-1. Copy file `local.properties.yml.template` to `local.properties.yml`
-2. Edit file `local.properties.yml` and configure following settings:
-
-   - `ndk.dir`: Path to NDK installation directory.
-
-3. Check that Rake is installed. Install Rake if Needed.
+1. Check that Rake is installed. Install Rake if Needed.
 
    ```bash
    $ which rake
    $ gem install rake
    ```
 
-4. Check that Cmake is installed. Install Cmake if Needed.
+2. Check that Cmake is installed. Install Cmake if Needed.
 
    ```bash
    $ which cmake
    $ brew install cmake
    ```
 
-5. Check that Ninja is installed. Install Ninja if Needed.
+3. Check that Ninja is installed. Install Ninja if Needed.
 
    ```bash
    $ which ninja
    $ brew install ninja
    ```
 
-6. Clone this repository.
+4. Clone this repository.
 
     ```bash
     $ git clone https://github.com/vgorloff/Android-On-Swift.git
     $ cd Android-On-Swift
     ```
+5. Copy file `local.properties.yml.template` to `local.properties.yml`
+
+6. Edit file `local.properties.yml` and configure following settings:
+
+   - `ndk.dir`: Path to NDK installation directory.
 
 7. Start a build.
 
