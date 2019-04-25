@@ -30,6 +30,15 @@ Setup and Build
    $ brew install ninja
    ```
 
+4. Check that Autotools is installed. Install Autotools if Needed.
+
+   ```bash
+   $ which autoconf
+   $ brew install autoconf
+   $ which aclocal
+   $ brew install automake
+   ```
+
 4. Clone this repository.
 
     ```bash
