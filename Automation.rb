@@ -24,10 +24,10 @@ class Automation
       action = ARGV.first
       if action == "checkout"
          checkout()
-      elsif action == "build"
+      elsif action == "make"
          # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
          build()
-      elsif action == "build:xml"
+      elsif action == "make:xml"
          XMLBuilder.new(Arch.armv7a).make
       else
          usage()
