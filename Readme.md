@@ -34,6 +34,9 @@ Setup and Build
  
    $ which glibtool
    $ brew install libtool
+   
+   $ which pkg-config
+   $ brew install pkg-config
    ```
 
 4. Clone this repository.
