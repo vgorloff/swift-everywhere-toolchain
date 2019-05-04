@@ -6,15 +6,8 @@ automation = Automation.new()
 
 task default: ['usage']
 
-desc "Checkout Sources of all Components from Git."
-task :checkout do automation.checkout() end
-
 desc "Verify ADB shell setup."
 task :verify do ADB.verify() end
-
-# Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
-desc "Build Swift Toolchain."
-task :build do automation.build() end
 
 task :usage do automation.usage() end
 

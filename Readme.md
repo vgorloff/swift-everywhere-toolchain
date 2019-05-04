@@ -9,28 +9,21 @@ Requirements
 Setup and Build
 ===============
 
-1. Check that Rake is installed. Install Rake if Needed.
-
-   ```bash
-   $ which rake
-   $ gem install rake
-   ```
-
-2. Check that Cmake is installed. Install Cmake if Needed.
+1. Check that Cmake is installed. Install Cmake if Needed.
 
    ```bash
    $ which cmake
    $ brew install cmake
    ```
 
-3. Check that Ninja is installed. Install Ninja if Needed.
+2. Check that Ninja is installed. Install Ninja if Needed.
 
    ```bash
    $ which ninja
    $ brew install ninja
    ```
 
-4. Check that Autotools is installed. Install Autotools if Needed.
+3. Check that Autotools is installed. Install Autotools if Needed.
 
    ```bash
    $ which autoconf
