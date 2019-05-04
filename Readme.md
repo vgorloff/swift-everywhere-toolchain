@@ -28,8 +28,12 @@ Setup and Build
    ```bash
    $ which autoconf
    $ brew install autoconf
+
    $ which aclocal
    $ brew install automake
+ 
+   $ which glibtool
+   $ brew install libtool
    ```
 
 4. Clone this repository.

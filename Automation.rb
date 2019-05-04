@@ -27,6 +27,8 @@ class Automation
       elsif action == "build"
          # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
          build()
+      elsif action == "build:xml"
+         XMLBuilder.new(Arch.armv7a).make
       else
          usage()
       end
