@@ -33,7 +33,7 @@ class ProjectBuilder < Builder
       execute "rm -rvf \"#{targetDir}\""
       execute "mkdir -p \"#{targetDir}\""
       message "Copying Shared Objects started."
-      Dir["#{@swift.installs}/lib/swift/android" + "/*.so"].each { |lib|
+      Dir["#{@swift.installs}/lib/swift/android/armv7" + "/*.so"].each { |lib|
          execute "cp -vf #{lib} #{targetDir}"
       }
       Dir["#{@dispatch.installs}/lib/swift/android" + "/*.so"].each { |lib|
@@ -77,7 +77,7 @@ class ProjectBuilder < Builder
       cmd << "-L #{@ndk.toolchain}/lib/gcc/arm-linux-androideabi/4.9.x" # Link the Android NDK's libc++ and libgcc.
       cmd << "-L #{@foundation.installs}/lib/swift/android"
       cmd << "-L #{@dispatch.installs}/lib/swift/android"
-      cmd << "-L #{@swift.installs}/lib/swift/android"
+      cmd << "-L #{@swift.installs}/lib/swift/android/armv7"
       return cmd
    end
 

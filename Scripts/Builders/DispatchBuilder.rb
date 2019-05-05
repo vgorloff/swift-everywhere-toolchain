@@ -8,10 +8,10 @@ class DispatchBuilder < Builder
    def initialize(arch = Arch.default)
       super(Lib.dispatch, arch)
       @ndk = NDK.new()
+      @swift = SwiftBuilder.new()
    end
 
    def executeConfigure
-      swift = SwiftBuilder.new()
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
       cmd = []
       cmd << "cd #{@builds} &&"
@@ -26,8 +26,8 @@ class DispatchBuilder < Builder
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DENABLE_SWIFT=true"
       cmd << "-DENABLE_TESTING=false"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{swift.builds}/bin/swiftc\""
-      cmd << "-DCMAKE_PREFIX_PATH=\"#{swift.builds}/lib/cmake/swift\""
+      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
+      cmd << "-DCMAKE_PREFIX_PATH=\"#{@swift.builds}/lib/cmake/swift\""
       cmd << @sources
       execute cmd.join(" ")
       fixNinjaBuild()
@@ -42,7 +42,7 @@ class DispatchBuilder < Builder
       execute "cp -vf #{file} #{file}.orig"
       contents = File.readlines(file).join()
       if !contents.include?('-tools-directory')
-         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -tools-directory #{@ndk.toolchain}/bin")
+         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -L #{@swift.installs}/lib/swift/android/armv7 -tools-directory #{@ndk.toolchain}/bin")
          contents = contents.gsub('-module-link-name swiftDispatch', "-module-link-name swiftDispatch -Xcc -I#{@ndk.sources}/sysroot/usr/include -Xcc -I#{@ndk.sources}/sysroot/usr/include/arm-linux-androideabi")
       end
       File.write(file, contents)

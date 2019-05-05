@@ -68,6 +68,8 @@ class Automation
       if component == "curl" then cleanCURL()
       elsif component == "xml" then cleanXML()
       elsif component == "deps" then cleanDeps()
+      elsif component == "dispatch" then cleanDispatch()
+      elsif component == "foundation" then cleanFoundation()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
       else

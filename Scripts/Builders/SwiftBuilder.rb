@@ -61,6 +61,8 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}"
       cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}"
       cmd << "-DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}"
+      cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
+      cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=\"armv7;aarch64\""
 
       icu = ICUBuilder.new(Arch.armv7a)
       cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{icu.lib}/libicuucswift.so"
@@ -68,9 +70,12 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{icu.lib}/libicui18nswift.so"
       cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{icu.sources}/source/i18n"
       cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{icu.lib}/libicudataswift.so"
-
-      cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
-      cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=armv7"
+      icu = ICUBuilder.new(Arch.aarch64)
+      cmd << "-DSWIFT_ANDROID_aarch64_ICU_UC=#{icu.lib}/libicuucswift.so"
+      cmd << "-DSWIFT_ANDROID_aarch64_ICU_UC_INCLUDE=#{icu.sources}/source/common"
+      cmd << "-DSWIFT_ANDROID_aarch64_ICU_I18N=#{icu.lib}/libicui18nswift.so"
+      cmd << "-DSWIFT_ANDROID_aarch64_ICU_I18N_INCLUDE=#{icu.sources}/source/i18n"
+      cmd << "-DSWIFT_ANDROID_aarch64_ICU_DATA=#{icu.lib}/libicudataswift.so"
 
       cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
@@ -137,16 +142,19 @@ class SwiftBuilder < Builder
    def executeBuild
       execute "cd #{@builds} && ninja -j#{numberOfJobs}"
       # Workaround: Should be `swift-stdlib-android-armv7` only.
-      targets = "swiftGlibc-android swiftCore-android swiftSIMDOperators-android swiftSwiftOnoneSupport-android swiftRemoteMirror-android"
+      targets = "swiftGlibc-android-armv7 swiftCore-android-armv7 swiftSIMDOperators-android-armv7 swiftSwiftOnoneSupport-android-armv7"
       execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
-      message "Copying Shared objects"
-      Dir["#{@builds}/lib/swift/android/armv7/*.so"].each { |so|
-         execute "cp -vfr \"#{so}\" \"#{@builds}/lib/swift/android/\""
-      }
+      targets = "swiftGlibc-android-aarch64 swiftCore-android-aarch64 swiftSIMDOperators-android-aarch64 swiftSwiftOnoneSupport-android-aarch64"
+      execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
    end
 
    def executeInstall
       fixInstallScript()
+      fixStdLibInstallScript("#{@builds}/stdlib/public/core/cmake_install.cmake")
+      fixStdLibInstallScript("#{@builds}/stdlib/public/SwiftOnoneSupport/cmake_install.cmake")
+      fixStdLibInstallScript("#{@builds}/stdlib/public/SIMDOperators/cmake_install.cmake")
+      fixStdLibInstallScript("#{@builds}/stdlib/public/SwiftRemoteMirror/cmake_install.cmake")
+      fixStdLibInstallScript("#{@builds}/stdlib/public/Platform/cmake_install.cmake")
       execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
    end
 
@@ -221,30 +229,41 @@ class SwiftBuilder < Builder
    end
 
    def fixInstallScript
-      file = "#{@builds}/cmake_install.cmake"
-      message "Applying fix for #{file}"
-      execute "cp -vf #{file} #{file}.orig"
-      lines = File.readlines(file)
-      contents = lines.join
-      if contents.include?("libswiftGlibc.so")
-         message "Seems you already applied fix for #{file}"
-         return
-      end
+      sourceFile = "#{@builds}/cmake_install.cmake"
+      lines = readInstallScript(sourceFile)
       result = []
-      # >> Fixes non NDK Dynamic Linker options.
-      filesToInstall = Dir["#{builds}/lib/swift/android/armv7/*.so"].map { |so| " \"#{so}\"" }.join("\n")
-      commands = 'if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)' + "\n"
-      commands += ' file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/swift/android" TYPE FILE FILES' + "\n"
-      commands += filesToInstall
-      commands += ")\nendif()\n"
       lines.each { |line|
          if line.include?('if(CMAKE_INSTALL_COMPONENT)')
-            line = commands + "\n" + line
+            line = installCommands("armv7") + "\n" + installCommands("aarch64") + "\n" + line
          end
          result << line
       }
       lines = result
-      File.write(file, lines.join() + "\n")
+      File.write(sourceFile, lines.join() + "\n")
+   end
+   
+   def installCommands(arch)
+      files = Dir["#{builds}/lib/swift/android/#{arch}/*.so"].map { |so| " \"#{so}\"" }.join("\n")
+      commands = 'if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)' + "\n"
+      commands += " file(INSTALL DESTINATION \"${CMAKE_INSTALL_PREFIX}/lib/swift/android/#{arch}\" TYPE FILE FILES" + "\n"
+      commands += files
+      commands += ")\nendif()\n"
+   end
+   
+   def fixStdLibInstallScript(sourceFile)
+      lines = readInstallScript(sourceFile)
+      lines = lines.reject { |line| line.include?(".dylib") }
+      File.write(sourceFile, lines.join() + "\n")
+   end
+   
+   def readInstallScript(sourceFile)
+      backupFile = "#{sourceFile}.orig"
+      if !File.exist?(backupFile)
+         execute "cp -vf #{sourceFile} #{backupFile}"
+      end
+      message "Applying fix for #{sourceFile}"
+      execute "cp -vf #{backupFile} #{sourceFile}"
+      return File.readlines(sourceFile)
    end
 
    def configurePatches(shouldEnable = true)
