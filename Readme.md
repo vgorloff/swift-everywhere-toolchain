@@ -54,7 +54,7 @@ Setup and Build
 7. Start a build.
 
    ```bash
-   $ rake
+   $ make
    ```
 
 8. Once build completed, open sample project `Projects/Hello-NDK` in Android Studio, update file `local.properties` with actual paths and launch sample app on ARMv7 Android Device.

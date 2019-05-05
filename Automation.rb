@@ -21,12 +21,35 @@ require_relative "Projects/HelloLibBuilder.rb"
 class Automation
   
    def perform()
+      helloExe = HelloExeBuilder.new(Arch.armv7a)
+      helloLib = HelloLibBuilder.new(Arch.armv7a)
+      
       action = ARGV.first
       if action == "checkout"
          checkout()
       elsif action == "make"
          # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
          build()
+      elsif action == "verify"
+         ADB.verify()
+      elsif action == "armv7a:project:buildExe"
+         helloExe.build
+      elsif action == "armv7a:project:buildLib"
+         helloLib.build
+      elsif action == "armv7a:project:cleanExe"
+         ADB.new(helloExe.libs, helloExe.binary).clean
+      elsif action == "armv7a:project:cleanLib"
+         ADB.new(helloLib.libs, helloLib.binary).clean
+      elsif action == "armv7a:project:deployExe"
+         helloExe.copyLibs()
+         adb = ADB.new(helloExe.libs, helloExe.binary)
+         adb.deploy()
+         adb.run()
+      elsif action == "armv7a:project:deployLib"
+         helloLib.copyLibs()
+         adb = ADB.new(helloLib.libs, helloLib.binary)
+         adb.deploy()
+         adb.run()
       elsif action == "make:xml"
          XMLBuilder.new(Arch.armv7a).make
       else
