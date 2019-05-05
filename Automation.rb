@@ -62,6 +62,7 @@ class Automation
    
    def clean(component)
       if component == "curl" then cleanCURL()
+      elsif component == "xml" then cleanXML()
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -101,10 +102,6 @@ class Automation
       OpenSSLBuilder.new(Arch.x86).make
    end
    
-   def buildXML()
-      XMLBuilder.new(Arch.armv7a).make
-   end
-   
    def cleanCURL()
       CurlBuilder.new(Arch.armv7a).clean
       CurlBuilder.new(Arch.aarch64).clean
@@ -112,14 +109,26 @@ class Automation
    end
    
    def buildCURL()
-      # CurlBuilder.new(Arch.armv7a).make
-      # CurlBuilder.new(Arch.aarch64).make
+      CurlBuilder.new(Arch.armv7a).make
+      CurlBuilder.new(Arch.aarch64).make
       CurlBuilder.new(Arch.x86).make
+   end
+   
+   def cleanXML()
+      XMLBuilder.new(Arch.armv7a).clean
+      XMLBuilder.new(Arch.aarch64).clean
+      XMLBuilder.new(Arch.x86).clean
+   end
+   
+   def buildXML()
+      XMLBuilder.new(Arch.armv7a).make
+      XMLBuilder.new(Arch.aarch64).make
+      XMLBuilder.new(Arch.x86).make
    end
 
    def buildDeps()
       buildICU()
-      XMLBuilder.new(Arch.armv7a).make
+      buildXML()
       buildSSL()
       buldCURL()
    end
