@@ -25,23 +25,15 @@ class Automation
       helloLib = HelloLibBuilder.new(Arch.armv7a)
       
       action = ARGV.first
-      if action.start_with?("build:")
-         # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
-         build(action.sub("build:", ''))
-      elsif action.start_with?("clean:")
-         clean(action.sub("clean:", ''))
-      elsif action == "checkout"
-         checkout()
-      elsif action == "verify"
-         ADB.verify()
-      elsif action == "armv7a:project:buildExe"
-         helloExe.build
-      elsif action == "armv7a:project:buildLib"
-         helloLib.build
-      elsif action == "armv7a:project:cleanExe"
-         ADB.new(helloExe.libs, helloExe.binary).clean
-      elsif action == "armv7a:project:cleanLib"
-         ADB.new(helloLib.libs, helloLib.binary).clean
+      # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
+      if action.start_with?("build:") then build(action.sub("build:", ''))
+      elsif action.start_with?("clean:") then clean(action.sub("clean:", ''))
+      elsif action == "checkout" then checkout()
+      elsif action == "verify" then ADB.verify()
+      elsif action == "armv7a:project:buildExe" then helloExe.build
+      elsif action == "armv7a:project:buildLib" then helloLib.build
+      elsif action == "armv7a:project:cleanExe" then ADB.new(helloExe.libs, helloExe.binary).clean
+      elsif action == "armv7a:project:cleanLib" then ADB.new(helloLib.libs, helloLib.binary).clean
       elsif action == "armv7a:project:deployExe"
          helloExe.copyLibs()
          adb = ADB.new(helloExe.libs, helloExe.binary)
@@ -52,20 +44,16 @@ class Automation
          adb = ADB.new(helloLib.libs, helloLib.binary)
          adb.deploy()
          adb.run()
-      else
-         usage()
+      else usage()
       end
    end
    
    def build(component)
-      if component == "all"
-         buildAll()
-      elsif component == "xml"
-         buildXML()
-      elsif component == "icu"
-         buildICU()
-      elsif component == "ssl"
-         buildSSL()
+      if component == "all" then buildAll()
+      elsif component == "xml" then buildXML()
+      elsif component == "icu" then buildICU()
+      elsif component == "curl" then buildCURL()
+      elsif component == "ssl" then buildSSL()
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -73,8 +61,7 @@ class Automation
    end
    
    def clean(component)
-      if component == "curl"
-         cleanCURL()
+      if component == "curl" then cleanCURL()
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -124,8 +111,10 @@ class Automation
       CurlBuilder.new(Arch.x86).clean
    end
    
-   def buldCURL()
-      CurlBuilder.new(Arch.armv7a).make
+   def buildCURL()
+      # CurlBuilder.new(Arch.armv7a).make
+      # CurlBuilder.new(Arch.aarch64).make
+      CurlBuilder.new(Arch.x86).make
    end
 
    def buildDeps()
