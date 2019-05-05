@@ -51,9 +51,11 @@ class Automation
          adb.deploy()
          adb.run()
       elsif action == "build:xml"
-         XMLBuilder.new(Arch.armv7a).make
+         buildXML()
       elsif action == "build:icu"
-         buildIcu
+         buildICU()
+      elsif action == "build:ssl"
+         buildSSL()
       else
          usage()
       end
@@ -74,7 +76,7 @@ class Automation
       CMarkBuilder.new().make
    end
    
-   def buildIcu()
+   def buildICU()
       ICUHostBuilder.new().clean
       ICUBuilder.new(Arch.armv7a).clean
       ICUBuilder.new(Arch.aarch64).clean
@@ -85,11 +87,21 @@ class Automation
       ICUBuilder.new(Arch.aarch64).make
       ICUBuilder.new(Arch.x86).make
    end
+   
+   def buildSSL()
+      OpenSSLBuilder.new(Arch.armv7a).make
+      OpenSSLBuilder.new(Arch.aarch64).make
+      OpenSSLBuilder.new(Arch.x86).make
+   end
+   
+   def buildXML()
+      XMLBuilder.new(Arch.armv7a).make
+   end
 
    def buildDeps()
-      buildIcu()
+      buildICU()
       XMLBuilder.new(Arch.armv7a).make
-      OpenSSLBuilder.new(Arch.armv7a).make
+      buildSSL()
       CurlBuilder.new(Arch.armv7a).make
    end
 
