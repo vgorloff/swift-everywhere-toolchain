@@ -1,5 +1,8 @@
 require_relative "../Common/Builder.rb"
 
+# See also:
+# - Build Curl for Android NDK: https://gist.github.com/bertrandmartel/d964444f4a85c2598053
+
 class CurlBuilder < Builder
 
    def initialize(arch = Arch.default)

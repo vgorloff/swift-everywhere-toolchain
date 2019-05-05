@@ -25,11 +25,13 @@ class Automation
       helloLib = HelloLibBuilder.new(Arch.armv7a)
       
       action = ARGV.first
-      if action == "checkout"
-         checkout()
-      elsif action == "build:all"
+      if action.start_with?("build:")
          # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
-         build()
+         build(action.sub("build:", ''))
+      elsif action.start_with?("clean:")
+         clean(action.sub("clean:", ''))
+      elsif action == "checkout"
+         checkout()
       elsif action == "verify"
          ADB.verify()
       elsif action == "armv7a:project:buildExe"
@@ -50,13 +52,31 @@ class Automation
          adb = ADB.new(helloLib.libs, helloLib.binary)
          adb.deploy()
          adb.run()
-      elsif action == "build:xml"
+      else
+         usage()
+      end
+   end
+   
+   def build(component)
+      if component == "all"
+         buildAll()
+      elsif component == "xml"
          buildXML()
-      elsif action == "build:icu"
+      elsif component == "icu"
          buildICU()
-      elsif action == "build:ssl"
+      elsif component == "ssl"
          buildSSL()
       else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+   
+   def clean(component)
+      if component == "curl"
+         cleanCURL()
+      else
+         puts "! Unknown component \"#{component}\"."
          usage()
       end
    end
@@ -65,7 +85,7 @@ class Automation
       Checkout.new().checkout()
    end
 
-   def build()
+   def buildAll()
       buildLLVM()
       buildDeps()
       buildSwift()
@@ -97,12 +117,22 @@ class Automation
    def buildXML()
       XMLBuilder.new(Arch.armv7a).make
    end
+   
+   def cleanCURL()
+      CurlBuilder.new(Arch.armv7a).clean
+      CurlBuilder.new(Arch.aarch64).clean
+      CurlBuilder.new(Arch.x86).clean
+   end
+   
+   def buldCURL()
+      CurlBuilder.new(Arch.armv7a).make
+   end
 
    def buildDeps()
       buildICU()
       XMLBuilder.new(Arch.armv7a).make
       buildSSL()
-      CurlBuilder.new(Arch.armv7a).make
+      buldCURL()
    end
 
    def buildSwift()
