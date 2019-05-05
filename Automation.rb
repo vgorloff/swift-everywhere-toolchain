@@ -54,6 +54,11 @@ class Automation
       elsif component == "icu" then buildICU()
       elsif component == "curl" then buildCURL()
       elsif component == "ssl" then buildSSL()
+      elsif component == "deps" then buildDeps()
+      elsif component == "libs" then buildLibs()
+      elsif component == "swift" then SwiftBuilder.new().make
+      elsif component == "dispatch" then buildDispatch()
+      elsif component == "foundation" then buildFoundation()
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -63,6 +68,9 @@ class Automation
    def clean(component)
       if component == "curl" then cleanCURL()
       elsif component == "xml" then cleanXML()
+      elsif component == "deps" then cleanDeps()
+      elsif component == "libs" then cleanLibs()
+      elsif component == "swift" then SwiftBuilder.new().clean
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -74,9 +82,16 @@ class Automation
    end
 
    def buildAll()
+      swift = SwiftBuilder.new()
       buildLLVM()
       buildDeps()
-      buildSwift()
+      swift.make
+      buildLibs()
+      puts ""
+      tool = Tool.new()
+      tool.print("\"Swift Toolchain for Android\" build is completed.")
+      tool.print("It can be found in \"#{swift.installs}\".")
+      puts ""
    end
 
    def buildLLVM()
@@ -126,23 +141,52 @@ class Automation
       XMLBuilder.new(Arch.x86).make
    end
 
+   def cleanDeps()
+      cleanICU()
+      cleanXML()
+      cleanSSL()
+      cleanCURL()
+   end
+
    def buildDeps()
       buildICU()
       buildXML()
       buildSSL()
-      buldCURL()
+      buildCURL()
+   end
+   
+   def cleanLibs()
+      cleanDispatch()
+      cleanFoundation()
    end
 
-   def buildSwift()
-      tool = Tool.new()
-      swift = SwiftBuilder.new(Arch.armv7a)
-      swift.make
+   def buildLibs()
+      buildDispatch()
+      buildFoundation()
+   end
+   
+   def cleanDispatch()
+      DispatchBuilder.new(Arch.armv7a).clean
+      # DispatchBuilder.new(Arch.aarch64).clean
+      # DispatchBuilder.new(Arch.x86).clean
+   end
+   
+   def buildDispatch()
       DispatchBuilder.new(Arch.armv7a).make
+      # DispatchBuilder.new(Arch.aarch64).make
+      # DispatchBuilder.new(Arch.x86).make
+   end
+   
+   def cleanFoundation()
+      FoundationBuilder.new(Arch.armv7a).clean
+      # FoundationBuilder.new(Arch.aarch64).clean
+      # FoundationBuilder.new(Arch.x86).clean
+   end
+   
+   def buildFoundation()
       FoundationBuilder.new(Arch.armv7a).make
-      puts ""
-      tool.print("\"Swift Toolchain for Android\" build is completed.")
-      tool.print("It can be found in \"#{swift.installs}\".")
-      puts ""
+      # FoundationBuilder.new(Arch.aarch64).make
+      # FoundationBuilder.new(Arch.x86).make
    end
 
    def usage()
