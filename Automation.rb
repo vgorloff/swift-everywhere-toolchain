@@ -115,12 +115,15 @@ class Automation
       HelloLibBuilder.new(Arch.armv7a).build
    end
    
-   def buildICU()
+   def cleanICU()
       ICUHostBuilder.new().clean
       ICUBuilder.new(Arch.armv7a).clean
       ICUBuilder.new(Arch.aarch64).clean
       ICUBuilder.new(Arch.x86).clean
-
+   end
+   
+   def buildICU()
+      cleanICU()
       ICUHostBuilder.new().make
       ICUBuilder.new(Arch.armv7a).make
       ICUBuilder.new(Arch.aarch64).make
@@ -131,6 +134,12 @@ class Automation
       OpenSSLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.aarch64).make
       OpenSSLBuilder.new(Arch.x86).make
+   end
+   
+   def cleanSSL()
+      OpenSSLBuilder.new(Arch.armv7a).clean
+      OpenSSLBuilder.new(Arch.aarch64).clean
+      OpenSSLBuilder.new(Arch.x86).clean
    end
    
    def cleanCURL()
