@@ -34,9 +34,8 @@ Cross compile:
 
 class SwiftBuilder < Builder
 
-   def initialize(arch = Arch.default)
-      super(Lib.swift, arch)
-      @icu = ICUBuilder.new(arch)
+   def initialize()
+      super(Lib.swift, Arch.host)
       @ndk = NDK.new()
       @cmark = CMarkBuilder.new()
       @llvm = LLVMBuilder.new()
@@ -62,11 +61,14 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}"
       cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}"
       cmd << "-DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{@icu.lib}/libicuucswift.so"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE=#{@icu.sources}/source/common"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{@icu.lib}/libicui18nswift.so"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{@icu.sources}/source/i18n"
-      cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{@icu.lib}/libicudataswift.so"
+
+      icu = ICUBuilder.new(Arch.armv7a)
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{icu.lib}/libicuucswift.so"
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_UC_INCLUDE=#{icu.sources}/source/common"
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N=#{icu.lib}/libicui18nswift.so"
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_I18N_INCLUDE=#{icu.sources}/source/i18n"
+      cmd << "-DSWIFT_ANDROID_armv7_ICU_DATA=#{icu.lib}/libicudataswift.so"
+
       cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
       cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=armv7"
 
@@ -134,19 +136,13 @@ class SwiftBuilder < Builder
 
    def executeBuild
       execute "cd #{@builds} && ninja -j#{numberOfJobs}"
-      if isMacOS?
-         if @arch != Arch.host
-            # Workaround: Should be `swift-stdlib-android-armv7` only.
-            targets = "swiftGlibc-android swiftCore-android swiftSIMDOperators-android swiftSwiftOnoneSupport-android swiftRemoteMirror-android"
-            execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
-         end
-         message "Copying Shared objects"
-         Dir["#{@builds}/lib/swift/android/armv7/*.so"].each { |so|
-            execute "cp -vfr \"#{so}\" \"#{@builds}/lib/swift/android/\""
-         }
-      else
-         execute "cd #{@builds} && ninja -j#{numberOfJobs} swift-stdlib-linux-x86_64 swift-stdlib-android-armv7"
-      end
+      # Workaround: Should be `swift-stdlib-android-armv7` only.
+      targets = "swiftGlibc-android swiftCore-android swiftSIMDOperators-android swiftSwiftOnoneSupport-android swiftRemoteMirror-android"
+      execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
+      message "Copying Shared objects"
+      Dir["#{@builds}/lib/swift/android/armv7/*.so"].each { |so|
+         execute "cp -vfr \"#{so}\" \"#{@builds}/lib/swift/android/\""
+      }
    end
 
    def executeInstall
@@ -155,46 +151,36 @@ class SwiftBuilder < Builder
    end
 
    def fixNinjaBuild
-      if @arch == Arch.host
-         return
-      end
       file = "#{@builds}/build.ninja"
       message "Applying fix for #{file}"
       execute "cp -vf #{file} #{file}.orig"
       lines = File.readlines(file)
-      if isMacOS?
-         result = []
-         # >> Fixes non NDK Linker options.
-         shouldFixLinker = false
-         lines.each { |line|
-            if line.start_with?("build") && line.include?('CXX_SHARED_LIBRARY_LINKER') && line.include?("android")
-               shouldFixLinker = true
-            elsif line.strip() == ""
-               shouldFixLinker = false
-            elsif shouldFixLinker && line.include?('LINK_LIBRARIES')
-               # See also: Build/armv7a-macos/swift/lib/cmake/swift/SwiftExports.cmake and Build/armv7a-macos/swift/lib/cmake/swift/SwiftConfig.cmake
-               line = line.gsub('-framework Foundation', '')
-               line = line.gsub('-framework CoreFoundation', '')
-               line = line.gsub('-licucore', '')
-            elsif shouldFixLinker && line.include?('LINK_FLAGS')
-               line = line.gsub('-all_load', '')
-            end
-            result << line
-         }
-         # <<
-         lines = result
-      end
+      result = []
+      # >> Fixes non NDK Linker options.
+      shouldFixLinker = false
+      lines.each { |line|
+         if line.start_with?("build") && line.include?('CXX_SHARED_LIBRARY_LINKER') && line.include?("android")
+            shouldFixLinker = true
+         elsif line.strip() == ""
+            shouldFixLinker = false
+         elsif shouldFixLinker && line.include?('LINK_LIBRARIES')
+            # See also: Build/armv7a-macos/swift/lib/cmake/swift/SwiftExports.cmake and Build/armv7a-macos/swift/lib/cmake/swift/SwiftConfig.cmake
+            line = line.gsub('-framework Foundation', '')
+            line = line.gsub('-framework CoreFoundation', '')
+            line = line.gsub('-licucore', '')
+         elsif shouldFixLinker && line.include?('LINK_FLAGS')
+            line = line.gsub('-all_load', '')
+         end
+         result << line
+      }
+      # <<
+      lines = result
       contents = lines.join()
-      if isMacOS?
-         contents = contents.gsub('-D__ANDROID_API__=21  -fobjc-arc', '-D__ANDROID_API__=21')
-      end
+      contents = contents.gsub('-D__ANDROID_API__=21  -fobjc-arc', '-D__ANDROID_API__=21')
       File.write(file, contents)
    end
 
    def fixNinjaRules
-      if @arch == Arch.host || !isMacOS?
-         return
-      end
       file = "#{@builds}/rules.ninja"
       message "Applying fix for #{file}"
       execute "cp -vf #{file} #{file}.orig"
@@ -235,9 +221,6 @@ class SwiftBuilder < Builder
    end
 
    def fixInstallScript
-      if !isMacOS?
-         return
-      end
       file = "#{@builds}/cmake_install.cmake"
       message "Applying fix for #{file}"
       execute "cp -vf #{file} #{file}.orig"

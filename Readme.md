@@ -9,25 +9,34 @@ Requirements
 Setup and Build
 ===============
 
-1. Check that Rake is installed. Install Rake if Needed.
-
-   ```bash
-   $ which rake
-   $ gem install rake
-   ```
-
-2. Check that Cmake is installed. Install Cmake if Needed.
+1. Check that Cmake is installed. Install Cmake if Needed.
 
    ```bash
    $ which cmake
    $ brew install cmake
    ```
 
-3. Check that Ninja is installed. Install Ninja if Needed.
+2. Check that Ninja is installed. Install Ninja if Needed.
 
    ```bash
    $ which ninja
    $ brew install ninja
+   ```
+
+3. Check that Autotools is installed. Install Autotools if Needed.
+
+   ```bash
+   $ which autoconf
+   $ brew install autoconf
+
+   $ which aclocal
+   $ brew install automake
+ 
+   $ which glibtool
+   $ brew install libtool
+   
+   $ which pkg-config
+   $ brew install pkg-config
    ```
 
 4. Clone this repository.
@@ -45,7 +54,7 @@ Setup and Build
 7. Start a build.
 
    ```bash
-   $ rake
+   $ make
    ```
 
 8. Once build completed, open sample project `Projects/Hello-NDK` in Android Studio, update file `local.properties` with actual paths and launch sample app on ARMv7 Android Device.
