@@ -194,7 +194,7 @@ class Automation
    
    def cleanDispatch()
       DispatchBuilder.new(Arch.armv7a).clean
-      # DispatchBuilder.new(Arch.aarch64).clean
+      DispatchBuilder.new(Arch.aarch64).clean
       # DispatchBuilder.new(Arch.x86).clean
    end
    
