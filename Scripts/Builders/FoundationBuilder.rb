@@ -61,8 +61,8 @@ class FoundationBuilder < Builder
    def executeBuild
       # For troubleshooting purpose.
       # execute "cd #{@builds} && ninja CoreFoundation"
-      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtbegin_so.o #{@builds}"
-      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/21/crtend_so.o #{@builds}"
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}/crtbegin_so.o #{@builds}"
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}/crtend_so.o #{@builds}"
       execute "cd #{@builds} && ninja"
    end
 
