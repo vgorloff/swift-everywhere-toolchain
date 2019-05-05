@@ -8,7 +8,7 @@ class ProjectBuilder < Builder
    def initialize(component, arch)
       super(component, arch)
       @sources = "#{Config.projects}/#{component}"
-      @swift = SwiftBuilder.new(@arch)
+      @swift = SwiftBuilder.new()
       @ndk = NDK.new()
       @dispatch = DispatchBuilder.new(@arch)
       @foundation = FoundationBuilder.new(@arch)

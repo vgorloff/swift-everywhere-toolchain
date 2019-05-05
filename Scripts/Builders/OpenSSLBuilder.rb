@@ -24,7 +24,14 @@ class OpenSSLBuilder < Builder
    def executeConfigure
       clean()
       # Seems `-D__ANDROID_API__` not needed. See: #{@sources}/NOTES.ANDROID
-      execute options.join(" ") + " ./Configure -D__ANDROID_API__=#{@ndk.api} --prefix=#{@installs} android-arm"
+      commonArgs = options.join(" ") + " ./Configure -D__ANDROID_API__=#{@ndk.api} --prefix=#{@installs}"
+      if @arch == Arch.armv7a
+         execute "#{commonArgs} android-arm"
+      elsif @arch == Arch.x86
+         execute "#{commonArgs} android-x86"
+      elsif @arch == Arch.aarch64
+         execute "#{commonArgs} android-arm64"
+      end
    end
 
    def executeBuild

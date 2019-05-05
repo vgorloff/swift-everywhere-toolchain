@@ -11,7 +11,7 @@ class DispatchBuilder < Builder
    end
 
    def executeConfigure
-      swift = SwiftBuilder.new(@arch)
+      swift = SwiftBuilder.new()
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
       cmd = []
       cmd << "cd #{@builds} &&"
