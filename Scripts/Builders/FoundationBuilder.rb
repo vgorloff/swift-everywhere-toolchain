@@ -8,7 +8,7 @@ class FoundationBuilder < Builder
       super(Lib.foundation, arch)
       @ndk = NDK.new()
       @dispatch = DispatchBuilder.new(arch)
-      @swift = SwiftBuilder.new(arch)
+      @swift = SwiftBuilder.new()
       @llvm = LLVMBuilder.new()
       @curl = CurlBuilder.new(arch)
       @icu = ICUBuilder.new(arch)
