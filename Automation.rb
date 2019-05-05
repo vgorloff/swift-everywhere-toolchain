@@ -200,7 +200,7 @@ class Automation
    
    def buildDispatch()
       DispatchBuilder.new(Arch.armv7a).make
-      # DispatchBuilder.new(Arch.aarch64).make
+      DispatchBuilder.new(Arch.aarch64).make
       # DispatchBuilder.new(Arch.x86).make
    end
    

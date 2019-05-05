@@ -22,7 +22,13 @@ class DispatchBuilder < Builder
       cmd << "-DANDROID_STL=c++_static"
       cmd << "-DANDROID_TOOLCHAIN=clang"
       cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
-      cmd << "-DANDROID_ABI=armeabi-v7a"
+      if @arch == Arch.armv7a
+         cmd << "-DANDROID_ABI=armeabi-v7a"
+      elsif @arch == Arch.x86
+         cmd << "-DANDROID_ABI=x86"
+      elsif @arch == Arch.aarch64
+         cmd << "-DANDROID_ABI=arm64-v8a"
+      end
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DENABLE_SWIFT=true"
       cmd << "-DENABLE_TESTING=false"
@@ -41,9 +47,19 @@ class DispatchBuilder < Builder
       message "Applying fix for #{file}"
       execute "cp -vf #{file} #{file}.orig"
       contents = File.readlines(file).join()
+      if @arch == Arch.armv7a
+         archPath = "armv7"
+         includePath = "arm-linux-androideabi"
+      elsif @arch == Arch.x86
+         archPath = "x86"
+         includePath = "i686-linux-android"
+      elsif @arch == Arch.aarch64
+         archPath = "aarch64"
+         includePath = "aarch64-linux-android"
+      end
       if !contents.include?('-tools-directory')
-         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -L #{@swift.installs}/lib/swift/android/armv7 -tools-directory #{@ndk.toolchain}/bin")
-         contents = contents.gsub('-module-link-name swiftDispatch', "-module-link-name swiftDispatch -Xcc -I#{@ndk.sources}/sysroot/usr/include -Xcc -I#{@ndk.sources}/sysroot/usr/include/arm-linux-androideabi")
+         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -L #{@swift.installs}/lib/swift/android/#{archPath} -tools-directory #{@ndk.toolchain}/bin")
+         contents = contents.gsub('-module-link-name swiftDispatch', "-module-link-name swiftDispatch -Xcc -I#{@ndk.sources}/sysroot/usr/include -Xcc -I#{@ndk.sources}/sysroot/usr/include/#{includePath}")
       end
       File.write(file, contents)
    end
