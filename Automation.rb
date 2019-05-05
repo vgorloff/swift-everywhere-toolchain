@@ -27,7 +27,7 @@ class Automation
       action = ARGV.first
       if action == "checkout"
          checkout()
-      elsif action == "make"
+      elsif action == "build:all"
          # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
          build()
       elsif action == "verify"
@@ -50,8 +50,10 @@ class Automation
          adb = ADB.new(helloLib.libs, helloLib.binary)
          adb.deploy()
          adb.run()
-      elsif action == "make:xml"
+      elsif action == "build:xml"
          XMLBuilder.new(Arch.armv7a).make
+      elsif action == "build:icu"
+         buildIcu
       else
          usage()
       end
@@ -71,12 +73,21 @@ class Automation
       LLVMBuilder.new().make
       CMarkBuilder.new().make
    end
-
-   def buildDeps()
+   
+   def buildIcu()
       ICUHostBuilder.new().clean
       ICUBuilder.new(Arch.armv7a).clean
+      ICUBuilder.new(Arch.aarch64).clean
+      ICUBuilder.new(Arch.x86).clean
+
       ICUHostBuilder.new().make
       ICUBuilder.new(Arch.armv7a).make
+      ICUBuilder.new(Arch.aarch64).make
+      ICUBuilder.new(Arch.x86).make
+   end
+
+   def buildDeps()
+      buildIcu()
       XMLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.armv7a).make
@@ -107,7 +118,7 @@ EOM
 
       tool.print("2. Build all Swift components and Sample projects for armv7a.", 32)
       help = <<EOM
-   $ make build
+   $ make build:all
    $ make armv7a:project:buildExe
    $ make armv7a:project:buildLib
 EOM
