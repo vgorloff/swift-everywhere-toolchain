@@ -19,6 +19,20 @@ require_relative "Projects/HelloExeBuilder.rb"
 require_relative "Projects/HelloLibBuilder.rb"
 
 class Automation
+  
+   def perform()
+      action = ARGV.first
+      if action == "checkout"
+         checkout()
+      elsif action == "make"
+         # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
+         build()
+      elsif action == "make:xml"
+         XMLBuilder.new(Arch.armv7a).make
+      else
+         usage()
+      end
+   end
 
    def checkout()
       Checkout.new().checkout()
@@ -64,21 +78,21 @@ class Automation
 
       tool.print("1. Get Sources and Tools.", 32)
       help = <<EOM
-   $ rake checkout
+   $ make checkout
 EOM
       tool.print(help, 36)
 
       tool.print("2. Build all Swift components and Sample projects for armv7a.", 32)
       help = <<EOM
-   $ rake build
-   $ rake armv7a:project:buildExe
-   $ rake armv7a:project:buildLib
+   $ make build
+   $ make armv7a:project:buildExe
+   $ make armv7a:project:buildLib
 EOM
       tool.print(help, 36)
 
       tool.print("3. Enable USB Debugging on Android device. Install Android Tools for macOS. Connect Android device and Verify ADB shell setup.", 32)
       help = <<EOM
-   $ rake verify
+   $ make verify
 
    References:
    - How to Install Android Tools for macOS: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
@@ -88,12 +102,11 @@ EOM
 
       tool.print("4. Deploy and run Demo projects to Android Device.", 32)
       help = <<EOM
-   $ rake armv7a:project:deployExe
-   $ rake armv7a:project:deployLib
+   $ make armv7a:project:deployExe
+   $ make armv7a:project:deployLib
 EOM
 
       tool.print(help, 36)
-      system "rake -T"
    end
 
 end
