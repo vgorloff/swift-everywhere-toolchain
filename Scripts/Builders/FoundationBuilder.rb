@@ -33,14 +33,17 @@ class FoundationBuilder < Builder
          cmd << "-DANDROID_ABI=armeabi-v7a"
          archPath = "armv7"
          ndkArchPath = "arm-linux-androideabi"
+         ndkToolchainPath = ndkArchPath
       elsif @arch == Arch.x86
          cmd << "-DANDROID_ABI=x86"
-         archPath = "x86"
+         archPath = "i686"
          ndkArchPath = "i686-linux-android"
+         ndkToolchainPath = "x86"
       elsif @arch == Arch.aarch64
          cmd << "-DANDROID_ABI=arm64-v8a"
          archPath = "aarch64"
          ndkArchPath = "aarch64-linux-android"
+         ndkToolchainPath = ndkArchPath
       end
       cmd << "-DCMAKE_SYSTEM_NAME=Android"
       cmd << "-DCMAKE_C_FLAGS=\"#{cFlags}\""
@@ -48,7 +51,7 @@ class FoundationBuilder < Builder
 
       cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/#{ndkArchPath}'"
       # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
-      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/#{ndkArchPath}/bin\;-L\;#{@swift.installs}/lib/swift/android/#{archPath}\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/#{ndkArchPath}-4.9/prebuilt/darwin-x86_64/lib/gcc/#{ndkArchPath}/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
+      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/#{ndkArchPath}/bin\;-L\;#{@swift.installs}/lib/swift/android/#{archPath}\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/#{ndkToolchainPath}-4.9/prebuilt/darwin-x86_64/lib/gcc/#{ndkArchPath}/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
       cmd << "-DADDITIONAL_SWIFT_CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
 
       cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
@@ -77,10 +80,10 @@ class FoundationBuilder < Builder
       elsif @arch == Arch.aarch64
          ndkArchPath = "aarch64-linux-android"
       end
-      # For troubleshooting purpose.
-      # execute "cd #{@builds} && ninja CoreFoundation"
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}/crtbegin_so.o #{@builds}"
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}/crtend_so.o #{@builds}"
+      # For troubleshooting purpose.
+      # execute "cd #{@builds} && ninja CoreFoundation"
       execute "cd #{@builds} && ninja"
    end
 
@@ -89,11 +92,9 @@ class FoundationBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      if @arch == Arch.host && shouldEnable
-         return
-      end
       configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/Data.swift.diff", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/CGFloat.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
       configurePatch("#{@sources}/Foundation/NSGeometry.swift", "#{@patches}/NSGeometry.patch", shouldEnable)

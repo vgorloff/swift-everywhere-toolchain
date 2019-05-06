@@ -213,14 +213,14 @@ class Automation
    
    def cleanFoundation()
       FoundationBuilder.new(Arch.armv7a).clean
-      # FoundationBuilder.new(Arch.aarch64).clean
-      # FoundationBuilder.new(Arch.x86).clean
+      FoundationBuilder.new(Arch.aarch64).clean
+      FoundationBuilder.new(Arch.x86).clean
    end
    
    def buildFoundation()
       FoundationBuilder.new(Arch.armv7a).make
       # FoundationBuilder.new(Arch.aarch64).make
-      # FoundationBuilder.new(Arch.x86).make
+      FoundationBuilder.new(Arch.x86).make
    end
 
    def usage()
