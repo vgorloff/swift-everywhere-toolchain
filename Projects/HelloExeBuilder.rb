@@ -59,7 +59,7 @@ class HelloExeBuilder < ProjectBuilder
       cmd << "-L #{@ndk.toolchain}/lib/gcc/arm-linux-androideabi/4.9.x" # Link the Android NDK's libc++ and libgcc.
       cmd << "-L #{@foundation.installs}/lib/swift/android"
       cmd << "-L #{@dispatch.installs}/lib/swift/android"
-      cmd << "-L #{@swift.installs}/lib/swift/android"
+      cmd << "-L #{@swift.installs}/lib/swift/android/armv7"
 
       cmd << "-o #{@binary}"
       execute cmd.join(" ")

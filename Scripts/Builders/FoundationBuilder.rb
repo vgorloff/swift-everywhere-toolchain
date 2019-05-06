@@ -29,15 +29,26 @@ class FoundationBuilder < Builder
       cmd << "-DANDROID_STL=c++_static"
       cmd << "-DANDROID_TOOLCHAIN=clang"
       cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
-      cmd << "-DANDROID_ABI=armeabi-v7a"
+      if @arch == Arch.armv7a
+         cmd << "-DANDROID_ABI=armeabi-v7a"
+         archPath = "armv7"
+         ndkArchPath = "arm-linux-androideabi"
+      elsif @arch == Arch.x86
+         cmd << "-DANDROID_ABI=x86"
+         archPath = "x86"
+         ndkArchPath = "i686-linux-android"
+      elsif @arch == Arch.aarch64
+         cmd << "-DANDROID_ABI=arm64-v8a"
+         archPath = "aarch64"
+         ndkArchPath = "aarch64-linux-android"
+      end
       cmd << "-DCMAKE_SYSTEM_NAME=Android"
       cmd << "-DCMAKE_C_FLAGS=\"#{cFlags}\""
       cmd << "-DCMAKE_CXX_FLAGS=\"#{cFlags}\""
 
-      cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/arm-linux-androideabi'"
+      cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/#{ndkArchPath}'"
       # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
-      platformPathComponent = isMacOS? ? "darwin-x86_64" : "linux-x86_64"
-      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/arm-linux-androideabi/bin\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/arm-linux-androideabi-4.9/prebuilt/#{platformPathComponent}/lib/gcc/arm-linux-androideabi/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
+      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/#{ndkArchPath}/bin\;-L\;#{@swift.installs}/lib/swift/android/#{archPath}\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/#{ndkArchPath}-4.9/prebuilt/darwin-x86_64/lib/gcc/#{ndkArchPath}/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
       cmd << "-DADDITIONAL_SWIFT_CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
 
       cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
@@ -59,10 +70,17 @@ class FoundationBuilder < Builder
    end
 
    def executeBuild
+      if @arch == Arch.armv7a
+         ndkArchPath = "arm-linux-androideabi"
+      elsif @arch == Arch.x86
+         ndkArchPath = "i686-linux-android"
+      elsif @arch == Arch.aarch64
+         ndkArchPath = "aarch64-linux-android"
+      end
       # For troubleshooting purpose.
       # execute "cd #{@builds} && ninja CoreFoundation"
-      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}/crtbegin_so.o #{@builds}"
-      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/arm-linux-androideabi/#{@ndk.api}/crtend_so.o #{@builds}"
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}/crtbegin_so.o #{@builds}"
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}/crtend_so.o #{@builds}"
       execute "cd #{@builds} && ninja"
    end
 

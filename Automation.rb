@@ -58,6 +58,7 @@ class Automation
       elsif component == "swift" then SwiftBuilder.new().make
       elsif component == "dispatch" then buildDispatch()
       elsif component == "foundation" then buildFoundation()
+      elsif component == "llvm" then buildLLVM()
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -68,6 +69,9 @@ class Automation
       if component == "curl" then cleanCURL()
       elsif component == "xml" then cleanXML()
       elsif component == "deps" then cleanDeps()
+      elsif component == "dispatch" then cleanDispatch()
+      elsif component == "foundation" then cleanFoundation()
+      elsif component == "llvm" then cleanLLVM()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
       else
@@ -105,6 +109,11 @@ class Automation
    def buildLLVM()
       LLVMBuilder.new().make
       CMarkBuilder.new().make
+   end
+   
+   def cleanLLVM()
+      LLVMBuilder.new().clean
+      CMarkBuilder.new().clean
    end
    
    def buildProjectExe()
@@ -192,13 +201,13 @@ class Automation
    
    def cleanDispatch()
       DispatchBuilder.new(Arch.armv7a).clean
-      # DispatchBuilder.new(Arch.aarch64).clean
+      DispatchBuilder.new(Arch.aarch64).clean
       # DispatchBuilder.new(Arch.x86).clean
    end
    
    def buildDispatch()
       DispatchBuilder.new(Arch.armv7a).make
-      # DispatchBuilder.new(Arch.aarch64).make
+      DispatchBuilder.new(Arch.aarch64).make
       # DispatchBuilder.new(Arch.x86).make
    end
    
