@@ -58,6 +58,7 @@ class Automation
       elsif component == "swift" then SwiftBuilder.new().make
       elsif component == "dispatch" then buildDispatch()
       elsif component == "foundation" then buildFoundation()
+      elsif component == "llvm" then buildLLVM()
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -70,6 +71,7 @@ class Automation
       elsif component == "deps" then cleanDeps()
       elsif component == "dispatch" then cleanDispatch()
       elsif component == "foundation" then cleanFoundation()
+      elsif component == "llvm" then cleanLLVM()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
       else
@@ -107,6 +109,11 @@ class Automation
    def buildLLVM()
       LLVMBuilder.new().make
       CMarkBuilder.new().make
+   end
+   
+   def cleanLLVM()
+      LLVMBuilder.new().clean
+      CMarkBuilder.new().clean
    end
    
    def buildProjectExe()
