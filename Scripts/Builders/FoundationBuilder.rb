@@ -102,7 +102,7 @@ class FoundationBuilder < Builder
       # FIXME: Below patches may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
       configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c", "#{@patches}/CFKnownLocations.patch", shouldEnable)
       configurePatch("#{@sources}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h", "#{@patches}/ForSwiftFoundationOnly.patch", shouldEnable)
-      configurePatch("#{@sources}/Foundation/FileManager.swift", "#{@patches}/FileManager.patch", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/FileManager.swift.diff", shouldEnable)
    end
 
 end

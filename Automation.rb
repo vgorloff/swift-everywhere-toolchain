@@ -219,7 +219,7 @@ class Automation
    
    def buildFoundation()
       FoundationBuilder.new(Arch.armv7a).make
-      # FoundationBuilder.new(Arch.aarch64).make
+      FoundationBuilder.new(Arch.aarch64).make
       FoundationBuilder.new(Arch.x86).make
    end
 

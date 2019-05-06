@@ -1,7 +1,16 @@
 diff --git a/Foundation/FileManager.swift b/Foundation/FileManager.swift
-index c51536246fc92efd82115c2217b256466b234712..a537ae8e676f4e5326d8cd4aae38a2e312b42faf 100644
+index 527e3fcb7a0405bf42583f9d6fc98dcf8d134c16..f3389997a55bfd38c907dba63a598db6bb8e226a 100644
 --- a/Foundation/FileManager.swift
 +++ b/Foundation/FileManager.swift
+@@ -15,7 +15,7 @@
+     import Glibc
+ #endif
+ 
+-#if os(Android) // struct stat.st_mode is UInt32
++#if os(Android) && arch(i386) // struct stat.st_mode is UInt32
+ internal func &(left: UInt32, right: mode_t) -> mode_t {
+     return mode_t(left) & right
+ }
 @@ -91,7 +91,10 @@ open class FileManager : NSObject {
              urls = mountPoints(statBuf, Int(fsCount))
          }
@@ -46,7 +55,7 @@ index c51536246fc92efd82115c2217b256466b234712..a537ae8e676f4e5326d8cd4aae38a2e3
      }
      
      /* attributesOfFileSystemForPath:error: returns an NSDictionary of key/value pairs containing the attributes of the filesystem containing the provided path. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. This method does not traverse a terminal symlink.
-@@ -880,6 +888,7 @@ open class FileManager : NSObject {
+@@ -889,6 +897,7 @@ open class FileManager : NSObject {
                  return
          }
  
@@ -54,7 +63,7 @@ index c51536246fc92efd82115c2217b256466b234712..a537ae8e676f4e5326d8cd4aae38a2e3
          let fileType = FileAttributeType(statMode: stat.st_mode)
          if fileType == .typeDirectory {
              try createDirectory(atPath: dstPath, withIntermediateDirectories: false, attributes: nil)
-@@ -903,6 +912,7 @@ open class FileManager : NSObject {
+@@ -912,6 +921,7 @@ open class FileManager : NSObject {
          } else {
              try body(srcPath, dstPath, fileType)
          }
@@ -62,7 +71,7 @@ index c51536246fc92efd82115c2217b256466b234712..a537ae8e676f4e5326d8cd4aae38a2e3
      }
      
      private func shouldProceedAfterError(_ error: Error, copyingItemAtPath path: String, toPath: String, isURL: Bool) -> Bool {
-@@ -1413,8 +1423,10 @@ open class FileManager : NSObject {
+@@ -1422,8 +1432,10 @@ open class FileManager : NSObject {
  
          if file1Type == S_IFCHR || file1Type == S_IFBLK {
              // For character devices, just check the major/minor pair is the same.
