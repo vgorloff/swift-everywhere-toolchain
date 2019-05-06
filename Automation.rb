@@ -20,29 +20,29 @@ require_relative "Projects/HelloLibBuilder.rb"
 
 class Automation
   
-   def perform()
-      helloExe = HelloExeBuilder.new(Arch.armv7a)
-      helloLib = HelloLibBuilder.new(Arch.armv7a)
-      
+   def perform()      
       action = ARGV.first
       if action.nil? then usage()
       elsif action.start_with?("build:") then build(action.sub("build:", '')) # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
       elsif action.start_with?("clean:") then clean(action.sub("clean:", ''))
-      elsif action.start_with?("build-project:") then buildProject(action.sub("build-project:", ''))
       elsif action == "checkout" then checkout()
       elsif action == "verify" then ADB.verify()
-      elsif action == "clean-armv7a:exe" then ADB.new(helloExe.libs, helloExe.binary).clean
-      elsif action == "clean-armv7a:lib" then ADB.new(helloLib.libs, helloLib.binary).clean
-      elsif action == "deploy-armv7a:exe"
+      elsif action == "deploy:projects:armv7a"
+         helloExe = HelloExeBuilder.new(Arch.armv7a)
+         helloLib = HelloLibBuilder.new(Arch.armv7a)
+         ADB.new(helloExe.libs, helloExe.binary).clean
+         ADB.new(helloLib.libs, helloLib.binary).clean
+      elsif action == "deploy:projects:armv7a"
+         helloExe = HelloExeBuilder.new(Arch.armv7a)
+         helloLib = HelloLibBuilder.new(Arch.armv7a)
          helloExe.copyLibs()
-         adb = ADB.new(helloExe.libs, helloExe.binary)
-         adb.deploy()
-         adb.run()
-      elsif action == "deploy-armv7a:lib"
          helloLib.copyLibs()
-         adb = ADB.new(helloLib.libs, helloLib.binary)
-         adb.deploy()
-         adb.run()
+         adb1 = ADB.new(helloExe.libs, helloExe.binary)
+         adb1.deploy()
+         adb2 = ADB.new(helloLib.libs, helloLib.binary)
+         adb2.deploy()
+         adb1.run()
+         adb2.run()
       else usage()
       end
    end
@@ -59,6 +59,7 @@ class Automation
       elsif component == "dispatch" then buildDispatch()
       elsif component == "foundation" then buildFoundation()
       elsif component == "llvm" then buildLLVM()
+      elsif component == "projects" then buildProjects()
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -80,9 +81,20 @@ class Automation
       end
    end
    
+   def buildProjects()
+      buildProject("exe")
+      buildProject("lib")
+   end
+   
    def buildProject(project)
-      if project == "exe" then buildProjectExe()
-      elsif project == "lib" then buildProjectLib()
+      if project == "exe"
+         HelloExeBuilder.new(Arch.armv7a).build
+         HelloExeBuilder.new(Arch.aarch64).build
+         HelloExeBuilder.new(Arch.x86).build
+      elsif project == "lib"
+         HelloLibBuilder.new(Arch.armv7a).build
+         HelloLibBuilder.new(Arch.aarch64).build
+         HelloLibBuilder.new(Arch.x86).build
       else
          puts "! Unknown project \"#{project}\"."
          usage()
@@ -114,14 +126,6 @@ class Automation
    def cleanLLVM()
       LLVMBuilder.new().clean
       CMarkBuilder.new().clean
-   end
-   
-   def buildProjectExe()
-      HelloExeBuilder.new(Arch.armv7a).build
-   end
-   
-   def buildProjectLib()
-      HelloLibBuilder.new(Arch.armv7a).build
    end
    
    def cleanICU()
@@ -237,8 +241,7 @@ EOM
       tool.print("2. Build all Swift components and Sample projects for armv7a.", 32)
       help = <<EOM
    $ make build:toolchain
-   $ make build-project:exe
-   $ make build-project:lib
+   $ make build:projects
 EOM
       tool.print(help, 36)
 
@@ -254,8 +257,7 @@ EOM
 
       tool.print("4. Deploy and run Demo projects to Android Device.", 32)
       help = <<EOM
-   $ make deploy-armv7a:exe
-   $ make deploy-armv7a:lib
+   $ make deploy:projects:armv7a
 EOM
 
       tool.print(help, 36)

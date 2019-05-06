@@ -100,11 +100,11 @@ class Builder < Tool
    def logStarted(action)
       puts ""
       print(@startSpacer, 33)
-      print("\"#{@component}\" #{action} is started.", 36)
+      print("\"#{@component}\" #{action} [#{@arch}] is started.", 36)
    end
 
    def logCompleted(action)
-      print("\"#{@component}\" #{action} is completed.", 36)
+      print("\"#{@component}\" #{action} [#{@arch}] is completed.", 36)
       print(@endSpacer, 33)
       puts ""
    end
