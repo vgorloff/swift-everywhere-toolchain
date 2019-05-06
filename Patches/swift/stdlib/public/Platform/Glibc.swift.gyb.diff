@@ -1,0 +1,13 @@
+diff --git a/stdlib/public/Platform/Glibc.swift.gyb b/stdlib/public/Platform/Glibc.swift.gyb
+index 4c011570295f58d717387bc686e878df853de74d..2de990adfffaf01e077c2fc84059b44d0fc8359d 100644
+--- a/stdlib/public/Platform/Glibc.swift.gyb
++++ b/stdlib/public/Platform/Glibc.swift.gyb
+@@ -36,7 +36,7 @@ public let FLT_RADIX = Double.radix
+ 
+ %for type, prefix in [('Float', 'FLT'), ('Double', 'DBL'), ('Float80', 'LDBL')]:
+ % if type == "Float80":
+-#if arch(i386) || arch(x86_64)
++#if !os(Android) && (arch(i386) || arch(x86_64))
+ % end
+ //  Where does the 1 come from? C counts the usually-implicit leading
+ //  significand bit, but Swift does not. Neither is really right or wrong.
