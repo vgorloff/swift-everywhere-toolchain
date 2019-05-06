@@ -1,5 +1,5 @@
 diff --git a/Foundation/FileManager.swift b/Foundation/FileManager.swift
-index 527e3fcb7a0405bf42583f9d6fc98dcf8d134c16..f3389997a55bfd38c907dba63a598db6bb8e226a 100644
+index 527e3fcb7a0405bf42583f9d6fc98dcf8d134c16..a08ee1f863296c0e06edf62f7346947a2e7de7d8 100644
 --- a/Foundation/FileManager.swift
 +++ b/Foundation/FileManager.swift
 @@ -15,7 +15,7 @@
@@ -7,7 +7,7 @@ index 527e3fcb7a0405bf42583f9d6fc98dcf8d134c16..f3389997a55bfd38c907dba63a598db6
  #endif
  
 -#if os(Android) // struct stat.st_mode is UInt32
-+#if os(Android) && arch(i386) // struct stat.st_mode is UInt32
++#if os(Android) && (arch(i386) || arch(arm)) // struct stat.st_mode is UInt32
  internal func &(left: UInt32, right: mode_t) -> mode_t {
      return mode_t(left) & right
  }
