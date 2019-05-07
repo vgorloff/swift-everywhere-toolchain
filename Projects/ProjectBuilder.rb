@@ -52,21 +52,22 @@ class ProjectBuilder < Builder
       Dir["#{@toolchainDir}/lib/swift/android/#{@archPath}" + "/*.so"].each { |lib|
          execute "cp -vf #{lib} #{targetDir}"
       }
-      cxxLibPath = "#{@ndk.sources}/sources/cxx-stl/llvm-libc++/libs/#{@cppPath}/libc++_shared.so"
+      cxxLibPath = "#{@toolchainDir}/ndk/sources/cxx-stl/llvm-libc++/libs/#{@cppPath}/libc++_shared.so"
       execute "cp -vf #{cxxLibPath} #{targetDir}"
       message "Copying Shared Objects completed."
    end
 
    def swiftFlags
+      ndkToolchain = "#{@toolchainDir}/ndk/toolchains/llvm/prebuilt/darwin-x86_64"
       cmd = []
       cmd << "-target #{@target}"
       # cmd << "-v"
-      cmd << "-tools-directory #{@ndk.toolchain}"
-      cmd << "-sdk #{@ndk.sources}/platforms/android-#{@ndk.api}/arch-#{@platform}"
-      cmd << "-Xcc -I#{@ndk.toolchain}/sysroot/usr/include -Xcc -I#{@ndk.toolchain}/sysroot/usr/include/#{@ndkArchPath}"
+      cmd << "-tools-directory #{ndkToolchain}"
+      cmd << "-sdk #{@toolchainDir}/ndk/platforms/android-#{@ndk.api}/arch-#{@platform}"
+      cmd << "-Xcc -I#{ndkToolchain}/sysroot/usr/include -Xcc -I#{ndkToolchain}/sysroot/usr/include/#{@ndkArchPath}"
       cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX -Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
-      cmd << "-L #{@ndk.sources}/sources/cxx-stl/llvm-libc++/libs/#{@cppPath}"
-      cmd << "-L #{@ndk.toolchain}/lib/gcc/#{@ndkArchPath}/#{@ndk.gcc}.x" # Link the Android NDK's libc++ and libgcc.
+      cmd << "-L #{@toolchainDir}/ndk/sources/cxx-stl/llvm-libc++/libs/#{@cppPath}"
+      cmd << "-L #{ndkToolchain}/lib/gcc/#{@ndkArchPath}/#{@ndk.gcc}.x" # Link the Android NDK's libc++ and libgcc.
       cmd << "-L #{@toolchainDir}/lib/swift/android/#{@archPath}"
       return cmd
    end

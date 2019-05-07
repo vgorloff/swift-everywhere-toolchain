@@ -30,6 +30,7 @@ class Automation
       elsif action == "checkout" then checkout()
       elsif action == "verify" then ADB.verify()
       elsif action == "archive" then archive()
+      elsif action == "compress" then compress()
       else usage()
       end
    end
@@ -94,7 +95,10 @@ class Automation
      files += Dir["#{root}/lib/**/*"].reject { |file| file.end_with?(".dylib") }
      files += Dir["#{root}/share/**/*"]
      copyFiles(files, root, toolchainDir)
-     
+
+     FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
+     File.symlink("/Users/vagrant/Library/Android/sdk/ndk-bundle", "#{toolchainDir}/ndk")
+
      archs = [Arch.armv7a, Arch.aarch64, Arch.x86]
      archs.each { |arch|
        root = DispatchBuilder.new(arch).installs
@@ -104,23 +108,37 @@ class Automation
        root = FoundationBuilder.new(arch).installs
        files = Dir["#{root}/lib/**/*"]
        copyFiles(files, root, toolchainDir)
-       
+
        root = ICUBuilder.new(arch).installs
        files = Dir["#{root}/lib/*.so"]
        copyLibFiles(files, root, toolchainDir, arch)
-       
+
        root = OpenSSLBuilder.new(arch).installs
        files = Dir["#{root}/lib/*.so"]
        copyLibFiles(files, root, toolchainDir, arch)
-       
+
        root = CurlBuilder.new(arch).installs
        files = Dir["#{root}/lib/*.so"]
        copyLibFiles(files, root, toolchainDir, arch)
-       
+
        root = XMLBuilder.new(arch).installs
        files = Dir["#{root}/lib/*.so"]
        copyLibFiles(files, root, toolchainDir, arch)
      }
+     
+     moduleMaps = Dir["#{toolchainDir}/lib/swift/**/glibc.modulemap"]
+     moduleMaps.each { |file|
+        puts "Correcting \"#{file}\""
+        contents = File.read(file)
+        contents = contents.gsub(/\/Users\/.+\/ndk-bundle/, "../../../../ndk")
+        File.write(file, contents)
+     }
+   end
+   
+   def compress()
+     puts "Compressing \"#{Config.toolchainDir}\""
+     baseName = File.basename(Config.toolchainDir)
+     system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{baseName}.tar.gz --options='compression-level=9' #{baseName}")
    end
    
    def copyFiles(files, source, destination)
@@ -186,6 +204,7 @@ class Automation
       swift.make
       buildLibs()
       archive()
+      compress()
       puts ""
       tool = Tool.new()
       tool.print("\"Swift Toolchain for Android\" build is completed.")
