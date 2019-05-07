@@ -15,17 +15,13 @@ class Builder < Tool
       @arch = arch
       @sources = "#{Config.sources}/#{component}"
       @patches = "#{Config.patches}/#{component}"
-      @builds = "#{Config.build}/#{arch}#{suffix}/#{component}"
-      @installs = "#{Config.install}/#{arch}#{suffix}/#{component}"
+      @builds = "#{Config.build}/#{arch}/#{component}"
+      @installs = "#{Config.install}/#{arch}/#{component}"
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
-      if isMacOS?
-         physicalCPUs = `sysctl -n hw.physicalcpu`.to_i
-      else
-         physicalCPUs = `grep -c ^processor /proc/cpuinfo`.to_i
-      end
-      @numberOfJobs = [physicalCPUs - 2, 1].max
+      physicalCPUs = `sysctl -n hw.physicalcpu`.to_i
+      @numberOfJobs = [physicalCPUs - 1, 1].max
    end
 
    def lib
@@ -53,11 +49,7 @@ class Builder < Tool
    end
 
    def toolchainPath
-      if isMacOS?
-         return "#{developerDir}/Toolchains/XcodeDefault.xctoolchain"
-      else
-         return ""
-      end
+      return "#{developerDir}/Toolchains/XcodeDefault.xctoolchain"
    end
 
    def clang
@@ -108,11 +100,11 @@ class Builder < Tool
    def logStarted(action)
       puts ""
       print(@startSpacer, 33)
-      print("\"#{@component}\" #{action} is started.", 36)
+      print("\"#{@component}\" #{action} [#{@arch}] is started.", 36)
    end
 
    def logCompleted(action)
-      print("\"#{@component}\" #{action} is completed.", 36)
+      print("\"#{@component}\" #{action} [#{@arch}] is completed.", 36)
       print(@endSpacer, 33)
       puts ""
    end

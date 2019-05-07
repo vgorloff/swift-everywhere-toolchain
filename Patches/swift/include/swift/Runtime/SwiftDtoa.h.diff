@@ -1,0 +1,15 @@
+diff --git a/include/swift/Runtime/SwiftDtoa.h b/include/swift/Runtime/SwiftDtoa.h
+index c309d2e97985ef70d6c714ca802e00831f113fe9..41a892eaaab662d640588c6a274a569545b5a7b7 100644
+--- a/include/swift/Runtime/SwiftDtoa.h
++++ b/include/swift/Runtime/SwiftDtoa.h
+@@ -37,6 +37,10 @@
+  #endif
+ #endif
+ 
++#if defined(__ANDROID__) && defined(__i386)
++ #undef SWIFT_DTOA_FLOAT80_SUPPORT
++#endif
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif

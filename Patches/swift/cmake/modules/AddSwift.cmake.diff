@@ -1,0 +1,13 @@
+diff --git a/cmake/modules/AddSwift.cmake b/cmake/modules/AddSwift.cmake
+index 5a7e220c6b04dbbef3288f996c4922ea539aac76..02e51b5f069ad8d5649c28d21ddf5351973482e6 100644
+--- a/cmake/modules/AddSwift.cmake
++++ b/cmake/modules/AddSwift.cmake
+@@ -435,6 +435,8 @@ function(_add_variant_link_flags)
+       set(android_libcxx_path "${SWIFT_ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a")
+     elseif("${LFLAGS_ARCH}" MATCHES aarch64)
+       set(android_libcxx_path "${SWIFT_ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/libs/arm64-v8a")
++    elseif("${LFLAGS_ARCH}" MATCHES i686)
++      set(android_libcxx_path "${SWIFT_ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/libs/x86")
+     else()
+       message(SEND_ERROR "unknown architecture (${LFLAGS_ARCH}) for android")
+     endif()
