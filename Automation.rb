@@ -20,29 +20,14 @@ require_relative "Projects/HelloLibBuilder.rb"
 
 class Automation
   
-   def perform()      
+   def perform()
       action = ARGV.first
       if action.nil? then usage()
       elsif action.start_with?("build:") then build(action.sub("build:", '')) # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
       elsif action.start_with?("clean:") then clean(action.sub("clean:", ''))
+      elsif action.start_with?("deploy:projects:") then deploy(action.sub("deploy:projects:", ''))
       elsif action == "checkout" then checkout()
       elsif action == "verify" then ADB.verify()
-      elsif action == "deploy:projects:armv7a"
-         helloExe = HelloExeBuilder.new(Arch.armv7a)
-         helloLib = HelloLibBuilder.new(Arch.armv7a)
-         ADB.new(helloExe.libs, helloExe.binary).clean
-         ADB.new(helloLib.libs, helloLib.binary).clean
-      elsif action == "deploy:projects:armv7a"
-         helloExe = HelloExeBuilder.new(Arch.armv7a)
-         helloLib = HelloLibBuilder.new(Arch.armv7a)
-         helloExe.copyLibs()
-         helloLib.copyLibs()
-         adb1 = ADB.new(helloExe.libs, helloExe.binary)
-         adb1.deploy()
-         adb2 = ADB.new(helloLib.libs, helloLib.binary)
-         adb2.deploy()
-         adb1.run()
-         adb2.run()
       else usage()
       end
    end
@@ -75,10 +60,31 @@ class Automation
       elsif component == "llvm" then cleanLLVM()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
+      elsif component.start_with?("projects:") then cleanProjects(component.sub("projects:", ''))
       else
          puts "! Unknown component \"#{component}\"."
          usage()
       end
+   end
+   
+   def deploy(arch)
+     helloExe = HelloExeBuilder.new(arch)
+     helloLib = HelloLibBuilder.new(arch)
+     helloExe.copyLibs()
+     helloLib.copyLibs()
+     adb1 = ADB.new(helloExe.libs, helloExe.binary)
+     adb1.deploy()
+     adb2 = ADB.new(helloLib.libs, helloLib.binary)
+     adb2.deploy()
+     adb1.run()
+     adb2.run()
+   end
+
+   def cleanProjects(arch)
+     helloExe = HelloExeBuilder.new(arch)
+     helloLib = HelloLibBuilder.new(arch)
+     ADB.new(helloExe.libs, helloExe.binary).clean
+     ADB.new(helloLib.libs, helloLib.binary).clean
    end
    
    def buildProjects()
@@ -258,6 +264,7 @@ EOM
       tool.print("4. Deploy and run Demo projects to Android Device.", 32)
       help = <<EOM
    $ make deploy:projects:armv7a
+   $ make deploy:projects:x86
 EOM
 
       tool.print(help, 36)
