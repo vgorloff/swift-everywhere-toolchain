@@ -1,0 +1,13 @@
+diff --git a/stdlib/public/core/Mirrors.swift.gyb b/stdlib/public/core/Mirrors.swift.gyb
+index 459acebd712e33e57a356e3efdbfed3fe70a406e..8e7ec5ca05c5587cf979de7cf65225cc13362383 100644
+--- a/stdlib/public/core/Mirrors.swift.gyb
++++ b/stdlib/public/core/Mirrors.swift.gyb
+@@ -53,7 +53,7 @@ extension ${Type[0]} : _CustomPlaygroundQuickLookable {
+ }
+ % end
+ 
+-#if !os(Windows) && (arch(i386) || arch(x86_64))
++#if !(os(Windows) || os(Android)) && (arch(i386) || arch(x86_64))
+ extension Float80 : CustomReflectable {
+   /// A mirror that reflects the Float80 instance.
+   public var customMirror: Mirror {

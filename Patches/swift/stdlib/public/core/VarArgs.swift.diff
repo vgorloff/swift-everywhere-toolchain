@@ -1,0 +1,13 @@
+diff --git a/stdlib/public/core/VarArgs.swift b/stdlib/public/core/VarArgs.swift
+index 0e31463c1a3765af230fe93bcb1b34ab376c4b5d..539017e53889c36610e88da562b2f89935779c8a 100644
+--- a/stdlib/public/core/VarArgs.swift
++++ b/stdlib/public/core/VarArgs.swift
+@@ -400,7 +400,7 @@ extension Double : _CVarArgPassedAsDouble, _CVarArgAligned {
+   }
+ }
+ 
+-#if !os(Windows) && (arch(i386) || arch(x86_64))
++#if !(os(Windows) || os(Android)) && (arch(i386) || arch(x86_64))
+ extension Float80 : CVarArg, _CVarArgAligned {
+   /// Transform `self` into a series of machine words that can be
+   /// appropriately interpreted by C varargs.

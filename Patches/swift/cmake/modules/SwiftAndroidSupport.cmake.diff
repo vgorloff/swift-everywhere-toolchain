@@ -1,0 +1,13 @@
+diff --git a/cmake/modules/SwiftAndroidSupport.cmake b/cmake/modules/SwiftAndroidSupport.cmake
+index c6dcc783c68091927edc1cc065d0bbb8c435501d..2bd1a068c5c2f92268fa50f59a009d6e58a984bc 100644
+--- a/cmake/modules/SwiftAndroidSupport.cmake
++++ b/cmake/modules/SwiftAndroidSupport.cmake
+@@ -23,6 +23,8 @@ function(swift_android_lib_for_arch arch var)
+     list(APPEND paths "${_prebuilt}/${_host}/lib/armv7-a")
+   elseif(arch STREQUAL aarch64)
+     list(APPEND paths "${_prebuilt}/${_host}/lib64")
++  elseif(arch STREQUAL i686)
++    list(APPEND paths "${_prebuilt}/${_host}/lib")
+   else()
+     message(SEND_ERROR "unknown architecture (${arch}) for android")
+   endif()

@@ -51,7 +51,7 @@ class DispatchBuilder < Builder
          archPath = "armv7"
          includePath = "arm-linux-androideabi"
       elsif @arch == Arch.x86
-         archPath = "x86"
+         archPath = "i686"
          includePath = "i686-linux-android"
       elsif @arch == Arch.aarch64
          archPath = "aarch64"
