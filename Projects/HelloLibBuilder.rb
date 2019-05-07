@@ -17,7 +17,7 @@ class HelloLibBuilder < ProjectBuilder
       binary = "#{@builds}/libHelloMessages.so"
 
       cmd = ["cd #{@builds} &&"]
-      cmd << "#{@swift.installs}/bin/swiftc -emit-library -emit-module -parse-as-library -module-name HelloMessages"
+      cmd << "#{@toolchainDir}/bin/swiftc -emit-library -emit-module -parse-as-library -module-name HelloMessages"
       cmd += swiftFlags
       cmd << "-o #{binary}"
       cmd << "#{@sources}/HelloMessage.swift"
@@ -30,7 +30,7 @@ class HelloLibBuilder < ProjectBuilder
       binary = @binary
 
       cmd = ["cd #{@builds} &&"]
-      cmd << "#{@swift.installs}/bin/swiftc -emit-executable -I #{@builds} -L #{@builds} -lHelloMessages"
+      cmd << "#{@toolchainDir}/bin/swiftc -emit-executable -I #{@builds} -L #{@builds} -lHelloMessages"
       cmd += swiftFlags
       cmd << "-o #{binary}"
       cmd << "#{@sources}/main.swift"

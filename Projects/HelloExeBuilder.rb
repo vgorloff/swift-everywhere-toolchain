@@ -14,7 +14,7 @@ class HelloExeBuilder < ProjectBuilder
    end
 
    def executeBuildNew
-      cmd = ["cd #{@builds} && #{@swift.installs}/bin/swiftc -emit-executable"]
+      cmd = ["cd #{@builds} && #{@toolchainDir}/bin/swiftc -emit-executable"]
       cmd += swiftFlags
       cmd << "-o #{@binary} #{@sources}/main.swift"
       execute cmd.join(" ")

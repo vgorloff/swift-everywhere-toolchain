@@ -7,15 +7,9 @@ class ProjectBuilder < Builder
 
    def initialize(component, arch)
       super(component, arch)
+      @toolchainDir = Config.toolchainDir
       @sources = "#{Config.projects}/#{component}"
-      @swift = SwiftBuilder.new()
       @ndk = NDK.new()
-      @dispatch = DispatchBuilder.new(@arch)
-      @foundation = FoundationBuilder.new(@arch)
-      @icu = ICUBuilder.new(@arch)
-      @curl = CurlBuilder.new(@arch)
-      @xml = XMLBuilder.new(arch)
-      @ssl = OpenSSLBuilder.new(@arch)
       @binary = "#{@builds}/#{component}"
       if @arch == Arch.armv7a
          @archPath = "armv7"
@@ -55,25 +49,7 @@ class ProjectBuilder < Builder
       execute "rm -rvf \"#{targetDir}\""
       execute "mkdir -p \"#{targetDir}\""
       message "Copying Shared Objects started."
-      Dir["#{@swift.installs}/lib/swift/android/#{@archPath}" + "/*.so"].each { |lib|
-         execute "cp -vf #{lib} #{targetDir}"
-      }
-      Dir["#{@dispatch.installs}/lib/swift/android" + "/*.so"].each { |lib|
-         execute "cp -vf #{lib} #{targetDir}"
-      }
-      Dir["#{@foundation.installs}/lib/swift/android" + "/*.so"].each { |lib|
-         execute "cp -vf #{lib} #{targetDir}"
-      }
-      Dir[@icu.lib + "/*.so"].each { |lib|
-         execute "cp -vf #{lib} #{targetDir}"
-      }
-      Dir[@curl.lib + "/*.so"].each { |lib|
-         execute "cp -vf #{lib} #{targetDir}"
-      }
-      Dir[@xml.lib + "/*.so"].each { |lib|
-         execute "cp -vf #{lib} #{targetDir}"
-      }
-      Dir[@ssl.lib + "/*.so*"].each { |lib|
+      Dir["#{@toolchainDir}/lib/swift/android/#{@archPath}" + "/*.so"].each { |lib|
          execute "cp -vf #{lib} #{targetDir}"
       }
       cxxLibPath = "#{@ndk.sources}/sources/cxx-stl/llvm-libc++/libs/#{@cppPath}/libc++_shared.so"
@@ -89,17 +65,9 @@ class ProjectBuilder < Builder
       cmd << "-sdk #{@ndk.sources}/platforms/android-#{@ndk.api}/arch-#{@platform}"
       cmd << "-Xcc -I#{@ndk.toolchain}/sysroot/usr/include -Xcc -I#{@ndk.toolchain}/sysroot/usr/include/#{@ndkArchPath}"
       cmd << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX -Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
-      cmd << "-I #{@dispatch.installs}/lib/swift/dispatch"
-      cmd << "-I #{@dispatch.installs}/lib/swift/android/#{@archPath}"
-      cmd << "-I #{@dispatch.installs}/lib/swift"
-      cmd << "-I #{@foundation.installs}/lib/swift/android/#{@archPath}"
-      cmd << "-I #{@foundation.installs}/lib/swift/CoreFoundation"
-      cmd << "-I #{@foundation.installs}/lib/swift"
       cmd << "-L #{@ndk.sources}/sources/cxx-stl/llvm-libc++/libs/#{@cppPath}"
       cmd << "-L #{@ndk.toolchain}/lib/gcc/#{@ndkArchPath}/#{@ndk.gcc}.x" # Link the Android NDK's libc++ and libgcc.
-      cmd << "-L #{@foundation.installs}/lib/swift/android"
-      cmd << "-L #{@dispatch.installs}/lib/swift/android"
-      cmd << "-L #{@swift.installs}/lib/swift/android/#{@archPath}"
+      cmd << "-L #{@toolchainDir}/lib/swift/android/#{@archPath}"
       return cmd
    end
 
