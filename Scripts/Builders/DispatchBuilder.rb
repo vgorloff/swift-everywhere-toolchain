@@ -9,6 +9,16 @@ class DispatchBuilder < Builder
       super(Lib.dispatch, arch)
       @ndk = NDK.new()
       @swift = SwiftBuilder.new()
+      if @arch == Arch.armv7a
+         @archPath = "armv7"
+         @includePath = "arm-linux-androideabi"
+      elsif @arch == Arch.x86
+         @archPath = "i686"
+         @includePath = "i686-linux-android"
+      elsif @arch == Arch.aarch64
+         @archPath = "aarch64"
+         @includePath = "aarch64-linux-android"
+      end
    end
 
    def executeConfigure
@@ -47,19 +57,9 @@ class DispatchBuilder < Builder
       message "Applying fix for #{file}"
       execute "cp -vf #{file} #{file}.orig"
       contents = File.readlines(file).join()
-      if @arch == Arch.armv7a
-         archPath = "armv7"
-         includePath = "arm-linux-androideabi"
-      elsif @arch == Arch.x86
-         archPath = "i686"
-         includePath = "i686-linux-android"
-      elsif @arch == Arch.aarch64
-         archPath = "aarch64"
-         includePath = "aarch64-linux-android"
-      end
       if !contents.include?('-tools-directory')
-         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -L #{@swift.installs}/lib/swift/android/#{archPath} -tools-directory #{@ndk.toolchain}/bin")
-         contents = contents.gsub('-module-link-name swiftDispatch', "-module-link-name swiftDispatch -Xcc -I#{@ndk.sources}/sysroot/usr/include -Xcc -I#{@ndk.sources}/sysroot/usr/include/#{includePath}")
+         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -L #{@swift.installs}/lib/swift/android/#{@archPath} -tools-directory #{@ndk.toolchain}/bin")
+         contents = contents.gsub('-module-link-name swiftDispatch', "-module-link-name swiftDispatch -Xcc -I#{@ndk.sources}/sysroot/usr/include -Xcc -I#{@ndk.sources}/sysroot/usr/include/#{@includePath}")
       end
       File.write(file, contents)
    end
@@ -83,6 +83,9 @@ class DispatchBuilder < Builder
 
    def executeInstall
       execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      Dir["#{@installs}/lib/swift/android/*.so"].each { |file|
+        FileUtils.mv(file, "#{File.dirname(file)}/#{@archPath}", :force => true)
+      }
    end
 
 end
