@@ -244,7 +244,7 @@ class Automation
 EOM
       tool.print(help, 36)
 
-      tool.print("2. Build all Swift components and Sample projects for armv7a.", 32)
+      tool.print("2. Build all Swift components and Sample projects.", 32)
       help = <<EOM
    $ make build:toolchain
    $ make build:projects
