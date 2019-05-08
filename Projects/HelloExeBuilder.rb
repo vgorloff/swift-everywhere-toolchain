@@ -14,11 +14,9 @@ class HelloExeBuilder < ProjectBuilder
    end
 
    def executeBuildNew
-      cmd = ["cd #{@builds} && #{@toolchainDir}/bin/swiftc -emit-executable"]
-      cmd += swiftFlags
-      cmd << "-o #{@binary} #{@sources}/main.swift"
-      execute cmd.join(" ")
+      execute "cd #{@builds} && #{@swiftc} -emit-executable -o #{@binary} #{@sources}/main.swift"
       execute "file #{@binary}"
+      copyLibs()
    end
 
    def executeBuildOld

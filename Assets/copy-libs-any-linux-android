@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+toolchainDir = File.dirname(File.dirname(__FILE__))
+
+arch = ENV['SA_TOOLCHAIN_SWIFT_ARCH_PATH_COMPONENT']
+cppArch = ENV['SA_TOOLCHAIN_NDK_CPP_ARCH_PATH_COMPONENT']
+destination = ARGV.first
+if destination.nil?
+  puts "! Destination directory to copy \"#{arch}\" libraries is not provided."
+  exit(1)
+end
+
+puts "Copying \"#{arch}\" libraries to \"#{destination}\""
+system "mkdir -p \"#{destination}\""
+
+puts toolchainDir
+
+files = Dir["#{toolchainDir}/lib/swift/android/#{arch}" + "/*.so"]
+files << "#{toolchainDir}/ndk/sources/cxx-stl/llvm-libc++/libs/#{cppArch}/libc++_shared.so"
+files.each { |lib|
+   puts "- Copying \"#{lib}\""
+   system "cp -f #{lib} #{destination}"
+}

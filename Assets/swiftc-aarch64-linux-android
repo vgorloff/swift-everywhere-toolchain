@@ -1,0 +1,6 @@
+#!/bin/bash
+export SA_TOOLCHAIN_SWIFT_ARCH_PATH_COMPONENT=aarch64
+export SA_TOOLCHAIN_NDK_ARCH_PATH_COMPONENT=aarch64-linux-android
+export SA_TOOLCHAIN_NDK_CPP_ARCH_PATH_COMPONENT=arm64-v8a
+export SA_TOOLCHAIN_NDK_PLATFORM_ARCH_PATH_COMPONENT=arm64
+`dirname $0`/swiftc-any-linux-android -target aarch64-unknown-linux-android "$@"

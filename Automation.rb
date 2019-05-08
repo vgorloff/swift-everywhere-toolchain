@@ -73,8 +73,6 @@ class Automation
    def deploy(arch)
      helloExe = HelloExeBuilder.new(arch)
      helloLib = HelloLibBuilder.new(arch)
-     helloExe.copyLibs()
-     helloLib.copyLibs()
      adb1 = ADB.new(helloExe.libs, helloExe.binary)
      adb1.deploy()
      adb2 = ADB.new(helloLib.libs, helloLib.binary)
@@ -89,15 +87,40 @@ class Automation
         FileUtils.rm_rf(toolchainDir)
      end
      FileUtils.mkdir_p(toolchainDir)
+     File.symlink("/Users/vagrant/Library/Android/sdk/ndk-bundle", "#{toolchainDir}/ndk")
 
+     copyToolchainFiles()
+     fixModuleMaps()
+     copyAssets()
+   end
+   
+   def copyAssets()
+     toolchainDir = Config.toolchainDir
+     FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
+     utils = Dir["#{Config.root}/Assets/swiftc-*"]
+     utils += Dir["#{Config.root}/Assets/copy-libs-*"]
+     utils.each { |file|
+       FileUtils.copy_entry(file, "#{toolchainDir}/bin/#{File.basename(file)}", false, false, true)
+     }
+   end
+   
+   def fixModuleMaps()
+     moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
+     moduleMaps.each { |file|
+        puts "Correcting \"#{file}\""
+        contents = File.read(file)
+        contents = contents.gsub(/\/Users\/.+\/ndk-bundle/, "../../../../ndk")
+        File.write(file, contents)
+     }
+   end
+   
+   def copyToolchainFiles()
+     toolchainDir = Config.toolchainDir
      root = SwiftBuilder.new().installs
      files = Dir["#{root}/bin/**/*"]
      files += Dir["#{root}/lib/**/*"].reject { |file| file.end_with?(".dylib") }
      files += Dir["#{root}/share/**/*"]
      copyFiles(files, root, toolchainDir)
-
-     FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
-     File.symlink("/Users/vagrant/Library/Android/sdk/ndk-bundle", "#{toolchainDir}/ndk")
 
      archs = [Arch.armv7a, Arch.aarch64, Arch.x86]
      archs.each { |arch|
@@ -124,14 +147,6 @@ class Automation
        root = XMLBuilder.new(arch).installs
        files = Dir["#{root}/lib/*.so"]
        copyLibFiles(files, root, toolchainDir, arch)
-     }
-     
-     moduleMaps = Dir["#{toolchainDir}/lib/swift/**/glibc.modulemap"]
-     moduleMaps.each { |file|
-        puts "Correcting \"#{file}\""
-        contents = File.read(file)
-        contents = contents.gsub(/\/Users\/.+\/ndk-bundle/, "../../../../ndk")
-        File.write(file, contents)
      }
    end
    
