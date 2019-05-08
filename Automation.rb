@@ -17,6 +17,7 @@ require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 
 require_relative "Projects/HelloExeBuilder.rb"
 require_relative "Projects/HelloLibBuilder.rb"
+require 'fileutils'
 
 class Automation
   
@@ -28,6 +29,8 @@ class Automation
       elsif action.start_with?("deploy:projects:") then deploy(action.sub("deploy:projects:", ''))
       elsif action == "checkout" then checkout()
       elsif action == "verify" then ADB.verify()
+      elsif action == "archive" then archive()
+      elsif action == "compress" then compress()
       else usage()
       end
    end
@@ -70,14 +73,135 @@ class Automation
    def deploy(arch)
      helloExe = HelloExeBuilder.new(arch)
      helloLib = HelloLibBuilder.new(arch)
-     helloExe.copyLibs()
-     helloLib.copyLibs()
      adb1 = ADB.new(helloExe.libs, helloExe.binary)
      adb1.deploy()
      adb2 = ADB.new(helloLib.libs, helloLib.binary)
      adb2.deploy()
      adb1.run()
      adb2.run()
+   end
+   
+   def archive()
+     toolchainDir = Config.toolchainDir
+     if File.exists?(toolchainDir)
+        FileUtils.rm_rf(toolchainDir)
+     end
+     FileUtils.mkdir_p(toolchainDir)
+     File.symlink("/Users/vagrant/Library/Android/sdk/ndk-bundle", "#{toolchainDir}/ndk")
+
+     copyToolchainFiles()
+     fixModuleMaps()
+     copyAssets()
+     copyLicenses()
+   end
+   
+   def copyAssets()
+     toolchainDir = Config.toolchainDir
+     FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
+     utils = Dir["#{Config.root}/Assets/swiftc-*"]
+     utils += Dir["#{Config.root}/Assets/copy-libs-*"]
+     utils.each { |file|
+       FileUtils.copy_entry(file, "#{toolchainDir}/bin/#{File.basename(file)}", false, false, true)
+     }
+   end
+   
+   def copyLicenses()
+     toolchainDir = Config.toolchainDir
+     sourcesDir = Config.sources
+     files = []
+     files << "#{sourcesDir}/#{Lib.clang}/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.cmark}/COPYING"
+     files << "#{sourcesDir}/#{Lib.crt}/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.curl}/COPYING"
+     files << "#{sourcesDir}/#{Lib.icu}/icu4c/LICENSE"
+     files << "#{sourcesDir}/#{Lib.llvm}/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.ssl}/LICENSE"
+     files << "#{sourcesDir}/#{Lib.dispatch}/LICENSE"
+     files << "#{sourcesDir}/#{Lib.foundation}/LICENSE"
+     files << "#{sourcesDir}/#{Lib.xml}/Copyright"
+     files.each { |file|
+        dst = file.sub(sourcesDir, "#{toolchainDir}/share")
+        puts "- Copying \"#{file}\""
+        FileUtils.mkdir_p(File.dirname(dst))
+        FileUtils.copy_entry(file, dst, false, false, true)
+     }
+   end
+   
+   def fixModuleMaps()
+     moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
+     moduleMaps.each { |file|
+        puts "Correcting \"#{file}\""
+        contents = File.read(file)
+        contents = contents.gsub(/\/Users\/.+\/ndk-bundle/, "../../../../ndk")
+        File.write(file, contents)
+     }
+   end
+   
+   def copyToolchainFiles()
+     toolchainDir = Config.toolchainDir
+     root = SwiftBuilder.new().installs
+     files = Dir["#{root}/bin/**/*"]
+     files += Dir["#{root}/lib/**/*"].reject { |file| file.end_with?(".dylib") }
+     files += Dir["#{root}/share/**/*"]
+     copyFiles(files, root, toolchainDir)
+
+     archs = [Arch.armv7a, Arch.aarch64, Arch.x86]
+     archs.each { |arch|
+       root = DispatchBuilder.new(arch).installs
+       files = Dir["#{root}/lib/**/*"]
+       copyFiles(files, root, toolchainDir)
+
+       root = FoundationBuilder.new(arch).installs
+       files = Dir["#{root}/lib/**/*"]
+       copyFiles(files, root, toolchainDir)
+
+       root = ICUBuilder.new(arch).installs
+       files = Dir["#{root}/lib/*.so"]
+       copyLibFiles(files, root, toolchainDir, arch)
+
+       root = OpenSSLBuilder.new(arch).installs
+       files = Dir["#{root}/lib/*.so"]
+       copyLibFiles(files, root, toolchainDir, arch)
+
+       root = CurlBuilder.new(arch).installs
+       files = Dir["#{root}/lib/*.so"]
+       copyLibFiles(files, root, toolchainDir, arch)
+
+       root = XMLBuilder.new(arch).installs
+       files = Dir["#{root}/lib/*.so"]
+       copyLibFiles(files, root, toolchainDir, arch)
+     }
+   end
+   
+   def compress()
+     puts "Compressing \"#{Config.toolchainDir}\""
+     baseName = File.basename(Config.toolchainDir)
+     system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{baseName}.tar.gz --options='compression-level=9' #{baseName}")
+   end
+   
+   def copyFiles(files, source, destination)
+     files.each { |file|
+       dst = file.sub(source, destination)
+       puts "- Copying \"#{file}\""
+       FileUtils.mkdir_p(File.dirname(dst))
+       FileUtils.copy_entry(file, dst, false, false, true)
+     }
+   end
+   
+   def copyLibFiles(files, source, destination, arch)
+     if arch == Arch.armv7a
+        archPath = "armv7"
+     elsif arch == Arch.x86
+        archPath = "i686"
+     elsif arch == Arch.aarch64
+        archPath = "aarch64"
+     end
+     files.each { |file|
+       dst = file.sub(source, destination).sub("/lib/", "/lib/swift/android/#{archPath}/")
+       puts "Copying \"#{file}\""
+       FileUtils.mkdir_p(File.dirname(dst))
+       FileUtils.copy_entry(file, dst, false, false, true)
+     }
    end
 
    def cleanProjects(arch)
@@ -112,15 +236,16 @@ class Automation
    end
 
    def buildAll()
-      swift = SwiftBuilder.new()
       buildLLVM()
       buildDeps()
-      swift.make
+      SwiftBuilder.new().make
       buildLibs()
+      archive()
+      compress()
       puts ""
       tool = Tool.new()
       tool.print("\"Swift Toolchain for Android\" build is completed.")
-      tool.print("It can be found in \"#{swift.installs}\".")
+      tool.print("It can be found in \"#{Config.toolchainDir}\".")
       puts ""
    end
 

@@ -15,16 +15,8 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_TOOLCHAIN=clang",
-                        '-DANDROID_ARM_NEON=TRUE',
-                        "-DSA_NDK_DIR=${properties.getProperty('ndk.dir')}",
-                        "-DSA_SWIFT_INSTALL_DIR=${properties.getProperty('sa.swift.installDir')}",
-                        "-DSA_DISPATCH_INSTALL_DIR=${properties.getProperty('sa.dispatch.installDir')}",
-                        "-DSA_FOUNDATION_INSTALL_DIR=${properties.getProperty('sa.foundation.installDir')}",
-                        "-DSA_CURL_INSTALL_DIR=${properties.getProperty('sa.curl.installDir')}",
-                        "-DSA_ICU_INSTALL_DIR=${properties.getProperty('sa.icu.installDir')}",
-                        "-DSA_SSL_INSTALL_DIR=${properties.getProperty('sa.ssl.installDir')}",
-                        "-DSA_XML_INSTALL_DIR=${properties.getProperty('sa.xml.installDir')}"
+                arguments "-DANDROID_TOOLCHAIN=clang", '-DANDROID_ARM_NEON=TRUE',
+                        "-DSA_SWIFT_TOOLCHAIN_DIR=${properties.getProperty('swiftToolchain.dir')}"
                 cppFlags "-frtti -fexceptions"
                 cFlags '-O3', '-fsigned-char'
             }

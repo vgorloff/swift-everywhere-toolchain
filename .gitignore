@@ -2,8 +2,6 @@
 /*.log
 .DS_Store
 
-/Build
-/Install
-/Sources
+/ToolChain
 /local.properties.yml
 /*.code-workspace

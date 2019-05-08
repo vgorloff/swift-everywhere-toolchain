@@ -5,21 +5,25 @@ class Config
    def self.root
       return File.realpath(File.dirname(__FILE__) + "/../../")
    end
-
-   def self.sources
-      return "#{root}/#{Location.sources}"
+   
+   def self.toolChain
+      return "#{root}/#{Location.toolChain}"
+   end
+   
+   def self.toolchainDir
+      return "#{toolChain}/swift-android-toolchain"
    end
 
-   def self.downloads
-      return "#{root}/#{Location.downloads}"
+   def self.sources
+      return "#{toolChain}/#{Location.sources}"
    end
 
    def self.build
-      return "#{root}/#{Location.build}"
+      return "#{toolChain}/#{Location.build}"
    end
 
    def self.install
-      return "#{root}/#{Location.install}"
+      return "#{toolChain}/#{Location.install}"
    end
 
    def self.patches
