@@ -92,6 +92,7 @@ class Automation
      copyToolchainFiles()
      fixModuleMaps()
      copyAssets()
+     copyLicenses()
    end
    
    def copyAssets()
@@ -101,6 +102,28 @@ class Automation
      utils += Dir["#{Config.root}/Assets/copy-libs-*"]
      utils.each { |file|
        FileUtils.copy_entry(file, "#{toolchainDir}/bin/#{File.basename(file)}", false, false, true)
+     }
+   end
+   
+   def copyLicenses()
+     toolchainDir = Config.toolchainDir
+     sourcesDir = Config.sources
+     files = []
+     files << "#{sourcesDir}/#{Lib.clang}/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.cmark}/COPYING"
+     files << "#{sourcesDir}/#{Lib.crt}/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.curl}/COPYING"
+     files << "#{sourcesDir}/#{Lib.icu}/icu4c/LICENSE"
+     files << "#{sourcesDir}/#{Lib.llvm}/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.ssl}/LICENSE"
+     files << "#{sourcesDir}/#{Lib.dispatch}/LICENSE"
+     files << "#{sourcesDir}/#{Lib.foundation}/LICENSE"
+     files << "#{sourcesDir}/#{Lib.xml}/Copyright"
+     files.each { |file|
+        dst = file.sub(sourcesDir, "#{toolchainDir}/share")
+        puts "- Copying \"#{file}\""
+        FileUtils.mkdir_p(File.dirname(dst))
+        FileUtils.copy_entry(file, dst, false, false, true)
      }
    end
    
@@ -159,7 +182,7 @@ class Automation
    def copyFiles(files, source, destination)
      files.each { |file|
        dst = file.sub(source, destination)
-       puts "Copying \"#{file}\""
+       puts "- Copying \"#{file}\""
        FileUtils.mkdir_p(File.dirname(dst))
        FileUtils.copy_entry(file, dst, false, false, true)
      }
