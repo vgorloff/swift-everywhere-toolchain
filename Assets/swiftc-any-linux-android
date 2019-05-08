@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+ndkPlatformArch = ENV['SA_TOOLCHAIN_NDK_PLATFORM_ARCH_PATH_COMPONENT']
+ndkArch = ENV['SA_TOOLCHAIN_NDK_ARCH_PATH_COMPONENT']
+swiftArch = ENV['SA_TOOLCHAIN_SWIFT_ARCH_PATH_COMPONENT']
+cppArch = ENV['SA_TOOLCHAIN_NDK_CPP_ARCH_PATH_COMPONENT']
+
+toolchainDir = File.dirname(File.dirname(__FILE__))
+ndkPath = "#{toolchainDir}/ndk"
+ndkGccVersion = "4.9"
+ndkApiVersion = "21"
+ndkToolChain = "#{ndkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
+
+args = []
+# args << "-v"
+args << "-tools-directory #{ndkToolChain}"
+args << "-sdk #{toolchainDir}/ndk/platforms/android-#{ndkApiVersion}/arch-#{ndkPlatformArch}"
+args << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX -Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
+args << "-Xcc -I#{ndkToolChain}/sysroot/usr/include -Xcc -I#{ndkToolChain}/sysroot/usr/include/#{ndkArch}"
+args << "-L #{toolchainDir}/ndk/sources/cxx-stl/llvm-libc++/libs/#{cppArch}"
+args << "-L #{ndkToolChain}/lib/gcc/#{ndkArch}/#{ndkGccVersion}.x" # Link the Android NDK's libc++ and libgcc.
+args << "-L #{toolchainDir}/lib/swift/android/#{swiftArch}"
+
+cmd = "#{toolchainDir}/bin/swiftc " + args.join(" ") + " " + ARGV.join(" ")
+puts cmd
+system cmd

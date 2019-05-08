@@ -13,30 +13,17 @@ class HelloLibBuilder < ProjectBuilder
    def executeBuild
 
       # Lib
-
       binary = "#{@builds}/libHelloMessages.so"
-
-      cmd = ["cd #{@builds} &&"]
-      cmd << "#{@swift.installs}/bin/swiftc -emit-library -emit-module -parse-as-library -module-name HelloMessages"
-      cmd += swiftFlags
-      cmd << "-o #{binary}"
-      cmd << "#{@sources}/HelloMessage.swift"
-
-      execute cmd.join(" ")
+      execute "cd #{@builds} && #{@swiftc} -emit-library -emit-module -parse-as-library -module-name HelloMessages -o #{binary} #{@sources}/HelloMessage.swift"
       execute "file #{binary}"
 
       # Exe
-
       binary = @binary
-
-      cmd = ["cd #{@builds} &&"]
-      cmd << "#{@swift.installs}/bin/swiftc -emit-executable -I #{@builds} -L #{@builds} -lHelloMessages"
-      cmd += swiftFlags
-      cmd << "-o #{binary}"
-      cmd << "#{@sources}/main.swift"
-
-      execute cmd.join(" ")
+      execute "cd #{@builds} && #{@swiftc} -emit-executable -I #{@builds} -L #{@builds} -lHelloMessages -o #{binary} #{@sources}/main.swift"
       execute "file #{binary}"
+      
+      # Swift Libs
+      copyLibs()
    end
 
    def libs

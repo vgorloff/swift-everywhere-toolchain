@@ -20,8 +20,7 @@ class NDK
    end
 
    def toolchain
-      prefix = "#{@settings.ndkDir}/toolchains/llvm/prebuilt"
-      return "#{prefix}/darwin-x86_64"
+      return "#{@settings.ndkDir}/toolchains/llvm/prebuilt/darwin-x86_64"
    end
 
 end

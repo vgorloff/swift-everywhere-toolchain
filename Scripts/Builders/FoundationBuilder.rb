@@ -13,6 +13,13 @@ class FoundationBuilder < Builder
       @curl = CurlBuilder.new(arch)
       @icu = ICUBuilder.new(arch)
       @xml = XMLBuilder.new(arch)
+      if @arch == Arch.armv7a
+         @archPath = "armv7"
+      elsif @arch == Arch.x86
+         @archPath = "i686"
+      elsif @arch == Arch.aarch64
+         @archPath = "aarch64"
+      end
    end
 
    def executeConfigure
@@ -31,17 +38,14 @@ class FoundationBuilder < Builder
       cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
       if @arch == Arch.armv7a
          cmd << "-DANDROID_ABI=armeabi-v7a"
-         archPath = "armv7"
          ndkArchPath = "arm-linux-androideabi"
          ndkToolchainPath = ndkArchPath
       elsif @arch == Arch.x86
          cmd << "-DANDROID_ABI=x86"
-         archPath = "i686"
          ndkArchPath = "i686-linux-android"
          ndkToolchainPath = "x86"
       elsif @arch == Arch.aarch64
          cmd << "-DANDROID_ABI=arm64-v8a"
-         archPath = "aarch64"
          ndkArchPath = "aarch64-linux-android"
          ndkToolchainPath = ndkArchPath
       end
@@ -51,7 +55,7 @@ class FoundationBuilder < Builder
 
       cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/#{ndkArchPath}'"
       # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
-      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/#{ndkArchPath}/bin\;-L\;#{@swift.installs}/lib/swift/android/#{archPath}\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/#{ndkToolchainPath}-4.9/prebuilt/darwin-x86_64/lib/gcc/#{ndkArchPath}/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
+      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/#{ndkArchPath}/bin\;-L\;#{@swift.installs}/lib/swift/android/#{@archPath}\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/#{ndkToolchainPath}-4.9/prebuilt/darwin-x86_64/lib/gcc/#{ndkArchPath}/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
       cmd << "-DADDITIONAL_SWIFT_CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
 
       cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
@@ -89,6 +93,9 @@ class FoundationBuilder < Builder
 
    def executeInstall
       execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      Dir["#{@installs}/lib/swift/android/*.so"].each { |file|
+        FileUtils.mv(file, "#{File.dirname(file)}/#{@archPath}", :force => true)
+      }
    end
 
    def configurePatches(shouldEnable = true)
