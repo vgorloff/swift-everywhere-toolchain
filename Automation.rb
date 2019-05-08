@@ -213,17 +213,16 @@ class Automation
    end
 
    def buildAll()
-      swift = SwiftBuilder.new()
       buildLLVM()
       buildDeps()
-      swift.make
+      SwiftBuilder.new().make
       buildLibs()
       archive()
       compress()
       puts ""
       tool = Tool.new()
       tool.print("\"Swift Toolchain for Android\" build is completed.")
-      tool.print("It can be found in \"#{swift.installs}\".")
+      tool.print("It can be found in \"#{Config.toolchainDir}\".")
       puts ""
    end
 
