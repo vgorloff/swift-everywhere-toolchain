@@ -1,4 +1,6 @@
 class Revision
+   
+   # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.foundation
       # 5.0.1: ebfbb38a35f02b2372e3e4973065506c3b5dd290

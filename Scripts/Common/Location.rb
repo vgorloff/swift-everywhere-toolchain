@@ -12,16 +12,16 @@ class Location
       return "Build"
    end
 
-   def self.downloads
-      return "Downloads"
-   end
-
    def self.patches
       return "Patches"
    end
 
    def self.projects
       return "Projects"
+   end
+   
+   def self.toolChain
+      return "ToolChain"
    end
 
 end
