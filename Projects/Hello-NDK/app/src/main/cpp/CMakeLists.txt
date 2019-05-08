@@ -9,6 +9,17 @@ project(SwiftNative)
 message(STATUS "Setting up project: ${PROJECT_NAME}")
 message(STATUS "Android ABI: ${ANDROID_ABI}")
 
+if("${ANDROID_ABI}" STREQUAL "arm64-v8a")
+    set(SaNdkPlatform "aarch64-linux-android")
+elseif("${ANDROID_ABI}" STREQUAL "x86")
+    set(SaNdkPlatform "i686-linux-android")
+elseif("${ANDROID_ABI}" STREQUAL "armeabi-v7a")
+    set(SaNdkPlatform "arm-linux-androideabi")
+else()
+    message(FATAL_ERROR "Unknown or not supported by Swift toolchain architecture: \"${ANDROID_ABI}\".")
+endif()
+message(STATUS "Android Tripple: ${SaNdkPlatform}")
+
 # >>> Configuration section.
 
 if(NOT SA_SWIFT_TOOLCHAIN_DIR)
@@ -17,8 +28,8 @@ else()
     set(SA_SWIFT_TOOLCHAIN_DIR ${SA_SWIFT_TOOLCHAIN_DIR} CACHE FILEPATH "Path to Swift toolchain installation directory.")
 endif()
 
-set(SASwiftCompiler "${SA_SWIFT_TOOLCHAIN_DIR}/bin/swiftc-arm-linux-androideabi")
-set(SASwiftCopyLibs "${SA_SWIFT_TOOLCHAIN_DIR}/bin/copy-libs-arm-linux-androideabi")
+set(SASwiftCompiler "${SA_SWIFT_TOOLCHAIN_DIR}/bin/swiftc-${SaNdkPlatform}")
+set(SASwiftCopyLibs "${SA_SWIFT_TOOLCHAIN_DIR}/bin/copy-libs-${SaNdkPlatform}")
 
 # <<< Configuration section.
 
