@@ -280,12 +280,14 @@ class Automation
       OpenSSLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.aarch64).make
       OpenSSLBuilder.new(Arch.x86).make
+      OpenSSLBuilder.new(Arch.x64).make
    end
    
    def cleanSSL()
       OpenSSLBuilder.new(Arch.armv7a).clean
       OpenSSLBuilder.new(Arch.aarch64).clean
       OpenSSLBuilder.new(Arch.x86).clean
+      OpenSSLBuilder.new(Arch.x64).clean
    end
    
    def cleanCURL()
