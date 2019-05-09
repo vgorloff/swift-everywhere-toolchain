@@ -250,7 +250,7 @@ class SwiftBuilder < Builder
       result = []
       lines.each { |line|
          if line.include?('if(CMAKE_INSTALL_COMPONENT)')
-            line = installCommands("armv7") + "\n" + installCommands("aarch64") + "\n" + installCommands("i686") + "\n" + line
+            line = installCommands("armv7") + "\n" + installCommands("aarch64") + "\n" + installCommands("i686") + "\n" + installCommands("x86_64") + "\n" + line
          end
          result << line
       }
@@ -285,6 +285,7 @@ class SwiftBuilder < Builder
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/SwiftShims/LibcShims.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftConfigureSDK.cmake.diff", shouldEnable)
