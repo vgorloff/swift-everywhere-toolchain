@@ -294,12 +294,14 @@ class Automation
       CurlBuilder.new(Arch.armv7a).clean
       CurlBuilder.new(Arch.aarch64).clean
       CurlBuilder.new(Arch.x86).clean
+      CurlBuilder.new(Arch.x64).clean
    end
    
    def buildCURL()
       CurlBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.aarch64).make
       CurlBuilder.new(Arch.x86).make
+      CurlBuilder.new(Arch.x64).make
    end
    
    def cleanXML()
