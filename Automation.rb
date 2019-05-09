@@ -265,14 +265,15 @@ class Automation
       ICUBuilder.new(Arch.armv7a).clean
       ICUBuilder.new(Arch.aarch64).clean
       ICUBuilder.new(Arch.x86).clean
+      ICUBuilder.new(Arch.x64).clean
    end
    
    def buildICU()
-      cleanICU()
       ICUHostBuilder.new().make
       ICUBuilder.new(Arch.armv7a).make
       ICUBuilder.new(Arch.aarch64).make
       ICUBuilder.new(Arch.x86).make
+      ICUBuilder.new(Arch.x64).make
    end
    
    def buildSSL()
