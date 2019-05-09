@@ -18,6 +18,9 @@ class DispatchBuilder < Builder
       elsif @arch == Arch.aarch64
          @archPath = "aarch64"
          @includePath = "aarch64-linux-android"
+      elsif @arch == Arch.x64
+         @archPath = "x86_64"
+         @includePath = "x86_64-linux-android"
       end
    end
 
@@ -38,6 +41,8 @@ class DispatchBuilder < Builder
          cmd << "-DANDROID_ABI=x86"
       elsif @arch == Arch.aarch64
          cmd << "-DANDROID_ABI=arm64-v8a"
+      elsif @arch == Arch.x64
+         cmd << "-DANDROID_ABI=x86_64"
       end
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DENABLE_SWIFT=true"

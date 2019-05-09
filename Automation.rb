@@ -346,12 +346,14 @@ class Automation
       DispatchBuilder.new(Arch.armv7a).clean
       DispatchBuilder.new(Arch.aarch64).clean
       DispatchBuilder.new(Arch.x86).clean
+      DispatchBuilder.new(Arch.x64).clean
    end
    
    def buildDispatch()
       DispatchBuilder.new(Arch.armv7a).make
       DispatchBuilder.new(Arch.aarch64).make
       DispatchBuilder.new(Arch.x86).make
+      DispatchBuilder.new(Arch.x64).make
    end
    
    def cleanFoundation()
