@@ -104,11 +104,11 @@ class FoundationBuilder < Builder
       configurePatchFile("#{@patches}/Foundation/CGFloat.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
-      configurePatch("#{@sources}/Foundation/NSGeometry.swift", "#{@patches}/NSGeometry.patch", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/NSGeometry.swift.diff", shouldEnable)
 
       # FIXME: Below patches may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
-      configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c", "#{@patches}/CFKnownLocations.patch", shouldEnable)
-      configurePatch("#{@sources}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h", "#{@patches}/ForSwiftFoundationOnly.patch", shouldEnable)
+      configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/CFKnownLocations.c.diff", shouldEnable)
+      configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/FileManager.swift.diff", shouldEnable)
    end
 
