@@ -304,12 +304,14 @@ class Automation
       XMLBuilder.new(Arch.armv7a).clean
       XMLBuilder.new(Arch.aarch64).clean
       XMLBuilder.new(Arch.x86).clean
+      XMLBuilder.new(Arch.x64).clean
    end
    
    def buildXML()
       XMLBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.aarch64).make
       XMLBuilder.new(Arch.x86).make
+      XMLBuilder.new(Arch.x64).make
    end
 
    def cleanDeps()
