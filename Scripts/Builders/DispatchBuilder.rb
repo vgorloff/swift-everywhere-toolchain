@@ -68,13 +68,8 @@ class DispatchBuilder < Builder
       if @arch == Arch.host && shouldEnable
          return
       end
-      originalFile = "#{@sources}/cmake/modules/SwiftSupport.cmake"
-      patchFile = "#{@patches}/CmakeSystemProcessor.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
-
-      originalFile = "#{@sources}/cmake/modules/DispatchCompilerWarnings.cmake"
-      patchFile = "#{@patches}/DisableWarningsAsErrors.patch"
-      configurePatch(originalFile, patchFile, shouldEnable)
+      configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
+      configurePatchFile("#{@patches}/cmake/modules/DispatchCompilerWarnings.cmake.diff", shouldEnable)
    end
 
    def executeBuild

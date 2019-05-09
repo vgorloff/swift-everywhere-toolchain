@@ -84,8 +84,8 @@ class ICUBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      configurePatch("#{@sources}/source/configure", "#{@patches}/configure.patch", shouldEnable)
-      configurePatch("#{@sources}/source/config/mh-linux", "#{@patches}/mh-linux.diff", shouldEnable)
+      configurePatchFile("#{@patches}/source/configure.diff", shouldEnable)
+      configurePatchFile("#{@patches}/source/config/mh-linux.diff", shouldEnable)
    end
 
 end
