@@ -406,6 +406,7 @@ EOM
       help = <<EOM
    $ make deploy:projects:armv7a
    $ make deploy:projects:x86
+   $ make deploy:projects:x86_64
 EOM
 
       tool.print(help, 36)
