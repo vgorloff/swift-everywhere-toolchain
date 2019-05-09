@@ -1,0 +1,4 @@
+#!/bin/bash
+export SA_TOOLCHAIN_SWIFT_ARCH_PATH_COMPONENT=x86_64
+export SA_TOOLCHAIN_NDK_CPP_ARCH_PATH_COMPONENT=x86_64
+`dirname $0`/copy-libs-any-linux-android "$@"

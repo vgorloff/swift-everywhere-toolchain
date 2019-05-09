@@ -146,7 +146,7 @@ class Automation
      files += Dir["#{root}/share/**/*"]
      copyFiles(files, root, toolchainDir)
 
-     archs = [Arch.armv7a, Arch.aarch64, Arch.x86]
+     archs = [Arch.armv7a, Arch.aarch64, Arch.x86, Arch.x64]
      archs.each { |arch|
        root = DispatchBuilder.new(arch).installs
        files = Dir["#{root}/lib/**/*"]
@@ -196,6 +196,8 @@ class Automation
         archPath = "i686"
      elsif arch == Arch.aarch64
         archPath = "aarch64"
+     elsif arch == Arch.x64
+        archPath = "x86_64"
      end
      files.each { |file|
        dst = file.sub(source, destination).sub("/lib/", "/lib/swift/android/#{archPath}/")
@@ -222,10 +224,12 @@ class Automation
          HelloExeBuilder.new(Arch.armv7a).build
          HelloExeBuilder.new(Arch.aarch64).build
          HelloExeBuilder.new(Arch.x86).build
+         HelloExeBuilder.new(Arch.x64).build
       elsif project == "lib"
          HelloLibBuilder.new(Arch.armv7a).build
          HelloLibBuilder.new(Arch.aarch64).build
          HelloLibBuilder.new(Arch.x86).build
+         HelloLibBuilder.new(Arch.x64).build
       else
          puts "! Unknown project \"#{project}\"."
          usage()
@@ -360,12 +364,14 @@ class Automation
       FoundationBuilder.new(Arch.armv7a).clean
       FoundationBuilder.new(Arch.aarch64).clean
       FoundationBuilder.new(Arch.x86).clean
+      FoundationBuilder.new(Arch.x64).clean
    end
    
    def buildFoundation()
       FoundationBuilder.new(Arch.armv7a).make
       FoundationBuilder.new(Arch.aarch64).make
       FoundationBuilder.new(Arch.x86).make
+      FoundationBuilder.new(Arch.x64).make
    end
 
    def usage()
