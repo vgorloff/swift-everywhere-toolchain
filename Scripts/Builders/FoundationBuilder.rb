@@ -19,6 +19,8 @@ class FoundationBuilder < Builder
          @archPath = "i686"
       elsif @arch == Arch.aarch64
          @archPath = "aarch64"
+      elsif @arch == Arch.x64
+         @archPath = "x86_64"
       end
    end
 
@@ -48,6 +50,10 @@ class FoundationBuilder < Builder
          cmd << "-DANDROID_ABI=arm64-v8a"
          ndkArchPath = "aarch64-linux-android"
          ndkToolchainPath = ndkArchPath
+      elsif @arch == Arch.x64
+         cmd << "-DANDROID_ABI=x86_64"
+         ndkArchPath = "x86_64-linux-android"
+         ndkToolchainPath = "x86_64"
       end
       cmd << "-DCMAKE_SYSTEM_NAME=Android"
       cmd << "-DCMAKE_C_FLAGS=\"#{cFlags}\""
@@ -83,6 +89,8 @@ class FoundationBuilder < Builder
          ndkArchPath = "i686-linux-android"
       elsif @arch == Arch.aarch64
          ndkArchPath = "aarch64-linux-android"
+      elsif @arch == Arch.x64
+         ndkArchPath = "x86_64-linux-android"
       end
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}/crtbegin_so.o #{@builds}"
       execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}/crtend_so.o #{@builds}"
@@ -104,11 +112,11 @@ class FoundationBuilder < Builder
       configurePatchFile("#{@patches}/Foundation/CGFloat.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
-      configurePatch("#{@sources}/Foundation/NSGeometry.swift", "#{@patches}/NSGeometry.patch", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/NSGeometry.swift.diff", shouldEnable)
 
       # FIXME: Below patches may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
-      configurePatch("#{@sources}/CoreFoundation/Base.subproj/CFKnownLocations.c", "#{@patches}/CFKnownLocations.patch", shouldEnable)
-      configurePatch("#{@sources}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h", "#{@patches}/ForSwiftFoundationOnly.patch", shouldEnable)
+      configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/CFKnownLocations.c.diff", shouldEnable)
+      configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/FileManager.swift.diff", shouldEnable)
    end
 

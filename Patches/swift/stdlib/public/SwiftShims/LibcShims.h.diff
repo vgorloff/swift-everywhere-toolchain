@@ -1,0 +1,13 @@
+diff --git a/stdlib/public/SwiftShims/LibcShims.h b/stdlib/public/SwiftShims/LibcShims.h
+index 2b3dd05b47141738fd0e5b1e4f30096344a84fc2..827256da8413b8ba95e984deab6a526e56ca4ad4 100644
+--- a/stdlib/public/SwiftShims/LibcShims.h
++++ b/stdlib/public/SwiftShims/LibcShims.h
+@@ -34,7 +34,7 @@ namespace swift { extern "C" {
+ // This declaration might not be universally correct.
+ // We verify its correctness for the current platform in the runtime code.
+ #if defined(__linux__)
+-# if defined(__ANDROID__) && !defined(__aarch64__)
++# if defined(__ANDROID__) && !(defined(__aarch64__) || defined(__x86_64__))
+ typedef __swift_uint16_t __swift_mode_t;
+ # else
+ typedef __swift_uint32_t __swift_mode_t;

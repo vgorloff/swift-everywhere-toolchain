@@ -62,7 +62,7 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}"
       cmd << "-DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}"
       cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
-      cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=\"armv7;aarch64;i686\""
+      cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=\"armv7;aarch64;i686;x86_64\""
 
       icu = ICUBuilder.new(Arch.armv7a)
       cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{icu.lib}/libicuucswift.so"
@@ -82,6 +82,12 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_ANDROID_i686_ICU_I18N=#{icu.lib}/libicui18nswift.so"
       cmd << "-DSWIFT_ANDROID_i686_ICU_I18N_INCLUDE=#{icu.sources}/source/i18n"
       cmd << "-DSWIFT_ANDROID_i686_ICU_DATA=#{icu.lib}/libicudataswift.so"
+      icu = ICUBuilder.new(Arch.x64)
+      cmd << "-DSWIFT_ANDROID_x86_64_ICU_UC=#{icu.lib}/libicuucswift.so"
+      cmd << "-DSWIFT_ANDROID_x86_64_ICU_UC_INCLUDE=#{icu.sources}/source/common"
+      cmd << "-DSWIFT_ANDROID_x86_64_ICU_I18N=#{icu.lib}/libicui18nswift.so"
+      cmd << "-DSWIFT_ANDROID_x86_64_ICU_I18N_INCLUDE=#{icu.sources}/source/i18n"
+      cmd << "-DSWIFT_ANDROID_x86_64_ICU_DATA=#{icu.lib}/libicudataswift.so"
 
       cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
@@ -147,11 +153,14 @@ class SwiftBuilder < Builder
 
    def executeBuild
       execute "cd #{@builds} && ninja -j#{numberOfJobs}"
+
       targets = "swiftGlibc-android-armv7 swiftCore-android-armv7 swiftSIMDOperators-android-armv7 swiftSwiftOnoneSupport-android-armv7"
       execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
       targets = "swiftGlibc-android-aarch64 swiftCore-android-aarch64 swiftSIMDOperators-android-aarch64 swiftSwiftOnoneSupport-android-aarch64"
       execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
       targets = "swiftGlibc-android-i686 swiftCore-android-i686 swiftSIMDOperators-android-i686 swiftSwiftOnoneSupport-android-i686"
+      execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
+      targets = "swiftGlibc-android-x86_64 swiftCore-android-x86_64 swiftSIMDOperators-android-x86_64 swiftSwiftOnoneSupport-android-x86_64"
       execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
    end
 
@@ -241,7 +250,7 @@ class SwiftBuilder < Builder
       result = []
       lines.each { |line|
          if line.include?('if(CMAKE_INSTALL_COMPONENT)')
-            line = installCommands("armv7") + "\n" + installCommands("aarch64") + "\n" + installCommands("i686") + "\n" + line
+            line = installCommands("armv7") + "\n" + installCommands("aarch64") + "\n" + installCommands("i686") + "\n" + installCommands("x86_64") + "\n" + line
          end
          result << line
       }
@@ -276,6 +285,7 @@ class SwiftBuilder < Builder
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/SwiftShims/LibcShims.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftConfigureSDK.cmake.diff", shouldEnable)
