@@ -6,6 +6,12 @@ Requirements
 - Android NDK 19 (Comes with Android Studio as downloadable package).
 - Ruby 2.5 (Comes with macOS)
 
+Using pre-built toolchain
+=========================
+
+Build of complete tollchain takes ~1.5h. Instead of building it you can just download and use already pre-built package from [Releases](https://github.com/vgorloff/Android-On-Swift/releases) page.
+
+
 Setup and Build
 ===============
 
@@ -57,4 +63,4 @@ Setup and Build
    $ make
    ```
 
-8. Once build completed, open sample project `Projects/Hello-NDK` in Android Studio, update file `local.properties` with actual paths and launch sample app on ARMv7 Android Device.
+8. Once build completed, open sample project `Projects/Hello-NDK` in Android Studio, update file `local.properties` with actual paths and launch sample app on Android Device or Simulator.

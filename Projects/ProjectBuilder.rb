@@ -16,6 +16,8 @@ class ProjectBuilder < Builder
          @ndkArchPath = "i686-linux-android"
       elsif @arch == Arch.aarch64
          @ndkArchPath = "aarch64-linux-android"
+      elsif @arch == Arch.x64
+         @ndkArchPath = "x86_64-linux-android"
       end
       @swiftc = @toolchainDir + "/bin/swiftc-" + @ndkArchPath
       @copyLibsCmd = @toolchainDir + "/bin/copy-libs-" + @ndkArchPath

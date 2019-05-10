@@ -98,6 +98,7 @@ class Automation
    def copyAssets()
      toolchainDir = Config.toolchainDir
      FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
+     FileUtils.copy_entry("#{Config.root}/VERSION", "#{toolchainDir}/VERSION", false, false, true)
      utils = Dir["#{Config.root}/Assets/swiftc-*"]
      utils += Dir["#{Config.root}/Assets/copy-libs-*"]
      utils.each { |file|
@@ -145,7 +146,7 @@ class Automation
      files += Dir["#{root}/share/**/*"]
      copyFiles(files, root, toolchainDir)
 
-     archs = [Arch.armv7a, Arch.aarch64, Arch.x86]
+     archs = [Arch.armv7a, Arch.aarch64, Arch.x86, Arch.x64]
      archs.each { |arch|
        root = DispatchBuilder.new(arch).installs
        files = Dir["#{root}/lib/**/*"]
@@ -195,6 +196,8 @@ class Automation
         archPath = "i686"
      elsif arch == Arch.aarch64
         archPath = "aarch64"
+     elsif arch == Arch.x64
+        archPath = "x86_64"
      end
      files.each { |file|
        dst = file.sub(source, destination).sub("/lib/", "/lib/swift/android/#{archPath}/")
@@ -221,10 +224,12 @@ class Automation
          HelloExeBuilder.new(Arch.armv7a).build
          HelloExeBuilder.new(Arch.aarch64).build
          HelloExeBuilder.new(Arch.x86).build
+         HelloExeBuilder.new(Arch.x64).build
       elsif project == "lib"
          HelloLibBuilder.new(Arch.armv7a).build
          HelloLibBuilder.new(Arch.aarch64).build
          HelloLibBuilder.new(Arch.x86).build
+         HelloLibBuilder.new(Arch.x64).build
       else
          puts "! Unknown project \"#{project}\"."
          usage()
@@ -264,50 +269,57 @@ class Automation
       ICUBuilder.new(Arch.armv7a).clean
       ICUBuilder.new(Arch.aarch64).clean
       ICUBuilder.new(Arch.x86).clean
+      ICUBuilder.new(Arch.x64).clean
    end
    
    def buildICU()
-      cleanICU()
       ICUHostBuilder.new().make
       ICUBuilder.new(Arch.armv7a).make
       ICUBuilder.new(Arch.aarch64).make
       ICUBuilder.new(Arch.x86).make
+      ICUBuilder.new(Arch.x64).make
    end
    
    def buildSSL()
       OpenSSLBuilder.new(Arch.armv7a).make
       OpenSSLBuilder.new(Arch.aarch64).make
       OpenSSLBuilder.new(Arch.x86).make
+      OpenSSLBuilder.new(Arch.x64).make
    end
    
    def cleanSSL()
       OpenSSLBuilder.new(Arch.armv7a).clean
       OpenSSLBuilder.new(Arch.aarch64).clean
       OpenSSLBuilder.new(Arch.x86).clean
+      OpenSSLBuilder.new(Arch.x64).clean
    end
    
    def cleanCURL()
       CurlBuilder.new(Arch.armv7a).clean
       CurlBuilder.new(Arch.aarch64).clean
       CurlBuilder.new(Arch.x86).clean
+      CurlBuilder.new(Arch.x64).clean
    end
    
    def buildCURL()
       CurlBuilder.new(Arch.armv7a).make
       CurlBuilder.new(Arch.aarch64).make
       CurlBuilder.new(Arch.x86).make
+      CurlBuilder.new(Arch.x64).make
    end
    
    def cleanXML()
       XMLBuilder.new(Arch.armv7a).clean
       XMLBuilder.new(Arch.aarch64).clean
       XMLBuilder.new(Arch.x86).clean
+      XMLBuilder.new(Arch.x64).clean
    end
    
    def buildXML()
       XMLBuilder.new(Arch.armv7a).make
       XMLBuilder.new(Arch.aarch64).make
       XMLBuilder.new(Arch.x86).make
+      XMLBuilder.new(Arch.x64).make
    end
 
    def cleanDeps()
@@ -338,24 +350,28 @@ class Automation
       DispatchBuilder.new(Arch.armv7a).clean
       DispatchBuilder.new(Arch.aarch64).clean
       DispatchBuilder.new(Arch.x86).clean
+      DispatchBuilder.new(Arch.x64).clean
    end
    
    def buildDispatch()
       DispatchBuilder.new(Arch.armv7a).make
       DispatchBuilder.new(Arch.aarch64).make
       DispatchBuilder.new(Arch.x86).make
+      DispatchBuilder.new(Arch.x64).make
    end
    
    def cleanFoundation()
       FoundationBuilder.new(Arch.armv7a).clean
       FoundationBuilder.new(Arch.aarch64).clean
       FoundationBuilder.new(Arch.x86).clean
+      FoundationBuilder.new(Arch.x64).clean
    end
    
    def buildFoundation()
       FoundationBuilder.new(Arch.armv7a).make
       FoundationBuilder.new(Arch.aarch64).make
       FoundationBuilder.new(Arch.x86).make
+      FoundationBuilder.new(Arch.x64).make
    end
 
    def usage()
@@ -390,6 +406,7 @@ EOM
       help = <<EOM
    $ make deploy:projects:armv7a
    $ make deploy:projects:x86
+   $ make deploy:projects:x86_64
 EOM
 
       tool.print(help, 36)

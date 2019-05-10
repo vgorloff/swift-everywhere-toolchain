@@ -31,6 +31,8 @@ class OpenSSLBuilder < Builder
          execute "#{commonArgs} android-x86"
       elsif @arch == Arch.aarch64
          execute "#{commonArgs} android-arm64"
+      elsif @arch == Arch.x64
+         execute "#{commonArgs} android-x86_64"
       end
    end
 

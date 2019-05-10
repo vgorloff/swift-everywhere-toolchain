@@ -12,6 +12,10 @@ class Arch
    def self.x86
       return "x86"
    end
+   
+   def self.x64
+      return "x86_64"
+   end
 
    def self.armv7a
       return "armv7a"

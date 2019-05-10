@@ -48,6 +48,15 @@ class ICUBuilder < Builder
          cmd << "RINLIB=#{@ndk.toolchain}/bin/aarch64-linux-android-ranlib"
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=aarch64-linux-android"
+      elsif @arch == Arch.x64
+         cmd << "CFLAGS='-Os -march=x86-64'"
+         cmd << "CXXFLAGS='--std=c++11'"
+         cmd << "CC=#{@ndk.toolchain}/bin/x86_64-linux-android#{@ndk.api}-clang"
+         cmd << "CXX=#{@ndk.toolchain}/bin/x86_64-linux-android#{@ndk.api}-clang++"
+         cmd << "AR=#{@ndk.toolchain}/bin/x86_64-linux-android-ar"
+         cmd << "RINLIB=#{@ndk.toolchain}/bin/x86_64-linux-android-ranlib"
+         cmd << "#{@sources}/source/configure --prefix=#{@installs}"
+         cmd << "--host=x86_64-linux-android"
       end
       cmd << "--with-library-suffix=swift"
       cmd << "--enable-static=no --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
@@ -75,8 +84,8 @@ class ICUBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      configurePatch("#{@sources}/source/configure", "#{@patches}/configure.patch", shouldEnable)
-      configurePatch("#{@sources}/source/config/mh-linux", "#{@patches}/mh-linux.diff", shouldEnable)
+      configurePatchFile("#{@patches}/source/configure.diff", shouldEnable)
+      configurePatchFile("#{@patches}/source/config/mh-linux.diff", shouldEnable)
    end
 
 end

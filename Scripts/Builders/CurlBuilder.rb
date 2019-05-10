@@ -54,6 +54,17 @@ class CurlBuilder < Builder
          cmd << "NM=#{@ndk.toolchain}/bin/aarch64-linux-android-nm"
          cmd << "STRIP=#{@ndk.toolchain}/bin/aarch64-linux-android-strip"
          cmd << "CHOST=aarch64-linux-android"
+      elsif @arch == Arch.x64
+         archFlags = "-march=x86-64"
+         cmd << "CC=#{@ndk.toolchain}/bin/x86_64-linux-android#{@ndk.api}-clang"
+         cmd << "CXX=#{@ndk.toolchain}/bin/x86_64-linux-android#{@ndk.api}-clang++"
+         cmd << "AR=#{@ndk.toolchain}/bin/x86_64-linux-android-ar"
+         cmd << "AS=#{@ndk.toolchain}/bin/x86_64-linux-android-as"
+         cmd << "LD=#{@ndk.toolchain}/bin/x86_64-linux-android-ld"
+         cmd << "RANLIB=#{@ndk.toolchain}/bin/x86_64-linux-android-ranlib"
+         cmd << "NM=#{@ndk.toolchain}/bin/x86_64-linux-android-nm"
+         cmd << "STRIP=#{@ndk.toolchain}/bin/x86_64-linux-android-strip"
+         cmd << "CHOST=x86_64-linux-android"
       end
       execute cmd.join(" ") + " ./buildconf"
 
@@ -70,6 +81,8 @@ class CurlBuilder < Builder
          cmd << "--host=i686-linux-android --target=i686-linux-android --build=x86_64-unknown-linux-gnu"
       elsif @arch == Arch.aarch64
          cmd << "--host=aarch64-linux-android --target=aarch64-linux-android --build=x86_64-unknown-linux-gnu"
+      elsif @arch == Arch.x64
+         cmd << "--host=x86_64-linux-android --target=x86_64-linux-android --build=x86_64-unknown-linux-gnu"
       end
       cmd << "--with-zlib=#{@ndk.sources}/usr/sysroot --with-ssl=#{@ssl.installs} --prefix=#{@installs}"
       execute cmd.join(" ")
