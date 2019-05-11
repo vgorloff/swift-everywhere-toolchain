@@ -1,9 +1,9 @@
-require_relative "Scripts/Common/ADB.rb"
 require_relative "Scripts/Common/Tool.rb"
 require_relative "Scripts/Common/Checkout.rb"
 require_relative "Scripts/Common/NDK.rb"
 
 require_relative "Scripts/Builders/ICUBuilder.rb"
+require_relative "Scripts/Builders/ICUHostBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
 require_relative "Scripts/Builders/DispatchBuilder.rb"
@@ -15,29 +15,61 @@ require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 
-require_relative "Projects/HelloExeBuilder.rb"
-require_relative "Projects/HelloLibBuilder.rb"
 require 'fileutils'
 
 class Automation
   
+   def usage()
+       tool = Tool.new()
+       
+       tool.print("\nBuilding Toolchain with One Action:\n", 33)
+       
+       tool.print("$ make bootstrap\n", 36)
+       
+       tool.print("Building Toolchain Step-by-Step:\n", 33)
+       
+       tool.print("1. Checkout sources:", 32)
+       tool.print("$ make checkout\n", 36)
+       
+       tool.print("2. Build toolchain:", 32)
+       tool.print("$ make build\n", 36)
+       
+       tool.print("3. Install toolchain:", 32)
+       tool.print("$ make install\n", 36)
+       
+       tool.print("4. Archive toolchain:", 32)
+       tool.print("$ make archive\n", 36)
+       
+       tool.print("5. (Optional) Clean toolchain build:", 32)
+       tool.print("$ make clean\n", 36)
+       
+       tool.print("Building certain component (i.e. llvm, icu, xml, ssl, curl, swift, dispatch, foundation):\n", 33)
+       
+       tool.print("To build only certain component:", 32)
+       tool.print("$ make build:llvm\n", 36)
+       
+       tool.print("To clean only certain component:", 32)
+       tool.print("$ make clean:llvm\n", 36)
+   end
+  
+   # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
    def perform()
       action = ARGV.first
       if action.nil? then usage()
-      elsif action.start_with?("build:") then build(action.sub("build:", '')) # Pass `SA_DRY_RUN=1 rake ...` for Dry run mode.
-      elsif action.start_with?("clean:") then clean(action.sub("clean:", ''))
-      elsif action.start_with?("deploy:projects:") then deploy(action.sub("deploy:projects:", ''))
-      elsif action == "checkout" then checkout()
-      elsif action == "verify" then ADB.verify()
+      elsif action == "bootstrap" then bootstrap()
+      elsif action == "build" then build()
+      elsif action == "checkout" then Checkout.new().checkout()
+      elsif action == "install" then install()
       elsif action == "archive" then archive()
-      elsif action == "compress" then compress()
+      elsif action == "clean" then clean()
+      elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
+      elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
       else usage()
       end
    end
    
-   def build(component)
-      if component == "toolchain" then buildAll()
-      elsif component == "xml" then buildXML()
+   def buildComponent(component)
+      if component == "xml" then buildXML()
       elsif component == "icu" then buildICU()
       elsif component == "curl" then buildCURL()
       elsif component == "ssl" then buildSSL()
@@ -47,41 +79,31 @@ class Automation
       elsif component == "dispatch" then buildDispatch()
       elsif component == "foundation" then buildFoundation()
       elsif component == "llvm" then buildLLVM()
-      elsif component == "projects" then buildProjects()
       else
          puts "! Unknown component \"#{component}\"."
          usage()
       end
    end
    
-   def clean(component)
+   def cleanComponent(component)
       if component == "curl" then cleanCURL()
+      elsif component == "icu" then cleanICU()
       elsif component == "xml" then cleanXML()
+      elsif component == "ssl" then cleanSSL()
+      elsif component == "curl" then cleanCURL()
       elsif component == "deps" then cleanDeps()
       elsif component == "dispatch" then cleanDispatch()
       elsif component == "foundation" then cleanFoundation()
       elsif component == "llvm" then cleanLLVM()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
-      elsif component.start_with?("projects:") then cleanProjects(component.sub("projects:", ''))
       else
          puts "! Unknown component \"#{component}\"."
          usage()
       end
    end
    
-   def deploy(arch)
-     helloExe = HelloExeBuilder.new(arch)
-     helloLib = HelloLibBuilder.new(arch)
-     adb1 = ADB.new(helloExe.libs, helloExe.binary)
-     adb1.deploy()
-     adb2 = ADB.new(helloLib.libs, helloLib.binary)
-     adb2.deploy()
-     adb1.run()
-     adb2.run()
-   end
-   
-   def archive()
+   def install()
      toolchainDir = Config.toolchainDir
      if File.exists?(toolchainDir)
         FileUtils.rm_rf(toolchainDir)
@@ -174,7 +196,7 @@ class Automation
      }
    end
    
-   def compress()
+   def archive()
      puts "Compressing \"#{Config.toolchainDir}\""
      baseName = File.basename(Config.toolchainDir)
      system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{baseName}.tar.gz --options='compression-level=9' #{baseName}")
@@ -206,52 +228,31 @@ class Automation
        FileUtils.copy_entry(file, dst, false, false, true)
      }
    end
-
-   def cleanProjects(arch)
-     helloExe = HelloExeBuilder.new(arch)
-     helloLib = HelloLibBuilder.new(arch)
-     ADB.new(helloExe.libs, helloExe.binary).clean
-     ADB.new(helloLib.libs, helloLib.binary).clean
+   
+   def bootstrap()
+     Checkout.new().checkout()
+     build()
+     install()
+     archive()
+     puts ""
+     tool = Tool.new()
+     tool.print("\"Swift Toolchain for Android\" build is completed.")
+     tool.print("It can be found in \"#{Config.toolchainDir}\".")
+     puts ""
    end
    
-   def buildProjects()
-      buildProject("exe")
-      buildProject("lib")
-   end
-   
-   def buildProject(project)
-      if project == "exe"
-         HelloExeBuilder.new(Arch.armv7a).build
-         HelloExeBuilder.new(Arch.aarch64).build
-         HelloExeBuilder.new(Arch.x86).build
-         HelloExeBuilder.new(Arch.x64).build
-      elsif project == "lib"
-         HelloLibBuilder.new(Arch.armv7a).build
-         HelloLibBuilder.new(Arch.aarch64).build
-         HelloLibBuilder.new(Arch.x86).build
-         HelloLibBuilder.new(Arch.x64).build
-      else
-         puts "! Unknown project \"#{project}\"."
-         usage()
-      end
+   def clean()
+     cleanLLVM()
+     cleanDeps()
+     SwiftBuilder.new().clean
+     cleanLibs()
    end
 
-   def checkout()
-      Checkout.new().checkout()
-   end
-
-   def buildAll()
+   def build()
       buildLLVM()
       buildDeps()
       SwiftBuilder.new().make
       buildLibs()
-      archive()
-      compress()
-      puts ""
-      tool = Tool.new()
-      tool.print("\"Swift Toolchain for Android\" build is completed.")
-      tool.print("It can be found in \"#{Config.toolchainDir}\".")
-      puts ""
    end
 
    def buildLLVM()
@@ -372,44 +373,6 @@ class Automation
       FoundationBuilder.new(Arch.aarch64).make
       FoundationBuilder.new(Arch.x86).make
       FoundationBuilder.new(Arch.x64).make
-   end
-
-   def usage()
-      tool = Tool.new()
-
-      tool.print("\nBuilding Swift Toolchain. Steps:\n", 32)
-
-      tool.print("1. Get Sources and Tools.", 32)
-      help = <<EOM
-   $ make checkout
-EOM
-      tool.print(help, 36)
-
-      tool.print("2. Build all Swift components and Sample projects.", 32)
-      help = <<EOM
-   $ make build:toolchain
-   $ make build:projects
-EOM
-      tool.print(help, 36)
-
-      tool.print("3. Enable USB Debugging on Android device. Install Android Tools for macOS. Connect Android device and Verify ADB shell setup.", 32)
-      help = <<EOM
-   $ make verify
-
-   References:
-   - How to Install Android Tools for macOS: https://stackoverflow.com/questions/17901692/set-up-adb-on-mac-os-x
-   - How to Enable USB Debugging on Android device: https://developer.android.com/studio/debug/dev-options
-EOM
-      tool.print(help, 36)
-
-      tool.print("4. Deploy and run Demo projects to Android Device.", 32)
-      help = <<EOM
-   $ make deploy:projects:armv7a
-   $ make deploy:projects:x86
-   $ make deploy:projects:x86_64
-EOM
-
-      tool.print(help, 36)
    end
 
 end
