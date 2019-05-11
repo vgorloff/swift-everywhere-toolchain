@@ -3,6 +3,7 @@ require_relative "Scripts/Common/Checkout.rb"
 require_relative "Scripts/Common/NDK.rb"
 
 require_relative "Scripts/Builders/ICUBuilder.rb"
+require_relative "Scripts/Builders/ICUHostBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
 require_relative "Scripts/Builders/DispatchBuilder.rb"
@@ -58,8 +59,8 @@ class Automation
       elsif action == "bootstrap" then bootstrap()
       elsif action == "build" then build()
       elsif action == "checkout" then Checkout.new().checkout()
-      elsif action == "install" then archive()
-      elsif action == "archive" then compress()
+      elsif action == "install" then install()
+      elsif action == "archive" then archive()
       elsif action == "clean" then clean()
       elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
       elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
@@ -102,7 +103,7 @@ class Automation
       end
    end
    
-   def archive()
+   def install()
      toolchainDir = Config.toolchainDir
      if File.exists?(toolchainDir)
         FileUtils.rm_rf(toolchainDir)
@@ -195,7 +196,7 @@ class Automation
      }
    end
    
-   def compress()
+   def archive()
      puts "Compressing \"#{Config.toolchainDir}\""
      baseName = File.basename(Config.toolchainDir)
      system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{baseName}.tar.gz --options='compression-level=9' #{baseName}")
@@ -231,8 +232,8 @@ class Automation
    def bootstrap()
      Checkout.new().checkout()
      build()
+     install()
      archive()
-     compress()
      puts ""
      tool = Tool.new()
      tool.print("\"Swift Toolchain for Android\" build is completed.")
