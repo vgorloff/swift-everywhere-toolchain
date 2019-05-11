@@ -9,7 +9,7 @@ Requirements
 Using pre-built toolchain
 =========================
 
-Build of complete tollchain takes ~1.5h. Instead of building it you can just download and use already pre-built package from [Releases](https://github.com/vgorloff/Android-On-Swift/releases) page.
+Build of complete tollchain takes ~1.5h. Instead of building it you can just download and use already pre-built package from [Releases](https://github.com/vgorloff/swift-everywhere-toolchain/releases) page.
 
 
 Setup and Build
@@ -70,4 +70,4 @@ Setup and Build
 Sample Projects
 ===============
 
-Sample projects can be found in separate repository `https://github.com/vgorloff/swift-everywhere-samples`. Please look into `Readme.md` in that repository to get information about how to configure and build sample projects.
+Sample projects can be found in separate [swift-everywhere-samples](https://github.com/vgorloff/swift-everywhere-samples) repository. Please look into `Readme.md` in that repository to get information about how to configure and build sample projects.
