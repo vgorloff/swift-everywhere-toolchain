@@ -48,9 +48,10 @@ Setup and Build
 4. Clone this repository.
 
     ```bash
-    $ git clone https://github.com/vgorloff/Android-On-Swift.git
-    $ cd Android-On-Swift
+    $ git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
+    $ cd swift-everywhere-toolchain
     ```
+
 5. Copy file `local.properties.yml.template` to `local.properties.yml`
 
 6. Edit file `local.properties.yml` and configure following settings:
@@ -63,4 +64,10 @@ Setup and Build
    $ make
    ```
 
-8. Once build completed, open sample project `Projects/Hello-NDK` in Android Studio, update file `local.properties` with actual paths and launch sample app on Android Device or Simulator.
+8. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz
+`.
+
+Sample Projects
+===============
+
+Sample projects can be found in separate repository `https://github.com/vgorloff/swift-everywhere-samples`. Please look into `Readme.md` in that repository to get information about how to configure and build sample projects.
