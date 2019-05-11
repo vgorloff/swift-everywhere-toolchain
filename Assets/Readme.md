@@ -18,7 +18,7 @@ Usage
    $ToolChain/bin/copy-libs-arm-linux-androideabi [destination]
    ```
    
-3. Compile Swift sources for `aarch64`, `x86`:
+3. Compile Swift sources for `aarch64`, `x86`, `x86_64`:
 
    ```bash
    # To build for aarch64
@@ -28,4 +28,8 @@ Usage
    # To build for x86
    $ToolChain/bin/swiftc-i686-linux-android -emit-executable -o hello main.swift
    $ToolChain/bin/copy-libs-i686-linux-android [destination]
+   
+   # To build for x86_64
+   $ToolChain/bin/swiftc-x86_64-linux-android -emit-executable -o hello main.swift
+   $ToolChain/bin/copy-libs-x86_64-linux-android [destination]
    ```

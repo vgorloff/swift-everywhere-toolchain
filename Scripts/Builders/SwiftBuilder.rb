@@ -225,22 +225,6 @@ class SwiftBuilder < Builder
          result << line
       }
       lines = result
-      # <<
-      # >> Fixes non NDK Static Linker options.
-      shouldFixLinker = false
-      result = []
-      lines.each { |line|
-         if line.start_with?("rule") && line.include?('CXX_STATIC_LIBRARY_LINKER') && line.include?("android")
-            shouldFixLinker = true
-         elsif line.strip() == ""
-            shouldFixLinker = false
-         elsif shouldFixLinker && line.include?('command')
-            line = line.gsub('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar', "#{@ndk.toolchain}/bin/arm-linux-androideabi-ar")
-         end
-         result << line
-      }
-      lines = result
-      # <<
       File.write(file, lines.join() + "\n")
    end
 
