@@ -3,38 +3,45 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.foundation
+      # 5.1-master: ae4956c891ff2abbda60b10e4f72ded5103fcf17
       # 5.0.1: ebfbb38a35f02b2372e3e4973065506c3b5dd290
-      return "ebfbb38a35f02b2372e3e4973065506c3b5dd290"
+      return "ae4956c891ff2abbda60b10e4f72ded5103fcf17"
    end
 
    def self.dispatch
+      # 5.1-master: 7784917b7c426e365fe192390e17c05a6a9e0fe1
       # 5.0.1: 7e7677bcaff3dc19731ab2bf28e69adaa49bb654
-      return "7e7677bcaff3dc19731ab2bf28e69adaa49bb654"
+      return "7784917b7c426e365fe192390e17c05a6a9e0fe1"
    end
 
    def self.swift
+      # 5.1-master: f96602063ce9496f2fe373dc00b893360055e958
       # 5.0.1: e6047a2f5bccd6e00ee82d35e8e448426640099e
-      return "e6047a2f5bccd6e00ee82d35e8e448426640099e"
+      return "f96602063ce9496f2fe373dc00b893360055e958"
    end
 
    def self.clang
+      # 5.1-stable: c8239f9976904be9426da787496b6e44c54f4de8
       # 5.0.1: 5c9d04dc0697297a47b5edb0c1a581b306a42bdb
-      return "5c9d04dc0697297a47b5edb0c1a581b306a42bdb"
+      return "c8239f9976904be9426da787496b6e44c54f4de8"
    end
 
    def self.llvm
+      # 5.1-stable: 082dec2e222ca228125e187a726ee87c5b83ad54
       # 5.0.1: 34250a6eef79ee8a83c5cfb4deb1583176dcbb63
-      return "34250a6eef79ee8a83c5cfb4deb1583176dcbb63"
+      return "082dec2e222ca228125e187a726ee87c5b83ad54"
    end
 
    def self.crt
+      # 5.1-srable: 75e23965e0c89d919f3666cf4e375def7c9f49c4
       # 5.0.1: b7035fda6caf881c33e3a346a6c76d10a499e6b2
-      return "b7035fda6caf881c33e3a346a6c76d10a499e6b2"
+      return "75e23965e0c89d919f3666cf4e375def7c9f49c4"
    end
 
    def self.cmark
+      # 5.1-master: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
       # 5.0.1: acd1105eb5dae681e71cc47b2cd0fe592a1ab529
-      return "acd1105eb5dae681e71cc47b2cd0fe592a1ab529"
+      return "32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27"
    end
 
    def self.ssl
