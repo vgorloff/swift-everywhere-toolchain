@@ -44,15 +44,15 @@ class Builder < Troubleshooter
       # -Wno-class-memaccess -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wstring-conversion
       # -Werror=switch -Wdocumentation -Wimplicit-fallthrough -Wunreachable-code -Woverloaded-virtual -Werror=unguarded-availability-new
 
-      -I#{@builds}/darwin/swift/stdlib/public/runtime
-      -I#{@toolChain}/Sources/swift/stdlib/public/runtime
-      -I#{@builds}/darwin/swift/include
-      -I#{@toolChain}/Sources/swift/include
+      # -I#{@builds}/darwin/swift/stdlib/public/runtime
+      # -I#{@toolChain}/Sources/swift/stdlib/public/runtime
+      # -I#{@builds}/darwin/swift/include
+      # -I#{@toolChain}/Sources/swift/include
 
-      -I#{@toolChain}/Sources/llvm/include
-      -I#{@toolChain}/Build/darwin/llvm/include
-      -I#{@toolChain}/Sources/llvm/tools/clang/include
-      -I#{@toolChain}/Build/darwin/llvm/tools/clang/include
+      # -I#{@toolChain}/Sources/llvm/include
+      # -I#{@toolChain}/Build/darwin/llvm/include
+      # -I#{@toolChain}/Sources/llvm/tools/clang/include
+      # -I#{@toolChain}/Build/darwin/llvm/tools/clang/include
 
       # -I#{@toolChain}/Sources/cmark/src
       # -I#{@toolChain}/Build/darwin/cmark/src
@@ -80,8 +80,8 @@ class Builder < Troubleshooter
       # -isystem #{@toolChain}/Sources/icu/icu4c/source/common
       # -isystem #{@toolChain}/Sources/icu/icu4c/source/i18n
 
-      -MD -MT #{@build}/SwiftRT-ELF.cpp.o
-      -MF #{@build}/SwiftRT-ELF.cpp.o.d
+      # -MD -MT #{@build}/SwiftRT-ELF.cpp.o
+      # -MF #{@build}/SwiftRT-ELF.cpp.o.d
       -o #{@build}/SwiftRT-ELF.cpp.o
       -c #{@sources}/swift/stdlib/public/runtime/SwiftRT-ELF.cpp
 EOM
