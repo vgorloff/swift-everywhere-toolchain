@@ -1,13 +1,14 @@
 class Troubleshooter
-   
+
    def initialize(sourceRoot)
       currentDir = File.expand_path(File.dirname(__FILE__))
-      @sources = File.expand_path("#{currentDir}/../ToolChain/Sources")
-      @builds = File.expand_path("#{currentDir}/../ToolChain/Build")
+      @toolChain = File.expand_path("#{currentDir}/../ToolChain")
+      @sources = "#{@toolChain}/Sources"
+      @builds = "#{@toolChain}/Build"
       @ndk = File.expand_path("~/Library/Android/sdk/ndk-bundle")
       @build = "#{currentDir}/Build"
    end
-   
+
    def build()
       clean()
       execute "mkdir -p \"#{@build}\""
@@ -19,11 +20,11 @@ class Troubleshooter
          execute "file #{file}"
       }
    end
-   
+
    def clean()
       execute "rm -rf \"#{@build}\""
    end
-   
+
    def execute(command)
       print(command, 32) # Green color.
       if system(command) != true

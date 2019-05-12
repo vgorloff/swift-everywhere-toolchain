@@ -17,13 +17,15 @@ require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 
 require 'fileutils'
 
-globalArch = ENV['SA_ARCH']
-archsToBuild = [Arch.armv7a, Arch.aarch64, Arch.x86, Arch.x64]
-if !globalArch.nil?
-   archsToBuild = [globalArch]
-end
-
 class Automation
+
+   def initialize()
+      globalArch = ENV['SA_ARCH']
+      @archsToBuild = [Arch.armv7a, Arch.aarch64, Arch.x86, Arch.x64]
+      if !globalArch.nil?
+         @archsToBuild = [globalArch]
+      end
+   end
 
    def usage()
        tool = Tool.new()
@@ -175,7 +177,7 @@ class Automation
      files += Dir["#{root}/share/**/*"]
      copyFiles(files, root, toolchainDir)
 
-     archsToBuild.each { |arch|
+     @archsToBuild.each { |arch|
        root = DispatchBuilder.new(arch).installs
        files = Dir["#{root}/lib/**/*"]
        copyFiles(files, root, toolchainDir)
@@ -297,52 +299,52 @@ class Automation
 
    def cleanICU()
       ICUHostBuilder.new().clean
-      archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
    end
 
    def buildICU()
       ICUHostBuilder.new().make
-      archsToBuild.each { |arch| ICUBuilder.new(arch).make }
+      @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
    end
 
    def buildSSL()
-      archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
+      @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
    end
 
    def cleanSSL()
-      archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
    end
 
    def cleanCURL()
-      archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
    end
 
    def buildCURL()
-      archsToBuild.each { |arch| CurlBuilder.new(arch).make }
+      @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
    end
 
    def cleanXML()
-      archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
    end
 
    def buildXML()
-      archsToBuild.each { |arch| XMLBuilder.new(arch).make }
+      @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
    end
 
    def cleanDispatch()
-      archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
    end
 
    def buildDispatch()
-      archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
+      @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
    end
 
    def cleanFoundation()
-      archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
    end
 
    def buildFoundation()
-      archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
+      @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
    end
 
 end

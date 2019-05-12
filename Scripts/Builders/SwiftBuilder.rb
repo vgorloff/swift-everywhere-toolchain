@@ -278,8 +278,6 @@ class SwiftBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      # configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
-      # configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/SwiftShims/LibcShims.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
