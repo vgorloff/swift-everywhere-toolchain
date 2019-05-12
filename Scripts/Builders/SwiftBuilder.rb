@@ -241,7 +241,7 @@ class SwiftBuilder < Builder
       lines = result
       File.write(sourceFile, lines.join() + "\n")
    end
-   
+
    def installCommands(arch)
       files = Dir["#{builds}/lib/swift/android/#{arch}/*.so"].map { |so| " \"#{so}\"" }.join("\n")
       commands = 'if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)' + "\n"
@@ -249,13 +249,13 @@ class SwiftBuilder < Builder
       commands += files
       commands += ")\nendif()\n"
    end
-   
+
    def fixStdLibInstallScript(sourceFile)
       lines = readInstallScript(sourceFile)
       lines = lines.reject { |line| line.include?(".dylib") }
       File.write(sourceFile, lines.join() + "\n")
    end
-   
+
    def readInstallScript(sourceFile)
       backupFile = "#{sourceFile}.orig"
       if !File.exist?(backupFile)
