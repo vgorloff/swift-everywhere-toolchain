@@ -142,8 +142,8 @@ class SwiftBuilder < Builder
       cmd << "-DLLVM_DIR=#{@llvm.builds}/lib/cmake/llvm"
       # In Swift 5.0 the following settings was used:
       # cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
-      # cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"    
-     
+      # cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"
+
       # CLANG
       cmd << "-DClang_DIR=#{@llvm.builds}/lib/cmake/clang"
       # In Swift 5.0 the following settings was used:
@@ -252,7 +252,7 @@ class SwiftBuilder < Builder
       lines = result
       File.write(sourceFile, lines.join() + "\n")
    end
-   
+
    def installCommands(arch)
       files = Dir["#{builds}/lib/swift/android/#{arch}/*.so"].map { |so| " \"#{so}\"" }.join("\n")
       commands = 'if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)' + "\n"
@@ -260,13 +260,13 @@ class SwiftBuilder < Builder
       commands += files
       commands += ")\nendif()\n"
    end
-   
+
    def fixStdLibInstallScript(sourceFile)
       lines = readInstallScript(sourceFile)
       lines = lines.reject { |line| line.include?(".dylib") }
       File.write(sourceFile, lines.join() + "\n")
    end
-   
+
    def readInstallScript(sourceFile)
       backupFile = "#{sourceFile}.orig"
       if !File.exist?(backupFile)
@@ -284,7 +284,7 @@ class SwiftBuilder < Builder
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftConfigureSDK.cmake.diff", shouldEnable)
-      # configurePatchFile("#{@patches}/cmake/modules/SwiftAndroidSupport.cmake.diff", shouldEnable)
+      configurePatchFile("#{@patches}/cmake/modules/SwiftAndroidSupport.cmake.diff", shouldEnable)
       configurePatchFile("#{@patches}/include/swift/Runtime/SwiftDtoa.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/tgmath.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/Glibc.swift.gyb.diff", shouldEnable)
