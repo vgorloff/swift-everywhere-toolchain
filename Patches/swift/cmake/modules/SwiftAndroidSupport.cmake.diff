@@ -1,7 +1,20 @@
 diff --git a/cmake/modules/SwiftAndroidSupport.cmake b/cmake/modules/SwiftAndroidSupport.cmake
-index c6dcc783c68091927edc1cc065d0bbb8c435501d..f2070c4ebf4dd646309a252c8f7a64956b2bb283 100644
+index c6dcc783c68091927edc1cc065d0bbb8c435501d..e4076f99e032c9fcb6c500c780f1822c077dd053 100644
 --- a/cmake/modules/SwiftAndroidSupport.cmake
 +++ b/cmake/modules/SwiftAndroidSupport.cmake
+@@ -1,8 +1,8 @@
+ function(swift_android_libcxx_include_paths var)
+-  set(${var}
+-        "${SWIFT_ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/include"
+-        "${SWIFT_ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++abi/include"
+-      PARENT_SCOPE)
++  # set(${var}
++  #       "${SWIFT_ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/include"
++  #       "${SWIFT_ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++abi/include"
++  #     PARENT_SCOPE)
+ endfunction()
+ 
+ function(swift_android_include_for_arch arch var)
 @@ -23,6 +23,10 @@ function(swift_android_lib_for_arch arch var)
      list(APPEND paths "${_prebuilt}/${_host}/lib/armv7-a")
    elseif(arch STREQUAL aarch64)
