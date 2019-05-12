@@ -13,9 +13,9 @@ class Builder < Troubleshooter
       -DOBJC_OLD_DISPATCH_PROTOTYPES=0 -DLLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING=1 -DSWIFT_TARGET_LIBRARY_NAME=swiftRuntime
       
       -Istdlib/public/runtime
-      # -I/Users/vagrant/Documents/Android-On-Swift/ToolChain/Sources/swift/stdlib/public/runtime
-      # -Iinclude
-      # -I/Users/vagrant/Documents/Android-On-Swift/ToolChain/Sources/swift/include
+      -I/Users/vagrant/Documents/Android-On-Swift/ToolChain/Sources/swift/stdlib/public/runtime
+      -Iinclude
+      -I/Users/vagrant/Documents/Android-On-Swift/ToolChain/Sources/swift/include
 
       -I/Users/vagrant/Documents/Android-On-Swift/ToolChain/Sources/llvm/include
       -I/Users/vagrant/Documents/Android-On-Swift/ToolChain/Build/darwin/llvm/include
