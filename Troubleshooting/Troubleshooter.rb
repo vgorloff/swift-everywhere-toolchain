@@ -1,12 +1,13 @@
 class Troubleshooter
 
    def initialize(sourceRoot)
-      currentDir = File.expand_path(File.dirname(__FILE__))
-      @toolChain = File.expand_path("#{currentDir}/../ToolChain")
+      @sourceRoot = sourceRoot
+      @currentDir = File.expand_path(File.dirname(__FILE__))
+      @toolChain = File.expand_path("#{@currentDir}/../ToolChain")
       @sources = "#{@toolChain}/Sources"
       @builds = "#{@toolChain}/Build"
       @ndk = File.expand_path("~/Library/Android/sdk/ndk-bundle")
-      @build = "#{currentDir}/Build"
+      @build = "#{@currentDir}/Build"
    end
 
    def build()
