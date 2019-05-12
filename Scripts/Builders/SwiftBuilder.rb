@@ -134,12 +134,23 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER=FALSE"
       cmd << "-DCMAKE_INSTALL_PREFIX=/"
 
-      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@clang.sources}"
-      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
 
-      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
-      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"
+      # Dependencies
+      # See: https://cmake.org/cmake/help/v3.14/command/find_package.html
 
+      # LLVM
+      cmd << "-DLLVM_DIR=#{@llvm.builds}/lib/cmake/llvm"
+      # In Swift 5.0 the following settings was used:
+      # cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
+      # cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"    
+     
+      # CLANG
+      cmd << "-DClang_DIR=#{@llvm.builds}/lib/cmake/clang"
+      # In Swift 5.0 the following settings was used:
+      # cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@clang.sources}"
+      # cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
+
+      # CMark
       cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=#{@cmark.sources}"
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=#{@cmark.builds}"
 
@@ -154,13 +165,13 @@ class SwiftBuilder < Builder
    def executeBuild
       execute "cd #{@builds} && ninja -j#{numberOfJobs}"
 
-      targets = "swiftGlibc-android-armv7 swiftCore-android-armv7 swiftSIMDOperators-android-armv7 swiftSwiftOnoneSupport-android-armv7"
+      targets = "swiftGlibc-android-armv7 swiftCore-android-armv7 swiftSwiftOnoneSupport-android-armv7"
       execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
-      targets = "swiftGlibc-android-aarch64 swiftCore-android-aarch64 swiftSIMDOperators-android-aarch64 swiftSwiftOnoneSupport-android-aarch64"
+      targets = "swiftGlibc-android-aarch64 swiftCore-android-aarch64 swiftSwiftOnoneSupport-android-aarch64"
       execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
-      targets = "swiftGlibc-android-i686 swiftCore-android-i686 swiftSIMDOperators-android-i686 swiftSwiftOnoneSupport-android-i686"
+      targets = "swiftGlibc-android-i686 swiftCore-android-i686 swiftSwiftOnoneSupport-android-i686"
       execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
-      targets = "swiftGlibc-android-x86_64 swiftCore-android-x86_64 swiftSIMDOperators-android-x86_64 swiftSwiftOnoneSupport-android-x86_64"
+      targets = "swiftGlibc-android-x86_64 swiftCore-android-x86_64 swiftSwiftOnoneSupport-android-x86_64"
       execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
    end
 
@@ -267,21 +278,20 @@ class SwiftBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
+      # configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
+      # configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/SwiftShims/LibcShims.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftConfigureSDK.cmake.diff", shouldEnable)
-      configurePatchFile("#{@patches}/cmake/modules/SwiftAndroidSupport.cmake.diff", shouldEnable)
+      # configurePatchFile("#{@patches}/cmake/modules/SwiftAndroidSupport.cmake.diff", shouldEnable)
       configurePatchFile("#{@patches}/include/swift/Runtime/SwiftDtoa.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/tgmath.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/Glibc.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/SDK/CoreGraphics/CGFloat.swift.gyb.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/Darwin/CoreGraphics/CGFloat.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/FloatingPoint.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/VarArgs.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/Mirrors.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/BuiltinMath.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/FloatingPointParsing.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/FloatingPointTypes.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/IntegerTypes.swift.gyb.diff", shouldEnable)
