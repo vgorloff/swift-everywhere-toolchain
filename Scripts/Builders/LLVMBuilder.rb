@@ -41,7 +41,7 @@ EOM
    end
 
    def executeInstall
-      execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
    end
 
    def setupSymLinks(enable)

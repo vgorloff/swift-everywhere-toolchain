@@ -171,7 +171,7 @@ class SwiftBuilder < Builder
       fixStdLibInstallScript("#{@builds}/stdlib/public/SIMDOperators/cmake_install.cmake")
       fixStdLibInstallScript("#{@builds}/stdlib/public/SwiftRemoteMirror/cmake_install.cmake")
       fixStdLibInstallScript("#{@builds}/stdlib/public/Platform/cmake_install.cmake")
-      execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
    end
 
    def fixNinjaBuild
