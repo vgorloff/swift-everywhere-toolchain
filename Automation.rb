@@ -256,8 +256,8 @@ class Automation < Tool
    end
 
    def build()
-      buildLLVM()
       buildDeps()
+      buildLLVM()
       SwiftBuilder.new().make
       buildLibs()
    end
