@@ -21,7 +21,6 @@ EOM
       lines = commands.split("\n").map { |line| line.strip }
       lines = lines.reject { |line| line.start_with?("#") || line.empty? }
       execute lines.join(" \\\n   ")
-      execute(cmd)
    end
 
    def print(message, color = 32)

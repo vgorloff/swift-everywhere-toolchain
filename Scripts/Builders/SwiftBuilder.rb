@@ -146,7 +146,7 @@ class SwiftBuilder < Builder
       # See: https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/Graphviz
       # cmd << "--graphviz=#{@builds}/graph.dot"
       cmd << @sources
-      execute cmd.join(" ")
+      execute cmd.join(" \\\n   ")
       fixNinjaBuild()
       fixNinjaRules()
    end
