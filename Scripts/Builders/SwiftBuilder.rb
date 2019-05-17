@@ -146,7 +146,7 @@ class SwiftBuilder < Builder
       # See: https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/Graphviz
       # cmd << "--graphviz=#{@builds}/graph.dot"
       cmd << @sources
-      execute cmd.join(" ")
+      execute cmd.join(" \\\n   ")
       fixNinjaBuild()
       fixNinjaRules()
    end
@@ -171,7 +171,7 @@ class SwiftBuilder < Builder
       fixStdLibInstallScript("#{@builds}/stdlib/public/SIMDOperators/cmake_install.cmake")
       fixStdLibInstallScript("#{@builds}/stdlib/public/SwiftRemoteMirror/cmake_install.cmake")
       fixStdLibInstallScript("#{@builds}/stdlib/public/Platform/cmake_install.cmake")
-      execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
    end
 
    def fixNinjaBuild
@@ -241,7 +241,7 @@ class SwiftBuilder < Builder
       lines = result
       File.write(sourceFile, lines.join() + "\n")
    end
-   
+
    def installCommands(arch)
       files = Dir["#{builds}/lib/swift/android/#{arch}/*.so"].map { |so| " \"#{so}\"" }.join("\n")
       commands = 'if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)' + "\n"
@@ -249,13 +249,13 @@ class SwiftBuilder < Builder
       commands += files
       commands += ")\nendif()\n"
    end
-   
+
    def fixStdLibInstallScript(sourceFile)
       lines = readInstallScript(sourceFile)
       lines = lines.reject { |line| line.include?(".dylib") }
       File.write(sourceFile, lines.join() + "\n")
    end
-   
+
    def readInstallScript(sourceFile)
       backupFile = "#{sourceFile}.orig"
       if !File.exist?(backupFile)

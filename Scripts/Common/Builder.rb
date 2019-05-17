@@ -171,9 +171,7 @@ class Builder < Tool
    end
 
    def setupSymLink(from, to, isRelative = false)
-      if File.exist? to
-         execute "rm -vf \"#{to}\""
-      end
+      removeSymLink(to)
       dirname = File.dirname(to)
       execute "mkdir -p \"#{dirname}\""
       if isRelative
@@ -181,6 +179,12 @@ class Builder < Tool
          execute "cd \"#{dirname}\" && ln -svf \"#{relativePath}\""
       else
          execute "ln -svf \"#{from}\" \"#{to}\""
+      end
+   end
+
+   def removeSymLink(to)
+      if File.exist? to
+         execute "rm -vf \"#{to}\""
       end
    end
 
