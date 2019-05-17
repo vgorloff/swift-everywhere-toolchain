@@ -32,6 +32,7 @@ class LLVMBuilder < Builder
       -DLLVM_ENABLE_PROJECTS=\"clang;compiler-rt\"
 EOM
       executeCommands cmd
+      setupSymLinks(false)
    end
 
    def executeBuild
@@ -41,7 +42,9 @@ EOM
    end
 
    def executeInstall
+      setupSymLinks(true)
       execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
+      setupSymLinks(false)
    end
 
    def setupSymLinks(enable)
