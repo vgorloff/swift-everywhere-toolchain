@@ -82,7 +82,7 @@ class DispatchBuilder < Builder
    end
 
    def executeInstall
-      execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
       Dir["#{@installs}/lib/swift/android/*.so"].each { |file|
         FileUtils.mv(file, "#{File.dirname(file)}/#{@archPath}", :force => true)
       }

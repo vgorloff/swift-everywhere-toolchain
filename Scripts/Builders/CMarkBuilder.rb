@@ -28,7 +28,7 @@ class CMarkBuilder < Builder
    end
 
    def executeInstall
-      execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
    end
 
 end
