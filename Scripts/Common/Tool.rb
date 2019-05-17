@@ -17,6 +17,12 @@ EOM
       end
    end
 
+   def executeCommands(commands)
+      lines = commands.split("\n").map { |line| line.strip }
+      lines = lines.reject { |line| line.start_with?("#") || line.empty? }
+      execute lines.join(" \\\n   ")
+   end
+
    def print(message, color = 32)
       # See: Colorized Ruby output – https://stackoverflow.com/a/11482430/1418981
       puts "\e[#{color}m#{message}\e[0m"

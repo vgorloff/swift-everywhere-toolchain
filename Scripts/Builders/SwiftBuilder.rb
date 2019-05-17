@@ -157,7 +157,7 @@ class SwiftBuilder < Builder
       # See: https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/Graphviz
       # cmd << "--graphviz=#{@builds}/graph.dot"
       cmd << @sources
-      execute cmd.join(" ")
+      execute cmd.join(" \\\n   ")
       fixNinjaBuild()
       fixNinjaRules()
    end
@@ -182,7 +182,7 @@ class SwiftBuilder < Builder
       fixStdLibInstallScript("#{@builds}/stdlib/public/SIMDOperators/cmake_install.cmake")
       fixStdLibInstallScript("#{@builds}/stdlib/public/SwiftRemoteMirror/cmake_install.cmake")
       fixStdLibInstallScript("#{@builds}/stdlib/public/Platform/cmake_install.cmake")
-      execute "DESTDIR=#{@installs} cmake --build #{@builds} -- install"
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
    end
 
    def fixNinjaBuild

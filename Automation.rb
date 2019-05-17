@@ -17,7 +17,7 @@ require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 
 require 'fileutils'
 
-class Automation
+class Automation < Tool
 
    def initialize()
       globalArch = ENV['SA_ARCH']
@@ -28,36 +28,35 @@ class Automation
    end
 
    def usage()
-       tool = Tool.new()
 
-       tool.print("\nBuilding Toolchain with One Action:\n", 33)
+       print("\nBuilding Toolchain with One Action:\n", 33)
 
-       tool.print("$ make bootstrap\n", 36)
+       print("   $ make bootstrap\n", 36)
 
-       tool.print("Building Toolchain Step-by-Step:\n", 33)
+       print("Building Toolchain Step-by-Step:\n", 33)
 
-       tool.print("1. Checkout sources:", 32)
-       tool.print("$ make checkout\n", 36)
+       print("1. Checkout sources:", 32)
+       print("   $ make checkout\n", 36)
 
-       tool.print("2. Build toolchain:", 32)
-       tool.print("$ make build\n", 36)
+       print("2. Build toolchain:", 32)
+       print("   $ make build\n", 36)
 
-       tool.print("3. Install toolchain:", 32)
-       tool.print("$ make install\n", 36)
+       print("3. Install toolchain:", 32)
+       print("   $ make install\n", 36)
 
-       tool.print("4. Archive toolchain:", 32)
-       tool.print("$ make archive\n", 36)
+       print("4. Archive toolchain:", 32)
+       print("   $ make archive\n", 36)
 
-       tool.print("5. (Optional) Clean toolchain build:", 32)
-       tool.print("$ make clean\n", 36)
+       print("5. (Optional) Clean toolchain build:", 32)
+       print("   $ make clean\n", 36)
 
-       tool.print("Building certain component (i.e. llvm, icu, xml, ssl, curl, swift, dispatch, foundation):\n", 33)
+       print("Building certain component (i.e. llvm, icu, xml, ssl, curl, swift, dispatch, foundation):\n", 33)
 
-       tool.print("To build only certain component:", 32)
-       tool.print("$ make build:llvm\n", 36)
+       print("To build only certain component:", 32)
+       print("   $ make build:llvm\n", 36)
 
-       tool.print("To clean only certain component:", 32)
-       tool.print("$ make clean:llvm\n", 36)
+       print("To clean only certain component:", 32)
+       print("   $ make clean:llvm\n", 36)
    end
 
    # Pass `SA_DRY_RUN=1 make ...` for Dry run mode.
@@ -71,6 +70,7 @@ class Automation
       elsif action == "install" then install()
       elsif action == "archive" then archive()
       elsif action == "clean" then clean()
+      elsif action == "reset" then reset()
       elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
       elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
       else usage()
@@ -243,9 +243,8 @@ class Automation
      install()
      archive()
      puts ""
-     tool = Tool.new()
-     tool.print("\"Swift Toolchain for Android\" build is completed.")
-     tool.print("It can be found in \"#{Config.toolchainDir}\".")
+     print("\"Swift Toolchain for Android\" build is completed.")
+     print("It can be found in \"#{Config.toolchainDir}\".")
      puts ""
    end
 
@@ -257,8 +256,8 @@ class Automation
    end
 
    def build()
-      buildLLVM()
       buildDeps()
+      buildLLVM()
       SwiftBuilder.new().make
       buildLibs()
    end
@@ -345,6 +344,13 @@ class Automation
 
    def buildFoundation()
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
+   end
+
+   def reset()
+      Dir["#{Config.sources}/*"].sort().each { |repo|
+         execute "cd #{repo} && git status && git reset --hard"
+         execute "cd #{repo} && git clean --quiet -f -x -d && git clean --quiet -f -X"
+      }
    end
 
 end
