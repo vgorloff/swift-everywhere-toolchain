@@ -36,9 +36,10 @@ cd #{@builds}/darwin/swift &&
 --sysroot=#{@ndk}/platforms/android-21/arch-arm
 -B #{@ndk}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/bin
 
+# Below issue was at the end fixed by adding `#include <cstddef>` into `/Sources/swift/stdlib/public/SwiftShims/Visibility.h`
 # *******
 # Uncommenting this block cause compile issues
-# "-I#{@ndk}/sources/cxx-stl/llvm-libc++/include"
+"-I#{@ndk}/sources/cxx-stl/llvm-libc++/include"
 # *******
 
 "-I#{@ndk}/sources/cxx-stl/llvm-libc++abi/include"
