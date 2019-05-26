@@ -1,29 +1,35 @@
 class Revision
-   
+
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
-   def self.foundation
-      # 5.1-master: ae4956c891ff2abbda60b10e4f72ded5103fcf17
-      # 5.0.1: ebfbb38a35f02b2372e3e4973065506c3b5dd290
-      return "ae4956c891ff2abbda60b10e4f72ded5103fcf17"
+   def self.swift
+      # 5.1-master: 036e74a6a64438b8f8e5e1546f362ca7490ae233
+      # 5.0.1: e6047a2f5bccd6e00ee82d35e8e448426640099e
+      return "036e74a6a64438b8f8e5e1546f362ca7490ae233"
    end
 
    def self.dispatch
-      # 5.1-master: 7784917b7c426e365fe192390e17c05a6a9e0fe1
+      # 5.1-master: a18aa1f600361c1397b810a488a2e073f6f03985
       # 5.0.1: 7e7677bcaff3dc19731ab2bf28e69adaa49bb654
-      return "7784917b7c426e365fe192390e17c05a6a9e0fe1"
+      return "a18aa1f600361c1397b810a488a2e073f6f03985"
    end
 
-   def self.swift
-      # 5.1-master: f96602063ce9496f2fe373dc00b893360055e958
-      # 5.0.1: e6047a2f5bccd6e00ee82d35e8e448426640099e
-      return "f96602063ce9496f2fe373dc00b893360055e958"
+   def self.foundation
+      # 5.1-master: c5357f39dd15ae858dc72d15bbabe5435376db70
+      # 5.0.1: ebfbb38a35f02b2372e3e4973065506c3b5dd290
+      return "c5357f39dd15ae858dc72d15bbabe5435376db70"
+   end
+
+   def self.cmark
+      # 5.1-master: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
+      # 5.0.1: acd1105eb5dae681e71cc47b2cd0fe592a1ab529
+      return "32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27"
    end
 
    def self.clang
-      # 5.1-stable: c8239f9976904be9426da787496b6e44c54f4de8
+      # 5.1-stable: 2a360740a35b97d3c6e779ce3e7ed1d00d7af2b3
       # 5.0.1: 5c9d04dc0697297a47b5edb0c1a581b306a42bdb
-      return "c8239f9976904be9426da787496b6e44c54f4de8"
+      return "2a360740a35b97d3c6e779ce3e7ed1d00d7af2b3"
    end
 
    def self.llvm
@@ -33,15 +39,9 @@ class Revision
    end
 
    def self.crt
-      # 5.1-srable: 75e23965e0c89d919f3666cf4e375def7c9f49c4
+      # 5.1-stable: f201a2894735c781f7da4ef74931fa390de16b31
       # 5.0.1: b7035fda6caf881c33e3a346a6c76d10a499e6b2
-      return "75e23965e0c89d919f3666cf4e375def7c9f49c4"
-   end
-
-   def self.cmark
-      # 5.1-master: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
-      # 5.0.1: acd1105eb5dae681e71cc47b2cd0fe592a1ab529
-      return "32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27"
+      return "f201a2894735c781f7da4ef74931fa390de16b31"
    end
 
    def self.ssl
@@ -57,9 +57,10 @@ class Revision
    end
 
    def self.curl
+      # 7.65.0: 885ce31401b6789c959131754b1e5ae518964072
       # 7.64.1: 521bbbe29928f9bc1c61306df612e856d45cbe5a
       # 7.63.0: 4258dc02d86e7e4de9f795a1af3a0bc6732d4ab5
-      return "521bbbe29928f9bc1c61306df612e856d45cbe5a"
+      return "885ce31401b6789c959131754b1e5ae518964072"
    end
 
    def self.xml
