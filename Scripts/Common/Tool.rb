@@ -1,6 +1,14 @@
 
 class Tool
 
+   def initialize()
+      globalArch = ENV['SA_ARCH']
+      @archsToBuild = [Arch.armv7a, Arch.aarch64, Arch.x86, Arch.x64]
+      if !globalArch.nil?
+         @archsToBuild = [globalArch]
+      end
+   end
+
    def execute(command)
       print(command, 32) # Green color.
       if system(command) != true

@@ -19,14 +19,6 @@ require 'fileutils'
 
 class Automation < Tool
 
-   def initialize()
-      globalArch = ENV['SA_ARCH']
-      @archsToBuild = [Arch.armv7a, Arch.aarch64, Arch.x86, Arch.x64]
-      if !globalArch.nil?
-         @archsToBuild = [globalArch]
-      end
-   end
-
    def usage()
 
        print("\nBuilding Toolchain with One Action:\n", 33)
@@ -73,6 +65,7 @@ class Automation < Tool
       elsif action == "reset" then reset()
       elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
       elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
+      elsif action.start_with?("install:") then installComponent(action.sub("install:", ''))
       else usage()
       end
    end
@@ -106,6 +99,15 @@ class Automation < Tool
       elsif component == "llvm" then cleanLLVM()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+
+   def installComponent(component)
+      if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).install }
+      elsif component == "swift" then SwiftBuilder.new().install
       else
          puts "! Unknown component \"#{component}\"."
          usage()
