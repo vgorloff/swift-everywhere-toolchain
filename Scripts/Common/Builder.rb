@@ -11,6 +11,7 @@ class Builder < Tool
    attr_reader :builds, :installs, :sources, :numberOfJobs
 
    def initialize(component, arch)
+      super()
       @component = component
       @arch = arch
       @sources = "#{Config.sources}/#{component}"

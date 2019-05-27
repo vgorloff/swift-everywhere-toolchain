@@ -8,6 +8,7 @@ class Troubleshooter
       @builds = "#{@toolChain}/Build"
       @ndk = File.expand_path("~/Library/Android/sdk/ndk-bundle")
       @build = "#{@currentDir}/Build"
+      @cmd = "echo 'Base class does nothing'"
    end
 
    def build()

@@ -1,5 +1,5 @@
 diff --git a/Foundation/CGFloat.swift b/Foundation/CGFloat.swift
-index 1bb768df2982ea692bee7a6c0cc62f1c7327f293..5f33c061dcfc6f6b3e4972af3dce20311b4b3488 100644
+index def5b86a8769087aa690f45f36d247a27c271b95..9e55fe2ccd37d5c9e53007b9745a51c1027f3d1f 100644
 --- a/Foundation/CGFloat.swift
 +++ b/Foundation/CGFloat.swift
 @@ -31,7 +31,7 @@ public struct CGFloat {

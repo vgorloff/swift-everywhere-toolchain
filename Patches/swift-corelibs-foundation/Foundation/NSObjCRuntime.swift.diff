@@ -1,0 +1,13 @@
+diff --git a/Foundation/NSObjCRuntime.swift b/Foundation/NSObjCRuntime.swift
+index edbc6de55e8da28f1af702e7bcc8174372709315..bdabab966c181711d8ea754ed7138c0f2b260624 100644
+--- a/Foundation/NSObjCRuntime.swift
++++ b/Foundation/NSObjCRuntime.swift
+@@ -261,7 +261,7 @@ internal let _NSClassesRenamedByObjCAPINotes: [(class: AnyClass, objCName: Strin
+     (Port.self, "NSPort"),
+     (PortMessage.self, "NSPortMessage"),
+     (SocketPort.self, "NSSocketPort"),
+-    (Process.self, "NSTask"),
++    // (Process.self, "NSTask"),
+     (XMLDTD.self, "NSXMLDTD"),
+     (XMLDTDNode.self, "NSXMLDTDNode"),
+     (XMLDocument.self, "NSXMLDocument"),

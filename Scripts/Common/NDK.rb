@@ -8,7 +8,7 @@ class NDK
    end
 
    def api
-      return "21"
+      return "24"
    end
 
    def gcc
