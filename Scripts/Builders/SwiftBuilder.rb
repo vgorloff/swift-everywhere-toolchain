@@ -62,7 +62,17 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}"
       cmd << "-DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}"
       cmd << "-DSWIFT_ANDROID_DEPLOY_DEVICE_PATH=/data/local/tmp"
-      cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=\"armv7;aarch64;i686;x86_64\""
+      archs = []
+      @archsToBuild.each { |arch|
+         if arch == "x86"
+            archs << "i686"
+         elsif arch == "armv7a"
+            archs << "armv7"
+         else
+            archs << arch
+         end
+      }
+      cmd << "-DSWIFT_SDK_ANDROID_ARCHITECTURES=\"#{archs.join(";")}\""
 
       icu = ICUBuilder.new(Arch.armv7a)
       cmd << "-DSWIFT_ANDROID_armv7_ICU_UC=#{icu.lib}/libicuucswift.so"
@@ -134,12 +144,23 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_RUNTIME_ENABLE_LEAK_CHECKER=FALSE"
       cmd << "-DCMAKE_INSTALL_PREFIX=/"
 
-      cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@clang.sources}"
-      cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
 
-      cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
-      cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"
+      # Dependencies
+      # See: https://cmake.org/cmake/help/v3.14/command/find_package.html
 
+      # LLVM
+      cmd << "-DLLVM_DIR=#{@llvm.builds}/lib/cmake/llvm"
+      # In Swift 5.0 the following settings was used:
+      # cmd << "-DSWIFT_PATH_TO_LLVM_SOURCE=#{@llvm.sources}"
+      # cmd << "-DSWIFT_PATH_TO_LLVM_BUILD=#{@llvm.builds}"
+
+      # CLANG
+      cmd << "-DClang_DIR=#{@llvm.builds}/lib/cmake/clang"
+      # In Swift 5.0 the following settings was used:
+      # cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@clang.sources}"
+      # cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
+
+      # CMark
       cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=#{@cmark.sources}"
       cmd << "-DSWIFT_PATH_TO_CMARK_BUILD=#{@cmark.builds}"
 
@@ -152,26 +173,34 @@ class SwiftBuilder < Builder
    end
 
    def executeBuild
+      # Seems link to `#{@ndk}/sources/cxx-stl/llvm-libc++/include` is proper solution.
+      setupSymLinks(true)
       execute "cd #{@builds} && ninja -j#{numberOfJobs}"
+      setupSymLinks(false)
 
-      targets = "swiftGlibc-android-armv7 swiftCore-android-armv7 swiftSIMDOperators-android-armv7 swiftSwiftOnoneSupport-android-armv7"
-      execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
-      targets = "swiftGlibc-android-aarch64 swiftCore-android-aarch64 swiftSIMDOperators-android-aarch64 swiftSwiftOnoneSupport-android-aarch64"
-      execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
-      targets = "swiftGlibc-android-i686 swiftCore-android-i686 swiftSIMDOperators-android-i686 swiftSwiftOnoneSupport-android-i686"
-      execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
-      targets = "swiftGlibc-android-x86_64 swiftCore-android-x86_64 swiftSIMDOperators-android-x86_64 swiftSwiftOnoneSupport-android-x86_64"
-      execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
+      @archsToBuild.each { |arch|
+         if arch == "x86"
+            targets = "swiftGlibc-android-i686 swiftCore-android-i686 swiftSwiftOnoneSupport-android-i686"
+         elsif arch == "armv7a"
+            targets = "swiftGlibc-android-armv7 swiftCore-android-armv7 swiftSwiftOnoneSupport-android-armv7"
+         elsif arch == "aarch64"
+            targets = "swiftGlibc-android-aarch64 swiftCore-android-aarch64 swiftSwiftOnoneSupport-android-aarch64"
+         else
+            targets = "swiftGlibc-android-x86_64 swiftCore-android-x86_64 swiftSwiftOnoneSupport-android-x86_64"
+         end
+         execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
+      }
    end
 
    def executeInstall
       fixInstallScript()
       fixStdLibInstallScript("#{@builds}/stdlib/public/core/cmake_install.cmake")
       fixStdLibInstallScript("#{@builds}/stdlib/public/SwiftOnoneSupport/cmake_install.cmake")
-      fixStdLibInstallScript("#{@builds}/stdlib/public/SIMDOperators/cmake_install.cmake")
       fixStdLibInstallScript("#{@builds}/stdlib/public/SwiftRemoteMirror/cmake_install.cmake")
       fixStdLibInstallScript("#{@builds}/stdlib/public/Platform/cmake_install.cmake")
+      setupSymLinks(true)
       execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
+      setupSymLinks(false)
    end
 
    def fixNinjaBuild
@@ -200,7 +229,7 @@ class SwiftBuilder < Builder
       # <<
       lines = result
       contents = lines.join()
-      contents = contents.gsub('-D__ANDROID_API__=21  -fobjc-arc', '-D__ANDROID_API__=21')
+      contents = contents.gsub('-fobjc-arc', '')
       File.write(file, contents)
    end
 
@@ -234,7 +263,15 @@ class SwiftBuilder < Builder
       result = []
       lines.each { |line|
          if line.include?('if(CMAKE_INSTALL_COMPONENT)')
-            line = installCommands("armv7") + "\n" + installCommands("aarch64") + "\n" + installCommands("i686") + "\n" + installCommands("x86_64") + "\n" + line
+            @archsToBuild.each { |arch|
+               if arch == "x86"
+                  line = installCommands("i686") + "\n" + line
+               elsif arch == "armv7a"
+                  line = installCommands("armv7") + "\n" + line
+               else
+                  line = installCommands(arch) + "\n" + line
+               end
+            }
          end
          result << line
       }
@@ -267,8 +304,7 @@ class SwiftBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      configurePatchFile("#{@patches}/stdlib/private/CMakeLists.txt.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/stubs/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/SwiftShims/Visibility.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/SwiftShims/LibcShims.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
@@ -277,15 +313,24 @@ class SwiftBuilder < Builder
       configurePatchFile("#{@patches}/include/swift/Runtime/SwiftDtoa.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/tgmath.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/Glibc.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/SDK/CoreGraphics/CGFloat.swift.gyb.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/Darwin/CoreGraphics/CGFloat.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/FloatingPoint.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/VarArgs.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/Mirrors.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/BuiltinMath.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/FloatingPointParsing.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/FloatingPointTypes.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/IntegerTypes.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/Runtime.swift.gyb.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/core/MathFunctions.swift.gyb.diff", shouldEnable)
+   end
+
+   def setupSymLinks(enable)
+      # Seems like a workaround. Try to configure include paths in CMAKE settings.
+      if enable
+         setupSymLink("#{toolchainPath}/usr/include/c++", "#{@llvm.builds}/include/c++")
+      else
+         removeSymLink("#{@llvm.builds}/include/c++")
+      end
    end
 
 end

@@ -61,8 +61,7 @@ class FoundationBuilder < Builder
 
       cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/#{ndkArchPath}'"
       # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
-      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/#{ndkArchPath}/bin\;-L\;#{@swift.installs}/lib/swift/android/#{@archPath}\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/#{ndkToolchainPath}-4.9/prebuilt/darwin-x86_64/lib/gcc/#{ndkArchPath}/4.9.x\;-Xlinker\;--defsym\;-Xlinker\;\"__CFConstantStringClassReference=\\$$s10Foundation19_NSCFConstantStringCN\"'"
-      cmd << "-DADDITIONAL_SWIFT_CFLAGS='-DDEPLOYMENT_TARGET_ANDROID'"
+      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/#{ndkArchPath}/bin\;-L\;#{@swift.installs}/lib/swift/android/#{@archPath}\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/#{ndkToolchainPath}-4.9/prebuilt/darwin-x86_64/lib/gcc/#{ndkArchPath}/4.9.x\'"
 
       cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
       cmd << "-DICU_LIBRARY=#{@icu.lib}"
@@ -108,16 +107,15 @@ class FoundationBuilder < Builder
 
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
-      configurePatchFile("#{@patches}/Foundation/Data.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/Foundation/CGFloat.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/CoreFoundation/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
-      configurePatchFile("#{@patches}/Foundation/NSGeometry.swift.diff", shouldEnable)
-
-      # FIXME: Below patches may cause unexpected behaviour on Android because it is not yet implemented. Linux version will be used.
+      configurePatchFile("#{@patches}/Foundation/CGFloat.swift.diff", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/FileManager.swift.diff", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/FileManager+POSIX.swift.diff", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/NSObjCRuntime.swift.diff", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/NSURL.swift.diff", shouldEnable)
+      configurePatchFile("#{@patches}/CoreFoundation/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/CFKnownLocations.c.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h.diff", shouldEnable)
-      configurePatchFile("#{@patches}/Foundation/FileManager.swift.diff", shouldEnable)
    end
 
 end

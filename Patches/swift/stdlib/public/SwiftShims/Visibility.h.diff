@@ -1,0 +1,15 @@
+diff --git a/stdlib/public/SwiftShims/Visibility.h b/stdlib/public/SwiftShims/Visibility.h
+index 8577fad1653b9870b7071972567c0d55680ad2da..e35830deae53cd8cfd89cc6b2323fd9c14a13329 100644
+--- a/stdlib/public/SwiftShims/Visibility.h
++++ b/stdlib/public/SwiftShims/Visibility.h
+@@ -18,6 +18,10 @@
+ #ifndef SWIFT_STDLIB_SHIMS_VISIBILITY_H
+ #define SWIFT_STDLIB_SHIMS_VISIBILITY_H
+ 
++#if defined(__cplusplus)
++#include <cstddef>
++#endif
++
+ #if !defined(__has_feature)
+ #define __has_feature(x) 0
+ #endif

@@ -1,43 +1,41 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index efe6aac25c59c9de17a56b58d7a7ab4fa39e1047..a3adaf02a3761bf58b9463d0dd256968743621aa 100644
+index c5dbd1e67146090a8ce4a9f49d1c8a53f9c63a1d..f43d69fc9e542ee307f3bca7ebe0bb348c6a63cb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -54,6 +54,10 @@ ExternalProject_Add(CoreFoundation
-                     CMAKE_COMMAND
-                       ${CMAKE_COMMAND}
-                     CMAKE_ARGS
-+                      -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-+                      -DANDROID_ABI=${ANDROID_ABI}
-+                      -DANDROID_TOOLCHAIN=${ANDROID_TOOLCHAIN}
-+                      -DANDROID_STL=${ANDROID_STL}
-                       -DBUILD_SHARED_LIBS=NO
-                       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                       -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-@@ -308,6 +312,7 @@ add_swift_library(Foundation
-                     ${deployment_enable_libdispatch}
-                     -F${install_dir}/System/Library/Frameworks
-                     -D_DLL
-+                    ${ADDITIONAL_SWIFT_CFLAGS}
-                   LINK_FLAGS
-                     -L${install_dir}/usr/lib
-                     -lCoreFoundation
-@@ -318,6 +323,7 @@ add_swift_library(Foundation
-                     -L${CMAKE_CURRENT_BINARY_DIR}
-                     -luuid
-                     ${Foundation_rpath_flags}
+@@ -292,6 +292,8 @@ add_swift_library(Foundation
+                     $<$<PLATFORM_ID:Windows>:-liphlpapi>
+                     $<$<PLATFORM_ID:Windows>:-lpathcch>
+                     $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:CoreFoundationResources>>
++                    ${ADDITIONAL_SWIFT_LINK_FLAGS}
++                    -Xlinker --defsym -Xlinker '__CFConstantStringClassReference=$$s10Foundation19_NSCFConstantStringCN'
+                   SWIFT_FLAGS
+                     -DDEPLOYMENT_RUNTIME_SWIFT
+                     $<$<BOOL:FOUNDATION_ENABLE_LIBDISPATCH>:-DDEPLOYMENT_ENABLE_LIBDISPATCH>
+@@ -300,6 +302,7 @@ add_swift_library(Foundation
+                     ${swift_enable_testing}
+                     ${swift_optimization_flags}
+                     ${swift_libc_flags}
++                    ${ADDITIONAL_SWIFT_FLAGS}
+                   DEPENDS
+                     uuid
+                     CoreFoundation
+@@ -358,6 +361,7 @@ add_swift_library(FoundationNetworking
+                     ${Foundation_RPATH}
+                     ${WORKAROUND_SR9138}
+                     ${WORKAROUND_SR9995}
 +                    ${ADDITIONAL_SWIFT_LINK_FLAGS}
                    SWIFT_FLAGS
                      -DDEPLOYMENT_RUNTIME_SWIFT
-                     ${deployment_enable_libdispatch}
-@@ -325,6 +331,7 @@ add_swift_library(Foundation
+                     -DNS_BUILDING_FOUNDATION_NETWORKING
+@@ -366,6 +370,7 @@ add_swift_library(FoundationNetworking
                      ${libdispatch_cflags}
                      ${swift_enable_testing}
                      ${swift_optimization_flags}
 +                    ${ADDITIONAL_SWIFT_FLAGS}
                    DEPENDS
-                     CoreFoundation)
- 
-@@ -340,6 +347,7 @@ if(NOT BUILD_SHARED_LIBS)
+                     uuid
+                     CoreFoundation
+@@ -386,6 +391,7 @@ if(NOT BUILD_SHARED_LIBS)
        ${LIBXML2_LIBRARIES})
  endif()
  
@@ -45,7 +43,7 @@ index efe6aac25c59c9de17a56b58d7a7ab4fa39e1047..a3adaf02a3761bf58b9463d0dd256968
  add_swift_executable(plutil
                       SOURCES
                         Tools/plutil/main.swift
-@@ -365,6 +373,7 @@ add_swift_executable(plutil
+@@ -409,6 +415,7 @@ add_swift_executable(plutil
                         uuid
                         Foundation
                         CoreFoundation)
@@ -53,13 +51,14 @@ index efe6aac25c59c9de17a56b58d7a7ab4fa39e1047..a3adaf02a3761bf58b9463d0dd256968
  
  if(ENABLE_TESTING)
    add_swift_executable(xdgTestHelper
-@@ -575,7 +584,9 @@ install(FILES
+@@ -644,7 +651,10 @@ install(FILES
            CoreFoundation/Base.subproj/module.map
          DESTINATION
            lib/swift/CoreFoundation)
++
 +if(NOT CMAKE_SYSTEM_NAME STREQUAL Android)
  install(PROGRAMS
-           ${CMAKE_CURRENT_BINARY_DIR}/plutil
+           ${CMAKE_CURRENT_BINARY_DIR}/plutil${CMAKE_EXECUTABLE_SUFFIX}
          DESTINATION
            ${CMAKE_INSTALL_FULL_BINDIR})
 +endif()
