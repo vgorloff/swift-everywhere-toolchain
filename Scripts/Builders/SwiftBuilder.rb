@@ -321,6 +321,7 @@ class SwiftBuilder < Builder
       configurePatchFile("#{@patches}/stdlib/public/core/FloatingPointTypes.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/IntegerTypes.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/Runtime.swift.gyb.diff", shouldEnable)
+      configurePatchFile("#{@patches}/stdlib/public/core/MathFunctions.swift.gyb.diff", shouldEnable)
    end
 
    def setupSymLinks(enable)
