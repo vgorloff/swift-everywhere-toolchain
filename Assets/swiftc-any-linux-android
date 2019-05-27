@@ -8,7 +8,7 @@ cppArch = ENV['SA_TOOLCHAIN_NDK_CPP_ARCH_PATH_COMPONENT']
 toolchainDir = File.dirname(File.dirname(__FILE__))
 ndkPath = "#{toolchainDir}/ndk"
 ndkGccVersion = "4.9"
-ndkApiVersion = "21"
+ndkApiVersion = "24"
 ndkToolChain = "#{ndkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
 
 args = []
@@ -24,3 +24,4 @@ args << "-L #{toolchainDir}/lib/swift/android/#{swiftArch}"
 cmd = "#{toolchainDir}/bin/swiftc " + args.join(" ") + " " + ARGV.join(" ")
 puts cmd
 system cmd
+exit($?.exitstatus)
