@@ -1,0 +1,43 @@
+diff --git a/Foundation/FileManager+POSIX.swift b/Foundation/FileManager+POSIX.swift
+index 129a6f06dd4f0b2a5e219717f0f0cc3c1b8fd6ea..d89b4b397c01688b94ec1d4a49f285e0b369aa93 100644
+--- a/Foundation/FileManager+POSIX.swift
++++ b/Foundation/FileManager+POSIX.swift
+@@ -591,7 +591,11 @@ extension FileManager {
+     internal func _copyOrLinkDirectoryHelper(atPath srcPath: String, toPath dstPath: String, variant: String = "Copy", _ body: (String, String, FileAttributeType) throws -> ()) throws {
+         let stat = try _lstatFile(atPath: srcPath)
+ 
+-        let fileType = FileAttributeType(statMode: stat.st_mode)
++        #if os(Android)
++                let fileType = FileAttributeType(statMode: UInt16(stat.st_mode))
++        #else
++                let type = FileAttributeType(statMode: stat.st_mode)
++        #endif
+         if fileType == .typeDirectory {
+             try createDirectory(atPath: dstPath, withIntermediateDirectories: false, attributes: nil)
+ 
+@@ -603,7 +607,11 @@ extension FileManager {
+                 let src = srcPath + "/" + item
+                 let dst = dstPath + "/" + item
+                 if let stat = try? _lstatFile(atPath: src) {
++                    #if os(Android)
++                    let fileType = FileAttributeType(statMode: UInt16(stat.st_mode))
++                    #else
+                     let fileType = FileAttributeType(statMode: stat.st_mode)
++                    #endif
+                     if fileType == .typeDirectory {
+                         try createDirectory(atPath: dst, withIntermediateDirectories: false, attributes: nil)
+                     } else {
+@@ -984,8 +992,13 @@ internal func _contentsEqual(atPath path1: String, andPath path2: String) -> Boo
+ 
+             if file1Type == S_IFCHR || file1Type == S_IFBLK {
+                 // For character devices, just check the major/minor pair is the same.
++                #if os(Android)
++                return _dev_major(UInt32(file1.st_rdev)) == _dev_major(UInt32(file2.st_rdev))
++                    && _dev_minor(UInt32(file1.st_rdev)) == _dev_minor(UInt32(file2.st_rdev))
++                #else
+                 return _dev_major(file1.st_rdev) == _dev_major(file2.st_rdev)
+                     && _dev_minor(file1.st_rdev) == _dev_minor(file2.st_rdev)
++                #endif
+             }
+ 
+             // If both paths point to the same device/inode or they are both zero length

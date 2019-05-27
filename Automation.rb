@@ -95,7 +95,7 @@ class Automation < Tool
       elsif component == "curl" then cleanCURL()
       elsif component == "deps" then cleanDeps()
       elsif component == "dispatch" then cleanDispatch()
-      elsif component == "foundation" then cleanFoundation()
+      elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
       elsif component == "llvm" then cleanLLVM()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
@@ -108,6 +108,7 @@ class Automation < Tool
    def installComponent(component)
       if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).install }
       elsif component == "swift" then SwiftBuilder.new().install
+      elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).install }
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -280,7 +281,7 @@ class Automation < Tool
 
    def cleanLibs()
       cleanDispatch()
-      cleanFoundation()
+      @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
    end
 
    def buildLibs()
@@ -338,10 +339,6 @@ class Automation < Tool
 
    def buildDispatch()
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
-   end
-
-   def cleanFoundation()
-      @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
    end
 
    def buildFoundation()

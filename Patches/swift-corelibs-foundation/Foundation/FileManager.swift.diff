@@ -1,84 +1,30 @@
 diff --git a/Foundation/FileManager.swift b/Foundation/FileManager.swift
-index 527e3fcb7a0405bf42583f9d6fc98dcf8d134c16..a08ee1f863296c0e06edf62f7346947a2e7de7d8 100644
+index 14636a90f96e83d2b34eaf462591d50995e3ae3a..586aeda26f3f53d08a1cbb0fa2b229b5f74b6b3c 100644
 --- a/Foundation/FileManager.swift
 +++ b/Foundation/FileManager.swift
-@@ -15,7 +15,7 @@
-     import Glibc
- #endif
+@@ -7,12 +7,6 @@
+ // See https://swift.org/CONTRIBUTORS.txt for the list of Swift project authors
+ //
  
 -#if os(Android) // struct stat.st_mode is UInt32
-+#if os(Android) && (arch(i386) || arch(arm)) // struct stat.st_mode is UInt32
- internal func &(left: UInt32, right: mode_t) -> mode_t {
-     return mode_t(left) & right
- }
-@@ -91,7 +91,10 @@ open class FileManager : NSObject {
-             urls = mountPoints(statBuf, Int(fsCount))
+-internal func &(left: UInt32, right: mode_t) -> mode_t {
+-    return mode_t(left) & right
+-}
+-#endif
+-
+ #if !canImport(Darwin) && !os(FreeBSD)
+ // The values do not matter as long as they are nonzero.
+ fileprivate let UF_IMMUTABLE: Int32 = 1
+@@ -470,7 +464,12 @@ open class FileManager : NSObject {
+             result[.groupOwnerAccountName] = name
          }
- #else
-+/* FIXME: Android compile Workaround.
- #error("Requires a platform-specific implementation")
-+*/
-+        urls = [] // FIXME: Android compile Workaround.
+ 
++#if os(Android)
++        let type = FileAttributeType(statMode: UInt16(s.st_mode))
++#else
+         let type = FileAttributeType(statMode: s.st_mode)
++#endif
++
  #endif
-         return urls
-     }
-@@ -581,6 +584,7 @@ open class FileManager : NSObject {
-         var entry = dirent()
-         var result: UnsafeMutablePointer<dirent>? = nil
+         result[.type] = type
  
-+        /* FIXME: Android compile Workaround.
-         while readdir_r(dir, &entry, &result) == 0 {
-             guard result != nil else {
-                 return
-@@ -595,6 +599,7 @@ open class FileManager : NSObject {
-                 try closure(entryName, entryType)
-             }
-         }
-+        */
-     }
- 
-     /**
-@@ -651,6 +656,8 @@ open class FileManager : NSObject {
-         This method replaces fileAttributesAtPath:traverseLink:.
-      */
-     open func attributesOfItem(atPath path: String) throws -> [FileAttributeKey : Any] {
-+        return [:]
-+        /* FIXME: Android compile Workaround.
-         let s = try _lstatFile(atPath: path)
-         var result = [FileAttributeKey : Any]()
-         result[.size] = NSNumber(value: UInt64(s.st_size))
-@@ -698,6 +705,7 @@ open class FileManager : NSObject {
-         result[.groupOwnerAccountID] = NSNumber(value: UInt64(s.st_gid))
-         
-         return result
-+        */
-     }
-     
-     /* attributesOfFileSystemForPath:error: returns an NSDictionary of key/value pairs containing the attributes of the filesystem containing the provided path. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. This method does not traverse a terminal symlink.
-@@ -889,6 +897,7 @@ open class FileManager : NSObject {
-                 return
-         }
- 
-+        /* FIXME: Android compile Workaround.
-         let fileType = FileAttributeType(statMode: stat.st_mode)
-         if fileType == .typeDirectory {
-             try createDirectory(atPath: dstPath, withIntermediateDirectories: false, attributes: nil)
-@@ -912,6 +921,7 @@ open class FileManager : NSObject {
-         } else {
-             try body(srcPath, dstPath, fileType)
-         }
-+        */
-     }
-     
-     private func shouldProceedAfterError(_ error: Error, copyingItemAtPath path: String, toPath: String, isURL: Bool) -> Bool {
-@@ -1422,8 +1432,10 @@ open class FileManager : NSObject {
- 
-         if file1Type == S_IFCHR || file1Type == S_IFBLK {
-             // For character devices, just check the major/minor pair is the same.
-+            /* FIXME: Android compile Workaround.
-             return _dev_major(file1.st_rdev) == _dev_major(file2.st_rdev)
-                 && _dev_minor(file1.st_rdev) == _dev_minor(file2.st_rdev)
-+            */
-         }
- 
-         // If both paths point to the same device/inode or they are both zero length

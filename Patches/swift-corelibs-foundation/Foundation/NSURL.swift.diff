@@ -1,0 +1,31 @@
+diff --git a/Foundation/NSURL.swift b/Foundation/NSURL.swift
+index 547f4051c8b48f003bd2523c6f16cd44ce02b7f2..4734e1ffc337f383195a5303bced3b5a9ef0f1e6 100644
+--- a/Foundation/NSURL.swift
++++ b/Foundation/NSURL.swift
+@@ -2063,7 +2063,7 @@ extension stat {
+         #if canImport(Darwin)
+         return Date(timespec: st_mtimespec)
+         #elseif os(Android)
+-        return Date(timeIntervalSince1970: st_mtime, nanoseconds: st_mtime_nsec)
++        return Date()
+         #elseif os(Windows)
+         return Date(timeIntervalSince1970: TimeInterval(st_mtime))
+         #else
+@@ -2075,7 +2075,7 @@ extension stat {
+         #if canImport(Darwin)
+         return Date(timespec: st_atimespec)
+         #elseif os(Android)
+-        return Date(timeIntervalSince1970: st_atime, nanoseconds: st_atime_nsec)
++        return Date()
+         #elseif os(Windows)
+         return Date(timeIntervalSince1970: TimeInterval(st_atime))
+         #else
+@@ -2087,7 +2087,7 @@ extension stat {
+         #if canImport(Darwin)
+         return Date(timespec: st_birthtimespec)
+         #elseif os(Android)
+-        return Date(timeIntervalSince1970: st_ctime, nanoseconds: st_ctime_nsec)
++        return Date()
+         #elseif os(Windows)
+         return Date(timeIntervalSince1970: TimeInterval(st_ctime))
+         #else
