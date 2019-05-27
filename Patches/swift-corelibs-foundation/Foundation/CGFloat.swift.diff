@@ -1,0 +1,13 @@
+diff --git a/Foundation/CGFloat.swift b/Foundation/CGFloat.swift
+index def5b86a8769087aa690f45f36d247a27c271b95..9e55fe2ccd37d5c9e53007b9745a51c1027f3d1f 100644
+--- a/Foundation/CGFloat.swift
++++ b/Foundation/CGFloat.swift
+@@ -31,7 +31,7 @@ public struct CGFloat {
+         self.native = NativeType(value)
+     }
+     
+-#if !os(Windows) && (arch(i386) || arch(x86_64))
++#if !(os(Windows) || os(Android)) && (arch(i386) || arch(x86_64))
+     @_transparent public init(_ value: Float80) {
+         self.native = NativeType(value)
+     }

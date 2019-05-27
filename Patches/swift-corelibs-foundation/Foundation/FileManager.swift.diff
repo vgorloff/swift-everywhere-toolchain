@@ -1,5 +1,5 @@
 diff --git a/Foundation/FileManager.swift b/Foundation/FileManager.swift
-index 14636a90f96e83d2b34eaf462591d50995e3ae3a..586aeda26f3f53d08a1cbb0fa2b229b5f74b6b3c 100644
+index 14636a90f96e83d2b34eaf462591d50995e3ae3a..4137427909fdfc5526339ac12352ced4e9d3394b 100644
 --- a/Foundation/FileManager.swift
 +++ b/Foundation/FileManager.swift
 @@ -7,12 +7,6 @@
@@ -19,7 +19,7 @@ index 14636a90f96e83d2b34eaf462591d50995e3ae3a..586aeda26f3f53d08a1cbb0fa2b229b5
              result[.groupOwnerAccountName] = name
          }
  
-+#if os(Android)
++#if os(Android) && (arch(i386) || arch(arm))
 +        let type = FileAttributeType(statMode: UInt16(s.st_mode))
 +#else
          let type = FileAttributeType(statMode: s.st_mode)

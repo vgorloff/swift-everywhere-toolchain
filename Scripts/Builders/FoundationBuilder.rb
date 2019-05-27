@@ -108,6 +108,7 @@ class FoundationBuilder < Builder
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/CGFloat.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/FileManager.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/FileManager+POSIX.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/NSObjCRuntime.swift.diff", shouldEnable)
