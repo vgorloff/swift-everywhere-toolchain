@@ -60,8 +60,8 @@ class Builder < Tool
    def configure()
       logConfigureStarted()
       prepare()
-      configurePatches(false)
-      configurePatches()
+      unpatch()
+      patch()
       executeConfigure()
       logConfigureCompleted()
    end
@@ -90,6 +90,14 @@ class Builder < Tool
 
    def executeInstall()
       # Base class does nothing
+   end
+
+   def patch()
+      configurePatches(true)
+   end
+
+   def unpatch()
+      configurePatches(false)
    end
 
    def configurePatches(shouldEnable = true)
@@ -153,7 +161,7 @@ class Builder < Tool
    end
 
    def clean
-      configurePatches(false)
+      unpatch()
       removeBuilds()
       cleanGitRepo()
    end
@@ -162,7 +170,7 @@ class Builder < Tool
       configure()
       build()
       install()
-      configurePatches(false)
+      unpatch()
    end
 
    def cleanGitRepo
@@ -207,10 +215,6 @@ class Builder < Tool
 
    def configurePatchFile(patchFile, shouldApply = true)
       originalFile = patchFile.sub(@patches, @sources).sub('.diff', '')
-      configurePatch(originalFile, patchFile, shouldApply)
-   end
-
-   def configurePatch(originalFile, patchFile, shouldApply = true)
       gitRepoRoot = "#{Config.sources}/#{@component}"
       backupFile = "#{originalFile}.orig"
       if shouldApply

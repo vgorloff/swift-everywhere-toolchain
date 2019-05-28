@@ -1,5 +1,5 @@
 diff --git a/cmake/modules/SwiftConfigureSDK.cmake b/cmake/modules/SwiftConfigureSDK.cmake
-index 21e47a6e6382cc19ea192d388677ec3e6276bc86..eb113dd162b20fa63e8e3dce5daf53042cabb999 100644
+index f5d77456dd43461154fcd91d16e7751d7355f698..339a5d739c318c4859c3b2892fe97b621ab9819a 100644
 --- a/cmake/modules/SwiftConfigureSDK.cmake
 +++ b/cmake/modules/SwiftConfigureSDK.cmake
 @@ -186,6 +186,16 @@ macro(configure_sdk_unix name architectures)
@@ -24,17 +24,16 @@ index 21e47a6e6382cc19ea192d388677ec3e6276bc86..eb113dd162b20fa63e8e3dce5daf5304
          set(_swift_android_prebuilt_build "linux-x86_64")
        endif()
 -      set(SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_PREBUILT_PATH
--          "${SWIFT_ANDROID_NDK_PATH}/toolchains/${SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_TRIPLE}-${SWIFT_ANDROID_NDK_GCC_VERSION}/prebuilt/${_swift_android_prebuilt_build}")
-+		if("${arch}" STREQUAL "i686")
-+	      set(SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_PREBUILT_PATH
-+	          "${SWIFT_ANDROID_NDK_PATH}/toolchains/x86-${SWIFT_ANDROID_NDK_GCC_VERSION}/prebuilt/${_swift_android_prebuilt_build}")
++      if("${arch}" STREQUAL "i686")
++        set(SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_PREBUILT_PATH
++          "${SWIFT_ANDROID_NDK_PATH}/toolchains/x86-${SWIFT_ANDROID_NDK_GCC_VERSION}/prebuilt/${_swift_android_prebuilt_build}")
 +      elseif("${arch}" STREQUAL "x86_64")
-+       	set(SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_PREBUILT_PATH
-+       	    "${SWIFT_ANDROID_NDK_PATH}/toolchains/x86_64-${SWIFT_ANDROID_NDK_GCC_VERSION}/prebuilt/${_swift_android_prebuilt_build}")
-+		else()
-+	      set(SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_PREBUILT_PATH
-+	          "${SWIFT_ANDROID_NDK_PATH}/toolchains/${SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_TRIPLE}-${SWIFT_ANDROID_NDK_GCC_VERSION}/prebuilt/${_swift_android_prebuilt_build}")
-+		endif()
++        set(SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_PREBUILT_PATH
++          "${SWIFT_ANDROID_NDK_PATH}/toolchains/x86_64-${SWIFT_ANDROID_NDK_GCC_VERSION}/prebuilt/${_swift_android_prebuilt_build}")
++      else()
++        set(SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_PREBUILT_PATH
+           "${SWIFT_ANDROID_NDK_PATH}/toolchains/${SWIFT_SDK_ANDROID_ARCH_${arch}_NDK_TRIPLE}-${SWIFT_ANDROID_NDK_GCC_VERSION}/prebuilt/${_swift_android_prebuilt_build}")
++      endif()
      else()
        if(NOT SWIFT_SDK_${prefix}_ARCH_${arch}_PATH)
          set(SWIFT_SDK_${prefix}_ARCH_${arch}_PATH "/")

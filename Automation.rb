@@ -66,6 +66,8 @@ class Automation < Tool
       elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
       elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
       elsif action.start_with?("install:") then installComponent(action.sub("install:", ''))
+      elsif action.start_with?("patch:") then patchComponent(action.sub("patch:", ''))
+      elsif action.start_with?("unpatch:") then unpatchComponent(action.sub("unpatch:", ''))
       else usage()
       end
    end
@@ -109,6 +111,22 @@ class Automation < Tool
       if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).install }
       elsif component == "swift" then SwiftBuilder.new().install
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).install }
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+
+   def patchComponent(component)
+      if component == "swift" then SwiftBuilder.new().patch
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+
+   def unpatchComponent(component)
+      if component == "swift" then SwiftBuilder.new().unpatch
       else
          puts "! Unknown component \"#{component}\"."
          usage()
