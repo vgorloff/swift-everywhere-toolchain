@@ -68,6 +68,7 @@ class Automation < Tool
       elsif action.start_with?("install:") then installComponent(action.sub("install:", ''))
       elsif action.start_with?("patch:") then patchComponent(action.sub("patch:", ''))
       elsif action.start_with?("unpatch:") then unpatchComponent(action.sub("unpatch:", ''))
+      elsif action.start_with?("configure:") then configureComponent(action.sub("configure:", ''))
       else usage()
       end
    end
@@ -119,6 +120,14 @@ class Automation < Tool
 
    def patchComponent(component)
       if component == "swift" then SwiftBuilder.new().patch
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+
+   def configureComponent(component)
+      if component == "swift" then SwiftBuilder.new().configure
       else
          puts "! Unknown component \"#{component}\"."
          usage()
