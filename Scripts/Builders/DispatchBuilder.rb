@@ -35,62 +35,62 @@ class DispatchBuilder < Builder
       @swift = SwiftBuilder.new()
       if @arch == Arch.armv7a
          @archPath = "armv7"
-         @includePath = "arm-linux-androideabi"
       elsif @arch == Arch.x86
          @archPath = "i686"
-         @includePath = "i686-linux-android"
       elsif @arch == Arch.aarch64
          @archPath = "aarch64"
-         @includePath = "aarch64-linux-android"
       elsif @arch == Arch.x64
          @archPath = "x86_64"
-         @includePath = "x86_64-linux-android"
       end
    end
 
    def executeConfigure
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
-      cmd = []
-      cmd << "cd #{@builds} &&"
-      cmd << "cmake -G Ninja" # --debug-output
-      cmd << "-DCMAKE_INSTALL_PREFIX=/"
-      # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
-      cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
-      cmd << "-DANDROID_STL=c++_static"
-      cmd << "-DANDROID_TOOLCHAIN=clang"
-      cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
-      if @arch == Arch.armv7a
-         cmd << "-DANDROID_ABI=armeabi-v7a"
-      elsif @arch == Arch.x86
-         cmd << "-DANDROID_ABI=x86"
-      elsif @arch == Arch.aarch64
-         cmd << "-DANDROID_ABI=arm64-v8a"
-      elsif @arch == Arch.x64
-         cmd << "-DANDROID_ABI=x86_64"
-      end
-      cmd << "-DCMAKE_BUILD_TYPE=Release"
-      cmd << "-DENABLE_SWIFT=true"
-      cmd << "-DENABLE_TESTING=false"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
-      cmd << "-DCMAKE_PREFIX_PATH=\"#{@swift.builds}/lib/cmake/swift\""
-      cmd << @sources
-      execute cmd.join(" \\\n")
-      fixNinjaBuild()
-   end
 
-   def fixNinjaBuild
-      file = "#{@builds}/build.ninja"
-      message "Applying fix for #{file}"
-      execute "cp -vf #{file} #{file}.orig"
-      contents = File.readlines(file).join()
-      if !contents.include?('-tools-directory')
-         contents = contents.gsub('-use-ld=gold', "-use-ld=gold -L #{@swift.installs}/lib/swift/android/#{@archPath} -tools-directory #{@ndk.toolchain}/bin")
-         contents = contents.gsub('-module-link-name swiftDispatch', "-module-link-name swiftDispatch -Xcc -I#{@ndk.sources}/sysroot/usr/include -Xcc -I#{@ndk.sources}/sysroot/usr/include/#{@includePath}")
+      if @arch == Arch.armv7a
+         abi = "armeabi-v7a"
+      elsif @arch == Arch.x86
+         abi = "x86"
+      elsif @arch == Arch.aarch64
+         abi = "arm64-v8a"
+      elsif @arch == Arch.x64
+         abi = "x86_64"
       end
-      File.write(file, contents)
+
+      cmd = <<EOM
+      cd #{@builds} &&
+      cmake -G Ninja
+      # --debug-output
+
+      # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
+      -DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake
+
+      -DANDROID_STL=c++_static
+      -DANDROID_TOOLCHAIN=clang
+
+      -DANDROID_PLATFORM=android-#{@ndk.api}
+      -DANDROID_ABI=#{abi}
+
+      -DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}
+      -DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}
+      -DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}
+
+      -DCMAKE_BUILD_TYPE=Release
+      -DENABLE_SWIFT=true
+      -DENABLE_TESTING=false
+
+      -DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\"
+      -DCMAKE_PREFIX_PATH=\"#{@swift.builds}/lib/cmake/swift\"
+      -DCMAKE_INSTALL_PREFIX=/
+
+      #{@sources}
+EOM
+      executeCommands cmd
    end
 
    def configurePatches(shouldEnable = true)
+      configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/src/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
    end
 

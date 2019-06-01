@@ -144,6 +144,7 @@ class Automation < Tool
 
    def configureComponent(component)
       if component == "swift" then SwiftBuilder.new().configure
+      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).configure }
       else
          puts "! Unknown component \"#{component}\"."
          usage()
