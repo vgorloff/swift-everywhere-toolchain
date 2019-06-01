@@ -74,14 +74,11 @@ class DispatchBuilder < Builder
       cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
       cmd << "-DCMAKE_PREFIX_PATH=\"#{@swift.builds}/lib/cmake/swift\""
       cmd << @sources
-      execute cmd.join(" ")
+      execute cmd.join(" \\\n")
       fixNinjaBuild()
    end
 
    def fixNinjaBuild
-      if @arch == Arch.host
-         return
-      end
       file = "#{@builds}/build.ninja"
       message "Applying fix for #{file}"
       execute "cp -vf #{file} #{file}.orig"
@@ -94,9 +91,6 @@ class DispatchBuilder < Builder
    end
 
    def configurePatches(shouldEnable = true)
-      if @arch == Arch.host && shouldEnable
-         return
-      end
       configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
       configurePatchFile("#{@patches}/cmake/modules/DispatchCompilerWarnings.cmake.diff", shouldEnable)
    end
@@ -108,7 +102,7 @@ class DispatchBuilder < Builder
    def executeInstall
       execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
       Dir["#{@installs}/lib/swift/android/*.so"].each { |file|
-        FileUtils.mv(file, "#{File.dirname(file)}/#{@archPath}", :force => true)
+         FileUtils.mv(file, "#{File.dirname(file)}/#{@archPath}", :force => true)
       }
    end
 
