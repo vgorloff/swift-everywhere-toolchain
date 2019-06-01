@@ -50,31 +50,42 @@ class DispatchBuilder < Builder
 
    def executeConfigure
       # See: /swift/swift-corelibs-libdispatch/INSTALL.md
-      cmd = []
-      cmd << "cd #{@builds} &&"
-      cmd << "cmake -G Ninja" # --debug-output
-      cmd << "-DCMAKE_INSTALL_PREFIX=/"
-      # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
-      cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
-      cmd << "-DANDROID_STL=c++_static"
-      cmd << "-DANDROID_TOOLCHAIN=clang"
-      cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
+
       if @arch == Arch.armv7a
-         cmd << "-DANDROID_ABI=armeabi-v7a"
+         abi = "armeabi-v7a"
       elsif @arch == Arch.x86
-         cmd << "-DANDROID_ABI=x86"
+         abi = "x86"
       elsif @arch == Arch.aarch64
-         cmd << "-DANDROID_ABI=arm64-v8a"
+         abi = "arm64-v8a"
       elsif @arch == Arch.x64
-         cmd << "-DANDROID_ABI=x86_64"
+         abi = "x86_64"
       end
-      cmd << "-DCMAKE_BUILD_TYPE=Release"
-      cmd << "-DENABLE_SWIFT=true"
-      cmd << "-DENABLE_TESTING=false"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
-      cmd << "-DCMAKE_PREFIX_PATH=\"#{@swift.builds}/lib/cmake/swift\""
-      cmd << @sources
-      execute cmd.join(" \\\n")
+
+      cmd = <<EOM
+      cd #{@builds} &&
+      cmake -G Ninja
+      # --debug-output
+
+      # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
+      -DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake
+
+      -DANDROID_STL=c++_static
+      -DANDROID_TOOLCHAIN=clang
+
+      -DANDROID_PLATFORM=android-#{@ndk.api}
+      -DANDROID_ABI=#{abi}
+
+      -DCMAKE_BUILD_TYPE=Release
+      -DENABLE_SWIFT=true
+      -DENABLE_TESTING=false
+
+      -DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\"
+      -DCMAKE_PREFIX_PATH=\"#{@swift.builds}/lib/cmake/swift\"
+      -DCMAKE_INSTALL_PREFIX=/
+
+      #{@sources}
+EOM
+      executeCommands cmd
       fixNinjaBuild()
    end
 
