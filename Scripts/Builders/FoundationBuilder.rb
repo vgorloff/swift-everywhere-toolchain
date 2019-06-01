@@ -102,7 +102,7 @@ class FoundationBuilder < Builder
       cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
 
       cmd << @sources
-      execute cmd.join(" ")
+      execute cmd.join(" \\\n")
    end
 
    def executeBuild
