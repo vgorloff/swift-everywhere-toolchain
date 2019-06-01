@@ -27,21 +27,20 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      # 5.1-master: 036e74a6a64438b8f8e5e1546f362ca7490ae233
-      # 5.0.1: e6047a2f5bccd6e00ee82d35e8e448426640099e
+      # v5.1 @ master: 036e74a6a64438b8f8e5e1546f362ca7490ae233
       return "036e74a6a64438b8f8e5e1546f362ca7490ae233"
    end
 
    def self.dispatch
-      # 5.1-master: a18aa1f600361c1397b810a488a2e073f6f03985
-      # 5.0.1: 7e7677bcaff3dc19731ab2bf28e69adaa49bb654
-      return "a18aa1f600361c1397b810a488a2e073f6f03985"
+      # v5.1 @ master: e8d020e49cdb82513186e63989398db7b7aaefab
+      # v5.1 @ master: a18aa1f600361c1397b810a488a2e073f6f03985
+      return "e8d020e49cdb82513186e63989398db7b7aaefab"
    end
 
    def self.foundation
-      # 5.1-master: c5357f39dd15ae858dc72d15bbabe5435376db70
-      # 5.0.1: ebfbb38a35f02b2372e3e4973065506c3b5dd290
-      return "c5357f39dd15ae858dc72d15bbabe5435376db70"
+      # v5.1 @ master: 75fa8e0a0f4dd6d6570cfa51cd6d0901870c9162
+      # v5.1 @ master: c5357f39dd15ae858dc72d15bbabe5435376db70
+      return "75fa8e0a0f4dd6d6570cfa51cd6d0901870c9162"
    end
 
    def self.cmark

@@ -90,6 +90,9 @@ class Automation < Tool
       elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
       elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
       elsif action.start_with?("install:") then installComponent(action.sub("install:", ''))
+      elsif action.start_with?("patch:") then patchComponent(action.sub("patch:", ''))
+      elsif action.start_with?("unpatch:") then unpatchComponent(action.sub("unpatch:", ''))
+      elsif action.start_with?("configure:") then configureComponent(action.sub("configure:", ''))
       else usage()
       end
    end
@@ -139,6 +142,34 @@ class Automation < Tool
       end
    end
 
+   def configureComponent(component)
+      if component == "swift" then SwiftBuilder.new().configure
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+
+   def patchComponent(component)
+      if component == "swift" then SwiftBuilder.new().patch
+      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).patch
+      elsif component == "foundation" then FoundationBuilder.new(Arch.default).patch
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+
+   def unpatchComponent(component)
+      if component == "swift" then SwiftBuilder.new().unpatch
+      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).unpatch
+      elsif component == "foundation" then FoundationBuilder.new(Arch.default).unpatch
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+
    def install()
      toolchainDir = Config.toolchainDir
      if File.exists?(toolchainDir)
@@ -157,6 +188,7 @@ class Automation < Tool
      toolchainDir = Config.toolchainDir
      FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
      FileUtils.copy_entry("#{Config.root}/VERSION", "#{toolchainDir}/VERSION", false, false, true)
+     FileUtils.copy_entry("#{Config.root}/LICENSE.txt", "#{toolchainDir}/LICENSE.txt", false, false, true)
      utils = Dir["#{Config.root}/Assets/swiftc-*"]
      utils += Dir["#{Config.root}/Assets/copy-libs-*"]
      utils.each { |file|
