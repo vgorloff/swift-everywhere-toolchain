@@ -144,6 +144,7 @@ class Automation < Tool
 
    def patchComponent(component)
       if component == "swift" then SwiftBuilder.new().patch
+      elsif component == "foundation" then FoundationBuilder.new(Arch.default).patch
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -160,6 +161,7 @@ class Automation < Tool
 
    def unpatchComponent(component)
       if component == "swift" then SwiftBuilder.new().unpatch
+      elsif component == "foundation" then FoundationBuilder.new(Arch.default).unpatch
       else
          puts "! Unknown component \"#{component}\"."
          usage()
