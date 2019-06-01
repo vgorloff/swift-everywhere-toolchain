@@ -184,6 +184,7 @@ class Automation < Tool
      toolchainDir = Config.toolchainDir
      FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
      FileUtils.copy_entry("#{Config.root}/VERSION", "#{toolchainDir}/VERSION", false, false, true)
+     FileUtils.copy_entry("#{Config.root}/LICENSE.txt", "#{toolchainDir}/LICENSE.txt", false, false, true)
      utils = Dir["#{Config.root}/Assets/swiftc-*"]
      utils += Dir["#{Config.root}/Assets/copy-libs-*"]
      utils.each { |file|
