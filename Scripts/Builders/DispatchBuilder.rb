@@ -92,7 +92,6 @@ class DispatchBuilder < Builder
 
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
-      configurePatchFile("#{@patches}/cmake/modules/DispatchCompilerWarnings.cmake.diff", shouldEnable)
    end
 
    def executeBuild
