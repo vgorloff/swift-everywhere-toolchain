@@ -158,7 +158,9 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
 
       cmd << "-DSWIFT_SDKS='ANDROID'"
+      cmd << "-DSWIFT_PRIMARY_VARIANT_SDK=ANDROID"
       cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
+      cmd << "-DSWIFT_PATH_TO_LIBICU_BUILD=#{@builds}" # Value at the moment not really used in build process, but used in Cmake logic routines.
 
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
       cmd << "-DLLVM_LIT_ARGS=-sv"
@@ -192,7 +194,6 @@ class SwiftBuilder < Builder
       # cmd << "--graphviz=#{@builds}/graph.dot"
       cmd << @sources
       execute cmd.join(" \\\n   ")
-      fixNinjaBuild()
       fixNinjaRules()
    end
 
@@ -225,38 +226,6 @@ class SwiftBuilder < Builder
       setupSymLinks(true)
       execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
       setupSymLinks(false)
-   end
-
-   def fixNinjaBuild
-      file = "#{@builds}/build.ninja"
-      backup = "#{file}.orig"
-      message "Applying fix for #{file}"
-      execute "cp -vf #{file} #{backup}"
-      lines = File.readlines(file)
-      result = []
-      # >> Fixes non NDK Linker options.
-      shouldFixLinker = false
-      lines.each { |line|
-         if line.start_with?("build") && line.include?('CXX_SHARED_LIBRARY_LINKER') && line.include?("android")
-            shouldFixLinker = true
-         elsif line.strip() == ""
-            shouldFixLinker = false
-         elsif shouldFixLinker && line.include?('LINK_LIBRARIES')
-            # See also: Build/armv7a-macos/swift/lib/cmake/swift/SwiftExports.cmake and Build/armv7a-macos/swift/lib/cmake/swift/SwiftConfig.cmake
-            line = line.gsub('-framework Foundation', '')
-            line = line.gsub('-framework CoreFoundation', '')
-            line = line.gsub('-licucore', '')
-         elsif shouldFixLinker && line.include?('LINK_FLAGS')
-            line = line.gsub('-all_load', '')
-         end
-         result << line
-      }
-      # <<
-      lines = result
-      contents = lines.join()
-      contents = contents.gsub('-fobjc-arc', '')
-      File.write(file, contents)
-      execute "diff -u #{backup} #{file} > #{file}.diff || true"
    end
 
    def fixNinjaRules
