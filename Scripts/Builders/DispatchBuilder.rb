@@ -91,7 +91,6 @@ EOM
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/src/CMakeLists.txt.diff", shouldEnable)
-      configurePatchFile("#{@patches}/cmake/modules/SwiftSupport.cmake.diff", shouldEnable)
    end
 
    def executeBuild
