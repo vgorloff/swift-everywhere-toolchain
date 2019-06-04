@@ -177,7 +177,7 @@ class Builder < Tool
    end
 
    def removeBuilds()
-      execute "rm -rf \"#{@builds}\""
+      execute "rm -rf \"#{@builds}/\"*"
    end
 
    def prepare()
