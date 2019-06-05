@@ -229,8 +229,9 @@ class SwiftBuilder < Builder
 
    def fixNinjaBuild
       file = "#{@builds}/build.ninja"
+      backup = "#{file}.orig"
       message "Applying fix for #{file}"
-      execute "cp -vf #{file} #{file}.orig"
+      execute "cp -vf #{file} #{backup}"
       lines = File.readlines(file)
       result = []
       # >> Fixes non NDK Linker options.
@@ -255,12 +256,14 @@ class SwiftBuilder < Builder
       contents = lines.join()
       contents = contents.gsub('-fobjc-arc', '')
       File.write(file, contents)
+      execute "diff -u #{backup} #{file} > #{file}.diff || true"
    end
 
    def fixNinjaRules
       file = "#{@builds}/rules.ninja"
+      backup = "#{file}.orig"
       message "Applying fix for #{file}"
-      execute "cp -vf #{file} #{file}.orig"
+      execute "cp -vf #{file} #{backup}"
       lines = File.readlines(file)
       result = []
       # >> Fixes non NDK Dynamic Linker options.
@@ -279,6 +282,7 @@ class SwiftBuilder < Builder
       }
       lines = result
       File.write(file, lines.join() + "\n")
+      execute "diff -u #{backup} #{file} > #{file}.diff || true"
    end
 
    def fixInstallScript
