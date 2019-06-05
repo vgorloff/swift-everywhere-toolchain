@@ -176,7 +176,12 @@ class Builder < Tool
       make()
    end
 
-   def cleanGitRepo
+   def reset()
+      execute "cd #{@sources} && git status && git reset --hard"
+      cleanGitRepo()
+   end
+
+   def cleanGitRepo()
       # See: https://stackoverflow.com/a/64966/1418981
       execute "cd #{@sources} && git clean --quiet -f -x -d"
       execute "cd #{@sources} && git clean --quiet -f -X"
