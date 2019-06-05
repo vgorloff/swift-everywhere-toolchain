@@ -88,6 +88,7 @@ class Automation < Tool
       elsif action == "clean" then clean()
       elsif action == "reset" then reset()
       elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
+      elsif action.start_with?("rebuild:") then rebuildComponent(action.sub("rebuild:", ''))
       elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
       elsif action.start_with?("install:") then installComponent(action.sub("install:", ''))
       elsif action.start_with?("patch:") then patchComponent(action.sub("patch:", ''))
@@ -105,9 +106,18 @@ class Automation < Tool
       elsif component == "deps" then buildDeps()
       elsif component == "libs" then buildLibs()
       elsif component == "swift" then SwiftBuilder.new().make
-      elsif component == "dispatch" then buildDispatch()
+      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       elsif component == "foundation" then buildFoundation()
       elsif component == "llvm" then buildLLVM()
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+
+   def rebuildComponent(component)
+      if component == "swift" then SwiftBuilder.new().rebuild()
+      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -342,7 +352,7 @@ class Automation < Tool
    end
 
    def buildLibs()
-      buildDispatch()
+      @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       buildFoundation()
    end
 
@@ -392,10 +402,6 @@ class Automation < Tool
 
    def cleanDispatch()
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
-   end
-
-   def buildDispatch()
-      @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
    end
 
    def buildFoundation()
