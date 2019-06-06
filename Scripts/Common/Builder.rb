@@ -82,26 +82,26 @@ class Builder < Tool
    end
 
    def configure()
-      logConfigureStarted()
+      logStarted("Configure")
       prepare()
       unpatch()
       patch()
       executeConfigure()
-      logConfigureCompleted()
+      logCompleted("Configure")
    end
 
    def build
-      logBuildStarted()
+      logStarted("Build")
       prepare()
       executeBuild()
-      logBuildCompleted()
+      logCompleted("Build")
    end
 
    def install
-      logInstallStarted()
+      logStarted("Install")
       removeInstalls()
       executeInstall()
-      logInstallCompleted()
+      logCompleted("Install")
    end
 
    def executeConfigure()
@@ -142,34 +142,6 @@ class Builder < Tool
       puts ""
    end
 
-   def logConfigureStarted
-      logStarted("Configure")
-   end
-
-   def logBuildStarted
-      logStarted("Build")
-   end
-
-   def logInstallStarted
-      logStarted("Install")
-   end
-
-   def logSetupCompleted
-      logCompleted("Setup")
-   end
-
-   def logBuildCompleted
-      logCompleted("Build")
-   end
-
-   def logConfigureCompleted
-      logCompleted("Configure")
-   end
-
-   def logInstallCompleted
-      logCompleted("Install")
-   end
-
    # ------------------------------------
 
    def removeInstalls()
@@ -177,7 +149,7 @@ class Builder < Tool
    end
 
    def removeBuilds()
-      execute "rm -rf \"#{@builds}\""
+      execute "rm -rf \"#{@builds}/\"*"
    end
 
    def prepare()
@@ -185,9 +157,11 @@ class Builder < Tool
    end
 
    def clean
+      logStarted("Clean")
       unpatch()
       removeBuilds()
       cleanGitRepo()
+      logCompleted("Clean")
    end
 
    def make
@@ -197,7 +171,17 @@ class Builder < Tool
       unpatch()
    end
 
-   def cleanGitRepo
+   def rebuild()
+      clean()
+      make()
+   end
+
+   def reset()
+      execute "cd #{@sources} && git status && git reset --hard"
+      cleanGitRepo()
+   end
+
+   def cleanGitRepo()
       # See: https://stackoverflow.com/a/64966/1418981
       execute "cd #{@sources} && git clean --quiet -f -x -d"
       execute "cd #{@sources} && git clean --quiet -f -X"

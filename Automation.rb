@@ -86,10 +86,12 @@ class Automation < Tool
       elsif action == "install" then install()
       elsif action == "archive" then archive()
       elsif action == "clean" then clean()
-      elsif action == "reset" then reset()
+      elsif action == "status" then status()
       elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
+      elsif action.start_with?("rebuild:") then rebuildComponent(action.sub("rebuild:", ''))
       elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
       elsif action.start_with?("install:") then installComponent(action.sub("install:", ''))
+      elsif action.start_with?("reset:") then resetComponent(action.sub("reset:", ''))
       elsif action.start_with?("patch:") then patchComponent(action.sub("patch:", ''))
       elsif action.start_with?("unpatch:") then unpatchComponent(action.sub("unpatch:", ''))
       elsif action.start_with?("configure:") then configureComponent(action.sub("configure:", ''))
@@ -105,9 +107,18 @@ class Automation < Tool
       elsif component == "deps" then buildDeps()
       elsif component == "libs" then buildLibs()
       elsif component == "swift" then SwiftBuilder.new().make
-      elsif component == "dispatch" then buildDispatch()
+      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       elsif component == "foundation" then buildFoundation()
       elsif component == "llvm" then buildLLVM()
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
+   end
+
+   def rebuildComponent(component)
+      if component == "swift" then SwiftBuilder.new().rebuild()
+      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -308,6 +319,24 @@ class Automation < Tool
      puts ""
    end
 
+   def status()
+      repos = []
+      repos << "#{Config.sources}/#{Lib.clang}"
+      repos << "#{Config.sources}/#{Lib.cmark}"
+      repos << "#{Config.sources}/#{Lib.crt}"
+      repos << "#{Config.sources}/#{Lib.curl}"
+      repos << "#{Config.sources}/#{Lib.icu}"
+      repos << "#{Config.sources}/#{Lib.llvm}"
+      repos << "#{Config.sources}/#{Lib.ssl}"
+      repos << "#{Config.sources}/#{Lib.swift}"
+      repos << "#{Config.sources}/#{Lib.dispatch}"
+      repos << "#{Config.sources}/#{Lib.foundation}"
+      repos << "#{Config.sources}/#{Lib.xml}"
+      repos.each { |repo|
+         execute "cd \"#{repo}\" && git status"
+      }
+   end
+
    def clean()
      cleanLLVM()
      cleanDeps()
@@ -342,7 +371,7 @@ class Automation < Tool
    end
 
    def buildLibs()
-      buildDispatch()
+      @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       buildFoundation()
    end
 
@@ -394,19 +423,18 @@ class Automation < Tool
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
    end
 
-   def buildDispatch()
-      @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
-   end
-
    def buildFoundation()
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
    end
 
-   def reset()
-      Dir["#{Config.sources}/*"].sort().each { |repo|
-         execute "cd #{repo} && git status && git reset --hard"
-         execute "cd #{repo} && git clean --quiet -f -x -d && git clean --quiet -f -X"
-      }
+   def resetComponent(component)
+      if component == "swift" then SwiftBuilder.new().reset
+      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).reset
+      elsif component == "foundation" then FoundationBuilder.new(Arch.default).reset
+      else
+         puts "! Unknown component \"#{component}\"."
+         usage()
+      end
    end
 
 end
