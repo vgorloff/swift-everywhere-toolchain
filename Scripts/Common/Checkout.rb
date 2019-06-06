@@ -66,7 +66,7 @@ class Checkout < Tool
       execute "cd \"#{localPath}\" && git fetch origin"
       # Disable warning about detached HEAD - https://stackoverflow.com/a/45652159/1418981
       execute "cd \"#{localPath}\" && git -c advice.detachedHead=false checkout #{revision}"
-      branchName = "sha-" + revision[0..16]
+      branchName = "swift-toolchain-v#{@version}@sha-" + revision[0..16]
       execute "cd \"#{localPath}\" && git branch -f #{branchName}"
       execute "cd \"#{localPath}\" && git checkout #{branchName}"
    end
