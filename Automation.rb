@@ -425,9 +425,12 @@ class Automation < Tool
    end
 
    def resetComponent(component)
-      if component == "swift" then SwiftBuilder.new().reset
-      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).reset
-      elsif component == "foundation" then FoundationBuilder.new(Arch.default).reset
+      if component == "swift" then SwiftBuilder.new().reset()
+      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).reset()
+      elsif component == "foundation" then FoundationBuilder.new(Arch.default).reset()
+      elsif component == "libs"
+         @archsToBuild.each { |arch| DispatchBuilder.new(arch).reset() }
+         @archsToBuild.each { |arch| FoundationBuilder.new(arch).reset() }
       else
          puts "! Unknown component \"#{component}\"."
          usage()
