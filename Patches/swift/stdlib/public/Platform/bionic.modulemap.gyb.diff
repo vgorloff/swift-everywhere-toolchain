@@ -1,0 +1,14 @@
+diff --git a/stdlib/public/Platform/bionic.modulemap.gyb b/stdlib/public/Platform/bionic.modulemap.gyb
+index 8513ca6aa0cd3867387a35370521f470578fd023..6119bbc7c3b1c8f39677aed44ddb8cdb2bbbc30a 100644
+--- a/stdlib/public/Platform/bionic.modulemap.gyb
++++ b/stdlib/public/Platform/bionic.modulemap.gyb
+@@ -19,9 +19,6 @@
+ /// It's not named just Bionic so that it doesn't conflict in the event of a
+ /// future official bionic modulemap.
+ module SwiftGlibc [system] {
+-  // FIXME: util contains rarely used functions and not usually needed.
+-  // Unfortunately link directive doesn't work in the submodule yet.
+-  link "util"
+ 
+   link "dl"
+ 
