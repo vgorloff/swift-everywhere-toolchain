@@ -35,12 +35,16 @@ class DispatchBuilder < Builder
       @swift = SwiftBuilder.new()
       if @arch == Arch.armv7a
          @archPath = "armv7"
+         @ndkArchPath = "arm-linux-androideabi"
       elsif @arch == Arch.x86
          @archPath = "i686"
+         @ndkArchPath = "i686-linux-android"
       elsif @arch == Arch.aarch64
          @archPath = "aarch64"
+         @ndkArchPath = "aarch64-linux-android"
       elsif @arch == Arch.x64
          @archPath = "x86_64"
+         @ndkArchPath = "x86_64-linux-android"
       end
    end
 
@@ -57,20 +61,40 @@ class DispatchBuilder < Builder
          abi = "x86_64"
       end
 
+      cFlags = "-fuse-ld=gold -Wno-unused-command-line-argument -B #{@ndk.toolchain}/#{@ndkArchPath}/bin -Wl,-L,#{@ndk.toolchain}/lib/gcc/#{@ndkArchPath}/4.9.x,-L,#{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath},-L,#{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}"
+      if @arch == Arch.aarch64 || @arch == Arch.x64
+         cFlags += " -Wl,-L,#{@ndk.toolchain}/#{@ndkArchPath}/lib64"
+      else
+         cFlags += " -Wl,-L,#{@ndk.toolchain}/#{@ndkArchPath}/lib"
+      end
+
       cmd = <<EOM
       cd #{@builds} &&
       cmake -G Ninja
       # --debug-output
 
       # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
-      -DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake
+      # -DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake
+      # -DANDROID_STL=c++_static
+      # -DANDROID_TOOLCHAIN=clang
+      # -DANDROID_PLATFORM=android-#{@ndk.api}
 
-      -DANDROID_STL=c++_static
-      -DANDROID_TOOLCHAIN=clang
+      # Settings without Android cmake toolchain
+      -DCMAKE_SYSTEM_NAME=Android
+      -DCMAKE_ANDROID_NDK=#{@ndk.sources}
+      -DCMAKE_ANDROID_API=#{@ndk.api}
+      -DCMAKE_ANDROID_ARCH_ABI=#{abi}
+      -DCMAKE_C_FLAGS="#{cFlags}"
+      -DCMAKE_CXX_FLAGS="#{cFlags}"
+      -DCMAKE_AR=#{@ndk.toolchain}/#{@ndkArchPath}/bin/ar
+      -DCMAKE_LINKER=#{@ndk.toolchain}/#{@ndkArchPath}/bin/ld.gold
+      -DCMAKE_RANLIB=#{@ndk.toolchain}/#{@ndkArchPath}/bin/ranlib
+      -DCMAKE_STRIP=#{@ndk.toolchain}/#{@ndkArchPath}/bin/strip
+      -DCMAKE_NM=#{@ndk.toolchain}/#{@ndkArchPath}/bin/nm
+      -DCMAKE_OBJCOPY=#{@ndk.toolchain}/#{@ndkArchPath}/bin/objcopy
+      -DCMAKE_OBJDUMP=#{@ndk.toolchain}/#{@ndkArchPath}/bin/objdump
 
-      -DANDROID_PLATFORM=android-#{@ndk.api}
-      -DANDROID_ABI=#{abi}
-
+      -DSWIFT_ANDROID_ABI=#{abi}
       -DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}
       -DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}
       -DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}
@@ -94,6 +118,8 @@ EOM
    end
 
    def executeBuild
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtbegin_so.o #{@builds}/src"
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtend_so.o #{@builds}/src"
       execute "cd #{@builds} && ninja"
    end
 

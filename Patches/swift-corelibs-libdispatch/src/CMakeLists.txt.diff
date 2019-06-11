@@ -1,5 +1,5 @@
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index cefde62a5538b8ff2acbf14baaccefa5ac65b9f0..019aab5c41b3af275b584bc2e9b99625a212bd05 100644
+index cefde62a5538b8ff2acbf14baaccefa5ac65b9f0..e60b8b5277d29c7ae4951af051a05c11ab0f1187 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -120,6 +120,42 @@ if(ENABLE_SWIFT)
@@ -38,7 +38,7 @@ index cefde62a5538b8ff2acbf14baaccefa5ac65b9f0..019aab5c41b3af275b584bc2e9b99625
 +    set(swift_android_lib_directory_path ${swift_android_lib_directory_path}/../lib/swift/android/${SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME})
 +    get_filename_component(swift_android_lib_directory_path ${swift_android_lib_directory_path} ABSOLUTE)
 +
-+    set(swift_android_link_flags -L ${swift_android_lib_directory_path} -tools-directory ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/bin)
++    set(swift_android_link_flags -L ${swift_android_lib_directory_path} -L ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/sysroot/usr/lib/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE}/${CMAKE_ANDROID_API} -tools-directory ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/bin)
 +    set(swift_android_compile_flags -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE})
 +  endif()
 +
