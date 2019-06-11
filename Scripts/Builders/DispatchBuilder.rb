@@ -73,12 +73,6 @@ class DispatchBuilder < Builder
       cmake -G Ninja
       # --debug-output
 
-      # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
-      # -DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake
-      # -DANDROID_STL=c++_static
-      # -DANDROID_TOOLCHAIN=clang
-      # -DANDROID_PLATFORM=android-#{@ndk.api}
-
       # Settings without Android cmake toolchain
       -DCMAKE_SYSTEM_NAME=Android
       -DCMAKE_ANDROID_NDK=#{@ndk.sources}
@@ -94,7 +88,6 @@ class DispatchBuilder < Builder
       -DCMAKE_OBJCOPY=#{@ndk.toolchain}/#{@ndkArchPath}/bin/objcopy
       -DCMAKE_OBJDUMP=#{@ndk.toolchain}/#{@ndkArchPath}/bin/objdump
 
-      -DSWIFT_ANDROID_ABI=#{abi}
       -DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}
       -DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}
       -DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}
