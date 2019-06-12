@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c5dbd1e67146090a8ce4a9f49d1c8a53f9c63a1d..f43d69fc9e542ee307f3bca7ebe0bb348c6a63cb 100644
+index 247ee6cebb2be5c7de3569ae37ab95d61a46ddff..a8e406eeea24fc3110f72c88b9b218a799366a2f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -292,6 +292,8 @@ add_swift_library(Foundation
@@ -51,11 +51,10 @@ index c5dbd1e67146090a8ce4a9f49d1c8a53f9c63a1d..f43d69fc9e542ee307f3bca7ebe0bb34
  
  if(ENABLE_TESTING)
    add_swift_executable(xdgTestHelper
-@@ -644,7 +651,10 @@ install(FILES
-           CoreFoundation/Base.subproj/module.map
+@@ -663,7 +670,9 @@ install(FILES
+           CoreFoundation/URL.subproj/module.map
          DESTINATION
-           lib/swift/CoreFoundation)
-+
+           lib/swift/CFURLSessionInterface)
 +if(NOT CMAKE_SYSTEM_NAME STREQUAL Android)
  install(PROGRAMS
            ${CMAKE_CURRENT_BINARY_DIR}/plutil${CMAKE_EXECUTABLE_SUFFIX}

@@ -152,6 +152,7 @@ class Automation < Tool
    def installComponent(component)
       if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).install }
       elsif component == "swift" then SwiftBuilder.new().install
+      elsif component == "llvm" then LLVMBuilder.new().install
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).install }
       else
          puts "! Unknown component \"#{component}\"."

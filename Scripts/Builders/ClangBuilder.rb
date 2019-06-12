@@ -31,4 +31,3 @@ class ClangBuilder < Builder
    end
 
 end
-
