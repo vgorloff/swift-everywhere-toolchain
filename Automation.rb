@@ -105,10 +105,12 @@ class Automation < Tool
       elsif component == "curl" then buildCURL()
       elsif component == "ssl" then buildSSL()
       elsif component == "deps" then buildDeps()
-      elsif component == "libs" then buildLibs()
+      elsif component == "libs"
+         @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
+         @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
       elsif component == "swift" then SwiftBuilder.new().make
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
-      elsif component == "foundation" then buildFoundation()
+      elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
       elsif component == "llvm" then buildLLVM()
       else
          puts "! Unknown component \"#{component}\"."
@@ -119,6 +121,10 @@ class Automation < Tool
    def rebuildComponent(component)
       if component == "swift" then SwiftBuilder.new().rebuild()
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
+      elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
+      elsif component == "libs"
+         @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
+         @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -146,6 +152,7 @@ class Automation < Tool
    def installComponent(component)
       if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).install }
       elsif component == "swift" then SwiftBuilder.new().install
+      elsif component == "llvm" then LLVMBuilder.new().install
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).install }
       else
          puts "! Unknown component \"#{component}\"."
@@ -348,7 +355,8 @@ class Automation < Tool
       buildDeps()
       buildLLVM()
       SwiftBuilder.new().make
-      buildLibs()
+      @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
+      @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
    end
 
    def cleanDeps()
@@ -368,11 +376,6 @@ class Automation < Tool
    def cleanLibs()
       cleanDispatch()
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
-   end
-
-   def buildLibs()
-      @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
-      buildFoundation()
    end
 
    def buildLLVM()
@@ -423,14 +426,13 @@ class Automation < Tool
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
    end
 
-   def buildFoundation()
-      @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
-   end
-
    def resetComponent(component)
-      if component == "swift" then SwiftBuilder.new().reset
-      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).reset
-      elsif component == "foundation" then FoundationBuilder.new(Arch.default).reset
+      if component == "swift" then SwiftBuilder.new().reset()
+      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).reset()
+      elsif component == "foundation" then FoundationBuilder.new(Arch.default).reset()
+      elsif component == "libs"
+         @archsToBuild.each { |arch| DispatchBuilder.new(arch).reset() }
+         @archsToBuild.each { |arch| FoundationBuilder.new(arch).reset() }
       else
          puts "! Unknown component \"#{component}\"."
          usage()

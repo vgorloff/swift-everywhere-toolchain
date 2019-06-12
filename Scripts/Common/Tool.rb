@@ -30,6 +30,7 @@ class Tool
       if !globalArch.nil?
          @archsToBuild = [globalArch]
       end
+      @version = File.read("#{Config.root}/VERSION").strip()
    end
 
    def execute(command)
