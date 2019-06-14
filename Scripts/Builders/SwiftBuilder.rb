@@ -306,7 +306,6 @@ class SwiftBuilder < Builder
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/include/swift/Runtime/SwiftDtoa.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/tgmath.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/Platform/bionic.modulemap.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/Glibc.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Darwin/CoreGraphics/CGFloat.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/core/FloatingPoint.swift.diff", shouldEnable)
