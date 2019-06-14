@@ -27,22 +27,23 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      # v5.1 @ master: 7beb3585d5edfc24e945afca513c24205e7a47a5
+      # v5.1 @ master: 93aed56cc97462c9eb797f933f9d43f9737057ff (1.0.25)
+      # v5.1 @ master: 7beb3585d5edfc24e945afca513c24205e7a47a5 (1.0.23)
       # v5.1 @ master: d272bfa18dc105db01afe01472a8c08f2025f9df
-      # v5.1 @ master: 50a8567c36b880676217bca63c4134fb6341faa3 (PR MERGE)
+      # v5.1 @ master: 50a8567c36b880676217bca63c4134fb6341faa3
       # v5.1 @ master: 036e74a6a64438b8f8e5e1546f362ca7490ae233
-      return "7beb3585d5edfc24e945afca513c24205e7a47a5"
+      return "93aed56cc97462c9eb797f933f9d43f9737057ff"
    end
 
    def self.dispatch
-      # v5.1 @ master: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99
+      # v5.1 @ master: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99 (1.0.24)
       # v5.1 @ master: e8d020e49cdb82513186e63989398db7b7aaefab
       # v5.1 @ master: a18aa1f600361c1397b810a488a2e073f6f03985
       return "90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99"
    end
 
    def self.foundation
-      # v5.1 @ master: 9e50b4014aceacf26ab341143bc19a85d8bd9962
+      # v5.1 @ master: 9e50b4014aceacf26ab341143bc19a85d8bd9962 (1.0.24)
       # v5.1 @ master: f9b18eb92d068a68006d8d288fc32406b1e91009
       # v5.1 @ master: 75fa8e0a0f4dd6d6570cfa51cd6d0901870c9162
       # v5.1 @ master: c5357f39dd15ae858dc72d15bbabe5435376db70

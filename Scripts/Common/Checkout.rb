@@ -46,7 +46,10 @@ class Checkout < Tool
       if File.exist?(localPath)
          cmd = "cd \"#{localPath}\" && git rev-parse --verify HEAD"
          sha = `#{cmd}`.strip()
-         if revision == sha
+         cmd = "cd \"#{localPath}\" && git branch | grep \\* | cut -d ' ' -f2"
+         branch = `#{cmd}`.strip()
+         expectedBranchName = branchName(revision)
+         if revision == sha && expectedBranchName == branch
             message "Repository \"#{repoURL}\" already checked out to \"#{localPath}\"."
          else
             checkoutRevision(localPath, revision)
@@ -62,13 +65,17 @@ class Checkout < Tool
    end
 
    def checkoutRevision(localPath, revision)
+      branch = branchName(revision)
       message "Checking out revision #{revision}"
       execute "cd \"#{localPath}\" && git fetch origin"
       # Disable warning about detached HEAD - https://stackoverflow.com/a/45652159/1418981
       execute "cd \"#{localPath}\" && git -c advice.detachedHead=false checkout #{revision}"
-      branchName = "swift-toolchain-v#{@version}@sha-" + revision[0..16]
-      execute "cd \"#{localPath}\" && git branch -f #{branchName}"
-      execute "cd \"#{localPath}\" && git checkout #{branchName}"
+      execute "cd \"#{localPath}\" && git branch -f #{branch}"
+      execute "cd \"#{localPath}\" && git checkout #{branch}"
+   end
+
+   def branchName(revision)
+      return "swift-toolchain-v#{@version}@sha-" + revision[0..16]
    end
 
 end
