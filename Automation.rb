@@ -100,7 +100,7 @@ class Automation < Tool
    end
 
    def buildComponent(component)
-      if component == "xml" then buildXML()
+      if component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
       elsif component == "icu" then buildICU()
       elsif component == "curl" then buildCURL()
       elsif component == "ssl" then buildSSL()
@@ -122,6 +122,7 @@ class Automation < Tool
       if component == "swift" then SwiftBuilder.new().rebuild()
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
+      elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
@@ -368,7 +369,7 @@ class Automation < Tool
 
    def buildDeps()
       buildICU()
-      buildXML()
+      @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
       buildSSL()
       buildCURL()
    end
@@ -416,10 +417,6 @@ class Automation < Tool
 
    def cleanXML()
       @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
-   end
-
-   def buildXML()
-      @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
    end
 
    def cleanDispatch()
