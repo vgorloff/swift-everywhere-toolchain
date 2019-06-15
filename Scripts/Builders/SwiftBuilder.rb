@@ -302,8 +302,10 @@ class SwiftBuilder < Builder
 
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/stdlib/public/SwiftShims/Visibility.h.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/SwiftShims/LibcShims.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
+
+      # Float80 patches.
+      configurePatchFile("#{@patches}/stdlib/public/SwiftShims/LibcShims.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/include/swift/Runtime/SwiftDtoa.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/tgmath.swift.gyb.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/public/Platform/Glibc.swift.gyb.diff", shouldEnable)
