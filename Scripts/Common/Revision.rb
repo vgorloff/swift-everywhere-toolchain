@@ -44,11 +44,12 @@ class Revision
    end
 
    def self.foundation
+      # v5.1 @ master: ef19b4ff14954978affacb8b3388380062916479 (1.0.26)
       # v5.1 @ master: 9e50b4014aceacf26ab341143bc19a85d8bd9962 (1.0.24)
       # v5.1 @ master: f9b18eb92d068a68006d8d288fc32406b1e91009
       # v5.1 @ master: 75fa8e0a0f4dd6d6570cfa51cd6d0901870c9162
       # v5.1 @ master: c5357f39dd15ae858dc72d15bbabe5435376db70
-      return "9e50b4014aceacf26ab341143bc19a85d8bd9962"
+      return "ef19b4ff14954978affacb8b3388380062916479"
    end
 
    def self.cmark

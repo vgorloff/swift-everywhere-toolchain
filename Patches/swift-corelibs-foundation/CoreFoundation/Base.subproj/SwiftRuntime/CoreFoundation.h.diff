@@ -1,0 +1,12 @@
+diff --git a/CoreFoundation/Base.subproj/SwiftRuntime/CoreFoundation.h b/CoreFoundation/Base.subproj/SwiftRuntime/CoreFoundation.h
+index 5aa0e1449e3c8ea1196a4b863c03a245b9e00777..593cb743b22118b2428a928d27e91fe3b31b98a3 100644
+--- a/CoreFoundation/Base.subproj/SwiftRuntime/CoreFoundation.h
++++ b/CoreFoundation/Base.subproj/SwiftRuntime/CoreFoundation.h
+@@ -22,6 +22,7 @@
+ 
+ #if !defined(CF_EXCLUDE_CSTD_HEADERS)
+ 
++#include <sys/cdefs.h>
+ #include <sys/types.h>
+ #include <stdarg.h>
+ #include <assert.h>
