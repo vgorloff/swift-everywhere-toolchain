@@ -1,9 +1,9 @@
 Requirements
 ============
 
-- Xcode 10.1
-- Android Studio 3.3
-- Android NDK 19 (Comes with Android Studio as downloadable package).
+- Xcode 10.2.1
+- Android Studio 3.4.1
+- Android NDK 20 (Comes with Android Studio as downloadable package).
 - Ruby 2.5 (Comes with macOS)
 
 Using pre-built toolchain
@@ -37,10 +37,10 @@ Setup and Build
 
    $ which aclocal
    $ brew install automake
- 
+
    $ which glibtool
    $ brew install libtool
-   
+
    $ which pkg-config
    $ brew install pkg-config
    ```

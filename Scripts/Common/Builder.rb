@@ -150,6 +150,7 @@ class Builder < Tool
 
    def removeBuilds()
       execute "rm -rf \"#{@builds}/\"*"
+      execute "find \"#{@builds}\" -type f | xargs -I{} rm -rf \"{}\""
    end
 
    def prepare()
