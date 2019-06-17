@@ -238,7 +238,7 @@ class SwiftBuilder < Builder
       # >> Fixes non NDK Dynamic Linker options.
       shouldFixLinker = false
       lines.each { |line|
-         if line.start_with?("rule") && line.include?('CXX_SHARED_LIBRARY_LINKER') && line.include?("android")
+         if line.start_with?("rule") && line.include?('C_SHARED_LIBRARY_LINKER') && line.include?("android")
             shouldFixLinker = true
          elsif line.strip() == ""
             shouldFixLinker = false

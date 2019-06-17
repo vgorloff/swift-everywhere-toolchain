@@ -135,10 +135,9 @@ class FoundationBuilder < Builder
       configurePatchFile("#{@patches}/Foundation/FileManager.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/FileManager+POSIX.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/NSObjCRuntime.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/Foundation/NSURL.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/CFKnownLocations.c.diff", shouldEnable)
-      configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/ForSwiftFoundationOnly.h.diff", shouldEnable)
+      configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/SwiftRuntime/CoreFoundation.h.diff", shouldEnable)
    end
 
 end
