@@ -303,21 +303,6 @@ class SwiftBuilder < Builder
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/stdlib/public/SwiftShims/Visibility.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
-
-      # Float80 patches.
-      configurePatchFile("#{@patches}/stdlib/public/SwiftShims/LibcShims.h.diff", shouldEnable)
-      configurePatchFile("#{@patches}/include/swift/Runtime/SwiftDtoa.h.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/Platform/tgmath.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/Platform/Glibc.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/Darwin/CoreGraphics/CGFloat.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/FloatingPoint.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/VarArgs.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/Mirrors.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/FloatingPointParsing.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/FloatingPointTypes.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/IntegerTypes.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/Runtime.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/MathFunctions.swift.gyb.diff", shouldEnable)
    end
 
    def setupSymLinks(enable)
