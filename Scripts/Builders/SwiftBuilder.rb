@@ -279,7 +279,7 @@ class SwiftBuilder < Builder
 
       # Fixes wrong Ninja rules generation.
       configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
-      configurePatchFile("#{@patches}/cmake/modules/SwiftSharedCMakeConfig.cmake", shouldEnable)
+      configurePatchFile("#{@patches}/cmake/modules/SwiftSharedCMakeConfig.cmake.diff", shouldEnable)
    end
 
    def setupSymLinks(enable)
