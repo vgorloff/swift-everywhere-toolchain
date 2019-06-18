@@ -194,7 +194,6 @@ class SwiftBuilder < Builder
       # cmd << "--graphviz=#{@builds}/graph.dot"
       cmd << @sources
       execute cmd.join(" \\\n   ")
-      fixNinjaRules()
    end
 
    def executeBuild
@@ -226,32 +225,6 @@ class SwiftBuilder < Builder
       setupSymLinks(true)
       execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
       setupSymLinks(false)
-   end
-
-   def fixNinjaRules
-      file = "#{@builds}/rules.ninja"
-      backup = "#{file}.orig"
-      message "Applying fix for #{file}"
-      execute "cp -vf #{file} #{backup}"
-      lines = File.readlines(file)
-      result = []
-      # >> Fixes non NDK Dynamic Linker options.
-      shouldFixLinker = false
-      lines.each { |line|
-         if line.start_with?("rule") && line.include?('C_SHARED_LIBRARY_LINKER') && line.include?("android")
-            shouldFixLinker = true
-         elsif line.strip() == ""
-            shouldFixLinker = false
-         elsif shouldFixLinker && line.include?('command')
-            line = line.gsub('-dynamiclib', '-shared')
-            line = line.gsub('$SONAME_FLAG $INSTALLNAME_DIR$SONAME', '-Wl,-soname,$SONAME')
-            line = line.gsub('-Wl,-headerpad_max_install_names', '')
-         end
-         result << line
-      }
-      lines = result
-      File.write(file, lines.join() + "\n")
-      execute "diff -u #{backup} #{file} > #{file}.diff || true"
    end
 
    def fixInstallScript
