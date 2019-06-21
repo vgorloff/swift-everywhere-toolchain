@@ -1,5 +1,5 @@
 diff --git a/cmake/modules/AddSwift.cmake b/cmake/modules/AddSwift.cmake
-index bb87ff602cd640b44a20f078d9f37f70fcfd1222..0d98e23ada65aac385bae589119405f6ca0c9f52 100644
+index bb87ff602cd640b44a20f078d9f37f70fcfd1222..9ac0fa37fd5f3c048efe550f00e930153044b3ea 100644
 --- a/cmake/modules/AddSwift.cmake
 +++ b/cmake/modules/AddSwift.cmake
 @@ -1096,6 +1096,10 @@ function(_add_swift_library_single target name)
@@ -30,13 +30,51 @@ index bb87ff602cd640b44a20f078d9f37f70fcfd1222..0d98e23ada65aac385bae589119405f6
  
      set(sdk_supported_archs
        ${SWIFT_SDK_${sdk}_ARCHITECTURES}
-@@ -2114,6 +2128,15 @@ function(add_swift_target_library name)
+@@ -1992,7 +2006,7 @@ function(add_swift_target_library name)
+         endif()
+       endif()
+ 
+-      if(NOT SWIFTLIB_OBJECT_LIBRARY)
++      if(NOT SWIFTLIB_OBJECT_LIBRARY AND NOT sdk STREQUAL ANDROID)
+         # Add dependencies on the (not-yet-created) custom lipo target.
+         foreach(DEP ${SWIFTLIB_LINK_LIBRARIES})
+           if (NOT "${DEP}" STREQUAL "icucore")
+@@ -2067,15 +2081,17 @@ function(add_swift_target_library name)
+       if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin" AND SWIFTLIB_SHARED)
+         set(codesign_arg CODESIGN)
+       endif()
+-      precondition(THIN_INPUT_TARGETS)
+-      _add_swift_lipo_target(SDK
+-                               ${sdk}
+-                             TARGET
+-                               ${lipo_target}
+-                             OUTPUT
+-                               ${UNIVERSAL_LIBRARY_NAME}
+-                             ${codesign_arg}
+-                             ${THIN_INPUT_TARGETS})
++      if(NOT "${sdk}" STREQUAL "ANDROID")
++        precondition(THIN_INPUT_TARGETS)
++        _add_swift_lipo_target(SDK
++                                 ${sdk}
++                               TARGET
++                                 ${lipo_target}
++                               OUTPUT
++                                 ${UNIVERSAL_LIBRARY_NAME}
++                               ${codesign_arg}
++                               ${THIN_INPUT_TARGETS})
++      endif()
+ 
+       # Cache universal libraries for dependency purposes
+       set(UNIVERSAL_LIBRARY_NAMES_${SWIFT_SDK_${sdk}_LIB_SUBDIR}
+@@ -2114,6 +2130,17 @@ function(add_swift_target_library name)
                                     ARCHIVE DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${resource_dir}/${resource_dir_sdk_subdir}/${SWIFT_PRIMARY_VARIANT_ARCH}"
                                     COMPONENT "${SWIFTLIB_INSTALL_IN_COMPONENT}"
                                     PERMISSIONS ${file_permissions})
 +      elseif(sdk STREQUAL ANDROID)
 +        foreach(arch ${SWIFT_SDK_ANDROID_ARCHITECTURES})
-+          set(UNIVERSAL_LIBRARY_NAME "${SWIFTLIB_DIR}/${SWIFT_SDK_${sdk}_LIB_SUBDIR}/${arch}/${CMAKE_SHARED_LIBRARY_PREFIX}${name}.so")
++          if(SWIFTLIB_SHARED)
++            set(UNIVERSAL_LIBRARY_NAME "${SWIFTLIB_DIR}/${SWIFT_SDK_${sdk}_LIB_SUBDIR}/${arch}/${CMAKE_SHARED_LIBRARY_PREFIX}${name}.so")
++          endif()
 +          swift_install_in_component(FILES "${UNIVERSAL_LIBRARY_NAME}"
 +                                     DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${resource_dir}/${resource_dir_sdk_subdir}/${arch}"
 +                                     COMPONENT "${SWIFTLIB_INSTALL_IN_COMPONENT}"
@@ -46,3 +84,42 @@ index bb87ff602cd640b44a20f078d9f37f70fcfd1222..0d98e23ada65aac385bae589119405f6
        else()
          swift_install_in_component(FILES "${UNIVERSAL_LIBRARY_NAME}"
                                     DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${resource_dir}/${resource_dir_sdk_subdir}"
+@@ -2184,21 +2211,23 @@ function(add_swift_target_library name)
+             "${name}-${SWIFT_SDK_${sdk}_LIB_SUBDIR}-static")
+         set(UNIVERSAL_LIBRARY_NAME
+             "${universal_subdir}/${SWIFT_SDK_${sdk}_LIB_SUBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${name}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+-        _add_swift_lipo_target(SDK
+-                                 ${sdk}
+-                               TARGET
+-                                 ${lipo_target_static}
+-                               OUTPUT
+-                                 "${UNIVERSAL_LIBRARY_NAME}"
+-                               ${THIN_INPUT_TARGETS_STATIC})
+-        swift_install_in_component(FILES "${UNIVERSAL_LIBRARY_NAME}"
+-                                   DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${install_subdir}/${resource_dir_sdk_subdir}"
+-                                   PERMISSIONS
+-                                     OWNER_READ OWNER_WRITE
+-                                     GROUP_READ
+-                                     WORLD_READ
+-                                   COMPONENT "${SWIFTLIB_INSTALL_IN_COMPONENT}"
+-                                   "${optional_arg}")
++        if(NOT "${sdk}" STREQUAL "ANDROID")
++          _add_swift_lipo_target(SDK
++                                   ${sdk}
++                                 TARGET
++                                   ${lipo_target_static}
++                                 OUTPUT
++                                   "${UNIVERSAL_LIBRARY_NAME}"
++                                 ${THIN_INPUT_TARGETS_STATIC})
++          swift_install_in_component(FILES "${UNIVERSAL_LIBRARY_NAME}"
++                                     DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${install_subdir}/${resource_dir_sdk_subdir}"
++                                     PERMISSIONS
++                                       OWNER_READ OWNER_WRITE
++                                       GROUP_READ
++                                       WORLD_READ
++                                     COMPONENT "${SWIFTLIB_INSTALL_IN_COMPONENT}"
++                                     "${optional_arg}")
++        endif()
+       endif()
+ 
+       # Add Swift standard library targets as dependencies to the top-level
