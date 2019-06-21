@@ -1,5 +1,5 @@
 diff --git a/cmake/modules/AddSwift.cmake b/cmake/modules/AddSwift.cmake
-index d2ababad6a3922b8a845f20c65d6e9de9812fa64..f2d5867df37f3e0eab0915dfa50caabacc3d62ef 100644
+index bb87ff602cd640b44a20f078d9f37f70fcfd1222..0d98e23ada65aac385bae589119405f6ca0c9f52 100644
 --- a/cmake/modules/AddSwift.cmake
 +++ b/cmake/modules/AddSwift.cmake
 @@ -1096,6 +1096,10 @@ function(_add_swift_library_single target name)
@@ -30,3 +30,19 @@ index d2ababad6a3922b8a845f20c65d6e9de9812fa64..f2d5867df37f3e0eab0915dfa50caaba
  
      set(sdk_supported_archs
        ${SWIFT_SDK_${sdk}_ARCHITECTURES}
+@@ -2114,6 +2128,15 @@ function(add_swift_target_library name)
+                                    ARCHIVE DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${resource_dir}/${resource_dir_sdk_subdir}/${SWIFT_PRIMARY_VARIANT_ARCH}"
+                                    COMPONENT "${SWIFTLIB_INSTALL_IN_COMPONENT}"
+                                    PERMISSIONS ${file_permissions})
++      elseif(sdk STREQUAL ANDROID)
++        foreach(arch ${SWIFT_SDK_ANDROID_ARCHITECTURES})
++          set(UNIVERSAL_LIBRARY_NAME "${SWIFTLIB_DIR}/${SWIFT_SDK_${sdk}_LIB_SUBDIR}/${arch}/${CMAKE_SHARED_LIBRARY_PREFIX}${name}.so")
++          swift_install_in_component(FILES "${UNIVERSAL_LIBRARY_NAME}"
++                                     DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${resource_dir}/${resource_dir_sdk_subdir}/${arch}"
++                                     COMPONENT "${SWIFTLIB_INSTALL_IN_COMPONENT}"
++                                     PERMISSIONS ${file_permissions}
++                                     "${optional_arg}")
++        endforeach()
+       else()
+         swift_install_in_component(FILES "${UNIVERSAL_LIBRARY_NAME}"
+                                    DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${resource_dir}/${resource_dir_sdk_subdir}"
