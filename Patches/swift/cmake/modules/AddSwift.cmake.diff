@@ -1,36 +1,8 @@
 diff --git a/cmake/modules/AddSwift.cmake b/cmake/modules/AddSwift.cmake
-index bb87ff602cd640b44a20f078d9f37f70fcfd1222..9ac0fa37fd5f3c048efe550f00e930153044b3ea 100644
+index 0a24fcd7cf88f34510a08aeaebb92a3140e04fce..c96aaaf7b36e706f690d51bbe71fb5abbeb09406 100644
 --- a/cmake/modules/AddSwift.cmake
 +++ b/cmake/modules/AddSwift.cmake
-@@ -1096,6 +1096,10 @@ function(_add_swift_library_single target name)
-     set_target_properties("${target}"
-       PROPERTIES
-       INSTALL_RPATH "$ORIGIN:/usr/lib/swift/cygwin")
-+  elseif("${SWIFTLIB_SINGLE_SDK}" STREQUAL "ANDROID")
-+    # Cmake generates incorrect rule `$SONAME_FLAG $INSTALLNAME_DIR$SONAME` for Android build on macOS cross-compile host.
-+    # Proper linker flags constructed manually. See below variable `swiftlib_link_flags_all`.
-+    set_target_properties("${target}" PROPERTIES NO_SONAME true)
-   endif()
- 
-   set_target_properties("${target}" PROPERTIES BUILD_WITH_INSTALL_RPATH YES)
-@@ -1882,6 +1886,16 @@ function(add_swift_target_library name)
-        NOT ${name} STREQUAL swiftRemoteMirror)
-       list(APPEND swiftlib_link_flags_all "-Wl,-z,defs")
-     endif()
-+    # Setting back linker flags which are not supported when making Android build on macOS cross-compile host.
-+    if(SWIFTLIB_SHARED)
-+      if(sdk IN_LIST SWIFT_APPLE_PLATFORMS)
-+        list(APPEND swiftlib_link_flags_all "-dynamiclib -Wl,-headerpad_max_install_names")
-+      elseif(sdk STREQUAL ANDROID)
-+        list(APPEND swiftlib_link_flags_all "-shared")
-+        # TODO: Instead of `lib${name}.so` find variable or target property which already have this value.
-+        list(APPEND swiftlib_link_flags_all "-Wl,-soname,lib${name}.so")
-+      endif()
-+    endif()
- 
-     set(sdk_supported_archs
-       ${SWIFT_SDK_${sdk}_ARCHITECTURES}
-@@ -1992,7 +2006,7 @@ function(add_swift_target_library name)
+@@ -2006,7 +2006,7 @@ function(add_swift_target_library name)
          endif()
        endif()
  
@@ -39,7 +11,7 @@ index bb87ff602cd640b44a20f078d9f37f70fcfd1222..9ac0fa37fd5f3c048efe550f00e93015
          # Add dependencies on the (not-yet-created) custom lipo target.
          foreach(DEP ${SWIFTLIB_LINK_LIBRARIES})
            if (NOT "${DEP}" STREQUAL "icucore")
-@@ -2067,15 +2081,17 @@ function(add_swift_target_library name)
+@@ -2081,15 +2081,17 @@ function(add_swift_target_library name)
        if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin" AND SWIFTLIB_SHARED)
          set(codesign_arg CODESIGN)
        endif()
@@ -66,7 +38,7 @@ index bb87ff602cd640b44a20f078d9f37f70fcfd1222..9ac0fa37fd5f3c048efe550f00e93015
  
        # Cache universal libraries for dependency purposes
        set(UNIVERSAL_LIBRARY_NAMES_${SWIFT_SDK_${sdk}_LIB_SUBDIR}
-@@ -2114,6 +2130,17 @@ function(add_swift_target_library name)
+@@ -2128,6 +2130,17 @@ function(add_swift_target_library name)
                                     ARCHIVE DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${resource_dir}/${resource_dir_sdk_subdir}/${SWIFT_PRIMARY_VARIANT_ARCH}"
                                     COMPONENT "${SWIFTLIB_INSTALL_IN_COMPONENT}"
                                     PERMISSIONS ${file_permissions})
@@ -84,7 +56,7 @@ index bb87ff602cd640b44a20f078d9f37f70fcfd1222..9ac0fa37fd5f3c048efe550f00e93015
        else()
          swift_install_in_component(FILES "${UNIVERSAL_LIBRARY_NAME}"
                                     DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/${resource_dir}/${resource_dir_sdk_subdir}"
-@@ -2184,21 +2211,23 @@ function(add_swift_target_library name)
+@@ -2198,21 +2211,23 @@ function(add_swift_target_library name)
              "${name}-${SWIFT_SDK_${sdk}_LIB_SUBDIR}-static")
          set(UNIVERSAL_LIBRARY_NAME
              "${universal_subdir}/${SWIFT_SDK_${sdk}_LIB_SUBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${name}${CMAKE_STATIC_LIBRARY_SUFFIX}")

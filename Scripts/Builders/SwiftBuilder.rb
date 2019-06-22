@@ -232,9 +232,8 @@ class SwiftBuilder < Builder
       configurePatchFile("#{@patches}/stdlib/public/SwiftShims/Visibility.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
 
-      # Fixes wrong Ninja rules generation.
+      # Fixes wrong install locations and unneded logic related to `lipo` and fat binaries.
       configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
-      configurePatchFile("#{@patches}/cmake/modules/SwiftSharedCMakeConfig.cmake.diff", shouldEnable)
    end
 
    def setupSymLinks(enable)
