@@ -132,11 +132,7 @@ class FoundationBuilder < Builder
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/CGFloat.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/Foundation/FileManager.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/Foundation/FileManager+POSIX.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/Foundation/NSObjCRuntime.swift.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/CMakeLists.txt.diff", shouldEnable)
-      configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/CFKnownLocations.c.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/SwiftRuntime/CoreFoundation.h.diff", shouldEnable)
    end
 
