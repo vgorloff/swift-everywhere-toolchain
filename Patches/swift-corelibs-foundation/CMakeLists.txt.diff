@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cd358d45ae41b3453ebf98a52d95a88a77099436..4ba0d6a44e62f71cb5143fe4e8fae256ead5c00f 100644
+index cd358d45ae41b3453ebf98a52d95a88a77099436..217da6d9918e10f892e37a870e1d9f1268f52a41 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -54,6 +54,14 @@ set(BUILD_SHARED_LIBS NO)
@@ -17,7 +17,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..4ba0d6a44e62f71cb5143fe4e8fae256
  # Setup include paths for uuid/uuid.h
  target_include_directories(CoreFoundation PRIVATE
    ${CMAKE_CURRENT_SOURCE_DIR}
-@@ -121,6 +129,50 @@ foreach(library ${CoreFoundation_LINK_LIBRARIES})
+@@ -121,6 +129,47 @@ foreach(library ${CoreFoundation_LINK_LIBRARIES})
    endif()
  endforeach()
  
@@ -62,13 +62,10 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..4ba0d6a44e62f71cb5143fe4e8fae256
 +  set(swift_android_compile_flags -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE})
 +endif()
 +
-+message("swift_android_link_flags => ${swift_android_link_flags}")
-+message("swift_android_compile_flags => ${swift_android_compile_flags}")
-+
  add_swift_library(Foundation
                    MODULE_NAME
                      Foundation
-@@ -287,6 +339,8 @@ add_swift_library(Foundation
+@@ -287,6 +336,8 @@ add_swift_library(Foundation
                      $<$<PLATFORM_ID:Windows>:-liphlpapi>
                      $<$<PLATFORM_ID:Windows>:-lpathcch>
                      $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:CoreFoundationResources>>
@@ -77,7 +74,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..4ba0d6a44e62f71cb5143fe4e8fae256
                    SWIFT_FLAGS
                      -DDEPLOYMENT_RUNTIME_SWIFT
                      $<$<BOOL:FOUNDATION_ENABLE_LIBDISPATCH>:-DDEPLOYMENT_ENABLE_LIBDISPATCH>
-@@ -295,6 +349,7 @@ add_swift_library(Foundation
+@@ -295,6 +346,7 @@ add_swift_library(Foundation
                      $<$<BOOL:ENABLE_TESTING>:-enable-testing>
                      $<$<NOT:$<CONFIG:Debug>>:-O>
                      ${swift_libc_flags}
@@ -85,7 +82,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..4ba0d6a44e62f71cb5143fe4e8fae256
                    DEPENDS
                      uuid
                      CoreFoundation
-@@ -353,6 +408,7 @@ add_swift_library(FoundationNetworking
+@@ -353,6 +405,7 @@ add_swift_library(FoundationNetworking
                      ${Foundation_RPATH}
                      ${WORKAROUND_SR9138}
                      ${WORKAROUND_SR9995}
@@ -93,7 +90,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..4ba0d6a44e62f71cb5143fe4e8fae256
                    SWIFT_FLAGS
                      -DDEPLOYMENT_RUNTIME_SWIFT
                      -DNS_BUILDING_FOUNDATION_NETWORKING
-@@ -361,6 +417,7 @@ add_swift_library(FoundationNetworking
+@@ -361,6 +414,7 @@ add_swift_library(FoundationNetworking
                      ${libdispatch_cflags}
                      ${swift_enable_testing}
                      ${swift_optimization_flags}
@@ -101,7 +98,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..4ba0d6a44e62f71cb5143fe4e8fae256
                    DEPENDS
                      uuid
                      CoreFoundation
-@@ -381,6 +438,7 @@ if(NOT BUILD_SHARED_LIBS)
+@@ -381,6 +435,7 @@ if(NOT BUILD_SHARED_LIBS)
        ${LIBXML2_LIBRARIES})
  endif()
  
@@ -109,7 +106,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..4ba0d6a44e62f71cb5143fe4e8fae256
  add_swift_executable(plutil
                       SOURCES
                         Tools/plutil/main.swift
-@@ -406,6 +464,7 @@ add_swift_executable(plutil
+@@ -406,6 +461,7 @@ add_swift_executable(plutil
                         uuid
                         Foundation
                         CoreFoundation)
@@ -117,7 +114,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..4ba0d6a44e62f71cb5143fe4e8fae256
  
  if(ENABLE_TESTING)
    add_swift_executable(xdgTestHelper
-@@ -665,7 +724,9 @@ install(FILES
+@@ -665,7 +721,9 @@ install(FILES
            CoreFoundation/URL.subproj/module.map
          DESTINATION
            lib/swift/CFURLSessionInterface)
