@@ -39,70 +39,83 @@ class FoundationBuilder < Builder
       @xml = XMLBuilder.new(arch)
       if @arch == Arch.armv7a
          @archPath = "armv7"
+         @ndkArchPath = "arm-linux-androideabi"
       elsif @arch == Arch.x86
          @archPath = "i686"
+         @ndkArchPath = "i686-linux-android"
       elsif @arch == Arch.aarch64
          @archPath = "aarch64"
+         @ndkArchPath = "aarch64-linux-android"
       elsif @arch == Arch.x64
          @archPath = "x86_64"
+         @ndkArchPath = "x86_64-linux-android"
       end
    end
 
    def executeConfigure
-      cmd = []
-      cmd << "cd #{@builds} &&"
-      cmd << "cmake -G Ninja"
-      cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}"
-      cmd << "-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}" # Check later if we can use `@installs`
-      cmd << "-DCMAKE_BUILD_TYPE=Release"
-      includePath = "#{@ndk.sources}/sysroot/usr/include"
-      cFlags = "-D__ANDROID__"
-      # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
-      cmd << "-DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake"
-      cmd << "-DANDROID_STL=c++_static"
-      cmd << "-DANDROID_TOOLCHAIN=clang"
-      cmd << "-DANDROID_PLATFORM=android-#{@ndk.api}"
       if @arch == Arch.armv7a
-         cmd << "-DANDROID_ABI=armeabi-v7a"
-         ndkArchPath = "arm-linux-androideabi"
-         ndkToolchainPath = ndkArchPath
+         abi = "armeabi-v7a"
       elsif @arch == Arch.x86
-         cmd << "-DANDROID_ABI=x86"
-         ndkArchPath = "i686-linux-android"
-         ndkToolchainPath = "x86"
+         abi = "x86"
       elsif @arch == Arch.aarch64
-         cmd << "-DANDROID_ABI=arm64-v8a"
-         ndkArchPath = "aarch64-linux-android"
-         ndkToolchainPath = ndkArchPath
+         abi = "arm64-v8a"
       elsif @arch == Arch.x64
-         cmd << "-DANDROID_ABI=x86_64"
-         ndkArchPath = "x86_64-linux-android"
-         ndkToolchainPath = "x86_64"
+         abi = "x86_64"
       end
-      cmd << "-DCMAKE_SYSTEM_NAME=Android"
-      cmd << "-DCMAKE_C_FLAGS=\"#{cFlags}\""
-      cmd << "-DCMAKE_CXX_FLAGS=\"#{cFlags}\""
 
-      cmd << "-DADDITIONAL_SWIFT_FLAGS='-I#{includePath}\;-I#{includePath}/#{ndkArchPath}'"
-      # Foundation.so `__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN`. Double $$ used as escape.
-      cmd << "-DADDITIONAL_SWIFT_LINK_FLAGS='-v\;-use-ld=gold\;-tools-directory\;#{@ndk.toolchain}/#{ndkArchPath}/bin\;-L\;#{@swift.installs}/lib/swift/android/#{@archPath}\;-L\;#{@ndk.toolchain}/sysroot/usr/lib/#{ndkArchPath}/#{@ndk.api}\;-L\;#{@ndk.sources}/toolchains/#{ndkToolchainPath}-4.9/prebuilt/darwin-x86_64/lib/gcc/#{ndkArchPath}/4.9.x\'"
+      cFlags = "-D__ANDROID__ -fuse-ld=gold -Wno-unused-command-line-argument -B #{@ndk.toolchain}/#{@ndkArchPath}/bin -Wl,-L,#{@ndk.toolchain}/lib/gcc/#{@ndkArchPath}/4.9.x,-L,#{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath},-L,#{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}"
+      if @arch == Arch.aarch64 || @arch == Arch.x64
+         cFlags += " -Wl,-L,#{@ndk.toolchain}/#{@ndkArchPath}/lib64"
+      else
+         cFlags += " -Wl,-L,#{@ndk.toolchain}/#{@ndkArchPath}/lib"
+      end
 
-      cmd << "-DICU_INCLUDE_DIR=#{@icu.include}"
-      cmd << "-DICU_LIBRARY=#{@icu.lib}"
-      cmd << "-DICU_I18N_LIBRARY_RELEASE=#{@icu.lib}/libicui18nswift.so"
-      cmd << "-DICU_UC_LIBRARY_RELEASE=#{@icu.lib}/libicuucswift.so"
+      cmd = <<EOM
+      cd #{@builds} &&
+      cmake -G Ninja
 
-      cmd << "-DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2"
-      cmd << "-DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so"
+      -DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}
 
-      cmd << "-DCURL_INCLUDE_DIR=#{@curl.include}"
-      cmd << "-DCURL_LIBRARY=#{@curl.lib}/libcurl.so"
+      # Check later if we can use `@installs`
+      -DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}
 
-      cmd << "-DCMAKE_INSTALL_PREFIX=/"
-      cmd << "-DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\""
+      # Settings without Android cmake toolchain
+      -DCMAKE_SYSTEM_NAME=Android
+      -DCMAKE_ANDROID_NDK=#{@ndk.sources}
+      -DCMAKE_ANDROID_API=#{@ndk.api}
+      -DCMAKE_ANDROID_ARCH_ABI=#{abi}
+      -DCMAKE_C_FLAGS="#{cFlags}"
+      -DCMAKE_CXX_FLAGS="#{cFlags}"
+      -DCMAKE_AR=#{@ndk.toolchain}/#{@ndkArchPath}/bin/ar
+      -DCMAKE_LINKER=#{@ndk.toolchain}/#{@ndkArchPath}/bin/ld.gold
+      -DCMAKE_RANLIB=#{@ndk.toolchain}/#{@ndkArchPath}/bin/ranlib
+      -DCMAKE_STRIP=#{@ndk.toolchain}/#{@ndkArchPath}/bin/strip
+      -DCMAKE_NM=#{@ndk.toolchain}/#{@ndkArchPath}/bin/nm
+      -DCMAKE_OBJCOPY=#{@ndk.toolchain}/#{@ndkArchPath}/bin/objcopy
+      -DCMAKE_OBJDUMP=#{@ndk.toolchain}/#{@ndkArchPath}/bin/objdump
 
-      cmd << @sources
-      execute cmd.join(" \\\n")
+      -DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}
+      -DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}
+      -DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}
+
+      -DICU_INCLUDE_DIR=#{@icu.include}
+      -DICU_LIBRARY=#{@icu.lib}
+      -DICU_I18N_LIBRARY_RELEASE=#{@icu.lib}/libicui18nswift.so
+      -DICU_UC_LIBRARY_RELEASE=#{@icu.lib}/libicuucswift.so
+
+      -DLIBXML2_INCLUDE_DIR=#{@xml.include}/libxml2
+      -DLIBXML2_LIBRARY=#{@xml.lib}/libxml2.so
+
+      -DCURL_INCLUDE_DIR=#{@curl.include}
+      -DCURL_LIBRARY=#{@curl.lib}/libcurl.so
+
+      -DCMAKE_INSTALL_PREFIX=/
+      -DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\"
+      -DCMAKE_BUILD_TYPE=Release
+
+      #{@sources}
+EOM
+      executeCommands cmd
    end
 
    def executeBuild
