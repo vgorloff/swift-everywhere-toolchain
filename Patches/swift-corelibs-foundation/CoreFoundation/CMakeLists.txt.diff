@@ -1,8 +1,8 @@
 diff --git a/CoreFoundation/CMakeLists.txt b/CoreFoundation/CMakeLists.txt
-index 0928546c44ead594701ce3a8059e54b5d96b0a0f..cd5160fda695895e57c03184c7fb24b3e1ac432b 100644
+index 0928546c44ead594701ce3a8059e54b5d96b0a0f..c12f8991d526ebd851a7f0d173af2caf32874bf9 100644
 --- a/CoreFoundation/CMakeLists.txt
 +++ b/CoreFoundation/CMakeLists.txt
-@@ -589,6 +601,9 @@ install(TARGETS
+@@ -589,6 +589,9 @@ install(TARGETS
  		  CFURLSessionInterface
          DESTINATION
            "${CMAKE_INSTALL_FULL_LIBDIR}")
