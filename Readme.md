@@ -5,6 +5,8 @@ Requirements
 - Android Studio 3.4.1
 - Android NDK 20 (Comes with Android Studio as downloadable package).
 - Ruby 2.5 (Comes with macOS)
+- CMake 3.14.5
+- Ninja 1.9.0
 
 Using pre-built toolchain
 =========================

@@ -67,10 +67,13 @@ class SwiftBuilder < Builder
    end
 
    def executeConfigure
+      setupToolsSymLinks(Arch.host)
       cmd = []
       cmd << "cd #{@builds} &&"
-      cmd << "cmake -G Ninja"  #  --trace --debug-output"
+      cmd << "cmake -G Ninja" # --trace --debug-output"
 
+      cmd << "-DCMAKE_AR=#{@builds}/cmake-ar"
+      cmd << "-DCMAKE_RANLIB=#{@builds}/cmake-ranlib"
       cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
       cmd << "-DSWIFT_LIPO=#{toolchainPath}/usr/bin/lipo"
       cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
@@ -194,130 +197,43 @@ class SwiftBuilder < Builder
       # cmd << "--graphviz=#{@builds}/graph.dot"
       cmd << @sources
       execute cmd.join(" \\\n   ")
-      fixNinjaRules()
    end
 
    def executeBuild
       # Seems link to `#{@ndk}/sources/cxx-stl/llvm-libc++/include` is proper solution.
       setupSymLinks(true)
+      setupToolsSymLinks(Arch.host)
       execute "cd #{@builds} && ninja -j#{numberOfJobs}"
       setupSymLinks(false)
 
       @archsToBuild.each { |arch|
+         setupToolsSymLinks(arch)
          if arch == "x86"
-            targets = "swiftGlibc-android-i686 swiftCore-android-i686 swiftSwiftOnoneSupport-android-i686"
+            targets = "swiftGlibc-android-i686 swiftCore-android-i686 swiftSwiftOnoneSupport-android-i686 swiftRemoteMirror-android-i686"
          elsif arch == "armv7a"
-            targets = "swiftGlibc-android-armv7 swiftCore-android-armv7 swiftSwiftOnoneSupport-android-armv7"
+            targets = "swiftGlibc-android-armv7 swiftCore-android-armv7 swiftSwiftOnoneSupport-android-armv7 swiftRemoteMirror-android-armv7"
          elsif arch == "aarch64"
-            targets = "swiftGlibc-android-aarch64 swiftCore-android-aarch64 swiftSwiftOnoneSupport-android-aarch64"
+            targets = "swiftGlibc-android-aarch64 swiftCore-android-aarch64 swiftSwiftOnoneSupport-android-aarch64 swiftRemoteMirror-android-aarch64"
          else
-            targets = "swiftGlibc-android-x86_64 swiftCore-android-x86_64 swiftSwiftOnoneSupport-android-x86_64"
+            targets = "swiftGlibc-android-x86_64 swiftCore-android-x86_64 swiftSwiftOnoneSupport-android-x86_64 swiftRemoteMirror-android-x86_64"
          end
          execute "cd #{@builds} && ninja -j#{numberOfJobs} #{targets}"
       }
+      setupToolsSymLinks(Arch.host)
    end
 
    def executeInstall
-      fixInstallScript()
-      fixStdLibInstallScript("#{@builds}/stdlib/public/core/cmake_install.cmake")
-      fixStdLibInstallScript("#{@builds}/stdlib/public/SwiftOnoneSupport/cmake_install.cmake")
-      fixStdLibInstallScript("#{@builds}/stdlib/public/SwiftRemoteMirror/cmake_install.cmake")
-      fixStdLibInstallScript("#{@builds}/stdlib/public/Platform/cmake_install.cmake")
       setupSymLinks(true)
       execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
       setupSymLinks(false)
-   end
-
-   def fixNinjaRules
-      file = "#{@builds}/rules.ninja"
-      backup = "#{file}.orig"
-      message "Applying fix for #{file}"
-      execute "cp -vf #{file} #{backup}"
-      lines = File.readlines(file)
-      result = []
-      # >> Fixes non NDK Dynamic Linker options.
-      shouldFixLinker = false
-      lines.each { |line|
-         if line.start_with?("rule") && line.include?('C_SHARED_LIBRARY_LINKER') && line.include?("android")
-            shouldFixLinker = true
-         elsif line.strip() == ""
-            shouldFixLinker = false
-         elsif shouldFixLinker && line.include?('command')
-            line = line.gsub('-dynamiclib', '-shared')
-            line = line.gsub('$SONAME_FLAG $INSTALLNAME_DIR$SONAME', '-Wl,-soname,$SONAME')
-            line = line.gsub('-Wl,-headerpad_max_install_names', '')
-         end
-         result << line
-      }
-      lines = result
-      File.write(file, lines.join() + "\n")
-      execute "diff -u #{backup} #{file} > #{file}.diff || true"
-   end
-
-   def fixInstallScript
-      sourceFile = "#{@builds}/cmake_install.cmake"
-      lines = readInstallScript(sourceFile)
-      result = []
-      lines.each { |line|
-         if line.include?('if(CMAKE_INSTALL_COMPONENT)')
-            @archsToBuild.each { |arch|
-               if arch == "x86"
-                  line = installCommands("i686") + "\n" + line
-               elsif arch == "armv7a"
-                  line = installCommands("armv7") + "\n" + line
-               else
-                  line = installCommands(arch) + "\n" + line
-               end
-            }
-         end
-         result << line
-      }
-      lines = result
-      File.write(sourceFile, lines.join() + "\n")
-   end
-
-   def installCommands(arch)
-      files = Dir["#{builds}/lib/swift/android/#{arch}/*.so"].map { |so| " \"#{so}\"" }.join("\n")
-      commands = 'if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)' + "\n"
-      commands += " file(INSTALL DESTINATION \"${CMAKE_INSTALL_PREFIX}/lib/swift/android/#{arch}\" TYPE FILE FILES" + "\n"
-      commands += files
-      commands += ")\nendif()\n"
-   end
-
-   def fixStdLibInstallScript(sourceFile)
-      lines = readInstallScript(sourceFile)
-      lines = lines.reject { |line| line.include?(".dylib") }
-      File.write(sourceFile, lines.join() + "\n")
-   end
-
-   def readInstallScript(sourceFile)
-      backupFile = "#{sourceFile}.orig"
-      if !File.exist?(backupFile)
-         execute "cp -vf #{sourceFile} #{backupFile}"
-      end
-      message "Applying fix for #{sourceFile}"
-      execute "cp -vf #{backupFile} #{sourceFile}"
-      return File.readlines(sourceFile)
    end
 
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/stdlib/public/SwiftShims/Visibility.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
 
-      # Float80 patches.
-      configurePatchFile("#{@patches}/stdlib/public/SwiftShims/LibcShims.h.diff", shouldEnable)
-      configurePatchFile("#{@patches}/include/swift/Runtime/SwiftDtoa.h.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/Platform/tgmath.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/Platform/Glibc.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/Darwin/CoreGraphics/CGFloat.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/FloatingPoint.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/VarArgs.swift.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/Mirrors.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/FloatingPointParsing.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/FloatingPointTypes.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/IntegerTypes.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/Runtime.swift.gyb.diff", shouldEnable)
-      configurePatchFile("#{@patches}/stdlib/public/core/MathFunctions.swift.gyb.diff", shouldEnable)
+      # Fixes wrong install locations and unneded logic related to `lipo` and fat binaries.
+      configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
    end
 
    def setupSymLinks(enable)
@@ -326,6 +242,25 @@ class SwiftBuilder < Builder
          setupSymLink("#{toolchainPath}/usr/include/c++", "#{@llvm.builds}/include/c++")
       else
          removeSymLink("#{@llvm.builds}/include/c++")
+      end
+   end
+
+   def setupToolsSymLinks(arch)
+      if arch == "x86"
+         setupSymLink("#{@ndk.toolchain}/i686-linux-android/bin/ar", "#{@builds}/cmake-ar")
+         setupSymLink("#{@ndk.toolchain}/i686-linux-android/bin/ranlib", "#{@builds}/cmake-ranlib")
+      elsif arch == "armv7a"
+         setupSymLink("#{@ndk.toolchain}/arm-linux-androideabi/bin/ar", "#{@builds}/cmake-ar")
+         setupSymLink("#{@ndk.toolchain}/arm-linux-androideabi/bin/ranlib", "#{@builds}/cmake-ranlib")
+      elsif arch == "aarch64"
+         setupSymLink("#{@ndk.toolchain}/aarch64-linux-android/bin/ar", "#{@builds}/cmake-ar")
+         setupSymLink("#{@ndk.toolchain}/aarch64-linux-android/bin/ranlib", "#{@builds}/cmake-ranlib")
+      elsif arch == "x86_64"
+         setupSymLink("#{@ndk.toolchain}/x86_64-linux-android/bin/ar", "#{@builds}/cmake-ar")
+         setupSymLink("#{@ndk.toolchain}/x86_64-linux-android/bin/ranlib", "#{@builds}/cmake-ranlib")
+      else
+         setupSymLink("#{toolchainPath}/usr/bin/ar", "#{@builds}/cmake-ar")
+         setupSymLink("#{toolchainPath}/usr/bin/ranlib", "#{@builds}/cmake-ranlib")
       end
    end
 
