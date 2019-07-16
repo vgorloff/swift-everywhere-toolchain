@@ -42,7 +42,7 @@ class Revision
       # master: f911a44a403a2cb48723604236bda9caa0f8a771 (1.0.37)
       # master: 4169c8d3382fd1083289ee3b22a349acef584141 (1.0.26)
       # master: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99 (1.0.24)
-      return "4169c8d3382fd1083289ee3b22a349acef584141"
+      return "f911a44a403a2cb48723604236bda9caa0f8a771"
    end
 
    def self.foundation
