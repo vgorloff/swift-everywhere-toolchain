@@ -40,12 +40,16 @@ class Builder < Tool
       @arch = arch
       @sources = "#{Config.sources}/#{component}"
       @patches = "#{Config.patches}/#{component}"
-      @builds = "#{Config.build}/#{arch}/#{component}"
-      @installs = "#{Config.install}/#{arch}/#{component}"
+      @builds = "#{Config.build}/#{platform}-#{arch}/#{component}"
+      @installs = "#{Config.install}/#{platform}-#{arch}/#{component}"
       @startSpacer = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
       @endSpacer =   "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
       @dryRun = ENV['SA_DRY_RUN'].to_s.empty? == false
-      physicalCPUs = `sysctl -n hw.physicalcpu`.to_i
+      if isMacOS?
+         physicalCPUs = `sysctl -n hw.physicalcpu`.to_i
+      else
+         physicalCPUs = `grep -c ^processor /proc/cpuinfo`.to_i
+      end
       @numberOfJobs = [physicalCPUs - 1, 1].max
    end
 
@@ -74,7 +78,11 @@ class Builder < Tool
    end
 
    def toolchainPath
-      return "#{developerDir}/Toolchains/XcodeDefault.xctoolchain"
+      if isMacOS?
+         return "#{developerDir}/Toolchains/XcodeDefault.xctoolchain"
+      else
+         return ""
+      end
    end
 
    def clang

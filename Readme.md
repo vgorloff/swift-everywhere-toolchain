@@ -11,7 +11,7 @@
 
 Build of complete tollchain takes ~1.5h. Instead of building it you can just download and use already pre-built package from [Releases](https://github.com/vgorloff/swift-everywhere-toolchain/releases) page.
 
-# Setup and Build
+# Setup and Build (macOS)
 
 1. Check that Cmake is installed. Install Cmake if Needed.
 
@@ -63,6 +63,42 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
    ```
 
 8. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
+
+# Setup and Build (Vagrant Linux)
+
+1. Clone this repository.
+
+   ```bash
+   git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
+   cd swift-everywhere-toolchain
+   ```
+
+2. Copy file `local.properties.yml.template` to `local.properties.yml`
+
+3. Edit file `local.properties.yml` and configure following settings:
+
+   - `ndk.dir`: Path to NDK installation directory.
+
+4. Launch Box.
+
+   ```bash
+   vagrant up
+   ```
+
+5. Login to Box.
+
+   ```bash
+   vagrant ssh
+   ```
+
+6. Start a build.
+
+   ```bash
+   cd /vagrant
+   make
+   ```
+
+7. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
 # Sample Projects
 
