@@ -38,6 +38,8 @@ class Checkout < Tool
       checkoutIfNeeded("#{Config.sources}/#{Lib.ssl}", "https://github.com/openssl/openssl.git", Revision.ssl)
       checkoutIfNeeded("#{Config.sources}/#{Lib.curl}", "https://github.com/curl/curl.git", Revision.curl)
       checkoutIfNeeded("#{Config.sources}/#{Lib.xml}", "https://github.com/GNOME/libxml2.git", Revision.xml)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.spm}", "https://github.com/apple/swift-package-manager.git", Revision.spm)
+      checkoutIfNeeded("#{Config.sources}/#{Lib.llb}", "https://github.com/apple/swift-llbuild.git", Revision.llb)
    end
 
    # Private

@@ -22,62 +22,31 @@
 # THE SOFTWARE.
 #
 
-class Lib
+require_relative "../Common/Builder.rb"
 
-   def self.swift
-      return "swift"
+class LLBBuilder < Builder
+
+   def initialize()
+      super(Lib.llb, Arch.host)
    end
 
-   def self.icu
-      return "icu"
+   def executeConfigure
+      # See: $SWIFT_REPO/docs/WindowsBuild.md
+      cmd = []
+      cmd << "cd #{@builds} &&"
+      cmd << "cmake -G Ninja"
+      cmd << "-DCMAKE_INSTALL_PREFIX=/"
+      cmd << "-DCMAKE_BUILD_TYPE=Release"
+      cmd << @sources
+      execute cmd.join(" ")
    end
 
-   def self.ndk
-      return "ndk"
+   def executeBuild
+      execute "cd #{@builds} && ninja"
    end
 
-   def self.llvm
-      return "llvm"
-   end
-
-   def self.cmark
-      return "cmark"
-   end
-
-   def self.clang
-      return "clang"
-   end
-
-   def self.crt
-      return "compiler-rt"
-   end
-
-   def self.curl
-      return "curl"
-   end
-
-   def self.xml
-      return "xml"
-   end
-
-   def self.ssl
-      return "ssl"
-   end
-
-   def self.spm
-      return "swiftpm"
-   end
-
-   def self.llb
-      return "llbuild"
-   end
-
-   def self.dispatch
-      return "swift-corelibs-libdispatch"
-   end
-
-   def self.foundation
-      return "swift-corelibs-foundation"
+   def executeInstall
+      execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
    end
 
 end

@@ -1,21 +1,17 @@
-Requirements
-============
+# Requirements
 
-- Xcode 10.2.1
+- Xcode 11
 - Android Studio 3.4.1
 - Android NDK 20 (Comes with Android Studio as downloadable package).
 - Ruby 2.5 (Comes with macOS)
 - CMake 3.14.5
 - Ninja 1.9.0
 
-Using pre-built toolchain
-=========================
+# Using pre-built toolchain
 
 Build of complete tollchain takes ~1.5h. Instead of building it you can just download and use already pre-built package from [Releases](https://github.com/vgorloff/swift-everywhere-toolchain/releases) page.
 
-
-Setup and Build
-===============
+# Setup and Build
 
 1. Check that Cmake is installed. Install Cmake if Needed.
 
@@ -49,10 +45,10 @@ Setup and Build
 
 4. Clone this repository.
 
-    ```bash
-    $ git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
-    $ cd swift-everywhere-toolchain
-    ```
+   ```bash
+   $ git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
+   $ cd swift-everywhere-toolchain
+   ```
 
 5. Copy file `local.properties.yml.template` to `local.properties.yml`
 
@@ -66,10 +62,8 @@ Setup and Build
    $ make
    ```
 
-8. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz
-`.
+8. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
-Sample Projects
-===============
+# Sample Projects
 
 Sample projects can be found in separate [swift-everywhere-samples](https://github.com/vgorloff/swift-everywhere-samples) repository. Please look into `Readme.md` in that repository to get information about how to configure and build sample projects.

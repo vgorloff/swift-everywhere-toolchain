@@ -22,62 +22,27 @@
 # THE SOFTWARE.
 #
 
-class Lib
+require_relative "../Common/Builder.rb"
 
-   def self.swift
-      return "swift"
+class SPMBuilder < Builder
+
+   def initialize()
+      super(Lib.spm, Arch.host)
+      @llb = LLBBuilder.new()
+      # @args = "--release --llbuild-link-framework --llbuild-framework-paths #{@llb.builds}/lib --build #{@builds} --prefix #{@installs}"
+      @args = "-v --llbuild-build-dir #{@llb.builds} --llbuild-source-dir #{@llb.sources} --build #{@builds} --prefix #{@installs}"
    end
 
-   def self.icu
-      return "icu"
+   def executeBuild
+      execute "cd #{@sources} && Utilities/bootstrap #{@args}"
    end
 
-   def self.ndk
-      return "ndk"
+   def executeClean
+      execute "cd #{@sources} && Utilities/bootstrap clean #{@args}"
    end
 
-   def self.llvm
-      return "llvm"
-   end
-
-   def self.cmark
-      return "cmark"
-   end
-
-   def self.clang
-      return "clang"
-   end
-
-   def self.crt
-      return "compiler-rt"
-   end
-
-   def self.curl
-      return "curl"
-   end
-
-   def self.xml
-      return "xml"
-   end
-
-   def self.ssl
-      return "ssl"
-   end
-
-   def self.spm
-      return "swiftpm"
-   end
-
-   def self.llb
-      return "llbuild"
-   end
-
-   def self.dispatch
-      return "swift-corelibs-libdispatch"
-   end
-
-   def self.foundation
-      return "swift-corelibs-foundation"
+   def executeInstall
+      execute "cd #{@sources} && Utilities/bootstrap install #{@args}"
    end
 
 end

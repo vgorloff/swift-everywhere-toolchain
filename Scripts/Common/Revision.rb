@@ -59,6 +59,16 @@ class Revision
       return "fdc818a038385a2cdcad4fac42c32a6473568e6f"
    end
 
+   def self.spm
+      # swift-5.1-branch 0996526dbf2d5adbdef4b133312e441c0deb3db7 (1.0.37)
+      return "0996526dbf2d5adbdef4b133312e441c0deb3db7"
+   end
+
+   def self.llb
+      # swift-5.1-branch f73b84bc1525998e5e267f9d830c1411487ac65e (1.0.37)
+      return "f73b84bc1525998e5e267f9d830c1411487ac65e"
+   end
+
    def self.cmark
       # 5.1-master: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
       # 5.0.1: acd1105eb5dae681e71cc47b2cd0fe592a1ab529

@@ -112,6 +112,10 @@ class Builder < Tool
       # Base class does nothing
    end
 
+   def executeClean()
+      # Base class does nothing
+   end
+
    def executeInstall()
       # Base class does nothing
    end
@@ -160,6 +164,7 @@ class Builder < Tool
    def clean
       logStarted("Clean")
       unpatch()
+      executeClean()
       removeBuilds()
       cleanGitRepo()
       logCompleted("Clean")
