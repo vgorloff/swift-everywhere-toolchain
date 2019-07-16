@@ -16,38 +16,38 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
 1. Check that Cmake is installed. Install Cmake if Needed.
 
    ```bash
-   $ which cmake
-   $ brew install cmake
+   which cmake
+   brew install cmake
    ```
 
 2. Check that Ninja is installed. Install Ninja if Needed.
 
    ```bash
-   $ which ninja
-   $ brew install ninja
+   which ninja
+   brew install ninja
    ```
 
 3. Check that Autotools is installed. Install Autotools if Needed.
 
    ```bash
-   $ which autoconf
-   $ brew install autoconf
+   which autoconf
+   brew install autoconf
 
-   $ which aclocal
-   $ brew install automake
+   which aclocal
+   brew install automake
 
-   $ which glibtool
-   $ brew install libtool
+   which glibtool
+   brew install libtool
 
-   $ which pkg-config
-   $ brew install pkg-config
+   which pkg-config
+   brew install pkg-config
    ```
 
 4. Clone this repository.
 
    ```bash
-   $ git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
-   $ cd swift-everywhere-toolchain
+   git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
+   cd swift-everywhere-toolchain
    ```
 
 5. Copy file `local.properties.yml.template` to `local.properties.yml`
@@ -59,7 +59,7 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
 7. Start a build.
 
    ```bash
-   $ make
+   make
    ```
 
 8. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
