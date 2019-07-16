@@ -39,24 +39,21 @@ class Revision
    end
 
    def self.dispatch
-      # v5.1 @ master: 4169c8d3382fd1083289ee3b22a349acef584141 (1.0.26)
-      # v5.1 @ master: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99 (1.0.24)
-      # v5.1 @ master: e8d020e49cdb82513186e63989398db7b7aaefab
-      # v5.1 @ master: a18aa1f600361c1397b810a488a2e073f6f03985
+      # master: f911a44a403a2cb48723604236bda9caa0f8a771 (1.0.37)
+      # master: 4169c8d3382fd1083289ee3b22a349acef584141 (1.0.26)
+      # master: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99 (1.0.24)
       return "4169c8d3382fd1083289ee3b22a349acef584141"
    end
 
    def self.foundation
-      # v5.1 @ master: fdc818a038385a2cdcad4fac42c32a6473568e6f (1.0.36)
-      # v5.1 @ master: 664c8a023aeba4b3dbe015b1073e3bf4e7d49fa7 (1.0.32)
-      # v5.1 @ master: 73f2a6217b69f8b781fc1f40963d3c5c2f2a269b (1.0.31)
-      # v5.1 @ master: 52334ad24dd36c608ace1b0a0c789f1d79d1ba23 (1.0.27)
-      # v5.1 @ master: ef19b4ff14954978affacb8b3388380062916479 (1.0.26)
-      # v5.1 @ master: 9e50b4014aceacf26ab341143bc19a85d8bd9962 (1.0.24)
-      # v5.1 @ master: f9b18eb92d068a68006d8d288fc32406b1e91009
-      # v5.1 @ master: 75fa8e0a0f4dd6d6570cfa51cd6d0901870c9162
-      # v5.1 @ master: c5357f39dd15ae858dc72d15bbabe5435376db70
-      return "fdc818a038385a2cdcad4fac42c32a6473568e6f"
+      # master: 7c9fb6a14643ae9ec6f37fef8161ec391ef38bff (1.0.37)
+      # master: fdc818a038385a2cdcad4fac42c32a6473568e6f (1.0.36)
+      # master: 664c8a023aeba4b3dbe015b1073e3bf4e7d49fa7 (1.0.32)
+      # master: 73f2a6217b69f8b781fc1f40963d3c5c2f2a269b (1.0.31)
+      # master: 52334ad24dd36c608ace1b0a0c789f1d79d1ba23 (1.0.27)
+      # master: ef19b4ff14954978affacb8b3388380062916479 (1.0.26)
+      # master: 9e50b4014aceacf26ab341143bc19a85d8bd9962 (1.0.24)
+      return "7c9fb6a14643ae9ec6f37fef8161ec391ef38bff"
    end
 
    def self.spm
