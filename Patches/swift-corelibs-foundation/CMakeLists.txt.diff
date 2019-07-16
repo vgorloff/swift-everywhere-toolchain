@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cd358d45ae41b3453ebf98a52d95a88a77099436..217da6d9918e10f892e37a870e1d9f1268f52a41 100644
+index 203a3a51c0586a665ec11477f1eb742e18da89ee..479ee31cad26c85a6c5419feedfc6fbadc5fb33f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -54,6 +54,14 @@ set(BUILD_SHARED_LIBS NO)
- add_subdirectory(CoreFoundation)
+ add_subdirectory(CoreFoundation EXCLUDE_FROM_ALL)
  set(BUILD_SHARED_LIBS ${SAVED_BUILD_SHARED_LIBS})
  
 +# User-configurable Android specific options.
@@ -17,7 +17,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..217da6d9918e10f892e37a870e1d9f12
  # Setup include paths for uuid/uuid.h
  target_include_directories(CoreFoundation PRIVATE
    ${CMAKE_CURRENT_SOURCE_DIR}
-@@ -121,6 +129,47 @@ foreach(library ${CoreFoundation_LINK_LIBRARIES})
+@@ -124,6 +132,47 @@ foreach(library ${CoreFoundation_LINK_LIBRARIES})
    endif()
  endforeach()
  
@@ -65,16 +65,16 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..217da6d9918e10f892e37a870e1d9f12
  add_swift_library(Foundation
                    MODULE_NAME
                      Foundation
-@@ -287,6 +336,8 @@ add_swift_library(Foundation
-                     $<$<PLATFORM_ID:Windows>:-liphlpapi>
+@@ -284,6 +333,8 @@ add_swift_library(Foundation
+                     $<$<PLATFORM_ID:Windows>:-lShell32>
                      $<$<PLATFORM_ID:Windows>:-lpathcch>
                      $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:CoreFoundationResources>>
 +                    ${swift_android_link_flags}
 +                    ${swift_android_foundation_link_flags}
                    SWIFT_FLAGS
+                     -Xcc -F${CMAKE_CURRENT_BINARY_DIR}
                      -DDEPLOYMENT_RUNTIME_SWIFT
-                     $<$<BOOL:FOUNDATION_ENABLE_LIBDISPATCH>:-DDEPLOYMENT_ENABLE_LIBDISPATCH>
-@@ -295,6 +346,7 @@ add_swift_library(Foundation
+@@ -293,6 +344,7 @@ add_swift_library(Foundation
                      $<$<BOOL:ENABLE_TESTING>:-enable-testing>
                      $<$<NOT:$<CONFIG:Debug>>:-O>
                      ${swift_libc_flags}
@@ -82,7 +82,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..217da6d9918e10f892e37a870e1d9f12
                    DEPENDS
                      uuid
                      CoreFoundation
-@@ -353,6 +405,7 @@ add_swift_library(FoundationNetworking
+@@ -348,6 +400,7 @@ add_swift_library(FoundationNetworking
                      ${Foundation_RPATH}
                      ${WORKAROUND_SR9138}
                      ${WORKAROUND_SR9995}
@@ -90,15 +90,15 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..217da6d9918e10f892e37a870e1d9f12
                    SWIFT_FLAGS
                      -DDEPLOYMENT_RUNTIME_SWIFT
                      -DNS_BUILDING_FOUNDATION_NETWORKING
-@@ -361,6 +414,7 @@ add_swift_library(FoundationNetworking
+@@ -355,6 +408,7 @@ add_swift_library(FoundationNetworking
+                     ${deployment_enable_libdispatch}
+                     -I;${CMAKE_CURRENT_BINARY_DIR}/swift
                      ${libdispatch_cflags}
-                     ${swift_enable_testing}
-                     ${swift_optimization_flags}
 +                    ${swift_android_compile_flags}
+                     $<$<BOOL:ENABLE_TESTING>:-enable-testing>
+                     $<$<NOT:$<CONFIG:Debug>>:-O>
                    DEPENDS
-                     uuid
-                     CoreFoundation
-@@ -381,6 +435,7 @@ if(NOT BUILD_SHARED_LIBS)
+@@ -377,6 +431,7 @@ if(NOT BUILD_SHARED_LIBS)
        ${LIBXML2_LIBRARIES})
  endif()
  
@@ -106,7 +106,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..217da6d9918e10f892e37a870e1d9f12
  add_swift_executable(plutil
                       SOURCES
                         Tools/plutil/main.swift
-@@ -406,6 +461,7 @@ add_swift_executable(plutil
+@@ -401,6 +456,7 @@ add_swift_executable(plutil
                         uuid
                         Foundation
                         CoreFoundation)
@@ -114,7 +114,7 @@ index cd358d45ae41b3453ebf98a52d95a88a77099436..217da6d9918e10f892e37a870e1d9f12
  
  if(ENABLE_TESTING)
    add_swift_executable(xdgTestHelper
-@@ -665,7 +721,9 @@ install(FILES
+@@ -668,7 +724,9 @@ install(FILES
            CoreFoundation/URL.subproj/module.map
          DESTINATION
            lib/swift/CFURLSessionInterface)
