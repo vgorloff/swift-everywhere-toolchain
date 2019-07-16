@@ -31,6 +31,7 @@ class DispatchBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.dispatch, arch)
+      @isUsedNDKToolchain = true # Make sure that you also changed the patch `Patches/swift-corelibs-libdispatch/src/CMakeLists.txt.diff`
       @ndk = NDK.new()
       @swift = SwiftBuilder.new()
       if @arch == Arch.armv7a
@@ -68,12 +69,7 @@ class DispatchBuilder < Builder
          cFlags += " -Wl,-L,#{@ndk.toolchain}/#{@ndkArchPath}/lib"
       end
 
-      cmd = <<EOM
-      cd #{@builds} &&
-      cmake -G Ninja
-      # --debug-output
-
-      # Settings without Android cmake toolchain
+      ndkSettings = <<EOM
       -DCMAKE_SYSTEM_NAME=Android
       -DCMAKE_ANDROID_NDK=#{@ndk.sources}
       -DCMAKE_ANDROID_API=#{@ndk.api}
@@ -87,6 +83,25 @@ class DispatchBuilder < Builder
       -DCMAKE_NM=#{@ndk.toolchain}/#{@ndkArchPath}/bin/nm
       -DCMAKE_OBJCOPY=#{@ndk.toolchain}/#{@ndkArchPath}/bin/objcopy
       -DCMAKE_OBJDUMP=#{@ndk.toolchain}/#{@ndkArchPath}/bin/objdump
+EOM
+
+      if @isUsedNDKToolchain
+         # See why we need to use cmake toolchain in NDK v19 - https://gitlab.kitware.com/cmake/cmake/issues/18739
+         ndkSettings = <<EOM
+         -DCMAKE_TOOLCHAIN_FILE=#{@ndk.sources}/build/cmake/android.toolchain.cmake
+         -DANDROID_STL=c++_static
+         -DANDROID_TOOLCHAIN=clang
+         -DANDROID_PLATFORM=android-#{@ndk.api}
+         -DANDROID_ABI=#{abi}
+EOM
+      end
+
+      cmd = <<EOM
+      cd #{@builds} &&
+      cmake -G Ninja
+      # --debug-output
+
+      #{ndkSettings}
 
       -DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}
       -DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}
@@ -111,15 +126,17 @@ EOM
    end
 
    def executeBuild
-      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtbegin_so.o #{@builds}/src"
-      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtend_so.o #{@builds}/src"
+      if @isUsedNDKToolchain
+         execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtbegin_so.o #{@builds}/src"
+         execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtend_so.o #{@builds}/src"
+      end
       execute "cd #{@builds} && ninja"
    end
 
    def executeInstall
       execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
       Dir["#{@installs}/lib/swift/android/*.so"].each { |file|
-         FileUtils.mv(file, "#{File.dirname(file)}/#{@archPath}", :force => true)
+         FileUtils.mv(file, "#{File.dirname(file)}/#{@archPath}", force: true)
       }
    end
 

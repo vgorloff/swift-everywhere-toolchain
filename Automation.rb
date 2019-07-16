@@ -38,6 +38,8 @@ require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/Builders/CMarkBuilder.rb"
 require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
+require_relative "Scripts/Builders/SPMBuilder.rb"
+require_relative "Scripts/Builders/LLBBuilder.rb"
 
 require 'fileutils'
 
@@ -109,6 +111,8 @@ class Automation < Tool
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
       elsif component == "swift" then SwiftBuilder.new().make
+      elsif component == "spm" then SPMBuilder.new().make
+      elsif component == "llb" then LLBBuilder.new().make
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
       elsif component == "llvm" then buildLLVM()
@@ -144,6 +148,8 @@ class Automation < Tool
       elsif component == "llvm" then cleanLLVM()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
+      elsif component == "spm" then SPMBuilder.new().clean
+      elsif component == "llb" then LLBBuilder.new().clean
       else
          puts "! Unknown component \"#{component}\"."
          usage()
