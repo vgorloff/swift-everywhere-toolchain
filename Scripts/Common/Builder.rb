@@ -239,10 +239,12 @@ class Builder < Tool
       originalFile = patchFile.sub(@patches, @sources).sub('.diff', '')
       gitRepoRoot = "#{Config.sources}/#{@component}"
       backupFile = "#{originalFile}.orig"
+      diffFile = "#{originalFile}.diff"
       if shouldApply
          if !File.exist? backupFile
             puts "Patching \"#{@component}\"..."
             execute "patch --backup #{originalFile} #{patchFile}"
+            execute "diff -u #{backupFile} #{originalFile} > #{diffFile} | true"
          else
             puts "Backup file \"#{backupFile}\" exists. Seems you already patched \"#{@component}\". Skipping..."
          end
@@ -251,6 +253,9 @@ class Builder < Tool
          execute "cd \"#{gitRepoRoot}\" && git checkout #{originalFile}"
          if File.exist? backupFile
             execute "rm -fv #{backupFile}"
+         end
+         if File.exist? diffFile
+            execute "rm -fv #{diffFile}"
          end
       end
    end
