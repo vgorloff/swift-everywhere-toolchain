@@ -36,10 +36,16 @@ class Settings
    end
 
    def ndkDir
-      ndkDir = @config['ndk.dir']
+      isMacOS = Tool.new().isMacOS?
+      if isMacOS
+         ndkDir = @config['ndk.dir.macos']
+      else
+         ndkDir = @config['ndk.dir.linux']
+      end
       if ndkDir.nil?
          raise "Setting \"ndk.dir\" is missed in file \"#{@settingsFilePath}\"."
       end
+
       return File.expand_path(ndkDir)
    end
 

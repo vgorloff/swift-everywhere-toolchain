@@ -1,2 +1,5 @@
-# Replace with path to NDK.
-ndk.dir: ~/Library/Android/sdk/ndk-bundle
+# Replace with path to NDK for macOS.
+ndk.dir.macos: ~/Library/Android/sdk/ndk-bundle
+
+# Replace with path to NDK for Linux.
+ndk.dir.linux: /vagrant/android-ndk-linux

@@ -54,7 +54,7 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
 
 6. Edit file `local.properties.yml` and configure following settings:
 
-   - `ndk.dir`: Path to NDK installation directory.
+   - `ndk.dir.macos`: Path to NDK installation directory.
 
 7. Start a build.
 
@@ -77,7 +77,7 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
 
 3. Edit file `local.properties.yml` and configure following settings:
 
-   - `ndk.dir`: Path to NDK installation directory.
+   - `ndk.dir.linux`: Path to NDK installation directory.
 
 4. Launch Box.
 

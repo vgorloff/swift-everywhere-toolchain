@@ -115,7 +115,8 @@ class Automation < Tool
       elsif component == "llb" then LLBBuilder.new().make
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
-      elsif component == "llvm" then buildLLVM()
+      elsif component == "cmark" then CMarkBuilder.new().make
+      elsif component == "llvm" then LLVMBuilder.new().make
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -145,7 +146,8 @@ class Automation < Tool
       elsif component == "deps" then cleanDeps()
       elsif component == "dispatch" then cleanDispatch()
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
-      elsif component == "llvm" then cleanLLVM()
+      elsif component == "cmark" then CMarkBuilder.new().clean
+      elsif component == "llvm" then LLVMBuilder.new().clean
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
       elsif component == "spm" then SPMBuilder.new().clean
@@ -353,7 +355,8 @@ class Automation < Tool
    end
 
    def clean()
-     cleanLLVM()
+     LLVMBuilder.new().clean
+     CMarkBuilder.new().clean
      cleanDeps()
      SwiftBuilder.new().clean
      cleanLibs()
@@ -361,7 +364,8 @@ class Automation < Tool
 
    def build()
       buildDeps()
-      buildLLVM()
+      LLVMBuilder.new().make
+      CMarkBuilder.new().make
       SwiftBuilder.new().make
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
@@ -384,16 +388,6 @@ class Automation < Tool
    def cleanLibs()
       cleanDispatch()
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
-   end
-
-   def buildLLVM()
-      LLVMBuilder.new().make
-      CMarkBuilder.new().make
-   end
-
-   def cleanLLVM()
-      LLVMBuilder.new().clean
-      CMarkBuilder.new().clean
    end
 
    def cleanICU()
