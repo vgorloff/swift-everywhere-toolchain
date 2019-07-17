@@ -77,7 +77,7 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
 
 3. Edit file `local.properties.yml` and configure following settings:
 
-   - `ndk.dir.linux`: Path to NDK installation directory.
+   - `ndk.dir.linux-vagrant`: Path to NDK installation directory.
 
 4. Launch Box.
 

@@ -103,7 +103,8 @@ class Automation < Tool
 
    def buildComponent(component)
       if component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
-      elsif component == "icu" then buildICU()
+      elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
+      elsif component == "icuHost" then ICUHostBuilder.new().make
       elsif component == "curl" then buildCURL()
       elsif component == "ssl" then buildSSL()
       elsif component == "deps" then buildDeps()
@@ -379,7 +380,8 @@ class Automation < Tool
    end
 
    def buildDeps()
-      buildICU()
+      ICUHostBuilder.new().make
+      @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
       @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
       buildSSL()
       buildCURL()
@@ -393,11 +395,6 @@ class Automation < Tool
    def cleanICU()
       ICUHostBuilder.new().clean
       @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
-   end
-
-   def buildICU()
-      ICUHostBuilder.new().make
-      @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
    end
 
    def buildSSL()
