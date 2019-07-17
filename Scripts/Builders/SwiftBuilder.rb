@@ -76,9 +76,13 @@ class SwiftBuilder < Builder
       cmd << "-DCMAKE_RANLIB=#{@builds}/cmake-ranlib"
       cmd << "-DCMAKE_LIBTOOL=#{toolchainPath}/usr/bin/libtool"
       cmd << "-DSWIFT_LIPO=#{toolchainPath}/usr/bin/lipo"
-      cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
-      cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
-      cmd << "-DSWIFT_DARWIN_DEPLOYMENT_VERSION_OSX=10.9"
+      if isMacOS?
+         cmd << "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+         cmd << "-DCMAKE_OSX_SYSROOT=#{macOSSDK}"
+         cmd << "-DSWIFT_DARWIN_DEPLOYMENT_VERSION_OSX=10.9"
+      else
+         cmd << "-DCMAKE_C_COMPILER=\"#{@llvm.builds}/bin/clang\" -DCMAKE_CXX_COMPILER=\"#{@llvm.builds}/bin/clang++\""
+      end
 
       cmd << "-DSWIFT_STDLIB_ENABLE_SIL_OWNERSHIP=FALSE"
       cmd << "-DSWIFT_ENABLE_GUARANTEED_NORMAL_ARGUMENTS=TRUE"
@@ -154,15 +158,24 @@ class SwiftBuilder < Builder
       cmd << "-DLIBDISPATCH_CMAKE_BUILD_TYPE=Release"
       cmd << "-DSWIFT_ENABLE_LLD_LINKER=FALSE"
 
-      cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
-      cmd << "-DSWIFT_HOST_VARIANT=macosx"
-      cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
-      cmd << "-DSWIFT_ENABLE_IOS32=false"
-      cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
+      if isMacOS?
+         cmd << "-DSWIFT_OVERLAY_TARGETS=''" # Disabling builds of Darwin Overlays.
+         cmd << "-DSWIFT_HOST_VARIANT=macosx"
+         cmd << "-DSWIFT_HOST_VARIANT_SDK=OSX"
+         cmd << "-DSWIFT_ENABLE_IOS32=false"
+         cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
+         cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
+         cmd << "-DSWIFT_SDKS='ANDROID'"
+      else
+         cmd << "-DSWIFT_HOST_VARIANT=linux"
+         cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
+         cmd << "-DSWIFT_HOST_TRIPLE=armv6-unknown-linux-gnueabihf"
+         # Workaround for error: Cannot add target-level dependencies to non-existent target "swift-stdlib-linux-x86_64".
+         # Fix it later so that it should be possible to build Swift for android only
+         cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
+      end
 
-      cmd << "-DSWIFT_SDKS='ANDROID'"
       cmd << "-DSWIFT_PRIMARY_VARIANT_SDK=ANDROID"
-      cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
       cmd << "-DSWIFT_PATH_TO_LIBICU_BUILD=#{@builds}" # Value at the moment not really used in build process, but used in Cmake logic routines.
 
       cmd << "-DSWIFT_HOST_VARIANT_ARCH=x86_64"
