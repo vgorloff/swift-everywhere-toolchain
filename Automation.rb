@@ -105,8 +105,8 @@ class Automation < Tool
       if component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
       elsif component == "icuHost" then ICUHostBuilder.new().make
-      elsif component == "curl" then buildCURL()
-      elsif component == "ssl" then buildSSL()
+      elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
+      elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
       elsif component == "deps" then buildDeps()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
@@ -139,16 +139,16 @@ class Automation < Tool
    end
 
    def cleanComponent(component)
-      if component == "curl" then cleanCURL()
-      elsif component == "icu" then cleanICU()
-      elsif component == "xml" then cleanXML()
-      elsif component == "ssl" then cleanSSL()
-      elsif component == "curl" then cleanCURL()
-      elsif component == "deps" then cleanDeps()
-      elsif component == "dispatch" then cleanDispatch()
+      if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
+      elsif component == "icuHost" then ICUHostBuilder.new().clean
+      elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
+      elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
+      elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
+      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
       elsif component == "cmark" then CMarkBuilder.new().clean
       elsif component == "llvm" then LLVMBuilder.new().clean
+      elsif component == "deps" then cleanDeps()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
       elsif component == "spm" then SPMBuilder.new().clean
@@ -373,52 +373,24 @@ class Automation < Tool
    end
 
    def cleanDeps()
-      cleanICU()
-      cleanXML()
-      cleanSSL()
-      cleanCURL()
+      ICUHostBuilder.new().clean
+      @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
    end
 
    def buildDeps()
       ICUHostBuilder.new().make
       @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
       @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
-      buildSSL()
-      buildCURL()
-   end
-
-   def cleanLibs()
-      cleanDispatch()
-      @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
-   end
-
-   def cleanICU()
-      ICUHostBuilder.new().clean
-      @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
-   end
-
-   def buildSSL()
       @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
-   end
-
-   def cleanSSL()
-      @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
-   end
-
-   def cleanCURL()
-      @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
-   end
-
-   def buildCURL()
       @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
    end
 
-   def cleanXML()
-      @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
-   end
-
-   def cleanDispatch()
+   def cleanLibs()
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
    end
 
    def resetComponent(component)
