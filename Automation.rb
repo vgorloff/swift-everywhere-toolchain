@@ -364,9 +364,9 @@ class Automation < Tool
    end
 
    def build()
-      buildDeps()
       LLVMBuilder.new().make
       CMarkBuilder.new().make
+      buildDeps()
       SwiftBuilder.new().make
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
