@@ -1,11 +1,15 @@
 # Requirements
 
-- Xcode 11
+- Xcode 10.2.1
 - Android Studio 3.4.1
 - Android NDK 20 (Comes with Android Studio as downloadable package).
 - Ruby 2.5 (Comes with macOS)
 - CMake 3.14.5
 - Ninja 1.9.0
+
+# Important
+
+Toolchain build may fail if macOS headers installed under `/usr/include`. This usually happens if you previously installed package `/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg`. See details in [Xcode Command Line Tools](https://developer.apple.com/documentation/xcode_release_notes/xcode_10_release_notes#3035624) notes. See following [SuperUser question](https://superuser.com/questions/36567/how-do-i-uninstall-any-apple-pkg-package-file) about how to uninstall package.
 
 # Using pre-built toolchain
 
