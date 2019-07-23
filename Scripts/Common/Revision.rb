@@ -27,33 +27,32 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      # v5.1 @ master: 17d65dc861727e0c8b2f676f30d5b03d021f896c (1.0.30)
-      # v5.1 @ master: b70cd7031fe7a2c400976007abbfff1597189174 (1.0.29)
-      # v5.1 @ master: 131bee791658c1beee0a48868b59a3000030702c (1.0.28)
-      # v5.1 @ master: ee6688d264d1012e669eda37c357d55e9de62dba (1.0.26)
-      # v5.1 @ master: 7beb3585d5edfc24e945afca513c24205e7a47a5 (1.0.23)
-      # v5.1 @ master: d272bfa18dc105db01afe01472a8c08f2025f9df
-      # v5.1 @ master: 50a8567c36b880676217bca63c4134fb6341faa3
-      # v5.1 @ master: 036e74a6a64438b8f8e5e1546f362ca7490ae233
-      return "17d65dc861727e0c8b2f676f30d5b03d021f896c"
+      # master @ 1.0.40: 10a4e3ef41059608ffe9eded039350055064ce9f
+      # master @ 1.0.30: 17d65dc861727e0c8b2f676f30d5b03d021f896c
+      # master @ 1.0.29: b70cd7031fe7a2c400976007abbfff1597189174
+      # master @ 1.0.28: 131bee791658c1beee0a48868b59a3000030702c
+      # master @ 1.0.26: ee6688d264d1012e669eda37c357d55e9de62dba
+      # master @ 1.0.23: 7beb3585d5edfc24e945afca513c24205e7a47a5
+      return "10a4e3ef41059608ffe9eded039350055064ce9f"
    end
 
    def self.dispatch
-      # master: f911a44a403a2cb48723604236bda9caa0f8a771 (1.0.37)
-      # master: 4169c8d3382fd1083289ee3b22a349acef584141 (1.0.26)
-      # master: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99 (1.0.24)
+      # master @ 1.0.37: f911a44a403a2cb48723604236bda9caa0f8a771
+      # master @ 1.0.26: 4169c8d3382fd1083289ee3b22a349acef584141
+      # master @ 1.0.24: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99
       return "f911a44a403a2cb48723604236bda9caa0f8a771"
    end
 
    def self.foundation
-      # master: 7c9fb6a14643ae9ec6f37fef8161ec391ef38bff (1.0.37)
-      # master: fdc818a038385a2cdcad4fac42c32a6473568e6f (1.0.36)
-      # master: 664c8a023aeba4b3dbe015b1073e3bf4e7d49fa7 (1.0.32)
-      # master: 73f2a6217b69f8b781fc1f40963d3c5c2f2a269b (1.0.31)
-      # master: 52334ad24dd36c608ace1b0a0c789f1d79d1ba23 (1.0.27)
-      # master: ef19b4ff14954978affacb8b3388380062916479 (1.0.26)
-      # master: 9e50b4014aceacf26ab341143bc19a85d8bd9962 (1.0.24)
-      return "7c9fb6a14643ae9ec6f37fef8161ec391ef38bff"
+      # master @ 1.0.40: c5c35c1a59b0a9a05b2e1ffbf8a7bab0a3e59baa
+      # master @ 1.0.37: 7c9fb6a14643ae9ec6f37fef8161ec391ef38bff
+      # master @ 1.0.36: fdc818a038385a2cdcad4fac42c32a6473568e6f
+      # master @ 1.0.32: 664c8a023aeba4b3dbe015b1073e3bf4e7d49fa7
+      # master @ 1.0.31: 73f2a6217b69f8b781fc1f40963d3c5c2f2a269b
+      # master @ 1.0.27: 52334ad24dd36c608ace1b0a0c789f1d79d1ba23
+      # master @ 1.0.26: ef19b4ff14954978affacb8b3388380062916479
+      # master @ 1.0.24: 9e50b4014aceacf26ab341143bc19a85d8bd9962
+      return "c5c35c1a59b0a9a05b2e1ffbf8a7bab0a3e59baa"
    end
 
    def self.spm
