@@ -35,11 +35,22 @@ class Settings
       end
    end
 
+   def isVagrant?
+      return !ENV['AUTOMATION_IS_INSIDE_VAGRANT_BOX'].nil?
+   end
+
    def ndkDir
-      ndkDir = @config['ndk.dir']
-      if ndkDir.nil?
-         raise "Setting \"ndk.dir\" is missed in file \"#{@settingsFilePath}\"."
+      if isVagrant?
+         return '/android-ndk'
       end
+
+      isMacOS = Tool.new().isMacOS?
+      settingKey = isMacOS ? 'ndk.dir.macos' : 'ndk.dir.linux'
+      ndkDir = @config[settingKey]
+      if ndkDir.nil?
+         raise "Setting \"#{settingKey}\" is missed in file \"#{@settingsFilePath}\"."
+      end
+
       return File.expand_path(ndkDir)
    end
 

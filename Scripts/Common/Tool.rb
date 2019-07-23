@@ -33,6 +33,14 @@ class Tool
       @version = File.read("#{Config.root}/VERSION").strip()
    end
 
+   def isMacOS?
+      (/darwin/ =~ RUBY_PLATFORM) != nil
+   end
+
+   def platform
+      return isMacOS? ? "darwin" : "linux"
+   end
+
    def execute(command)
       print(command, 32) # Green color.
       if system(command) != true
