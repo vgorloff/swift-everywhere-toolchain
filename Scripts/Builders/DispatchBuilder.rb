@@ -31,7 +31,7 @@ class DispatchBuilder < Builder
 
    def initialize(arch = Arch.default)
       super(Lib.dispatch, arch)
-      @isUsedNDKToolchain = true # Make sure that you also changed the patch `Patches/swift-corelibs-libdispatch/src/CMakeLists.txt.diff`
+      @isUsedNDKToolchain = false # Make sure that you also changed the patch `Patches/swift-corelibs-libdispatch/src/CMakeLists.txt.diff`
       @ndk = NDK.new()
       @swift = SwiftBuilder.new()
       if @arch == Arch.armv7a
@@ -126,10 +126,8 @@ EOM
    end
 
    def executeBuild
-      if @isUsedNDKToolchain
-         execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtbegin_so.o #{@builds}/src"
-         execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtend_so.o #{@builds}/src"
-      end
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtbegin_so.o #{@builds}/src"
+      execute "ln -vfs #{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}/crtend_so.o #{@builds}/src"
       execute "cd #{@builds} && ninja"
    end
 
