@@ -44,7 +44,9 @@ class NDK
    end
 
    def toolchain
-      return "#{@settings.ndkDir}/toolchains/llvm/prebuilt/darwin-x86_64"
+      isMacOS = Tool.new().isMacOS?
+      subPath = isMacOS ? "darwin-x86_64" : "linux-x86_64"
+      return "#{@settings.ndkDir}/toolchains/llvm/prebuilt/#{subPath}"
    end
 
 end

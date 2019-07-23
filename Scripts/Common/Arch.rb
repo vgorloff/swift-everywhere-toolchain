@@ -30,7 +30,7 @@ class Arch
 
    # Fixme. Seems `x86` can be used instead.
    def self.host
-      return "darwin"
+      return "host"
    end
 
    def self.x86

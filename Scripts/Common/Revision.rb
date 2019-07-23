@@ -42,7 +42,7 @@ class Revision
       # master: f911a44a403a2cb48723604236bda9caa0f8a771 (1.0.37)
       # master: 4169c8d3382fd1083289ee3b22a349acef584141 (1.0.26)
       # master: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99 (1.0.24)
-      return "4169c8d3382fd1083289ee3b22a349acef584141"
+      return "f911a44a403a2cb48723604236bda9caa0f8a771"
    end
 
    def self.foundation
@@ -66,31 +66,28 @@ class Revision
       return "f73b84bc1525998e5e267f9d830c1411487ac65e"
    end
 
-   def self.cmark
-      # 5.1-master: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
-      # 5.0.1: acd1105eb5dae681e71cc47b2cd0fe592a1ab529
-      return "32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27"
+   def self.llvm
+      # swift-5.1-branch @ 1.0.39: 688b71e2f9b709fd7ae3839172f2234eb8bd469a
+      # swift-5.1-branch @ 1.0.26: 42c6b79618828d5d536b1f527ea14c33fc7474d7
+      return "688b71e2f9b709fd7ae3839172f2234eb8bd469a"
    end
 
    def self.clang
-      # swift-5.1-branch: 2a6d22b018a5348a03000b8abfa0bde207ffd08d (1.0.26)
-      # 5.1-stable: 2a360740a35b97d3c6e779ce3e7ed1d00d7af2b3
-      # 5.0.1: 5c9d04dc0697297a47b5edb0c1a581b306a42bdb
-      return "2a6d22b018a5348a03000b8abfa0bde207ffd08d"
-   end
-
-   def self.llvm
-      # swift-5.1-branch: 42c6b79618828d5d536b1f527ea14c33fc7474d7 (1.0.26)
-      # 5.1-stable: 082dec2e222ca228125e187a726ee87c5b83ad54
-      # 5.0.1: 34250a6eef79ee8a83c5cfb4deb1583176dcbb63
-      return "42c6b79618828d5d536b1f527ea14c33fc7474d7"
+      # swift-5.1-branch @ 1.0.39: cb082b2ada7a959cfa27a48b1c3777a8a496114c
+      # swift-5.1-branch @ 1.0.26: 2a6d22b018a5348a03000b8abfa0bde207ffd08d
+      return "cb082b2ada7a959cfa27a48b1c3777a8a496114c"
    end
 
    def self.crt
-      # swift-5.1-branch: cfe3fd986aaceb308a7736c159bfa8bd688b381b (1.0.26)
-      # 5.1-stable: f201a2894735c781f7da4ef74931fa390de16b31
-      # 5.0.1: b7035fda6caf881c33e3a346a6c76d10a499e6b2
-      return "cfe3fd986aaceb308a7736c159bfa8bd688b381b"
+      # swift-5.1-branch @ 1.0.39: 79b188b8d0e744baa86f58cebb721a8613d1adb2
+      # swift-5.1-branch @ 1.0.26: cfe3fd986aaceb308a7736c159bfa8bd688b381b
+      return "79b188b8d0e744baa86f58cebb721a8613d1adb2"
+   end
+
+   def self.cmark
+      # swift-5.1-branch @ 1.0.39: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
+      # swift-5.1-branch @ 1.0.26: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
+      return "32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27"
    end
 
    def self.ssl

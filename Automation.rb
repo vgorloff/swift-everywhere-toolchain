@@ -103,9 +103,10 @@ class Automation < Tool
 
    def buildComponent(component)
       if component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
-      elsif component == "icu" then buildICU()
-      elsif component == "curl" then buildCURL()
-      elsif component == "ssl" then buildSSL()
+      elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
+      elsif component == "icuHost" then ICUHostBuilder.new().make
+      elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
+      elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
       elsif component == "deps" then buildDeps()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
@@ -115,7 +116,8 @@ class Automation < Tool
       elsif component == "llb" then LLBBuilder.new().make
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
-      elsif component == "llvm" then buildLLVM()
+      elsif component == "cmark" then CMarkBuilder.new().make
+      elsif component == "llvm" then LLVMBuilder.new().make
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -137,15 +139,16 @@ class Automation < Tool
    end
 
    def cleanComponent(component)
-      if component == "curl" then cleanCURL()
-      elsif component == "icu" then cleanICU()
-      elsif component == "xml" then cleanXML()
-      elsif component == "ssl" then cleanSSL()
-      elsif component == "curl" then cleanCURL()
-      elsif component == "deps" then cleanDeps()
-      elsif component == "dispatch" then cleanDispatch()
+      if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
+      elsif component == "icuHost" then ICUHostBuilder.new().clean
+      elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
+      elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
+      elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
+      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
-      elsif component == "llvm" then cleanLLVM()
+      elsif component == "cmark" then CMarkBuilder.new().clean
+      elsif component == "llvm" then LLVMBuilder.new().clean
+      elsif component == "deps" then cleanDeps()
       elsif component == "libs" then cleanLibs()
       elsif component == "swift" then SwiftBuilder.new().clean
       elsif component == "spm" then SPMBuilder.new().clean
@@ -170,6 +173,7 @@ class Automation < Tool
    def configureComponent(component)
       if component == "swift" then SwiftBuilder.new().configure
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).configure }
+      elsif component == "llvm" then LLVMBuilder.new().configure
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -352,81 +356,41 @@ class Automation < Tool
    end
 
    def clean()
-     cleanLLVM()
+     LLVMBuilder.new().clean
+     CMarkBuilder.new().clean
      cleanDeps()
      SwiftBuilder.new().clean
      cleanLibs()
    end
 
    def build()
+      LLVMBuilder.new().make
+      CMarkBuilder.new().make
       buildDeps()
-      buildLLVM()
       SwiftBuilder.new().make
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
    end
 
    def cleanDeps()
-      cleanICU()
-      cleanXML()
-      cleanSSL()
-      cleanCURL()
-   end
-
-   def buildDeps()
-      buildICU()
-      @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
-      buildSSL()
-      buildCURL()
-   end
-
-   def cleanLibs()
-      cleanDispatch()
-      @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
-   end
-
-   def buildLLVM()
-      LLVMBuilder.new().make
-      CMarkBuilder.new().make
-   end
-
-   def cleanLLVM()
-      LLVMBuilder.new().clean
-      CMarkBuilder.new().clean
-   end
-
-   def cleanICU()
       ICUHostBuilder.new().clean
       @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
-   end
-
-   def buildICU()
-      ICUHostBuilder.new().make
-      @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
-   end
-
-   def buildSSL()
-      @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
-   end
-
-   def cleanSSL()
+      @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
       @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
-   end
-
-   def cleanCURL()
       @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
    end
 
-   def buildCURL()
+   def buildDeps()
+      ICUHostBuilder.new().make
+      @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
+      @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
+      @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
       @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
    end
 
-   def cleanXML()
-      @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
-   end
-
-   def cleanDispatch()
+   def cleanLibs()
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
+      @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
    end
 
    def resetComponent(component)
