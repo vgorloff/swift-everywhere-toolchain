@@ -54,12 +54,16 @@ class DispatchBuilder < Builder
 
       if @arch == Arch.armv7a
          abi = "armeabi-v7a"
+         swiftTarget = "armv7-none-linux-androideabi"
       elsif @arch == Arch.x86
          abi = "x86"
+         swiftTarget = "i686-none-linux-android"
       elsif @arch == Arch.aarch64
          abi = "arm64-v8a"
+         swiftTarget = "aarch64-none-linux-android"
       elsif @arch == Arch.x64
          abi = "x86_64"
+         swiftTarget = "x86_64-none-linux-android"
       end
 
       cFlags = "-fuse-ld=gold -Wno-unused-command-line-argument -B #{@ndk.toolchain}/#{@ndkArchPath}/bin -Wl,-L,#{@ndk.toolchain}/lib/gcc/#{@ndkArchPath}/4.9.x,-L,#{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath},-L,#{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}"
@@ -106,6 +110,9 @@ EOM
       -DSWIFT_ANDROID_NDK_PATH=#{@ndk.sources}
       -DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}
       -DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}
+
+      # See: "build: support `CMAKE_SWIFT_COMPILER_TARGET` by compnerd": https://github.com/apple/swift-corelibs-libdispatch/pull/509
+      -DCMAKE_SWIFT_COMPILER_TARGET=#{swiftTarget}
 
       -DCMAKE_BUILD_TYPE=Release
       -DENABLE_SWIFT=true
