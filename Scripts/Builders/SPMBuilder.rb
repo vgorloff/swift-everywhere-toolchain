@@ -29,20 +29,25 @@ class SPMBuilder < Builder
    def initialize()
       super(Lib.spm, Arch.host)
       @llb = LLBBuilder.new()
-      # @args = "--release --llbuild-link-framework --llbuild-framework-paths #{@llb.builds}/lib --build #{@builds} --prefix #{@installs}"
-      @args = "-v --llbuild-build-dir #{@llb.builds} --llbuild-source-dir #{@llb.sources} --build #{@builds} --prefix #{@installs}"
+      @swift = SwiftBuilder.new()
+      @args = []
+      # @args << "-v"
+      # @args << "--swiftc \"#{@swift.builds}/bin/swiftc\""
+      @args << "--release"
+      @args << "--build #{@builds} --prefix #{@installs}"
+      @args << "--llbuild-build-dir #{@llb.builds} --llbuild-source-dir #{@llb.sources}"
    end
 
    def executeBuild
-      execute "cd #{@sources} && Utilities/bootstrap #{@args}"
+      execute "cd #{@sources} && Utilities/bootstrap #{@args.join(' ')}"
    end
 
    def executeClean
-      execute "cd #{@sources} && Utilities/bootstrap clean #{@args}"
+      execute "cd #{@sources} && Utilities/bootstrap clean #{@args.join(' ')}"
    end
 
    def executeInstall
-      execute "cd #{@sources} && Utilities/bootstrap install #{@args}"
+      execute "cd #{@sources} && Utilities/bootstrap install #{@args.join(' ')}"
    end
 
 end

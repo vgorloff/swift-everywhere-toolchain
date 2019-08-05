@@ -59,13 +59,17 @@ class Revision
    end
 
    def self.spm
-      # swift-5.1-branch 0996526dbf2d5adbdef4b133312e441c0deb3db7 (1.0.37)
-      return "0996526dbf2d5adbdef4b133312e441c0deb3db7"
+      # swift-5.0-branch @ 1.0.43 3a57975e10be0b1a8b87992ddf3a49701036f96c
+      # master @ 1.0.43 3dad9e7cfe20d1b48256afca13df293bdca870b9
+      # swift-5.1-branch @ 1.0.37 0996526dbf2d5adbdef4b133312e441c0deb3db7
+      return "3a57975e10be0b1a8b87992ddf3a49701036f96c"
    end
 
    def self.llb
-      # swift-5.1-branch f73b84bc1525998e5e267f9d830c1411487ac65e (1.0.37)
-      return "f73b84bc1525998e5e267f9d830c1411487ac65e"
+      # swift-5.0-branch @ 1.0.43 4f77fc47e2f5fcddc057abc8391f7c23d1e8d275
+      # master @ 1.0.43 5bf016632c0e85d835c63b84b43d3c887f01418f
+      # swift-5.1-branch @ 1.0.37 f73b84bc1525998e5e267f9d830c1411487ac65e
+      return "4f77fc47e2f5fcddc057abc8391f7c23d1e8d275"
    end
 
    def self.llvm

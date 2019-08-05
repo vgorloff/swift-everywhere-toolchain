@@ -132,6 +132,8 @@ class Automation < Tool
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
+      elsif component == "spm" then SPMBuilder.new().rebuild()
+      elsif component == "llb" then LLBBuilder.new().rebuild()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
@@ -246,6 +248,8 @@ class Automation < Tool
      files << "#{sourcesDir}/#{Lib.dispatch}/LICENSE"
      files << "#{sourcesDir}/#{Lib.foundation}/LICENSE"
      files << "#{sourcesDir}/#{Lib.xml}/Copyright"
+     files << "#{sourcesDir}/#{Lib.llb}/LICENSE.txt"
+     files << "#{sourcesDir}/#{Lib.spm}/LICENSE.txt"
      files.each { |file|
         dst = file.sub(sourcesDir, "#{toolchainDir}/share")
         puts "- Copying \"#{file}\""
@@ -268,8 +272,16 @@ class Automation < Tool
      toolchainDir = Config.toolchainDir
      root = SwiftBuilder.new().installs
      files = Dir["#{root}/bin/**/*"]
-     files += Dir["#{root}/lib/**/*"].reject { |file| file.end_with?(".dylib") }
+     files += Dir["#{root}/lib/**/*"]
      files += Dir["#{root}/share/**/*"]
+     copyFiles(files, root, toolchainDir)
+
+     root = LLBBuilder.new().installs
+     files = Dir["#{root}/**/*"]
+     copyFiles(files, root, toolchainDir)
+
+     root = SPMBuilder.new().installs
+     files = Dir["#{root}/**/*"]
      copyFiles(files, root, toolchainDir)
 
      @archsToBuild.each { |arch|
@@ -356,6 +368,8 @@ class Automation < Tool
       repos << "#{Config.sources}/#{Lib.dispatch}"
       repos << "#{Config.sources}/#{Lib.foundation}"
       repos << "#{Config.sources}/#{Lib.xml}"
+      repos << "#{Config.sources}/#{Lib.spm}"
+      repos << "#{Config.sources}/#{Lib.llb}"
       repos.each { |repo|
          execute "cd \"#{repo}\" && git status"
       }
@@ -367,6 +381,8 @@ class Automation < Tool
      cleanDeps()
      SwiftBuilder.new().clean
      cleanLibs()
+     LLBBuilder.new().clean
+     SPMBuilder.new().clean
    end
 
    def build()
@@ -376,6 +392,8 @@ class Automation < Tool
       SwiftBuilder.new().make
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
+      LLBBuilder.new().make
+      SPMBuilder.new().make
    end
 
    def cleanDeps()
