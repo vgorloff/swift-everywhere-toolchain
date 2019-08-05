@@ -89,6 +89,9 @@ class Automation < Tool
       elsif action == "archive" then archive()
       elsif action == "clean" then clean()
       elsif action == "status" then status()
+      elsif action == "finalize"
+         install()
+         archive()
       elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
       elsif action.start_with?("rebuild:") then rebuildComponent(action.sub("rebuild:", ''))
       elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
@@ -132,6 +135,9 @@ class Automation < Tool
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
+      elsif component == "stage2"
+         rebuildComponent("swift")
+         rebuildComponent("libs")
       else
          puts "! Unknown component \"#{component}\"."
          usage()
