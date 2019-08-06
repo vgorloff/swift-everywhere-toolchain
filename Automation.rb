@@ -28,6 +28,7 @@ require_relative "Scripts/Common/NDK.rb"
 
 require_relative "Scripts/Builders/ICUBuilder.rb"
 require_relative "Scripts/Builders/ICUHostBuilder.rb"
+require_relative "Scripts/Builders/ICUSwiftHostBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
 require_relative "Scripts/Builders/DispatchBuilder.rb"
@@ -108,6 +109,7 @@ class Automation < Tool
       if component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
       elsif component == "icuHost" then ICUHostBuilder.new().make
+      elsif component == "icuSwift" then ICUSwiftHostBuilder.new().make
       elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
       elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
       elsif component == "deps" then buildDeps()

@@ -32,6 +32,10 @@ class Lib
       return "icu"
    end
 
+   def self.icuSwift
+      return "icu-swift"
+   end
+
    def self.ndk
       return "ndk"
    end
