@@ -165,7 +165,7 @@ class SwiftBuilder < Builder
          cmd << "-DSWIFT_ENABLE_IOS32=false"
          cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
          cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
-         cmd << "-DSWIFT_SDKS='ANDROID'"
+         cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
       else
          cmd << "-DSWIFT_HOST_VARIANT=linux"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
