@@ -131,6 +131,11 @@ class SwiftBuilder < Builder
       cmd << "-DSWIFT_ANDROID_x86_64_ICU_DATA=#{icu.lib}/libicudataswift.so"
 
       cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
+      if isMacOS?
+         icu = ICUSwiftHostBuilder.new()
+         linkFlags = "-L #{icu.installs}/lib"
+         cmd << "-DCMAKE_LD_FLAGS='#{linkFlags}'"
+      end
       cmd << "-DCMAKE_C_FLAGS='#{cFlags}'"
       cmd << "-DCMAKE_CXX_FLAGS='#{cFlags}'"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
@@ -165,11 +170,11 @@ class SwiftBuilder < Builder
          cmd << "-DSWIFT_ENABLE_IOS32=false"
          cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
          cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
-         cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
+         cmd << "-DSWIFT_SDKS='OSX;ANDROID'"
       else
          cmd << "-DSWIFT_HOST_VARIANT=linux"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
-         cmd << "-DSWIFT_HOST_TRIPLE=armv6-unknown-linux-gnueabihf"
+         cmd << "-DSWIFT_HOST_TRIPLE=x86_64-unknown-linux-gnu"
          # Workaround for error: Cannot add target-level dependencies to non-existent target "swift-stdlib-linux-x86_64".
          # Fix it later so that it should be possible to build Swift for android only
          cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
@@ -217,6 +222,8 @@ class SwiftBuilder < Builder
       setupSymLinks(true)
       setupToolsSymLinks(Arch.host)
       execute "cd #{@builds} && ninja -j#{numberOfJobs}"
+      # Needed by Swift Package manager
+      # execute "cd #{@builds} && ninja -j#{numberOfJobs} swiftCore-macosx-x86_64 swiftDarwin-macosx-x86_64"
       setupSymLinks(false)
 
       @archsToBuild.each { |arch|

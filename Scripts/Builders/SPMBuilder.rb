@@ -33,7 +33,7 @@ class SPMBuilder < Builder
       @args = []
       # @args << "-v"
       # @args << "--swiftc \"#{@swift.builds}/bin/swiftc\""
-      # @args << "--sbt #{@llb.builds}/bin/swift-build-tool"
+      @args << "--sbt #{@llb.builds}/bin/swift-build-tool"
       @args << "--release"
       @args << "--build #{@builds} --prefix #{@installs}"
       @args << "--llbuild-build-dir #{@llb.builds} --llbuild-source-dir #{@llb.sources}"

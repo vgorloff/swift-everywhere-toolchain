@@ -134,14 +134,17 @@ class Automation < Tool
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
-      elsif component == "spm" then SPMBuilder.new().rebuild()
       elsif component == "llb" then LLBBuilder.new().rebuild()
+      elsif component == "spm" then SPMBuilder.new().rebuild()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
-      elsif component == "stage2"
+      elsif component == "stage-swift"
          rebuildComponent("swift")
          rebuildComponent("libs")
+      elsif component == "stage-spm"
+         rebuildComponent("llb")
+         rebuildComponent("spm")
       else
          puts "! Unknown component \"#{component}\"."
          usage()
