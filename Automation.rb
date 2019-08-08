@@ -242,6 +242,7 @@ class Automation < Tool
      FileUtils.copy_entry("#{Config.root}/LICENSE.txt", "#{toolchainDir}/LICENSE.txt", false, false, true)
      utils = Dir["#{Config.root}/Assets/*"].reject { |file| file.include?("Readme.md") }
      utils.each { |file|
+       puts "- Copying \"#{file}\""
        FileUtils.copy_entry(file, "#{toolchainDir}/bin/#{File.basename(file)}", false, false, true)
      }
    end
@@ -271,7 +272,7 @@ class Automation < Tool
    def fixModuleMaps()
      moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
      moduleMaps.each { |file|
-        puts "Correcting \"#{file}\""
+        puts "* Correcting \"#{file}\""
         contents = File.read(file)
         contents = contents.gsub(/\/Users\/.+\/ndk-bundle/, "../../../../ndk")
         File.write(file, contents)
@@ -343,7 +344,7 @@ class Automation < Tool
      end
      files.each { |file|
        dst = file.sub(source, destination).sub("/lib/", "/lib/swift/android/#{archPath}/")
-       puts "Copying \"#{file}\""
+       puts "- Copying \"#{file}\""
        FileUtils.mkdir_p(File.dirname(dst))
        FileUtils.copy_entry(file, dst, false, false, true)
      }

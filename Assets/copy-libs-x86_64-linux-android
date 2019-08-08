@@ -23,4 +23,4 @@
 # THE SOFTWARE.
 #
 
-`dirname $0`/android-swift-copy-libs -target x86_64-unknown-linux-android "$@"
+`dirname $0`/android-swift-copy-libs --android-target x86_64-unknown-linux-android "$@"

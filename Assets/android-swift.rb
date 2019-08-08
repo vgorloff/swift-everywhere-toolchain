@@ -36,7 +36,7 @@ class SwiftBuilder
       ARGV.each_with_index { |val, index|
          if val == '-v'
             @isVerbose = true
-         elsif val == '-target'
+         elsif val == '--android-target'
             targetTrippleIndex = index + 1
          elsif targetTrippleIndex == index
             @targetTripple = val
@@ -82,10 +82,20 @@ class SwiftBuilder
 
    def warnOnInvalidTarget()
       puts("Please provide valid build target.\nKnown targets:")
-      @knownTargets.map { |value| puts "   -target #{value}" }
+      @knownTargets.map { |value| puts "   --android-target #{value}" }
    end
 
    def compile()
+      args = swiftcArgs()
+      cmd = "#{@toolchainDir}/bin/swiftc " + args.join(" ") + " " + @arguments.join(" ")
+      if @isVerbose
+         puts cmd
+      end
+      system cmd
+      exit($?.exitstatus)
+   end
+
+   def swiftcArgs()
       args = []
       if @isVerbose
          args << "-v"
@@ -98,13 +108,7 @@ class SwiftBuilder
       args << "-L #{@toolchainDir}/ndk/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}"
       args << "-L #{@ndkToolChain}/lib/gcc/#{@ndkArch}/#{@ndkGccVersion}.x" # Link the Android NDK's libc++ and libgcc.
       args << "-L #{@toolchainDir}/lib/swift/android/#{@swiftArch}"
-
-      cmd = "#{@toolchainDir}/bin/swiftc " + args.join(" ") + " " + @arguments.join(" ")
-      if @isVerbose
-         puts cmd
-      end
-      system cmd
-      exit($?.exitstatus)
+      return args
    end
 
    def copyLibs()
@@ -130,7 +134,22 @@ class SwiftBuilder
    end
 
    def build()
-      puts "Not implemented!"
+      cmd = []
+      cmd << "SWIFT_EXEC=\"#{@toolchainDir}/bin/swiftc-#{@ndkArch}\""
+      cmd << "swift build"
+      if @isVerbose
+         cmd << "-v"
+      end
+      cmd << "-Xswiftc -target -Xswiftc #{@targetTripple}"
+      cmd << "-Xswiftc -swift-version -Xswiftc 5"
+      cmd << "-Xswiftc -sdk -Xswiftc #{@toolchainDir}/ndk/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
+      cmd << "-Xlinker -L -Xlinker #{@ndkToolChain}/sysroot/usr/lib/#{@ndkArch}/#{@ndkApiVersion}"
+      cmd = cmd.join(" ")
+      if @isVerbose
+         puts cmd
+      end
+      system cmd
+      exit($?.exitstatus)
    end
 
 end
