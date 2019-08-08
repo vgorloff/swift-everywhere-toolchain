@@ -23,6 +23,8 @@
 # THE SOFTWARE.
 #
 
+require 'fileutils'
+
 class SwiftBuilder
 
    def initialize()
@@ -144,12 +146,20 @@ class SwiftBuilder
       cmd << "-Xswiftc -swift-version -Xswiftc 5"
       cmd << "-Xswiftc -sdk -Xswiftc #{@toolchainDir}/ndk/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
       cmd << "-Xlinker -L -Xlinker #{@ndkToolChain}/sysroot/usr/lib/#{@ndkArch}/#{@ndkApiVersion}"
-      cmd = cmd.join(" ")
+      cmd = cmd.join(" ") + " " + @arguments.join(" ")
       if @isVerbose
          puts cmd
       end
       system cmd
-      exit($?.exitstatus)
+      status = $?.exitstatus
+      if status.zero?
+         binaryDir = `swift build --show-bin-path #{@arguments.join(" ")}`.strip()
+         libs = Dir["#{binaryDir}/**/*.dylib"]
+         libs.each { |lib|
+            FileUtils.copy_entry(lib, lib.sub(/\.dylib$/, '.so'), false, false, true)
+         }
+      end
+      exit(status)
    end
 
 end
