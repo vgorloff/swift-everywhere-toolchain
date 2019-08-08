@@ -23,8 +23,4 @@
 # THE SOFTWARE.
 #
 
-export SA_TOOLCHAIN_SWIFT_ARCH_PATH_COMPONENT=armv7
-export SA_TOOLCHAIN_NDK_ARCH_PATH_COMPONENT=arm-linux-androideabi
-export SA_TOOLCHAIN_NDK_CPP_ARCH_PATH_COMPONENT=armeabi-v7a
-export SA_TOOLCHAIN_NDK_PLATFORM_ARCH_PATH_COMPONENT=arm
-`dirname $0`/swiftc-any-linux-android -target armv7-none-linux-androideabi "$@"
+`dirname $0`/android-swiftc -target armv7-none-linux-androideabi "$@"

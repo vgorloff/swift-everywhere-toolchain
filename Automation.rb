@@ -221,6 +221,7 @@ class Automation < Tool
 
    def install()
      toolchainDir = Config.toolchainDir
+     print("Installing toolchain into \"#{toolchainDir}\"", 32)
      if File.exists?(toolchainDir)
         FileUtils.rm_rf(toolchainDir)
      end
@@ -231,6 +232,7 @@ class Automation < Tool
      fixModuleMaps()
      copyAssets()
      copyLicenses()
+     print("Toolchain installed into \"#{toolchainDir}\"", 36)
    end
 
    def copyAssets()
@@ -238,8 +240,7 @@ class Automation < Tool
      FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
      FileUtils.copy_entry("#{Config.root}/VERSION", "#{toolchainDir}/VERSION", false, false, true)
      FileUtils.copy_entry("#{Config.root}/LICENSE.txt", "#{toolchainDir}/LICENSE.txt", false, false, true)
-     utils = Dir["#{Config.root}/Assets/swiftc-*"]
-     utils += Dir["#{Config.root}/Assets/copy-libs-*"]
+     utils = Dir["#{Config.root}/Assets/*"].reject { |file| file.include?("Readme.md") }
      utils.each { |file|
        FileUtils.copy_entry(file, "#{toolchainDir}/bin/#{File.basename(file)}", false, false, true)
      }
@@ -259,8 +260,6 @@ class Automation < Tool
      files << "#{sourcesDir}/#{Lib.dispatch}/LICENSE"
      files << "#{sourcesDir}/#{Lib.foundation}/LICENSE"
      files << "#{sourcesDir}/#{Lib.xml}/Copyright"
-     files << "#{sourcesDir}/#{Lib.llb}/LICENSE.txt"
-     files << "#{sourcesDir}/#{Lib.spm}/LICENSE.txt"
      files.each { |file|
         dst = file.sub(sourcesDir, "#{toolchainDir}/share")
         puts "- Copying \"#{file}\""
@@ -315,9 +314,12 @@ class Automation < Tool
    end
 
    def archive()
-     puts "Compressing \"#{Config.toolchainDir}\""
+     print("Compressing \"#{Config.toolchainDir}\"", 32)
      baseName = File.basename(Config.toolchainDir)
-     system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{baseName}.tar.gz --options='compression-level=9' #{baseName}")
+     extName = 'tar.gz'
+     fileName = "#{baseName}.#{extName}"
+     system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{fileName} --options='compression-level=9' #{baseName}")
+     print("Archive saved to \"#{Config.toolchainDir}.#{extName}\"", 36)
    end
 
    def copyFiles(files, source, destination)
