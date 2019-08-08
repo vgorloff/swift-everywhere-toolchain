@@ -28,6 +28,10 @@ class Lib
       return "swift"
    end
 
+   def self.swiftSPM
+      return "swift-spm"
+   end
+
    def self.icu
       return "icu"
    end

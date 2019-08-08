@@ -23,16 +23,17 @@
 #
 
 require_relative "../Common/Builder.rb"
+require_relative "SwiftSPMBuilder.rb"
 
 class SPMBuilder < Builder
 
    def initialize()
       super(Lib.spm, Arch.host)
       @llb = LLBBuilder.new()
-      @swift = SwiftBuilder.new()
+      @swift = SwiftSPMBuilder.new()
       @args = []
       # @args << "-v"
-      # @args << "--swiftc \"#{@swift.builds}/bin/swiftc\""
+      @args << "--swiftc \"#{@swift.builds}/bin/swiftc\""
       @args << "--sbt #{@llb.builds}/bin/swift-build-tool"
       @args << "--release"
       @args << "--build #{@builds} --prefix #{@installs}"

@@ -1,6 +1,6 @@
 # Requirements
 
-- Xcode 10.2.1
+- Xcode 11
 - Android Studio 3.4.1
 - Android NDK 20 (Comes with Android Studio as downloadable package).
 - Ruby 2.5 (Comes with macOS)

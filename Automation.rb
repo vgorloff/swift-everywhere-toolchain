@@ -41,6 +41,7 @@ require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 require_relative "Scripts/Builders/SPMBuilder.rb"
 require_relative "Scripts/Builders/LLBBuilder.rb"
+require_relative "Scripts/Builders/SwiftSPMBuilder.rb"
 
 require 'fileutils'
 
@@ -81,6 +82,9 @@ class Automation < Tool
    # Pass `SA_DRY_RUN=1 make ...` for Dry run mode.
    # Pass `SA_ARCH=armv7a make ...` to build only armv7a.
    def perform()
+      if !verifyXcode
+         exit 1
+      end
       action = ARGV.first
       if action.nil? then usage()
       elsif action == "bootstrap" then bootstrap()
@@ -117,6 +121,7 @@ class Automation < Tool
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
       elsif component == "swift" then SwiftBuilder.new().make
+      elsif component == "swift-spm" then SwiftSPMBuilder.new().make
       elsif component == "spm" then SPMBuilder.new().make
       elsif component == "llb" then LLBBuilder.new().make
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
@@ -136,6 +141,7 @@ class Automation < Tool
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
       elsif component == "llb" then LLBBuilder.new().rebuild()
       elsif component == "spm" then SPMBuilder.new().rebuild()
+      elsif component == "swift-spm" then SwiftSPMBuilder.new().rebuild()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
@@ -281,14 +287,6 @@ class Automation < Tool
      files += Dir["#{root}/share/**/*"]
      copyFiles(files, root, toolchainDir)
 
-     root = LLBBuilder.new().installs
-     files = Dir["#{root}/**/*"]
-     copyFiles(files, root, toolchainDir)
-
-     root = SPMBuilder.new().installs
-     files = Dir["#{root}/**/*"]
-     copyFiles(files, root, toolchainDir)
-
      @archsToBuild.each { |arch|
        root = DispatchBuilder.new(arch).installs
        files = Dir["#{root}/lib/**/*"]
@@ -386,8 +384,6 @@ class Automation < Tool
      cleanDeps()
      SwiftBuilder.new().clean
      cleanLibs()
-     LLBBuilder.new().clean
-     SPMBuilder.new().clean
    end
 
    def build()
@@ -397,8 +393,6 @@ class Automation < Tool
       SwiftBuilder.new().make
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
-      LLBBuilder.new().make
-      SPMBuilder.new().make
    end
 
    def cleanDeps()

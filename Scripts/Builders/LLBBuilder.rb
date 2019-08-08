@@ -28,6 +28,7 @@ class LLBBuilder < Builder
 
    def initialize()
       super(Lib.llb, Arch.host)
+      @swift = SwiftSPMBuilder.new()
    end
 
    def executeConfigure
@@ -38,6 +39,7 @@ class LLBBuilder < Builder
       cmd << "-DCMAKE_INSTALL_PREFIX=/"
       cmd << "-DCMAKE_BUILD_TYPE=Release"
       cmd << "-DLLBUILD_SUPPORT_BINDINGS=Swift"
+      cmd << "-DSWIFTC_EXECUTABLE=\"#{@swift.builds}/bin/swiftc\""
       cmd << @sources
       execute cmd.join(" ")
    end

@@ -41,6 +41,18 @@ class Tool
       return isMacOS? ? "darwin" : "linux"
    end
 
+   def verifyXcode
+      fullVersion = `xcodebuild -version`.strip
+      version = fullVersion.split("\n").select { |comp| comp.include?("Xcode") }.first
+      status = version.include?("11")
+      if !status
+         print("Please use Xcode 11.", 31)
+         print("Your Xcode version seems too old:", 36)
+         print(fullVersion, 32)
+      end
+      return status
+   end
+
    def execute(command)
       print(command, 32) # Green color.
       if system(command) != true
