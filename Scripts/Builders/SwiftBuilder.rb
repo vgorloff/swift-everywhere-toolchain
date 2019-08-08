@@ -165,14 +165,14 @@ class SwiftBuilder < Builder
          cmd << "-DSWIFT_ENABLE_IOS32=false"
          cmd << "-DSWIFT_SDK_OSX_PATH=#{macOSSDK}"
          cmd << "-DSWIFT_HOST_TRIPLE=x86_64-apple-macosx10.9"
-         cmd << "-DSWIFT_SDKS='OSX;ANDROID'"
+         cmd << "-DSWIFT_SDKS='ANDROID;OSX'"
       else
          cmd << "-DSWIFT_HOST_VARIANT=linux"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
          cmd << "-DSWIFT_HOST_TRIPLE=x86_64-unknown-linux-gnu"
          # Workaround for error: Cannot add target-level dependencies to non-existent target "swift-stdlib-linux-x86_64".
          # Fix it later so that it should be possible to build Swift for android only
-         cmd << "-DSWIFT_SDKS='LINUX;ANDROID'"
+         cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"
       end
 
       cmd << "-DSWIFT_PRIMARY_VARIANT_SDK=ANDROID"
@@ -217,8 +217,6 @@ class SwiftBuilder < Builder
       setupSymLinks(true)
       setupToolsSymLinks(Arch.host)
       execute "cd #{@builds} && ninja -j#{numberOfJobs}"
-      # Needed by Swift Package manager
-      # execute "cd #{@builds} && ninja -j#{numberOfJobs} swiftCore-macosx-x86_64 swiftDarwin-macosx-x86_64"
       setupSymLinks(false)
 
       @archsToBuild.each { |arch|
