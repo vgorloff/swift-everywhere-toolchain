@@ -23,6 +23,4 @@
 # THE SOFTWARE.
 #
 
-export SA_TOOLCHAIN_SWIFT_ARCH_PATH_COMPONENT=armv7
-export SA_TOOLCHAIN_NDK_CPP_ARCH_PATH_COMPONENT=armeabi-v7a
-`dirname $0`/copy-libs-any-linux-android "$@"
+`dirname $0`/android-copy-libs --android-target armv7-none-linux-androideabi "$@"

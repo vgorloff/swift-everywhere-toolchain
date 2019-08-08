@@ -169,7 +169,7 @@ class SwiftBuilder < Builder
       else
          cmd << "-DSWIFT_HOST_VARIANT=linux"
          cmd << "-DSWIFT_HOST_VARIANT_SDK=LINUX"
-         cmd << "-DSWIFT_HOST_TRIPLE=armv6-unknown-linux-gnueabihf"
+         cmd << "-DSWIFT_HOST_TRIPLE=x86_64-unknown-linux-gnu"
          # Workaround for error: Cannot add target-level dependencies to non-existent target "swift-stdlib-linux-x86_64".
          # Fix it later so that it should be possible to build Swift for android only
          cmd << "-DSWIFT_SDKS='ANDROID;LINUX'"

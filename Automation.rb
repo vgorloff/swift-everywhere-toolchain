@@ -28,6 +28,7 @@ require_relative "Scripts/Common/NDK.rb"
 
 require_relative "Scripts/Builders/ICUBuilder.rb"
 require_relative "Scripts/Builders/ICUHostBuilder.rb"
+require_relative "Scripts/Builders/ICUSwiftHostBuilder.rb"
 require_relative "Scripts/Builders/SwiftBuilder.rb"
 require_relative "Scripts/Builders/FoundationBuilder.rb"
 require_relative "Scripts/Builders/DispatchBuilder.rb"
@@ -40,6 +41,7 @@ require_relative "Scripts/Builders/ClangBuilder.rb"
 require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 require_relative "Scripts/Builders/SPMBuilder.rb"
 require_relative "Scripts/Builders/LLBBuilder.rb"
+require_relative "Scripts/Builders/SwiftSPMBuilder.rb"
 
 require 'fileutils'
 
@@ -80,6 +82,9 @@ class Automation < Tool
    # Pass `SA_DRY_RUN=1 make ...` for Dry run mode.
    # Pass `SA_ARCH=armv7a make ...` to build only armv7a.
    def perform()
+      if !verifyXcode
+         exit 1
+      end
       action = ARGV.first
       if action.nil? then usage()
       elsif action == "bootstrap" then bootstrap()
@@ -108,6 +113,7 @@ class Automation < Tool
       if component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
       elsif component == "icuHost" then ICUHostBuilder.new().make
+      elsif component == "icuSwift" then ICUSwiftHostBuilder.new().make
       elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
       elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
       elsif component == "deps" then buildDeps()
@@ -115,6 +121,7 @@ class Automation < Tool
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
       elsif component == "swift" then SwiftBuilder.new().make
+      elsif component == "swift-spm" then SwiftSPMBuilder.new().make
       elsif component == "spm" then SPMBuilder.new().make
       elsif component == "llb" then LLBBuilder.new().make
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
@@ -132,14 +139,18 @@ class Automation < Tool
       elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
-      elsif component == "spm" then SPMBuilder.new().rebuild()
       elsif component == "llb" then LLBBuilder.new().rebuild()
+      elsif component == "spm" then SPMBuilder.new().rebuild()
+      elsif component == "swift-spm" then SwiftSPMBuilder.new().rebuild()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
-      elsif component == "stage2"
+      elsif component == "stage-swift"
          rebuildComponent("swift")
          rebuildComponent("libs")
+      elsif component == "stage-spm"
+         rebuildComponent("llb")
+         rebuildComponent("spm")
       else
          puts "! Unknown component \"#{component}\"."
          usage()
@@ -210,6 +221,7 @@ class Automation < Tool
 
    def install()
      toolchainDir = Config.toolchainDir
+     print("Installing toolchain into \"#{toolchainDir}\"", 32)
      if File.exists?(toolchainDir)
         FileUtils.rm_rf(toolchainDir)
      end
@@ -220,6 +232,7 @@ class Automation < Tool
      fixModuleMaps()
      copyAssets()
      copyLicenses()
+     print("Toolchain installed into \"#{toolchainDir}\"", 36)
    end
 
    def copyAssets()
@@ -227,9 +240,9 @@ class Automation < Tool
      FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
      FileUtils.copy_entry("#{Config.root}/VERSION", "#{toolchainDir}/VERSION", false, false, true)
      FileUtils.copy_entry("#{Config.root}/LICENSE.txt", "#{toolchainDir}/LICENSE.txt", false, false, true)
-     utils = Dir["#{Config.root}/Assets/swiftc-*"]
-     utils += Dir["#{Config.root}/Assets/copy-libs-*"]
+     utils = Dir["#{Config.root}/Assets/*"].reject { |file| file.include?("Readme.md") }
      utils.each { |file|
+       puts "- Copying \"#{file}\""
        FileUtils.copy_entry(file, "#{toolchainDir}/bin/#{File.basename(file)}", false, false, true)
      }
    end
@@ -248,8 +261,6 @@ class Automation < Tool
      files << "#{sourcesDir}/#{Lib.dispatch}/LICENSE"
      files << "#{sourcesDir}/#{Lib.foundation}/LICENSE"
      files << "#{sourcesDir}/#{Lib.xml}/Copyright"
-     files << "#{sourcesDir}/#{Lib.llb}/LICENSE.txt"
-     files << "#{sourcesDir}/#{Lib.spm}/LICENSE.txt"
      files.each { |file|
         dst = file.sub(sourcesDir, "#{toolchainDir}/share")
         puts "- Copying \"#{file}\""
@@ -261,7 +272,7 @@ class Automation < Tool
    def fixModuleMaps()
      moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
      moduleMaps.each { |file|
-        puts "Correcting \"#{file}\""
+        puts "* Correcting \"#{file}\""
         contents = File.read(file)
         contents = contents.gsub(/\/Users\/.+\/ndk-bundle/, "../../../../ndk")
         File.write(file, contents)
@@ -274,14 +285,6 @@ class Automation < Tool
      files = Dir["#{root}/bin/**/*"]
      files += Dir["#{root}/lib/**/*"]
      files += Dir["#{root}/share/**/*"]
-     copyFiles(files, root, toolchainDir)
-
-     root = LLBBuilder.new().installs
-     files = Dir["#{root}/**/*"]
-     copyFiles(files, root, toolchainDir)
-
-     root = SPMBuilder.new().installs
-     files = Dir["#{root}/**/*"]
      copyFiles(files, root, toolchainDir)
 
      @archsToBuild.each { |arch|
@@ -312,9 +315,12 @@ class Automation < Tool
    end
 
    def archive()
-     puts "Compressing \"#{Config.toolchainDir}\""
+     print("Compressing \"#{Config.toolchainDir}\"", 32)
      baseName = File.basename(Config.toolchainDir)
-     system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{baseName}.tar.gz --options='compression-level=9' #{baseName}")
+     extName = 'tar.gz'
+     fileName = "#{baseName}.#{extName}"
+     system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{fileName} --options='compression-level=9' #{baseName}")
+     print("Archive saved to \"#{Config.toolchainDir}.#{extName}\"", 36)
    end
 
    def copyFiles(files, source, destination)
@@ -338,7 +344,7 @@ class Automation < Tool
      end
      files.each { |file|
        dst = file.sub(source, destination).sub("/lib/", "/lib/swift/android/#{archPath}/")
-       puts "Copying \"#{file}\""
+       puts "- Copying \"#{file}\""
        FileUtils.mkdir_p(File.dirname(dst))
        FileUtils.copy_entry(file, dst, false, false, true)
      }
@@ -381,8 +387,6 @@ class Automation < Tool
      cleanDeps()
      SwiftBuilder.new().clean
      cleanLibs()
-     LLBBuilder.new().clean
-     SPMBuilder.new().clean
    end
 
    def build()
@@ -392,8 +396,6 @@ class Automation < Tool
       SwiftBuilder.new().make
       @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
       @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
-      LLBBuilder.new().make
-      SPMBuilder.new().make
    end
 
    def cleanDeps()

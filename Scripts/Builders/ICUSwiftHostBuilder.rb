@@ -23,33 +23,41 @@
 #
 
 require_relative "../Common/Builder.rb"
-require_relative "SwiftSPMBuilder.rb"
 
-class SPMBuilder < Builder
+class ICUSwiftHostBuilder < Builder
 
    def initialize()
-      super(Lib.spm, Arch.host)
-      @llb = LLBBuilder.new()
-      @swift = SwiftSPMBuilder.new()
-      @args = []
-      # @args << "-v"
-      @args << "--swiftc \"#{@swift.builds}/bin/swiftc\""
-      @args << "--sbt #{@llb.builds}/bin/swift-build-tool"
-      @args << "--release"
-      @args << "--build #{@builds} --prefix #{@installs}"
-      @args << "--llbuild-build-dir #{@llb.builds} --llbuild-source-dir #{@llb.sources}"
+      super(Lib.icuSwift, Arch.host)
+      @sources = "#{Config.sources}/#{Lib.icu}/icu4c"
+   end
+
+   def executeConfigure
+      # See: ./Sources/swift/utils/build-script-impl
+      hostSystem = isMacOS? ? "MacOSX" : "Linux"
+      cmd = ["cd #{@builds} &&"]
+      cmd << "CFLAGS='-Os'"
+      cmd << "CXXFLAGS='--std=c++11 -fPIC'"
+      cmd << "#{@sources}/source/runConfigureICU #{hostSystem} --prefix=#{@installs}"
+      cmd << "--enable-renaming --with-library-suffix=swift"
+      cmd << "--enable-shared --enable-static --enable-strict --disable-icuio --disable-plugins --disable-dyload"
+      cmd << "--disable-extras --disable-samples --enable-tests=no --enable-tools=no --disable-layoutex --with-data-packaging=auto"
+      execute cmd.join(" ")
    end
 
    def executeBuild
-      execute "cd #{@sources} && Utilities/bootstrap #{@args.join(' ')}"
-   end
-
-   def executeClean
-      execute "cd #{@sources} && Utilities/bootstrap clean #{@args.join(' ')}"
+      cmd = "cd #{@builds} && make"
+      @dryRun ? message(cmd) : execute(cmd)
    end
 
    def executeInstall
-      execute "cd #{@sources} && Utilities/bootstrap install #{@args.join(' ')}"
+      cmd = "cd #{@builds} && make install"
+      @dryRun ? message(cmd) : execute(cmd)
+      prependContents = File.read("#{@builds}/uconfig.h.prepend")
+      file = "#{@installs}/include/unicode/uconfig.h"
+      contents = File.read(file)
+      token = "#define __UCONFIG_H__"
+      contents = contents.sub(token, "#{token}\n#{prependContents}")
+      File.write(file, contents)
    end
 
 end

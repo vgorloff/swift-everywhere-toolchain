@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 #
 # The MIT License
 #
@@ -23,4 +23,5 @@
 # THE SOFTWARE.
 #
 
-`dirname $0`/android-swiftc --android-target x86_64-unknown-linux-android "$@"
+require_relative "android-swift.rb"
+SwiftBuilder.new().build()
