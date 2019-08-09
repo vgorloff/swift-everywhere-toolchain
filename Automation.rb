@@ -230,7 +230,7 @@ class Automation < Tool
         FileUtils.rm_rf(toolchainDir)
      end
      FileUtils.mkdir_p(toolchainDir)
-     File.symlink("/Users/vagrant/Library/Android/sdk/ndk-bundle", "#{toolchainDir}/ndk")
+     # File.symlink("/Users/vagrant/Library/Android/sdk/ndk-bundle", "#{toolchainDir}/ndk")
 
      copyToolchainFiles()
      fixModuleMaps()
@@ -279,7 +279,7 @@ class Automation < Tool
       moduleMaps.each { |file|
          puts "* Correcting \"#{file}\""
          contents = File.read(file)
-         contents = contents.gsub(/header\s+\".+sysroot/, "header \"../../../../ndk/sysroot")
+         contents = contents.gsub(/header\s+\".+sysroot/, "header \"/usr/local/ndk/sysroot")
          File.write(file, contents)
       }
    end

@@ -76,7 +76,7 @@ class SwiftBuilder
          @ndkPlatformArch = "x86_64"
       end
       @toolchainDir = File.dirname(File.dirname(__FILE__))
-      @ndkPath = "#{@toolchainDir}/ndk"
+      @ndkPath = "/usr/local/ndk"
       @ndkGccVersion = "4.9"
       @ndkApiVersion = "24"
       @ndkToolChain = "#{@ndkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
@@ -105,10 +105,10 @@ class SwiftBuilder
       args << "-swift-version 5"
       args << "-target #{@targetTripple}"
       args << "-tools-directory #{@ndkToolChain}"
-      args << "-sdk #{@toolchainDir}/ndk/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
+      args << "-sdk #{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
       args << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX -Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
       args << "-Xcc -I#{@ndkToolChain}/sysroot/usr/include -Xcc -I#{@ndkToolChain}/sysroot/usr/include/#{@ndkArch}"
-      args << "-L #{@toolchainDir}/ndk/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}"
+      args << "-L #{@ndkPath}/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}"
       args << "-L #{@ndkToolChain}/lib/gcc/#{@ndkArch}/#{@ndkGccVersion}.x" # Link the Android NDK's -lstdc++ and libgcc.
       args << "-L #{@ndkToolChain}/sysroot/usr/lib/#{@ndkArch}/#{@ndkApiVersion}" # Link the Android NDK's -lc++
       args << "-L #{@toolchainDir}/lib/swift/android/#{@swiftArch}"
@@ -128,7 +128,7 @@ class SwiftBuilder
       system "mkdir -p \"#{destination}\""
 
       files = Dir["#{@toolchainDir}/lib/swift/android/#{@swiftArch}" + "/*.so"]
-      files << "#{@toolchainDir}/ndk/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}/libc++_shared.so"
+      files << "#{@ndkPath}/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}/libc++_shared.so"
       files.each { |lib|
          if @isVerbose
             puts "- Copying \"#{lib}\""
@@ -145,7 +145,7 @@ class SwiftBuilder
          cmd << "-v"
       end
       cmd << "-Xswiftc -target -Xswiftc #{@targetTripple}"
-      cmd << "-Xswiftc -sdk -Xswiftc #{@toolchainDir}/ndk/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
+      cmd << "-Xswiftc -sdk -Xswiftc #{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
       # cmd << "-Xswiftc -swift-version -Xswiftc 5"
       # cmd << "-Xlinker -L -Xlinker #{@ndkToolChain}/sysroot/usr/lib/#{@ndkArch}/#{@ndkApiVersion}"
       cmd = cmd.join(" ") + " " + @arguments.join(" ")
