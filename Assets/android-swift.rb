@@ -54,31 +54,35 @@ class SwiftBuilder
          warnOnInvalidTarget()
          exit(1)
       end
+      @ndkApiVersion = "24"
       if @targetTripple == "aarch64-unknown-linux-android"
          @swiftArch = "aarch64"
          @ndkArch = "aarch64-linux-android"
          @cppArch = "arm64-v8a"
          @ndkPlatformArch = "arm64"
+         @clang = "aarch64-linux-android#{@ndkApiVersion}-clang"
       elsif @targetTripple == "armv7-none-linux-androideabi"
          @swiftArch = "armv7"
          @ndkArch = "arm-linux-androideabi"
          @cppArch = "armeabi-v7a"
          @ndkPlatformArch = "arm"
+         @clang = "armv7a-linux-androideabi#{@ndkApiVersion}-clang"
       elsif @targetTripple == "i686-unknown-linux-android"
          @swiftArch = "i686"
          @ndkArch = "i686-linux-android"
          @cppArch = "x86"
          @ndkPlatformArch = "x86"
+         @clang = "i686-linux-android#{@ndkApiVersion}-clang"
       elsif @targetTripple == "x86_64-unknown-linux-android"
          @swiftArch = "x86_64"
          @ndkArch = "x86_64-linux-android"
          @cppArch = "x86_64"
          @ndkPlatformArch = "x86_64"
+         @clang = "x86_64-linux-android#{@ndkApiVersion}-clang"
       end
       @toolchainDir = File.dirname(File.dirname(__FILE__))
       @ndkPath = "/usr/local/ndk"
       @ndkGccVersion = "4.9"
-      @ndkApiVersion = "24"
       @ndkToolChain = "#{@ndkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
    end
 
@@ -140,6 +144,8 @@ class SwiftBuilder
    def build()
       cmd = []
       cmd << "SWIFT_EXEC=\"#{@toolchainDir}/bin/swiftc-#{@ndkArch}\""
+      # cmd << "CC=#{@ndkToolChain}/bin/#{@clang}"
+      # cmd << "CXX=#{@ndkToolChain}/bin/#{@clang}++"
       cmd << "swift build"
       if @isVerbose
          cmd << "-v"
