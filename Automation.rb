@@ -275,13 +275,13 @@ class Automation < Tool
    end
 
    def fixModuleMaps()
-     moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
-     moduleMaps.each { |file|
-        puts "* Correcting \"#{file}\""
-        contents = File.read(file)
-        contents = contents.gsub(/\/Users\/.+\/ndk-bundle/, "../../../../ndk")
-        File.write(file, contents)
-     }
+      moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
+      moduleMaps.each { |file|
+         puts "* Correcting \"#{file}\""
+         contents = File.read(file)
+         contents = contents.gsub(/header\s+\".+sysroot/, "header \"../../../../ndk/sysroot")
+         File.write(file, contents)
+      }
    end
 
    def copyToolchainFiles()
