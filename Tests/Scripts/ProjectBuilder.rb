@@ -75,7 +75,7 @@ EOM
    end
 
    def initialize(component, arch)
-      @isVerbose = !false
+      @isVerbose = false
       @arch = arch
       @component = component
       @sources = "#{@root}/Sources"

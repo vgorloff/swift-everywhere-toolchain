@@ -368,7 +368,9 @@ class Automation < Tool
 
    def test()
       execute "cd \"#{Config.tests}/sample-executable\" && make build"
+      puts()
       execute "cd \"#{Config.tests}/sample-library\" && make build"
+      puts()
       execute "cd \"#{Config.tests}/sample-package\" && make build"
    end
 

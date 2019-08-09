@@ -17,7 +17,7 @@ class Builder < ProjectBuilder
       execute "file #{binary}"
 
       # Exe
-      binary = @binary
+      binary = "#{@builds}/#{@component}"
       execute "cd #{@builds} && #{@swiftc} -emit-executable -I #{@builds} -L #{@builds} -lHelloMessages -o #{binary} #{@sources}/main.swift"
       execute "file #{binary}"
 
