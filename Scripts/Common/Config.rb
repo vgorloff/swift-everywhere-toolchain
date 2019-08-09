@@ -54,8 +54,8 @@ class Config
       return "#{root}/#{Location.patches}"
    end
 
-   def self.projects
-      return "#{root}/#{Location.projects}"
+   def self.tests
+      return "#{root}/#{Location.tests}"
    end
 
 end

@@ -67,7 +67,10 @@ class Automation < Tool
        print("4. Archive toolchain:", 32)
        print("   $ make archive\n", 36)
 
-       print("5. (Optional) Clean toolchain build:", 32)
+       print("5. (Optional) Verify toolchain build:", 32)
+       print("   $ make test\n", 36)
+
+       print("6. (Optional) Clean toolchain build:", 32)
        print("   $ make clean\n", 36)
 
        print("Building certain component (i.e. llvm, icu, xml, ssl, curl, swift, dispatch, foundation):\n", 33)
@@ -94,6 +97,7 @@ class Automation < Tool
       elsif action == "archive" then archive()
       elsif action == "clean" then clean()
       elsif action == "status" then status()
+      elsif action == "test" then test()
       elsif action == "finalize"
          install()
          archive()
@@ -315,15 +319,6 @@ class Automation < Tool
      }
    end
 
-   def archive()
-     print("Compressing \"#{Config.toolchainDir}\"", 32)
-     baseName = File.basename(Config.toolchainDir)
-     extName = 'tar.gz'
-     fileName = "#{baseName}.#{extName}"
-     system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{fileName} --options='compression-level=9' #{baseName}")
-     print("Archive saved to \"#{Config.toolchainDir}.#{extName}\"", 36)
-   end
-
    def copyFiles(files, source, destination)
      files.each { |file|
        dst = file.sub(source, destination)
@@ -351,15 +346,30 @@ class Automation < Tool
      }
    end
 
+   def archive()
+      print("Compressing \"#{Config.toolchainDir}\"", 32)
+      baseName = File.basename(Config.toolchainDir)
+      extName = 'tar.gz'
+      fileName = "#{baseName}.#{extName}"
+      system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{fileName} --options='compression-level=9' #{baseName}")
+      print("Archive saved to \"#{Config.toolchainDir}.#{extName}\"", 36)
+   end
+
    def bootstrap()
-     Checkout.new().checkout()
-     build()
-     install()
-     archive()
-     puts ""
-     print("\"Swift Toolchain for Android\" build is completed.")
-     print("It can be found in \"#{Config.toolchainDir}\".")
-     puts ""
+      Checkout.new().checkout()
+      build()
+      install()
+      archive()
+      puts ""
+      print("\"Swift Toolchain for Android\" build is completed.")
+      print("It can be found in \"#{Config.toolchainDir}\".")
+      puts ""
+   end
+
+   def test()
+      execute "cd \"#{Config.tests}/sample-executable\" && make build"
+      execute "cd \"#{Config.tests}/sample-library\" && make build"
+      execute "cd \"#{Config.tests}/sample-package\" && make build"
    end
 
    def status()
