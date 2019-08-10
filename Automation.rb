@@ -367,6 +367,17 @@ class Automation < Tool
    end
 
    def test()
+      ndkDir = "/usr/local/ndk"
+      toolchainName = isMacOS? ? "darwin-x86_64" : "linux-x86_64"
+      testFile = "#{ndkDir}/toolchains/llvm/prebuilt/#{toolchainName}"
+      if !Dir.exist?(testFile)
+         error "! Please create symbolic link \"#{ndkDir}\" which points to Android NDK installation."
+         puts ""
+         message "  Example:"
+         message "  sudo ln -vs ~/Library/Android/sdk/ndk-bundle #{ndkDir}"
+         puts ""
+         exit(1)
+      end
       execute "cd \"#{Config.tests}/sample-executable\" && make build"
       puts()
       execute "cd \"#{Config.tests}/sample-library\" && make build"
