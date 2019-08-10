@@ -40,8 +40,8 @@ class Location
       return "Patches"
    end
 
-   def self.projects
-      return "Projects"
+   def self.tests
+      return "Tests"
    end
 
    def self.toolChain

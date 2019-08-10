@@ -67,7 +67,10 @@ class Automation < Tool
        print("4. Archive toolchain:", 32)
        print("   $ make archive\n", 36)
 
-       print("5. (Optional) Clean toolchain build:", 32)
+       print("5. (Optional) Verify toolchain build:", 32)
+       print("   $ make test\n", 36)
+
+       print("6. (Optional) Clean toolchain build:", 32)
        print("   $ make clean\n", 36)
 
        print("Building certain component (i.e. llvm, icu, xml, ssl, curl, swift, dispatch, foundation):\n", 33)
@@ -94,6 +97,7 @@ class Automation < Tool
       elsif action == "archive" then archive()
       elsif action == "clean" then clean()
       elsif action == "status" then status()
+      elsif action == "test" then test()
       elsif action == "finalize"
          install()
          archive()
@@ -226,7 +230,7 @@ class Automation < Tool
         FileUtils.rm_rf(toolchainDir)
      end
      FileUtils.mkdir_p(toolchainDir)
-     File.symlink("/Users/vagrant/Library/Android/sdk/ndk-bundle", "#{toolchainDir}/ndk")
+     # File.symlink("/Users/vagrant/Library/Android/sdk/ndk-bundle", "#{toolchainDir}/ndk")
 
      copyToolchainFiles()
      fixModuleMaps()
@@ -238,6 +242,7 @@ class Automation < Tool
    def copyAssets()
      toolchainDir = Config.toolchainDir
      FileUtils.copy_entry("#{Config.root}/Assets/Readme.md", "#{toolchainDir}/Readme.md", false, false, true)
+     FileUtils.copy_entry("#{Config.root}/CHANGELOG", "#{toolchainDir}/CHANGELOG", false, false, true)
      FileUtils.copy_entry("#{Config.root}/VERSION", "#{toolchainDir}/VERSION", false, false, true)
      FileUtils.copy_entry("#{Config.root}/LICENSE.txt", "#{toolchainDir}/LICENSE.txt", false, false, true)
      utils = Dir["#{Config.root}/Assets/*"].reject { |file| file.include?("Readme.md") }
@@ -270,13 +275,13 @@ class Automation < Tool
    end
 
    def fixModuleMaps()
-     moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
-     moduleMaps.each { |file|
-        puts "* Correcting \"#{file}\""
-        contents = File.read(file)
-        contents = contents.gsub(/\/Users\/.+\/ndk-bundle/, "../../../../ndk")
-        File.write(file, contents)
-     }
+      moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
+      moduleMaps.each { |file|
+         puts "* Correcting \"#{file}\""
+         contents = File.read(file)
+         contents = contents.gsub(/header\s+\".+sysroot/, "header \"/usr/local/ndk/sysroot")
+         File.write(file, contents)
+      }
    end
 
    def copyToolchainFiles()
@@ -314,15 +319,6 @@ class Automation < Tool
      }
    end
 
-   def archive()
-     print("Compressing \"#{Config.toolchainDir}\"", 32)
-     baseName = File.basename(Config.toolchainDir)
-     extName = 'tar.gz'
-     fileName = "#{baseName}.#{extName}"
-     system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{fileName} --options='compression-level=9' #{baseName}")
-     print("Archive saved to \"#{Config.toolchainDir}.#{extName}\"", 36)
-   end
-
    def copyFiles(files, source, destination)
      files.each { |file|
        dst = file.sub(source, destination)
@@ -350,15 +346,43 @@ class Automation < Tool
      }
    end
 
+   def archive()
+      print("Compressing \"#{Config.toolchainDir}\"", 32)
+      baseName = File.basename(Config.toolchainDir)
+      extName = 'tar.gz'
+      fileName = "#{baseName}.#{extName}"
+      system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{fileName} --options='compression-level=9' #{baseName}")
+      print("Archive saved to \"#{Config.toolchainDir}.#{extName}\"", 36)
+   end
+
    def bootstrap()
-     Checkout.new().checkout()
-     build()
-     install()
-     archive()
-     puts ""
-     print("\"Swift Toolchain for Android\" build is completed.")
-     print("It can be found in \"#{Config.toolchainDir}\".")
-     puts ""
+      Checkout.new().checkout()
+      build()
+      install()
+      archive()
+      puts ""
+      print("\"Swift Toolchain for Android\" build is completed.")
+      print("It can be found in \"#{Config.toolchainDir}\".")
+      puts ""
+   end
+
+   def test()
+      ndkDir = "/usr/local/ndk"
+      toolchainName = isMacOS? ? "darwin-x86_64" : "linux-x86_64"
+      testFile = "#{ndkDir}/toolchains/llvm/prebuilt/#{toolchainName}"
+      if !Dir.exist?(testFile)
+         error "! Please create symbolic link \"#{ndkDir}\" which points to Android NDK installation."
+         puts ""
+         message "  Example:"
+         message "  sudo ln -vs ~/Library/Android/sdk/ndk-bundle #{ndkDir}"
+         puts ""
+         exit(1)
+      end
+      execute "cd \"#{Config.tests}/sample-executable\" && make build"
+      puts()
+      execute "cd \"#{Config.tests}/sample-library\" && make build"
+      puts()
+      execute "cd \"#{Config.tests}/sample-package\" && make build"
    end
 
    def status()

@@ -1,10 +1,9 @@
 # Usage
 
-1. Make sure that symbolic link with name `ndk` points to right `Android NDK` location (usually `~/Library/Android/sdk/ndk-bundle`).
+1. Make sure that symbolic link with name `/usr/local/ndk` points to right `Android NDK` location (usually `~/Library/Android/sdk/ndk-bundle`). Create symbolic link if needed.
 
    ```bash
-   cd ./swift-android-toolchain
-   ln -s ~/Library/Android/sdk/ndk-bundle ndk
+   sudo ln -vs ~/Library/Android/sdk/ndk-bundle /usr/local/ndk
    ```
 
 2. Compile Swift sources for `armv7a`:

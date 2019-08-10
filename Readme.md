@@ -70,7 +70,7 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
 
 8. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
-# Setup and Build (Vagrant Linux)
+# Setup and Build (Vagrant Linux) - Draft Beta
 
 1. Clone this repository.
 
