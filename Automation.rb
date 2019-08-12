@@ -403,8 +403,8 @@ class Automation < Tool
       repos << "#{Config.sources}/#{Lib.dispatch}"
       repos << "#{Config.sources}/#{Lib.foundation}"
       repos << "#{Config.sources}/#{Lib.xml}"
-      repos << "#{Config.sources}/#{Lib.spm}"
-      repos << "#{Config.sources}/#{Lib.llb}"
+      # repos << "#{Config.sources}/#{Lib.spm}"
+      # repos << "#{Config.sources}/#{Lib.llb}"
       repos.each { |repo|
          execute "cd \"#{repo}\" && git status"
       }
