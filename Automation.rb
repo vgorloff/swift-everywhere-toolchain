@@ -116,8 +116,8 @@ class Automation < Tool
    def buildComponent(component)
       if component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
-      elsif component == "icuHost" then ICUHostBuilder.new().make
-      elsif component == "icuSwift" then ICUSwiftHostBuilder.new().make
+      elsif component == "icu-host" then ICUHostBuilder.new().make
+      elsif component == "icu-swift" then ICUSwiftHostBuilder.new().make
       elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
       elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
       elsif component == "deps" then buildDeps()
@@ -145,6 +145,10 @@ class Automation < Tool
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
       elsif component == "llb" then LLBBuilder.new().rebuild()
       elsif component == "spm" then SPMBuilder.new().rebuild()
+      elsif component == "icu-swift" then ICUSwiftHostBuilder.new().rebuild()
+      elsif component == "icu"
+         ICUHostBuilder.new().rebuild()
+         @archsToBuild.each { |arch| ICUBuilder.new(arch).rebuild() }
       elsif component == "swift-spm" then SwiftSPMBuilder.new().rebuild()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
@@ -163,7 +167,8 @@ class Automation < Tool
 
    def cleanComponent(component)
       if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
-      elsif component == "icuHost" then ICUHostBuilder.new().clean
+      elsif component == "icu-host" then ICUHostBuilder.new().clean
+      elsif component == "icu-swift" then ICUSwiftHostBuilder.new().clean
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
       elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
@@ -302,7 +307,7 @@ class Automation < Tool
        copyFiles(files, root, toolchainDir)
 
        root = ICUBuilder.new(arch).installs
-       files = Dir["#{root}/lib/*.so"]
+       files = Dir["#{root}/lib/*.so"].reject { |file| file.include?("libicutestswift.so") }
        copyLibFiles(files, root, toolchainDir, arch)
 
        root = OpenSSLBuilder.new(arch).installs

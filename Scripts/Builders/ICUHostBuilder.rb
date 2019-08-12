@@ -36,8 +36,15 @@ class ICUHostBuilder < ICUBuilder
       cmd << "CFLAGS='-Os'"
       cmd << "CXXFLAGS='--std=c++11'"
       cmd << "#{@sources}/source/runConfigureICU #{hostSystem} --prefix=#{@installs}"
+
+      # Below option should not be set. Otherwize you will have ICU without embed data.
+      # See:
+      # - ICU Data - ICU User Guide: http://userguide.icu-project.org/icudata#TOC-Building-and-Linking-against-ICU-data
+      # - https://forums.swift.org/t/partial-nightlies-for-android-sdk/25909/43?u=v.gorlov
+      # cmd << "--enable-tools=no"
+
       cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
-      cmd << "--enable-layoutex=no --enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
+      cmd << "--enable-layoutex=no --enable-tests=no --enable-samples=no --enable-dyload=no"
       execute cmd.join(" ")
    end
 

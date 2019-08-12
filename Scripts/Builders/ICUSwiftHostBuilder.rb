@@ -39,8 +39,16 @@ class ICUSwiftHostBuilder < Builder
       cmd << "CXXFLAGS='--std=c++11 -fPIC'"
       cmd << "#{@sources}/source/runConfigureICU #{hostSystem} --prefix=#{@installs}"
       cmd << "--enable-renaming --with-library-suffix=swift"
-      cmd << "--enable-shared --enable-static --enable-strict --disable-icuio --disable-plugins --disable-dyload"
-      cmd << "--disable-extras --disable-samples --enable-tests=no --enable-tools=no --disable-layoutex --with-data-packaging=auto"
+      # cmd << "--enable-static"
+
+      # Below option should not be set. Otherwize you will have ICU without embed data.
+      # See:
+      # - ICU Data - ICU User Guide: http://userguide.icu-project.org/icudata#TOC-Building-and-Linking-against-ICU-data
+      # - https://forums.swift.org/t/partial-nightlies-for-android-sdk/25909/43?u=v.gorlov
+      # cmd << --enable-tools=no"
+
+      cmd << "--enable-shared --enable-strict --disable-icuio --disable-plugins --disable-dyload"
+      cmd << "--disable-extras --disable-samples --enable-tests=no --disable-layoutex --with-data-packaging=library"
       execute cmd.join(" ")
    end
 

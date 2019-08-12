@@ -82,11 +82,18 @@ class ICUBuilder < Builder
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=x86_64-linux-android"
       end
+
+      # Below option should not be set. Otherwize you will have ICU without embed data.
+      # See:
+      # - ICU Data - ICU User Guide: http://userguide.icu-project.org/icudata#TOC-Building-and-Linking-against-ICU-data
+      # - https://forums.swift.org/t/partial-nightlies-for-android-sdk/25909/43?u=v.gorlov
+      # cmd << --enable-tools=no"
+
       cmd << "--with-library-suffix=swift"
       cmd << "--enable-static=no --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
-      cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
+      cmd << "--enable-tests=no --enable-samples=no --enable-dyload=no"
       cmd << "--with-cross-build=#{host.builds}"
-      cmd << "--with-data-packaging=archive"
+      cmd << "--with-data-packaging=library"
       execute cmd.join(" ")
    end
 
