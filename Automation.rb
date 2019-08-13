@@ -98,6 +98,7 @@ class Automation < Tool
       elsif action == "clean" then clean()
       elsif action == "status" then status()
       elsif action == "test" then test()
+      elsif action == "verify" then verify()
       elsif action == "finalize"
          install()
          archive()
@@ -388,6 +389,15 @@ class Automation < Tool
       execute "cd \"#{Config.tests}/sample-library\" && make build"
       puts()
       execute "cd \"#{Config.tests}/sample-package\" && make build"
+   end
+
+   def verify()
+      @archsToBuild.each { |arch|
+         ICUBuilder.new(arch).verify()
+         OpenSSLBuilder.new(arch).verify()
+         DispatchBuilder.new(arch).verify()
+         FoundationBuilder.new(arch).verify()
+      }
    end
 
    def status()

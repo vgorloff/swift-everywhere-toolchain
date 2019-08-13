@@ -119,4 +119,9 @@ class ICUBuilder < Builder
       configurePatchFile("#{@patches}/source/config/mh-linux.diff", shouldEnable)
    end
 
+   def libs()
+      files = Dir["#{@installs}/lib/**/*.so"].reject { |file| file.include?("libicutestswift.so") }
+      return files
+   end
+
 end

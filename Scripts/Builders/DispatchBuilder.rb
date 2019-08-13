@@ -145,4 +145,9 @@ EOM
       }
    end
 
+   def libs()
+      files = Dir["#{@installs}/lib/**/*.so"]
+      return files
+   end
+
 end
