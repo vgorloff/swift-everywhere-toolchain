@@ -87,7 +87,7 @@ class ICUBuilder < Builder
       # See:
       # - ICU Data - ICU User Guide: http://userguide.icu-project.org/icudata#TOC-Building-and-Linking-against-ICU-data
       # - https://forums.swift.org/t/partial-nightlies-for-android-sdk/25909/43?u=v.gorlov
-      # cmd << --enable-tools=no"
+      # cmd << "--enable-tools=no"
 
       cmd << "--with-library-suffix=swift"
       cmd << "--enable-static=no --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
