@@ -22,7 +22,7 @@
 # THE SOFTWARE.
 #
 
-require_relative "../Common/Builder.rb"
+require_relative "ICUBaseBuilder.rb"
 
 # See:
 # - ICU Patches: https://github.com/amraboelela/swift/blob/android/docs/Android.md
@@ -33,11 +33,10 @@ require_relative "../Common/Builder.rb"
 # - Packaging ICU4C: http://userguide.icu-project.org/packaging
 # - GitHub libiconv-libicu-android: https://github.com/SwiftAndroid/libiconv-libicu-android
 
-class ICUBuilder < Builder
+class ICUBuilder < ICUBaseBuilder
 
    def initialize(arch = Arch.default)
       super(Lib.icu, arch)
-      @sources = "#{Config.sources}/#{Lib.icu}/icu4c"
       @ndk = NDK.new()
    end
 
@@ -98,13 +97,12 @@ class ICUBuilder < Builder
    end
 
    def executeBuild
-      cmd = "cd #{@builds} && make"
-      @dryRun ? message(cmd) : execute(cmd)
+      execute "cd #{@builds} && make"
    end
 
    def executeInstall
-      cmd = "cd #{@builds} && make install"
-      @dryRun ? message(cmd) : execute(cmd)
+      execute "cd #{@builds} && make install"
+
       Dir[lib + "/**.so*"].each { |f|
          if File.symlink?(f)
             File.delete(f)
@@ -117,6 +115,7 @@ class ICUBuilder < Builder
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/source/configure.diff", shouldEnable)
       configurePatchFile("#{@patches}/source/config/mh-linux.diff", shouldEnable)
+      configurePatchFile("#{@patches}/source/data/Makefile.in.diff", shouldEnable)
    end
 
    def libs()

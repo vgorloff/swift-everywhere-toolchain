@@ -22,38 +22,23 @@
 # THE SOFTWARE.
 #
 
-require_relative "ICUBaseBuilder.rb"
+require_relative "../Common/Builder.rb"
 
-class ICUHostBuilder < ICUBaseBuilder
+class ICUBaseBuilder < Builder
 
-   def initialize()
-      super(Lib.icu, Arch.host)
+   def initialize(component, arch)
+      super(component, arch)
+      @sources = "#{Config.sources}/#{Lib.icu}/icu4c"
    end
 
-   def executeConfigure
-      hostSystem = isMacOS? ? "MacOSX" : "Linux"
-      cmd = ["cd #{@builds} &&"]
-      cmd << "CFLAGS='-Os'"
-      cmd << "CXXFLAGS='--std=c++11'"
-      cmd << "#{@sources}/source/runConfigureICU #{hostSystem} --prefix=#{@installs}"
-
-      # Below option should not be set. Otherwize you will have ICU without embed data.
-      # See:
-      # - ICU Data - ICU User Guide: http://userguide.icu-project.org/icudata#TOC-Building-and-Linking-against-ICU-data
-      # - https://forums.swift.org/t/partial-nightlies-for-android-sdk/25909/43?u=v.gorlov
-      # cmd << "--enable-tools=no"
-
-      cmd << "--enable-static --enable-shared=no --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no"
-      cmd << "--enable-layoutex=no --enable-tests=no --enable-samples=no --enable-dyload=no"
-      execute cmd.join(" ")
-   end
-
-   def executeBuild
-      execute "cd #{@builds} && make"
-   end
-
-   def executeInstall
-      puts "ICU Host Build not require to install. It is just used for `Cross Compilation`."
+   def applyRenamingFix
+      file = "#{@installs}/include/unicode/uconfig.h"
+      message "Applying changes to #{file} (As suggected by ICU)."
+      prependContents = File.read("#{@builds}/uconfig.h.prepend")
+      contents = File.read(file)
+      token = "#define __UCONFIG_H__"
+      contents = contents.sub(token, "#{token}\n#{prependContents}")
+      File.write(file, contents)
    end
 
 end

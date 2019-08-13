@@ -22,13 +22,12 @@
 # THE SOFTWARE.
 #
 
-require_relative "../Common/Builder.rb"
+require_relative "ICUBaseBuilder.rb"
 
-class ICUSwiftHostBuilder < Builder
+class ICUSwiftHostBuilder < ICUBaseBuilder
 
    def initialize()
       super(Lib.icuSwift, Arch.host)
-      @sources = "#{Config.sources}/#{Lib.icu}/icu4c"
    end
 
    def executeConfigure
@@ -38,8 +37,6 @@ class ICUSwiftHostBuilder < Builder
       cmd << "CFLAGS='-Os'"
       cmd << "CXXFLAGS='--std=c++11 -fPIC'"
       cmd << "#{@sources}/source/runConfigureICU #{hostSystem} --prefix=#{@installs}"
-      cmd << "--enable-renaming --with-library-suffix=swift"
-      # cmd << "--enable-static"
 
       # Below option should not be set. Otherwize you will have ICU without embed data.
       # See:
@@ -47,25 +44,19 @@ class ICUSwiftHostBuilder < Builder
       # - https://forums.swift.org/t/partial-nightlies-for-android-sdk/25909/43?u=v.gorlov
       # cmd << --enable-tools=no"
 
+      cmd << "--enable-renaming --with-library-suffix=swift" # These options can cause a trouble. If not working look how other ICU builders are configured.
       cmd << "--enable-shared --enable-strict --disable-icuio --disable-plugins --disable-dyload"
       cmd << "--disable-extras --disable-samples --enable-tests=no --disable-layoutex --with-data-packaging=library"
       execute cmd.join(" ")
    end
 
    def executeBuild
-      cmd = "cd #{@builds} && make"
-      @dryRun ? message(cmd) : execute(cmd)
+      execute "cd #{@builds} && make"
    end
 
    def executeInstall
-      cmd = "cd #{@builds} && make install"
-      @dryRun ? message(cmd) : execute(cmd)
-      prependContents = File.read("#{@builds}/uconfig.h.prepend")
-      file = "#{@installs}/include/unicode/uconfig.h"
-      contents = File.read(file)
-      token = "#define __UCONFIG_H__"
-      contents = contents.sub(token, "#{token}\n#{prependContents}")
-      File.write(file, contents)
+      execute "cd #{@builds} && make install"
+      applyRenamingFix()
    end
 
 end
