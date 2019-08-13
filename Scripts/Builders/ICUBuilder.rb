@@ -102,14 +102,14 @@ class ICUBuilder < ICUBaseBuilder
 
    def executeInstall
       execute "cd #{@builds} && make install"
-
+      Dir[lib + "/**.so*"].select { |f| File.symlink?(f) }.each { |f| File.delete(f) }
       Dir[lib + "/**.so*"].each { |f|
-         if File.symlink?(f)
-            File.delete(f)
-         else
-            File.rename(f, f.sub(/\.so.*/, '.so'))
+         newName = f.sub(/\.so.*/, '.so')
+         if !File.exist?(newName)
+            File.rename(f, newName)
          end
       }
+      Dir[lib + "/**.so.*"].each { |f| File.delete(f) }
    end
 
    def configurePatches(shouldEnable = true)

@@ -233,7 +233,7 @@ class Automation < Tool
    def install()
      toolchainDir = Config.toolchainDir
      print("Installing toolchain into \"#{toolchainDir}\"", 32)
-     if File.exists?(toolchainDir)
+     if File.exist?(toolchainDir)
         FileUtils.rm_rf(toolchainDir)
      end
      FileUtils.mkdir_p(toolchainDir)
