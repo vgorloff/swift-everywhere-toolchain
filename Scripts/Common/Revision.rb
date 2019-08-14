@@ -42,7 +42,7 @@ class Revision
       # master @ 1.0.28: 131bee791658c1beee0a48868b59a3000030702c
       # master @ 1.0.26: ee6688d264d1012e669eda37c357d55e9de62dba
       # master @ 1.0.23: 7beb3585d5edfc24e945afca513c24205e7a47a5
-      return "6e50c519dcaf348c7021cd87e9045d08fd137324"
+      return "542cbadbbc829d9988ea5e43e96f50378c49eaa6"
    end
 
    def self.dispatch
