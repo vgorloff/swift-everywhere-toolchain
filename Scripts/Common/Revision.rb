@@ -27,6 +27,7 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
+      # master @ 1.0.47: 0bae3ec0efdb6b668d646b8dc51a0308f822d50a
       # master @ 1.0.47: 37abe9d4d3b09f49ceb27ff842bdca844d18f320
       # master @ 1.0.47: 61261fcddf5331a73688b4e21d4e924933c3d1a1
       # master @ 1.0.47: 6e50c519dcaf348c7021cd87e9045d08fd137324
@@ -38,7 +39,7 @@ class Revision
       # master @ 1.0.28: 131bee791658c1beee0a48868b59a3000030702c
       # master @ 1.0.26: ee6688d264d1012e669eda37c357d55e9de62dba
       # master @ 1.0.23: 7beb3585d5edfc24e945afca513c24205e7a47a5
-      return "37abe9d4d3b09f49ceb27ff842bdca844d18f320"
+      return "0bae3ec0efdb6b668d646b8dc51a0308f822d50a"
    end
 
    def self.dispatch
