@@ -134,10 +134,13 @@ class SwiftBuilder
       files = Dir["#{@toolchainDir}/lib/swift/android/#{@swiftArch}" + "/*.so"]
       files << "#{@ndkPath}/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}/libc++_shared.so"
       files.each { |lib|
-         if @isVerbose
-            puts "- Copying \"#{lib}\""
+         dst = File.join(destination, File.basename(lib))
+         if !FileUtils.uptodate?(dst, [lib])
+            if @isVerbose
+               puts "- Copying \"#{lib}\" to \"#{dst}\""
+            end
+            FileUtils.copy_entry(lib, dst, false, false, true)
          end
-         system "cp -f #{lib} #{destination}"
       }
    end
 
@@ -164,7 +167,13 @@ class SwiftBuilder
          binaryDir = `swift build --show-bin-path #{@arguments.join(" ")}`.strip()
          libs = Dir["#{binaryDir}/**/*.dylib"]
          libs.each { |lib|
-            FileUtils.copy_entry(lib, lib.sub(/\.dylib$/, '.so'), false, false, true)
+            destination = lib.sub(/\.dylib$/, '.so')
+            if !FileUtils.uptodate?(destination, [lib])
+               if @isVerbose
+                  puts "- Copying \"#{lib}\" to \"#{destination}\""
+               end
+               FileUtils.copy_entry(lib, destination, false, false, true)
+            end
          }
       end
       exit(status)

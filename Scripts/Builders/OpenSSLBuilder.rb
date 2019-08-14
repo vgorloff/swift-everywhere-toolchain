@@ -68,4 +68,9 @@ class OpenSSLBuilder < Builder
       execute options.join(" ") + " make SHLIB_VERSION_NUMBER= SHLIB_EXT=.so install_sw install_ssldirs"
    end
 
+   def libs()
+      files = Dir["#{@installs}/lib/*.so"]
+      return files
+   end
+
 end

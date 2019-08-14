@@ -1,0 +1,15 @@
+diff --git a/icu4c/source/data/Makefile.in b/icu4c/source/data/Makefile.in
+index 778b6c7affa28916cd366854fc44f46b8343733d..5c99e6eaf40c287c2cede61a3368112def771fdd 100644
+--- a/icu4c/source/data/Makefile.in
++++ b/icu4c/source/data/Makefile.in
+@@ -27,7 +27,9 @@ ifeq ($(PKGDATA_OPTS),)
+ PKGDATA_OPTS = -O $(top_builddir)/data/icupkg.inc
+ endif
+ ifeq ($(PKGDATA_VERSIONING),)
+-PKGDATA_VERSIONING = -r $(SO_TARGET_VERSION)
++# PKGDATA_VERSIONING = -r $(SO_TARGET_VERSION)
++# Disables so-file `libicudataswift.so` versioning.
++PKGDATA_VERSIONING =
+ endif
+ 
+ # This allows all the data to be in one directory

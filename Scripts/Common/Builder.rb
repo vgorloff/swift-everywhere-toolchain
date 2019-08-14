@@ -260,4 +260,46 @@ class Builder < Tool
       end
    end
 
+   def libs()
+      return []
+   end
+
+   def verify()
+      command = "greadelf"
+      aliasValue = `/bin/bash -lc \"alias #{command}\"`.strip()
+      if $?.exitstatus != 0
+         message "Skipping verification of so-files due non existed shell alias to \"#{command}\"."
+         puts "You can install \"binutils\" via `brew install binutils`, and then `alias greadelf=\"YOUR_BREW_ROOT/opt/binutils/bin/greadelf\"`"
+      else
+         aliasValue = aliasValue.sub(/\s*alias\s+greadelf\s*=\s*/i, '')
+         libs.each { |lib|
+            verifyLibrary(aliasValue, lib)
+         }
+      end
+   end
+
+   def verifyLibrary(executable, lib)
+      message "Checking #{lib}"
+      command = "#{executable} -d #{lib}"
+      output = `#{command}`.strip()
+      if $?.exitstatus != 0
+         message "Execution of command is failed:"
+         error command
+         raise
+      end
+      lines = output.split("\n")
+      lines = lines.select { |line| line.include?("NEEDED") || line.include?("SONAME") }
+      lines.each { |line|
+         puts line
+         match = line.match(/\[(.+)\]/i)
+         fileName = match[1]
+         if !fileName.end_with?(".so")
+            error "Unexpected library name!"
+            error line
+            error "Library name should not contain version suffixes."
+            raise
+         end
+      }
+   end
+
 end

@@ -98,6 +98,7 @@ class Automation < Tool
       elsif action == "clean" then clean()
       elsif action == "status" then status()
       elsif action == "test" then test()
+      elsif action == "verify" then verify()
       elsif action == "finalize"
          install()
          archive()
@@ -116,8 +117,8 @@ class Automation < Tool
    def buildComponent(component)
       if component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
-      elsif component == "icuHost" then ICUHostBuilder.new().make
-      elsif component == "icuSwift" then ICUSwiftHostBuilder.new().make
+      elsif component == "icu-host" then ICUHostBuilder.new().make
+      elsif component == "icu-swift" then ICUSwiftHostBuilder.new().make
       elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
       elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
       elsif component == "deps" then buildDeps()
@@ -145,6 +146,9 @@ class Automation < Tool
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
       elsif component == "llb" then LLBBuilder.new().rebuild()
       elsif component == "spm" then SPMBuilder.new().rebuild()
+      elsif component == "icu-swift" then ICUSwiftHostBuilder.new().rebuild()
+      elsif component == "icu-host" then ICUHostBuilder.new().rebuild()
+      elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).rebuild() }
       elsif component == "swift-spm" then SwiftSPMBuilder.new().rebuild()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
@@ -163,7 +167,8 @@ class Automation < Tool
 
    def cleanComponent(component)
       if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
-      elsif component == "icuHost" then ICUHostBuilder.new().clean
+      elsif component == "icu-host" then ICUHostBuilder.new().clean
+      elsif component == "icu-swift" then ICUSwiftHostBuilder.new().clean
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
       elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
@@ -206,6 +211,7 @@ class Automation < Tool
    def patchComponent(component)
       if component == "swift" then SwiftBuilder.new().patch
       elsif component == "dispatch" then DispatchBuilder.new(Arch.default).patch
+      elsif component == "icu" then ICUBuilder.new(Arch.default).patch
       elsif component == "foundation" then FoundationBuilder.new(Arch.default).patch
       else
          puts "! Unknown component \"#{component}\"."
@@ -216,6 +222,7 @@ class Automation < Tool
    def unpatchComponent(component)
       if component == "swift" then SwiftBuilder.new().unpatch
       elsif component == "dispatch" then DispatchBuilder.new(Arch.default).unpatch
+      elsif component == "icu" then ICUBuilder.new(Arch.default).unpatch
       elsif component == "foundation" then FoundationBuilder.new(Arch.default).unpatch
       else
          puts "! Unknown component \"#{component}\"."
@@ -226,7 +233,7 @@ class Automation < Tool
    def install()
      toolchainDir = Config.toolchainDir
      print("Installing toolchain into \"#{toolchainDir}\"", 32)
-     if File.exists?(toolchainDir)
+     if File.exist?(toolchainDir)
         FileUtils.rm_rf(toolchainDir)
      end
      FileUtils.mkdir_p(toolchainDir)
@@ -302,7 +309,7 @@ class Automation < Tool
        copyFiles(files, root, toolchainDir)
 
        root = ICUBuilder.new(arch).installs
-       files = Dir["#{root}/lib/*.so"]
+       files = Dir["#{root}/lib/*.so"].reject { |file| file.include?("libicutestswift.so") }
        copyLibFiles(files, root, toolchainDir, arch)
 
        root = OpenSSLBuilder.new(arch).installs
@@ -385,6 +392,15 @@ class Automation < Tool
       execute "cd \"#{Config.tests}/sample-package\" && make build"
    end
 
+   def verify()
+      @archsToBuild.each { |arch|
+         ICUBuilder.new(arch).verify()
+         OpenSSLBuilder.new(arch).verify()
+         DispatchBuilder.new(arch).verify()
+         FoundationBuilder.new(arch).verify()
+      }
+   end
+
    def status()
       repos = []
       repos << "#{Config.sources}/#{Lib.clang}"
@@ -398,8 +414,6 @@ class Automation < Tool
       repos << "#{Config.sources}/#{Lib.dispatch}"
       repos << "#{Config.sources}/#{Lib.foundation}"
       repos << "#{Config.sources}/#{Lib.xml}"
-      repos << "#{Config.sources}/#{Lib.spm}"
-      repos << "#{Config.sources}/#{Lib.llb}"
       repos.each { |repo|
          execute "cd \"#{repo}\" && git status"
       }

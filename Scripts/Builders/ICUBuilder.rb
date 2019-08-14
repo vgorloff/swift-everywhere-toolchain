@@ -22,7 +22,7 @@
 # THE SOFTWARE.
 #
 
-require_relative "../Common/Builder.rb"
+require_relative "ICUBaseBuilder.rb"
 
 # See:
 # - ICU Patches: https://github.com/amraboelela/swift/blob/android/docs/Android.md
@@ -33,11 +33,10 @@ require_relative "../Common/Builder.rb"
 # - Packaging ICU4C: http://userguide.icu-project.org/packaging
 # - GitHub libiconv-libicu-android: https://github.com/SwiftAndroid/libiconv-libicu-android
 
-class ICUBuilder < Builder
+class ICUBuilder < ICUBaseBuilder
 
    def initialize(arch = Arch.default)
       super(Lib.icu, arch)
-      @sources = "#{Config.sources}/#{Lib.icu}/icu4c"
       @ndk = NDK.new()
    end
 
@@ -82,34 +81,46 @@ class ICUBuilder < Builder
          cmd << "#{@sources}/source/configure --prefix=#{@installs}"
          cmd << "--host=x86_64-linux-android"
       end
+
+      # Below option should not be set. Otherwize you will have ICU without embed data.
+      # See:
+      # - ICU Data - ICU User Guide: http://userguide.icu-project.org/icudata#TOC-Building-and-Linking-against-ICU-data
+      # - https://forums.swift.org/t/partial-nightlies-for-android-sdk/25909/43?u=v.gorlov
+      # cmd << "--enable-tools=no"
+
       cmd << "--with-library-suffix=swift"
       cmd << "--enable-static=no --enable-shared --enable-extras=no --enable-strict=no --enable-icuio=no --enable-layout=no --enable-layoutex=no"
-      cmd << "--enable-tools=no --enable-tests=no --enable-samples=no --enable-dyload=no"
+      cmd << "--enable-tests=no --enable-samples=no --enable-dyload=no"
       cmd << "--with-cross-build=#{host.builds}"
-      cmd << "--with-data-packaging=archive"
+      cmd << "--with-data-packaging=library"
       execute cmd.join(" ")
    end
 
    def executeBuild
-      cmd = "cd #{@builds} && make"
-      @dryRun ? message(cmd) : execute(cmd)
+      execute "cd #{@builds} && make"
    end
 
    def executeInstall
-      cmd = "cd #{@builds} && make install"
-      @dryRun ? message(cmd) : execute(cmd)
+      execute "cd #{@builds} && make install"
+      Dir[lib + "/**.so*"].select { |f| File.symlink?(f) }.each { |f| File.delete(f) }
       Dir[lib + "/**.so*"].each { |f|
-         if File.symlink?(f)
-            File.delete(f)
-         else
-            File.rename(f, f.sub(/\.so.*/, '.so'))
+         newName = f.sub(/\.so.*/, '.so')
+         if !File.exist?(newName)
+            File.rename(f, newName)
          end
       }
+      Dir[lib + "/**.so.*"].each { |f| File.delete(f) }
    end
 
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/source/configure.diff", shouldEnable)
       configurePatchFile("#{@patches}/source/config/mh-linux.diff", shouldEnable)
+      configurePatchFile("#{@patches}/source/data/Makefile.in.diff", shouldEnable)
+   end
+
+   def libs()
+      files = Dir["#{@installs}/lib/**/*.so"].reject { |file| file.include?("libicutestswift.so") }
+      return files
    end
 
 end
