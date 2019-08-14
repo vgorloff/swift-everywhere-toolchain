@@ -27,25 +27,15 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      # master @ 1.0.47: b148ea0a416f9ecae1835edbefe1468a4754ca31
-      # master @ 1.0.47: 5bf69b356c320d77784427108bb92573847de346
-      # master @ 1.0.47: d9fd3d3ec26ebfe73baee29b4647d419aac773ac
-      # master @ 1.0.47: 0bae3ec0efdb6b668d646b8dc51a0308f822d50a
-      # master @ 1.0.47: 37abe9d4d3b09f49ceb27ff842bdca844d18f320
-      # master @ 1.0.47: 61261fcddf5331a73688b4e21d4e924933c3d1a1
-      # master @ 1.0.47: 6e50c519dcaf348c7021cd87e9045d08fd137324
-
-      # master @ 1.0.47: f82572a573af91bfbe1495c1b747165d64df5f02
+      # master @ 1.0.47: f82572a573af91bfbe1495c1b747165d64df5f02 (Breaks Build)
       # master @ 1.0.47: f34ef5db8525f286236abf84b4f909c15c07aca2
-      # master @ 1.0.47: 542cbadbbc829d9988ea5e43e96f50378c49eaa6
-      # master @ 1.0.47: 4c45b5141171518190737d8ab2f0df285816ecc3
       # master @ 1.0.40: 10a4e3ef41059608ffe9eded039350055064ce9f
       # master @ 1.0.30: 17d65dc861727e0c8b2f676f30d5b03d021f896c
       # master @ 1.0.29: b70cd7031fe7a2c400976007abbfff1597189174
       # master @ 1.0.28: 131bee791658c1beee0a48868b59a3000030702c
       # master @ 1.0.26: ee6688d264d1012e669eda37c357d55e9de62dba
       # master @ 1.0.23: 7beb3585d5edfc24e945afca513c24205e7a47a5
-      return "f82572a573af91bfbe1495c1b747165d64df5f02"
+      return "f34ef5db8525f286236abf84b4f909c15c07aca2"
    end
 
    def self.dispatch
