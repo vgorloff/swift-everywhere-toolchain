@@ -45,6 +45,7 @@ require_relative "Scripts/Builders/SwiftSPMBuilder.rb"
 
 require 'fileutils'
 
+# Pass `SA_ARCH=armv7a make ...` to build only armv7a.
 class Automation < Tool
 
    def usage()
@@ -82,8 +83,6 @@ class Automation < Tool
        print("   $ make clean:llvm\n", 36)
    end
 
-   # Pass `SA_DRY_RUN=1 make ...` for Dry run mode.
-   # Pass `SA_ARCH=armv7a make ...` to build only armv7a.
    def perform()
       if !verifyXcode
          exit 1

@@ -1,4 +1,4 @@
-require_relative "Tool.rb"
+require_relative "../../Scripts/Common/Tool.rb"
 
 class ADB < Tool
 

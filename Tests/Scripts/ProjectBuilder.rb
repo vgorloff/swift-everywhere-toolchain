@@ -1,5 +1,5 @@
 require_relative "ADB.rb"
-require_relative "Tool.rb"
+require_relative "../../Scripts/Common/Tool.rb"
 
 class ProjectBuilder < Tool
 
@@ -53,17 +53,11 @@ EOM
    end
 
    def self.build()
-      Builder.new("armv7a").build()
-      Builder.new("aarch64").build()
-      Builder.new("x86").build()
-      Builder.new("x86_64").build()
+      Tool.new().archsToBuild.each { |arch| Builder.new(arch).build() }
    end
 
    def self.clean()
-      Builder.new("armv7a").clean()
-      Builder.new("aarch64").clean()
-      Builder.new("x86").clean()
-      Builder.new("x86_64").clean()
+      Tool.new().archsToBuild.each { |arch| Builder.new(arch).clean() }
    end
 
    def self.deploy(arch)

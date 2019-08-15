@@ -1,0 +1,21 @@
+diff --git a/lib/Driver/ToolChains.cpp b/lib/Driver/ToolChains.cpp
+index 923be9064d2665a48a9320015a337a09277cd294..db60ea7c1f16a14e72d03a6d5606dc39507050ed 100644
+--- a/lib/Driver/ToolChains.cpp
++++ b/lib/Driver/ToolChains.cpp
+@@ -1172,11 +1172,11 @@ void ToolChain::getResourceDirPath(SmallVectorImpl<char> &resourceDirPath,
+   if (const Arg *A = args.getLastArg(options::OPT_resource_dir)) {
+     StringRef value = A->getValue();
+     resourceDirPath.append(value.begin(), value.end());
+-  } else if (!getTriple().isOSDarwin() && args.hasArg(options::OPT_sdk)) {
+-    StringRef value = args.getLastArg(options::OPT_sdk)->getValue();
+-    resourceDirPath.append(value.begin(), value.end());
+-    llvm::sys::path::append(resourceDirPath, "usr", "lib",
+-                            shared ? "swift" : "swift_static");
++  // } else if (!getTriple().isOSDarwin() && args.hasArg(options::OPT_sdk)) {
++  //  StringRef value = args.getLastArg(options::OPT_sdk)->getValue();
++  //  resourceDirPath.append(value.begin(), value.end());
++  //  llvm::sys::path::append(resourceDirPath, "usr", "lib",
++  //                          shared ? "swift" : "swift_static");
+   } else {
+     auto programPath = getDriver().getSwiftProgramPath();
+     resourceDirPath.append(programPath.begin(), programPath.end());

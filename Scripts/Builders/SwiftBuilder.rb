@@ -245,6 +245,10 @@ class SwiftBuilder < Builder
       configurePatchFile("#{@patches}/stdlib/public/SwiftShims/Visibility.h.diff", shouldEnable)
       configurePatchFile("#{@patches}/stdlib/CMakeLists.txt.diff", shouldEnable)
 
+      # Fixes wrong path to `swiftrt.o` after PR merge: https://github.com/apple/swift/pull/25990
+      # See also: [Driver: honour `-sdk` even on Darwin by compnerd · Pull Request #26361 · apple/swift](https://github.com/apple/swift/pull/26361)
+      configurePatchFile("#{@patches}/lib/Driver/ToolChains.cpp.diff", shouldEnable)
+
       # Fixes wrong install locations and unneded logic related to `lipo` and fat binaries.
       configurePatchFile("#{@patches}/cmake/modules/AddSwift.cmake.diff", shouldEnable)
    end
