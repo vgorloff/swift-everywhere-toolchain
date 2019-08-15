@@ -22,7 +22,12 @@
 # THE SOFTWARE.
 #
 
+require_relative "Arch.rb"
+require_relative "Config.rb"
+
 class Tool
+
+   attr_reader :archsToBuild
 
    def initialize()
       globalArch = ENV['SA_ARCH']
