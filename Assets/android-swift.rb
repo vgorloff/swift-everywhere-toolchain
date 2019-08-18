@@ -80,7 +80,7 @@ class SwiftBuilder
          @ndkPlatformArch = "x86_64"
          @clang = "x86_64-linux-android#{@ndkApiVersion}-clang"
       end
-      @toolchainDir = File.dirname(File.dirname(__FILE__))
+      @toolchainDir = File.dirname(File.dirname(File.dirname(__FILE__)))
       @ndkPath = "/usr/local/ndk"
       @ndkGccVersion = "4.9"
       @ndkToolChain = "#{@ndkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
@@ -93,7 +93,7 @@ class SwiftBuilder
 
    def compile()
       args = swiftcArgs()
-      cmd = "#{@toolchainDir}/bin/swiftc " + args.join(" ") + " " + @arguments.join(" ")
+      cmd = "#{@toolchainDir}/usr/bin/swiftc " + args.join(" ") + " " + @arguments.join(" ")
       if @isVerbose
          puts cmd
       end
@@ -109,13 +109,19 @@ class SwiftBuilder
       args << "-swift-version 5"
       args << "-target #{@targetTripple}"
       args << "-tools-directory #{@ndkToolChain}"
-      args << "-sdk #{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
+
+      # See:
+      # - https://github.com/apple/swift/pull/26366/files
+      # - https://github.com/apple/swift/pull/25990#issuecomment-522344255
+      args << "-Xcc --sysroot -Xcc #{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
+      args << "-Xclang-linker --sysroot -Xclang-linker #{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
+
       args << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX -Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
       args << "-Xcc -I#{@ndkToolChain}/sysroot/usr/include -Xcc -I#{@ndkToolChain}/sysroot/usr/include/#{@ndkArch}"
       args << "-L #{@ndkPath}/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}"
       args << "-L #{@ndkToolChain}/lib/gcc/#{@ndkArch}/#{@ndkGccVersion}.x" # Link the Android NDK's -lstdc++ and libgcc.
       args << "-L #{@ndkToolChain}/sysroot/usr/lib/#{@ndkArch}/#{@ndkApiVersion}" # Link the Android NDK's -lc++
-      args << "-L #{@toolchainDir}/lib/swift/android/#{@swiftArch}"
+      args << "-L #{@toolchainDir}/usr/lib/swift/android/#{@swiftArch}"
       return args
    end
 
@@ -131,7 +137,7 @@ class SwiftBuilder
       end
       system "mkdir -p \"#{destination}\""
 
-      files = Dir["#{@toolchainDir}/lib/swift/android/#{@swiftArch}" + "/*.so"]
+      files = Dir["#{@toolchainDir}/usr/lib/swift/android/#{@swiftArch}" + "/*.so"]
       files << "#{@ndkPath}/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}/libc++_shared.so"
       files.each { |lib|
          dst = File.join(destination, File.basename(lib))
@@ -146,7 +152,7 @@ class SwiftBuilder
 
    def build()
       cmd = []
-      cmd << "SWIFT_EXEC=\"#{@toolchainDir}/bin/swiftc-#{@ndkArch}\""
+      cmd << "SWIFT_EXEC=\"#{@toolchainDir}/usr/bin/swiftc-#{@ndkArch}\""
       # cmd << "CC=#{@ndkToolChain}/bin/#{@clang}"
       # cmd << "CXX=#{@ndkToolChain}/bin/#{@clang}++"
       cmd << "swift build"
@@ -154,7 +160,7 @@ class SwiftBuilder
          cmd << "-v"
       end
       cmd << "-Xswiftc -target -Xswiftc #{@targetTripple}"
-      cmd << "-Xswiftc -sdk -Xswiftc #{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
+      cmd << "-Xswiftc -sdk -Xswiftc #{@toolchainDir}"
       # cmd << "-Xswiftc -swift-version -Xswiftc 5"
       # cmd << "-Xlinker -L -Xlinker #{@ndkToolChain}/sysroot/usr/lib/#{@ndkArch}/#{@ndkApiVersion}"
       cmd = cmd.join(" ") + " " + @arguments.join(" ")

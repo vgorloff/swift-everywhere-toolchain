@@ -89,9 +89,9 @@ EOM
          @ndkArchPath = "x86_64-linux-android"
          @swiftTarget = "x86_64-unknown-linux-android"
       end
-      @swiftc = @toolchainDir + "/bin/swiftc-" + @ndkArchPath
-      @copyLibsCmd = @toolchainDir + "/bin/copy-libs-" + @ndkArchPath
-      @swiftBuildCmd = "#{@toolchainDir}/bin/android-swift-build --android-target #{@swiftTarget} -c #{@config} --build-path #{@builds}"
+      @swiftc = @toolchainDir + "/usr/bin/swiftc-" + @ndkArchPath
+      @copyLibsCmd = @toolchainDir + "/usr/bin/copy-libs-" + @ndkArchPath
+      @swiftBuildCmd = "#{@toolchainDir}/usr/bin/android-swift-build --android-target #{@swiftTarget} -c #{@config} --build-path #{@builds}"
 
       if @isVerbose
          @swiftc += " -v"
