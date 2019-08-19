@@ -280,7 +280,7 @@ class Automation < Tool
    end
 
    def fixModuleMaps()
-      moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
+      moduleMaps = Dir["#{Config.toolchainDir}/usr/lib/swift/**/glibc.modulemap"]
       moduleMaps.each { |file|
          puts "* Correcting \"#{file}\""
          contents = File.read(file)
