@@ -236,7 +236,6 @@ class Automation < Tool
         FileUtils.rm_rf(toolchainDir)
      end
      FileUtils.mkdir_p(toolchainDir)
-     # File.symlink("/Users/vagrant/Library/Android/sdk/ndk-bundle", "#{toolchainDir}/ndk")
 
      copyToolchainFiles()
      fixModuleMaps()
@@ -254,7 +253,7 @@ class Automation < Tool
      utils = Dir["#{Config.root}/Assets/*"].reject { |file| file.include?("Readme.md") }
      utils.each { |file|
        puts "- Copying \"#{file}\""
-       FileUtils.copy_entry(file, "#{toolchainDir}/bin/#{File.basename(file)}", false, false, true)
+       FileUtils.copy_entry(file, "#{toolchainDir}/usr/bin/#{File.basename(file)}", false, false, true)
      }
    end
 
@@ -273,7 +272,7 @@ class Automation < Tool
      files << "#{sourcesDir}/#{Lib.foundation}/LICENSE"
      files << "#{sourcesDir}/#{Lib.xml}/Copyright"
      files.each { |file|
-        dst = file.sub(sourcesDir, "#{toolchainDir}/share")
+        dst = file.sub(sourcesDir, "#{toolchainDir}/usr/share")
         puts "- Copying \"#{file}\""
         FileUtils.mkdir_p(File.dirname(dst))
         FileUtils.copy_entry(file, dst, false, false, true)
@@ -281,7 +280,7 @@ class Automation < Tool
    end
 
    def fixModuleMaps()
-      moduleMaps = Dir["#{Config.toolchainDir}/lib/swift/**/glibc.modulemap"]
+      moduleMaps = Dir["#{Config.toolchainDir}/usr/lib/swift/**/glibc.modulemap"]
       moduleMaps.each { |file|
          puts "* Correcting \"#{file}\""
          contents = File.read(file)
@@ -291,7 +290,7 @@ class Automation < Tool
    end
 
    def copyToolchainFiles()
-     toolchainDir = Config.toolchainDir
+     toolchainDir = "#{Config.toolchainDir}/usr"
      root = SwiftBuilder.new().installs
      files = Dir["#{root}/bin/**/*"]
      files += Dir["#{root}/lib/**/*"]
