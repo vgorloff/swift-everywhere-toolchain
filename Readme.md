@@ -55,27 +55,32 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
    which git-lfs
    brew install git-lfs
    ```
+5. Make sure that `Xcode Command Line Tools` properly configured.
 
-5. Clone this repository.
+   ```bash
+   xcode-select --print-path
+   ```
+
+6. Clone this repository.
 
    ```bash
    git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
    cd swift-everywhere-toolchain
    ```
 
-6. Copy file `local.properties.yml.template` to `local.properties.yml`
+7. Copy file `local.properties.yml.template` to `local.properties.yml`
 
-7. Edit file `local.properties.yml` and configure following settings:
+8. Edit file `local.properties.yml` and configure following settings:
 
    - `ndk.dir.macos`: Path to NDK installation directory.
 
-8. Start a build.
+9. Start a build.
 
    ```bash
    make
    ```
 
-9. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
+10. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
 # Setup and Build (Vagrant Linux) - Draft Beta
 
