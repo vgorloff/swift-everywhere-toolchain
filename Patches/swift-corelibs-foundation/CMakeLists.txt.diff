@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ac8614552b9565fb007d3d4e9cf0576462fbd9cd..6122aabe840f1a0b06a456cd3a569c9ae9460a8c 100644
+index 686ae5468be36169d012f221a358cc52178116c6..2958c524551b6ebc9bc8850c12afa6c91b3f79e3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -45,6 +45,14 @@ set(BUILD_SHARED_LIBS NO)
@@ -82,7 +82,7 @@ index ac8614552b9565fb007d3d4e9cf0576462fbd9cd..6122aabe840f1a0b06a456cd3a569c9a
                    DEPENDS
                      uuid
                      CoreFoundation
-@@ -330,6 +382,7 @@ add_swift_library(FoundationNetworking
+@@ -331,6 +383,7 @@ add_swift_library(FoundationNetworking
                      ${Foundation_RPATH}
                      ${WORKAROUND_SR9138}
                      ${WORKAROUND_SR9995}
@@ -90,7 +90,7 @@ index ac8614552b9565fb007d3d4e9cf0576462fbd9cd..6122aabe840f1a0b06a456cd3a569c9a
                    SWIFT_FLAGS
                      -DDEPLOYMENT_RUNTIME_SWIFT
                      -DNS_BUILDING_FOUNDATION_NETWORKING
-@@ -337,6 +390,7 @@ add_swift_library(FoundationNetworking
+@@ -338,6 +391,7 @@ add_swift_library(FoundationNetworking
                      -DDEPLOYMENT_ENABLE_LIBDISPATCH
                      -I;${CMAKE_CURRENT_BINARY_DIR}/swift
                      ${libdispatch_cflags}
@@ -98,7 +98,7 @@ index ac8614552b9565fb007d3d4e9cf0576462fbd9cd..6122aabe840f1a0b06a456cd3a569c9a
                      $<$<BOOL:ENABLE_TESTING>:-enable-testing>
                      $<$<NOT:$<CONFIG:Debug>>:-O>
                    DEPENDS
-@@ -372,6 +426,7 @@ add_swift_library(FoundationXML
+@@ -373,6 +427,7 @@ add_swift_library(FoundationXML
                      ${Foundation_RPATH}
                      ${WORKAROUND_SR9138}
                      ${WORKAROUND_SR9995}
@@ -106,7 +106,7 @@ index ac8614552b9565fb007d3d4e9cf0576462fbd9cd..6122aabe840f1a0b06a456cd3a569c9a
                    SWIFT_FLAGS
                      -DDEPLOYMENT_RUNTIME_SWIFT
                      -DNS_BUILDING_FOUNDATION_NETWORKING
-@@ -379,6 +434,7 @@ add_swift_library(FoundationXML
+@@ -380,6 +435,7 @@ add_swift_library(FoundationXML
                      -DDEPLOYMENT_ENABLE_LIBDISPATCH
                      -I;${CMAKE_CURRENT_BINARY_DIR}/swift
                      ${libdispatch_cflags}
@@ -114,7 +114,7 @@ index ac8614552b9565fb007d3d4e9cf0576462fbd9cd..6122aabe840f1a0b06a456cd3a569c9a
                      $<$<BOOL:ENABLE_TESTING>:-enable-testing>
                      $<$<NOT:$<CONFIG:Debug>>:-O>
                    DEPENDS
-@@ -401,6 +457,7 @@ if(NOT BUILD_SHARED_LIBS)
+@@ -402,6 +458,7 @@ if(NOT BUILD_SHARED_LIBS)
        ${LIBXML2_LIBRARIES})
  endif()
  
@@ -122,15 +122,15 @@ index ac8614552b9565fb007d3d4e9cf0576462fbd9cd..6122aabe840f1a0b06a456cd3a569c9a
  add_swift_executable(plutil
                       SOURCES
                         Tools/plutil/main.swift
-@@ -425,6 +482,7 @@ add_swift_executable(plutil
-                        uuid
-                        Foundation
-                        CoreFoundation)
+@@ -448,6 +505,7 @@ add_swift_executable(GenerateTestFixtures
+                        ${swift_libc_flags}
+                      DEPENDS
+                        Foundation)
 +endif()
  
  if(ENABLE_TESTING)
    add_swift_executable(xdgTestHelper
-@@ -711,7 +769,9 @@ install(FILES
+@@ -735,7 +793,9 @@ install(FILES
            CoreFoundation/Parsing.subproj/module.map
          DESTINATION
            lib/swift/CFXMLInterface)
