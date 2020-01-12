@@ -55,6 +55,7 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
    which git-lfs
    brew install git-lfs
    ```
+
 5. Make sure that `Xcode Command Line Tools` properly configured.
 
    ```bash
