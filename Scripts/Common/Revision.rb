@@ -55,6 +55,8 @@ class Revision
    end
 
    def self.foundation
+      return "c9c34a9447682131ae49332e3d2a20b8c82ca01e"
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-04-a: c9c34a9447682131ae49332e3d2a20b8c82ca01e
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-02-a: 3e5366251756d7ffcf289c0faff865ca7dd23417
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-08-28-a: d99abed49a0763eefb7e1e1cdaa9654fb38c7c1b
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-08-16-a: 2e4734c674247b011a67996a9472f15ecb394e5e
@@ -69,7 +71,6 @@ class Revision
       # master @ 1.0.27: 52334ad24dd36c608ace1b0a0c789f1d79d1ba23
       # master @ 1.0.26: ef19b4ff14954978affacb8b3388380062916479
       # master @ 1.0.24: 9e50b4014aceacf26ab341143bc19a85d8bd9962
-      return "3e5366251756d7ffcf289c0faff865ca7dd23417"
    end
 
    def self.spm
