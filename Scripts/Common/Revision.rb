@@ -42,12 +42,16 @@ class Revision
    end
 
    def self.dispatch
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-26-a: 970d562fcaee756bae9d20386e64bba90e635818
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-16-a: c023edd1cd02720407c62f4fac6a3f2c92cd0069
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-02-a: 90a45ce22f62c7c380339aa847dae4ab2d66ee30
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-08-22-a: 3da29ddcab09e4d09b015624e377f73a82c8dc9c
       # master @ 1.0.42: 68875cb3bacc1061716ed8c91a4e408fa015552e
       # master @ 1.0.40: 6d32c4d424e24ceea6e1c6e57ee9b6b5e5d375d7
       # master @ 1.0.37: f911a44a403a2cb48723604236bda9caa0f8a771
       # master @ 1.0.26: 4169c8d3382fd1083289ee3b22a349acef584141
       # master @ 1.0.24: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99
-      return "68875cb3bacc1061716ed8c91a4e408fa015552e"
+      return "90a45ce22f62c7c380339aa847dae4ab2d66ee30"
    end
 
    def self.foundation

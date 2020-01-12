@@ -1,10 +1,10 @@
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index cefde62a5538b8ff2acbf14baaccefa5ac65b9f0..6059435377d988b12113dd38e9bddb2dda5d62f3 100644
+index 9c4ae4c9c41f23068b51fa1cd556015153eefff7..8a0318d7b3148706debe6b8328e888d90c0e0260 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -120,6 +120,41 @@ if(ENABLE_SWIFT)
-     set(use_ld_flag -use-ld=gold)
-   endif()
+@@ -116,6 +116,41 @@ if(ENABLE_SWIFT)
+                         PROPERTIES
+                           POSITION_INDEPENDENT_CODE YES)
  
 +  # Android specific configuration.
 +  if(CMAKE_SYSTEM_NAME STREQUAL Android)
@@ -44,19 +44,19 @@ index cefde62a5538b8ff2acbf14baaccefa5ac65b9f0..6059435377d988b12113dd38e9bddb2d
    add_swift_library(swiftDispatch
                      CFLAGS
                        -fblocks
-@@ -129,6 +164,7 @@ if(ENABLE_SWIFT)
+@@ -124,6 +159,7 @@ if(ENABLE_SWIFT)
+                       module-maps
                        DispatchStubs
                      LINK_FLAGS
-                       ${use_ld_flag}
 +                      ${swift_android_link_flags}
                        -lDispatchStubs
                        -L $<TARGET_LINKER_FILE_DIR:BlocksRuntime>
                        -lBlocksRuntime
-@@ -160,6 +196,7 @@ if(ENABLE_SWIFT)
+@@ -155,6 +191,7 @@ if(ENABLE_SWIFT)
                        # TODO(compnerd) handle /MT builds
                        $<$<PLATFORM_ID:Windows>:-Xcc>
                        $<$<PLATFORM_ID:Windows>:-D_DLL>
 +                      ${swift_android_compile_flags}
                      TARGET
-                       ${CMAKE_C_COMPILER_TARGET})
+                       ${CMAKE_SWIFT_COMPILER_TARGET})
  endif()
