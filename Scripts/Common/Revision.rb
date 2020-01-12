@@ -55,7 +55,8 @@ class Revision
    end
 
    def self.foundation
-      return "c9c34a9447682131ae49332e3d2a20b8c82ca01e"
+      return "f62c026cb2f2f162bb3b3d93ae49969b60652e0b"
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-30-a: f62c026cb2f2f162bb3b3d93ae49969b60652e0b
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-04-a: c9c34a9447682131ae49332e3d2a20b8c82ca01e
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-02-a: 3e5366251756d7ffcf289c0faff865ca7dd23417
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-08-28-a: d99abed49a0763eefb7e1e1cdaa9654fb38c7c1b
