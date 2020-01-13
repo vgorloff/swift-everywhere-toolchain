@@ -91,24 +91,28 @@ class Revision
    end
 
    def self.llvm
+      # 1.0.49 @ swift-5.1.1-RELEASE: b47beb8a7084f8feac68176d6fc90687045b87bb
       # swift-5.1-branch @ 1.0.39: 688b71e2f9b709fd7ae3839172f2234eb8bd469a
       # swift-5.1-branch @ 1.0.26: 42c6b79618828d5d536b1f527ea14c33fc7474d7
-      return "688b71e2f9b709fd7ae3839172f2234eb8bd469a"
+      return "b47beb8a7084f8feac68176d6fc90687045b87bb"
    end
 
    def self.clang
+      # 1.0.49 @ swift-5.1.1-RELEASE: 9fbdf1d6c0269c9bbadba34f92db5d2b6a5fca26
       # swift-5.1-branch @ 1.0.39: cb082b2ada7a959cfa27a48b1c3777a8a496114c
       # swift-5.1-branch @ 1.0.26: 2a6d22b018a5348a03000b8abfa0bde207ffd08d
-      return "cb082b2ada7a959cfa27a48b1c3777a8a496114c"
+      return "9fbdf1d6c0269c9bbadba34f92db5d2b6a5fca26"
    end
 
    def self.crt
+      # 1.0.49 @ swift-5.1.1-RELEASE: dfdb55233f4f7aa994c180446a5e210d768b4ea5
       # swift-5.1-branch @ 1.0.39: 79b188b8d0e744baa86f58cebb721a8613d1adb2
       # swift-5.1-branch @ 1.0.26: cfe3fd986aaceb308a7736c159bfa8bd688b381b
-      return "79b188b8d0e744baa86f58cebb721a8613d1adb2"
+      return "dfdb55233f4f7aa994c180446a5e210d768b4ea5"
    end
 
    def self.cmark
+      # 1.0.49 @ swift-5.1.1-RELEASE: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
       # swift-5.1-branch @ 1.0.39: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
       # swift-5.1-branch @ 1.0.26: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
       return "32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27"
