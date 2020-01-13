@@ -2,7 +2,7 @@
 
 - Xcode 11
 - Android Studio 3.4.1
-- Android NDK 20 (Comes with Android Studio as downloadable package).
+- Android NDK r20b (Comes with Android Studio as downloadable package).
 - Ruby 2.5 (Comes with macOS)
 - CMake 3.14.5
 - Ninja 1.9.0
@@ -49,26 +49,39 @@ Build of complete tollchain takes ~1.5h. Instead of building it you can just dow
    brew install pkg-config
    ```
 
-4. Clone this repository.
+4. Check that git-lfs is installed. Install git-lfs if Needed.
+
+   ```bash
+   which git-lfs
+   brew install git-lfs
+   ```
+
+5. Make sure that `Xcode Command Line Tools` properly configured.
+
+   ```bash
+   xcode-select --print-path
+   ```
+
+6. Clone this repository.
 
    ```bash
    git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
    cd swift-everywhere-toolchain
    ```
 
-5. Copy file `local.properties.yml.template` to `local.properties.yml`
+7. Copy file `local.properties.yml.template` to `local.properties.yml`
 
-6. Edit file `local.properties.yml` and configure following settings:
+8. Edit file `local.properties.yml` and configure following settings:
 
    - `ndk.dir.macos`: Path to NDK installation directory.
 
-7. Start a build.
+9. Start a build.
 
    ```bash
    make
    ```
 
-8. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
+10. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
 # Setup and Build (Vagrant Linux) - Draft Beta
 

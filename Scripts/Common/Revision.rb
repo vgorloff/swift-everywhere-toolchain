@@ -27,7 +27,9 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      # master @ 1.0.47: 9d1470dc565c6cf94be070d38599ca50966f1b7f
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-16-a: f302da0f9b856592992206afa75dd95668a192e1
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-08-30-a: dcd0893efe43639dddf6fc1637022822080e6a6a
+      # 1.0.47 @ master / swift-DEVELOPMENT-SNAPSHOT-2019-08-13-a: 9d1470dc565c6cf94be070d38599ca50966f1b7f
       # master @ 1.0.47: f82572a573af91bfbe1495c1b747165d64df5f02 (Breaks Build)
       # master @ 1.0.47: f34ef5db8525f286236abf84b4f909c15c07aca2
       # master @ 1.0.40: 10a4e3ef41059608ffe9eded039350055064ce9f
@@ -36,19 +38,32 @@ class Revision
       # master @ 1.0.28: 131bee791658c1beee0a48868b59a3000030702c
       # master @ 1.0.26: ee6688d264d1012e669eda37c357d55e9de62dba
       # master @ 1.0.23: 7beb3585d5edfc24e945afca513c24205e7a47a5
-      return "9d1470dc565c6cf94be070d38599ca50966f1b7f"
+      return "f302da0f9b856592992206afa75dd95668a192e1"
    end
 
    def self.dispatch
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-26-a: 970d562fcaee756bae9d20386e64bba90e635818
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-16-a: c023edd1cd02720407c62f4fac6a3f2c92cd0069
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-02-a: 90a45ce22f62c7c380339aa847dae4ab2d66ee30
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-08-22-a: 3da29ddcab09e4d09b015624e377f73a82c8dc9c
       # master @ 1.0.42: 68875cb3bacc1061716ed8c91a4e408fa015552e
       # master @ 1.0.40: 6d32c4d424e24ceea6e1c6e57ee9b6b5e5d375d7
       # master @ 1.0.37: f911a44a403a2cb48723604236bda9caa0f8a771
       # master @ 1.0.26: 4169c8d3382fd1083289ee3b22a349acef584141
       # master @ 1.0.24: 90a84a1c6cf8c2f8abbd0eb60b1cf23ad8f66f99
-      return "68875cb3bacc1061716ed8c91a4e408fa015552e"
+      return "970d562fcaee756bae9d20386e64bba90e635818"
    end
 
    def self.foundation
+      return "facf5715d25d1765f10e4319b0701f300d9248e0"
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-11-01-a: facf5715d25d1765f10e4319b0701f300d9248e0
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-30-a: 5bb98287f5945a8cbb37df5a69741328488d2dd0
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-30-a: f62c026cb2f2f162bb3b3d93ae49969b60652e0b
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-04-a: c9c34a9447682131ae49332e3d2a20b8c82ca01e
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-02-a: 3e5366251756d7ffcf289c0faff865ca7dd23417
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-08-28-a: d99abed49a0763eefb7e1e1cdaa9654fb38c7c1b
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-08-16-a: 2e4734c674247b011a67996a9472f15ecb394e5e
+      # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-08-14-a: f2d055cf77f59568c23412b2179e72193abac052
       # master @ 1.0.42: 84d6a68f05793f55c1a3aecf553c74fe2fae2ae9
       # master @ 1.0.42: e6d968fa1636db8f3dc2ebfee3f28477240d1dc0
       # master @ 1.0.40: c5c35c1a59b0a9a05b2e1ffbf8a7bab0a3e59baa
@@ -59,7 +74,6 @@ class Revision
       # master @ 1.0.27: 52334ad24dd36c608ace1b0a0c789f1d79d1ba23
       # master @ 1.0.26: ef19b4ff14954978affacb8b3388380062916479
       # master @ 1.0.24: 9e50b4014aceacf26ab341143bc19a85d8bd9962
-      return "84d6a68f05793f55c1a3aecf553c74fe2fae2ae9"
    end
 
    def self.spm
@@ -77,24 +91,28 @@ class Revision
    end
 
    def self.llvm
+      # 1.0.49 @ swift-5.1.1-RELEASE: b47beb8a7084f8feac68176d6fc90687045b87bb
       # swift-5.1-branch @ 1.0.39: 688b71e2f9b709fd7ae3839172f2234eb8bd469a
       # swift-5.1-branch @ 1.0.26: 42c6b79618828d5d536b1f527ea14c33fc7474d7
-      return "688b71e2f9b709fd7ae3839172f2234eb8bd469a"
+      return "b47beb8a7084f8feac68176d6fc90687045b87bb"
    end
 
    def self.clang
+      # 1.0.49 @ swift-5.1.1-RELEASE: 9fbdf1d6c0269c9bbadba34f92db5d2b6a5fca26
       # swift-5.1-branch @ 1.0.39: cb082b2ada7a959cfa27a48b1c3777a8a496114c
       # swift-5.1-branch @ 1.0.26: 2a6d22b018a5348a03000b8abfa0bde207ffd08d
-      return "cb082b2ada7a959cfa27a48b1c3777a8a496114c"
+      return "9fbdf1d6c0269c9bbadba34f92db5d2b6a5fca26"
    end
 
    def self.crt
+      # 1.0.49 @ swift-5.1.1-RELEASE: dfdb55233f4f7aa994c180446a5e210d768b4ea5
       # swift-5.1-branch @ 1.0.39: 79b188b8d0e744baa86f58cebb721a8613d1adb2
       # swift-5.1-branch @ 1.0.26: cfe3fd986aaceb308a7736c159bfa8bd688b381b
-      return "79b188b8d0e744baa86f58cebb721a8613d1adb2"
+      return "dfdb55233f4f7aa994c180446a5e210d768b4ea5"
    end
 
    def self.cmark
+      # 1.0.49 @ swift-5.1.1-RELEASE: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
       # swift-5.1-branch @ 1.0.39: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
       # swift-5.1-branch @ 1.0.26: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
       return "32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27"
