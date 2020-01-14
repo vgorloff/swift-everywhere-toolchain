@@ -143,6 +143,7 @@ class Automation < Tool
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
       elsif component == "llb" then LLBBuilder.new().rebuild()
       elsif component == "spm" then SPMBuilder.new().rebuild()
+      elsif component == "cmark" then CMarkBuilder.new().rebuild()
       elsif component == "icu-swift" then ICUSwiftHostBuilder.new().rebuild()
       elsif component == "icu-host" then ICUHostBuilder.new().rebuild()
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).rebuild() }

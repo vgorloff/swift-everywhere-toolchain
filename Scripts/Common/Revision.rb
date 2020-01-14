@@ -75,7 +75,7 @@ class Revision
    end
 
    def self.cmark
-      return "31e12547c4de3dfcacc69855d93298cb90fd4f27"
+      return "bfa95d55b535fa178f75484b5e8f82ae3d8517af"
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-03-a: 31e12547c4de3dfcacc69855d93298cb90fd4f27
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-14-a: bfa95d55b535fa178f75484b5e8f82ae3d8517af
       # 1.0.49 @ swift-5.1.1-RELEASE: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
