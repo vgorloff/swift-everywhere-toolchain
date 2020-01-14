@@ -41,7 +41,7 @@ class LLVMBuilder < Builder
       cFlags = "-Wno-unknown-warning-option -Werror=unguarded-availability-new -fno-stack-protector"
       cmd = <<EOM
       cd #{@builds} && cmake -G Ninja
-      -S #{@sources}
+      -S #{@sources}/llvm
       -B #{@builds}
       -DCMAKE_BUILD_TYPE=Release
       -DLLVM_INCLUDE_EXAMPLES=false -DLLVM_INCLUDE_TESTS=false -DLLVM_INCLUDE_DOCS=false
@@ -72,11 +72,7 @@ EOM
    end
 
    def setupSymLinks(enable)
-      # Making needed SymLinks. See: https://llvm.org/docs/GettingStarted.html#git-mirror
       message "Making symbolic links..."
-      setupSymLink(ClangBuilder.new(@arch).sources, "#{@sources}/tools/clang", true)
-      setupSymLink(CompilerRTBuilder.new(@arch).sources, "#{@sources}/projects/compiler-rt", true)
-
       # Seems like a workaround. Try to configure include paths in CMAKE settings.
       if enable
          setupSymLink("#{toolchainPath}/usr/include/c++", "#{@builds}/include/c++")

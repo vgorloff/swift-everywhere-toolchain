@@ -45,19 +45,11 @@ class Lib
    end
 
    def self.llvm
-      return "llvm"
+      return "llvm-project"
    end
 
    def self.cmark
       return "cmark"
-   end
-
-   def self.clang
-      return "clang"
-   end
-
-   def self.crt
-      return "compiler-rt"
    end
 
    def self.curl

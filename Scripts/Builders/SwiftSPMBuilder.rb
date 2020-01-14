@@ -7,7 +7,6 @@ class SwiftSPMBuilder < Builder
       @sources = "#{Config.sources}/#{Lib.swift}"
       @cmark = CMarkBuilder.new()
       @llvm = LLVMBuilder.new()
-      @clang = ClangBuilder.new(@arch)
    end
 
    def executeConfigure
