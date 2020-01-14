@@ -27,7 +27,8 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      return "9a4abf47a450aeff6a3231225fd2cf18cc7a940a"
+      return "746b58e8e1c1ef1ac09d8031875fd2a08b65597c"
+      # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2019-12-27-a: 746b58e8e1c1ef1ac09d8031875fd2a08b65597c
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-14-a: 9a4abf47a450aeff6a3231225fd2cf18cc7a940a
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-26-a: 8a91e9802448de399df4ee3ed24c63dc25af7e67
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-18-a: 4dac0d1e8bffee79728f04784961b3bc26ed9dbc

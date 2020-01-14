@@ -260,12 +260,12 @@ class Automation < Tool
      toolchainDir = Config.toolchainDir
      sourcesDir = Config.sources
      files = []
-     files << "#{sourcesDir}/#{Lib.clang}/LICENSE.TXT"
      files << "#{sourcesDir}/#{Lib.cmark}/COPYING"
-     files << "#{sourcesDir}/#{Lib.crt}/LICENSE.TXT"
      files << "#{sourcesDir}/#{Lib.curl}/COPYING"
      files << "#{sourcesDir}/#{Lib.icu}/icu4c/LICENSE"
      files << "#{sourcesDir}/#{Lib.llvm}/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.llvm}/clang/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.llvm}/compiler-rt/LICENSE.TXT"
      files << "#{sourcesDir}/#{Lib.ssl}/LICENSE"
      files << "#{sourcesDir}/#{Lib.dispatch}/LICENSE"
      files << "#{sourcesDir}/#{Lib.foundation}/LICENSE"
