@@ -400,9 +400,7 @@ class Automation < Tool
 
    def status()
       repos = []
-      repos << "#{Config.sources}/#{Lib.clang}"
       repos << "#{Config.sources}/#{Lib.cmark}"
-      repos << "#{Config.sources}/#{Lib.crt}"
       repos << "#{Config.sources}/#{Lib.curl}"
       repos << "#{Config.sources}/#{Lib.icu}"
       repos << "#{Config.sources}/#{Lib.llvm}"

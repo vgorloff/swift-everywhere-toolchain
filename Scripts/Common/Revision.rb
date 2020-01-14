@@ -27,7 +27,8 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      return "746b58e8e1c1ef1ac09d8031875fd2a08b65597c"
+      return "3b9014dc9acae3d95255a83befd85b52e7176acb"
+      # 1.0.52 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-13-a: 3b9014dc9acae3d95255a83befd85b52e7176acb
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2019-12-27-a: 746b58e8e1c1ef1ac09d8031875fd2a08b65597c
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-14-a: 9a4abf47a450aeff6a3231225fd2cf18cc7a940a
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-26-a: 8a91e9802448de399df4ee3ed24c63dc25af7e67
@@ -76,7 +77,7 @@ class Revision
    end
 
    def self.cmark
-      return "bfa95d55b535fa178f75484b5e8f82ae3d8517af"
+      return "31e12547c4de3dfcacc69855d93298cb90fd4f27"
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-03-a: 31e12547c4de3dfcacc69855d93298cb90fd4f27
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-14-a: bfa95d55b535fa178f75484b5e8f82ae3d8517af
       # 1.0.49 @ swift-5.1.1-RELEASE: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
