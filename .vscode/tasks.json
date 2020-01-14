@@ -1,19 +1,43 @@
 {
-   // See https://go.microsoft.com/fwlink/?LinkId=733558
-   // for the documentation about the tasks.json format
-   "version": "2.0.0",
-   "tasks": [
-      {
-         "label": "Checkout",
-         "type": "shell",
-         "command": "ruby -r './Automation.rb' -e 'Automation.new().perform()' checkout",
-         "presentation": {
-           "panel": "shared",
-           "focus": false,
-           "clear": true
-         },
-         "group": "build",
-         "problemMatcher": []
-       }
-   ]
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Checkout",
+      "type": "shell",
+      "command": "ruby -r './Automation.rb' -e 'Automation.new().perform()' checkout",
+      "presentation": {
+        "panel": "shared",
+        "focus": false,
+        "clear": true
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Install",
+      "type": "shell",
+      "command": "ruby -r './Automation.rb' -e 'Automation.new().perform()' install",
+      "presentation": {
+        "panel": "shared",
+        "focus": false,
+        "clear": true
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Archive",
+      "type": "shell",
+      "command": "ruby -r './Automation.rb' -e 'Automation.new().perform()' archive",
+      "presentation": {
+        "panel": "shared",
+        "focus": false,
+        "clear": true
+      },
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
 }

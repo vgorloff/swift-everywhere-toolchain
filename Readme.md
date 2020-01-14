@@ -15,7 +15,7 @@ Keep tools like `Cmake` and `ninja` up to date.
 
 # Using pre-built toolchain
 
-Build of complete tollchain takes ~1.5h. Instead of building it you can just download and use already pre-built package from [Releases](https://github.com/vgorloff/swift-everywhere-toolchain/releases) page.
+Build of complete toolchain takes ~1.5h. Instead of building it you can just download and use already pre-built package from [Releases](https://github.com/vgorloff/swift-everywhere-toolchain/releases) page.
 
 # Setup and Build (macOS)
 
