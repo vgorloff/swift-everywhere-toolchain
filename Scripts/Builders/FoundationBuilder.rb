@@ -74,10 +74,7 @@ class FoundationBuilder < Builder
       cd #{@builds} &&
       cmake -G Ninja
 
-      -DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=#{@dispatch.sources}
-
-      # Check later if we can use `@installs`
-      -DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=#{@dispatch.builds}
+      -Ddispatch_DIR=#{@dispatch.builds}/cmake/modules
 
       # Settings without Android cmake toolchain
       -DCMAKE_SYSTEM_NAME=Android
@@ -110,7 +107,14 @@ class FoundationBuilder < Builder
       -DCURL_LIBRARY=#{@curl.lib}/libcurl.so
 
       -DCMAKE_INSTALL_PREFIX=/
-      -DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\"
+
+      -DCMAKE_Swift_COMPILER=\"#{@swift.builds}/bin/swiftc\"
+      # Skipping Swift compiler check. See: /usr/local/Cellar/cmake/3.16.2/share/cmake/Modules/CMakeTestSwiftCompiler.cmake
+      -DCMAKE_Swift_COMPILER_FORCED=true
+
+      -DCMAKE_BUILD_WITH_INSTALL_RPATH=true
+      -DCMAKE_INSTALL_RPATH="$ORIGIN"
+
       -DCMAKE_BUILD_TYPE=Release
 
       #{@sources}
@@ -144,6 +148,7 @@ EOM
 
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/Foundation/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/SwiftRuntime/CoreFoundation.h.diff", shouldEnable)
    end
 

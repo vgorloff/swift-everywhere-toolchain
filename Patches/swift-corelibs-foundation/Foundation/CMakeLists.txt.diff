@@ -1,0 +1,95 @@
+diff --git a/Foundation/CMakeLists.txt b/Foundation/CMakeLists.txt
+index 2af14fc2307a1b65732e22805832dcacae201ec0..6294d2d776e199d02cfb890d94c270d59d53e391 100644
+--- a/Foundation/CMakeLists.txt
++++ b/Foundation/CMakeLists.txt
+@@ -1,3 +1,55 @@
++# Android specific configuration.
++if(CMAKE_SYSTEM_NAME STREQUAL Android)
++ if("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "armeabi-v7a")
++   set(SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH "arm")
++   set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "arm-linux-androideabi")
++   set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "armv7")
++   set(SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET "armv7-none-linux-androideabi")
++ elseif("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "arm64-v8a")
++   set(SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH "arm64")
++   set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "aarch64-linux-android")
++   set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "aarch64")
++   set(SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET "aarch64-none-linux-android")
++ elseif("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "x86")
++   set(SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH "x86")
++   set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "i686-linux-android")
++   set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "i686")
++   set(SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET "i686-none-linux-android")
++ elseif("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "x86_64")
++   set(SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH "x86_64")
++   set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "x86_64-linux-android")
++   set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "x86_64")
++   set(SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET "x86_64-none-linux-android")
++ else()
++   message(FATAL_ERROR "Unknown arch for android SDK: ${CMAKE_ANDROID_ARCH_ABI}")
++ endif()
++
++ # Get the prebuilt suffix to create the correct toolchain path when using the NDK
++ if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
++   set(_swift_android_prebuilt_build "darwin-x86_64")
++ elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
++   set(_swift_android_prebuilt_build "linux-x86_64")
++ endif()
++ set(SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH "${SWIFT_ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${_swift_android_prebuilt_build}")
++
++ # Setting Android specific Swift flags.
++ get_filename_component(swift_android_lib_directory_path ${CMAKE_Swift_COMPILER} DIRECTORY)
++ set(swift_android_lib_directory_path ${swift_android_lib_directory_path}/../lib/swift/android/${SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME})
++ get_filename_component(swift_android_lib_directory_path ${swift_android_lib_directory_path} ABSOLUTE)
++
++ set(swift_android_flags
++     "-target ${SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET}
++      -L ${swift_android_lib_directory_path}
++      -L ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/sysroot/usr/lib/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE}/${CMAKE_ANDROID_API}
++      -tools-directory ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/bin
++      -use-ld=gold
++      -Xlinker -v
++      -L ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/lib/gcc/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE}/${SWIFT_ANDROID_NDK_GCC_VERSION}.x
++      -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include
++      -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE}
++      -Xclang-linker --sysroot -Xclang-linker ${SWIFT_ANDROID_NDK_PATH}/platforms/android-${CMAKE_ANDROID_API}/arch-${SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH}")
++
++endif()
+ 
+ add_library(Foundation
+   AffineTransform.swift
+@@ -166,6 +218,11 @@ set_target_properties(Foundation PROPERTIES
+   Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift
+   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/swift)
+ 
++if(CMAKE_SYSTEM_NAME STREQUAL Android)
++  target_compile_options(Foundation PRIVATE
++    "SHELL:-Xlinker --defsym -Xlinker '__CFConstantStringClassReference=$s10Foundation19_NSCFConstantStringCN'"
++    "SHELL:${swift_android_flags}")
++endif()
+ 
+ add_library(FoundationNetworking
+   Boxing.swift
+@@ -215,6 +272,10 @@ set_target_properties(FoundationNetworking PROPERTIES
+   Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift
+   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/swift)
+ 
++if(CMAKE_SYSTEM_NAME STREQUAL Android)
++  target_compile_options(FoundationNetworking PRIVATE
++    "SHELL:${swift_android_flags}")
++endif()
+ 
+ add_library(FoundationXML
+   XMLDocument.swift
+@@ -239,6 +300,11 @@ set_target_properties(FoundationXML PROPERTIES
+   Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/swift
+   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/swift)
+ 
++if(CMAKE_SYSTEM_NAME STREQUAL Android)
++  target_compile_options(FoundationXML PRIVATE
++    "SHELL:${swift_android_flags}")
++endif()
++
+ set_property(GLOBAL APPEND PROPERTY Foundation_EXPORTS
+   Foundation FoundationNetworking FoundationXML)
+ get_swift_host_arch(swift_arch)
