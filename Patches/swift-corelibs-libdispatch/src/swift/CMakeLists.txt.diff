@@ -1,0 +1,69 @@
+diff --git a/src/swift/CMakeLists.txt b/src/swift/CMakeLists.txt
+index a10d969a3ad77241ecbb4128eb8523902037b067..c6968209c47232158168f2e1979f90e4a6d0ef5e 100644
+--- a/src/swift/CMakeLists.txt
++++ b/src/swift/CMakeLists.txt
+@@ -18,6 +18,56 @@ target_include_directories(DispatchStubs PRIVATE
+ set_target_properties(DispatchStubs PROPERTIES
+   POSITION_INDEPENDENT_CODE YES)
+ 
++# Android specific configuration.
++if(CMAKE_SYSTEM_NAME STREQUAL Android)
++  if("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "armeabi-v7a")
++    set(SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH "arm")
++    set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "arm-linux-androideabi")
++    set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "armv7")
++    set(SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET "armv7-none-linux-androideabi")
++  elseif("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "arm64-v8a")
++    set(SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH "arm64")
++    set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "aarch64-linux-android")
++    set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "aarch64")
++    set(SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET "aarch64-none-linux-android")
++  elseif("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "x86")
++    set(SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH "x86")
++    set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "i686-linux-android")
++    set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "i686")
++    set(SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET "i686-none-linux-android")
++  elseif("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "x86_64")
++    set(SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH "x86_64")
++    set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "x86_64-linux-android")
++    set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "x86_64")
++    set(SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET "x86_64-none-linux-android")
++  else()
++    message(FATAL_ERROR "Unknown arch for android SDK: ${CMAKE_ANDROID_ARCH_ABI}")
++  endif()
++
++  # Get the prebuilt suffix to create the correct toolchain path when using the NDK
++  if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
++    set(_swift_android_prebuilt_build "darwin-x86_64")
++  elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
++    set(_swift_android_prebuilt_build "linux-x86_64")
++  endif()
++  set(SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH "${SWIFT_ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${_swift_android_prebuilt_build}")
++
++  # Setting Android specific Swift flags.
++  get_filename_component(swift_android_lib_directory_path ${CMAKE_Swift_COMPILER} DIRECTORY)
++  set(swift_android_lib_directory_path ${swift_android_lib_directory_path}/../lib/swift/android/${SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME})
++  get_filename_component(swift_android_lib_directory_path ${swift_android_lib_directory_path} ABSOLUTE)
++
++  set(swift_android_flags
++    "-target ${SWIFT_SDK_ANDROID_SWIFT_COMPILER_TARGET}
++    -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include
++    -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE}
++    -L ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/sysroot/usr/lib/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE}/${CMAKE_ANDROID_API}
++    -L ${swift_android_lib_directory_path}
++    -tools-directory ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/bin
++    -Xclang-linker --sysroot -Xclang-linker ${SWIFT_ANDROID_NDK_PATH}/platforms/android-${CMAKE_ANDROID_API}/arch-${SWIFT_SDK_ANDROID_ARCH_NDK_PLATFORM_ARCH}"
++  )
++endif()
++
+ add_library(swiftDispatch
+   Block.swift
+   Data.swift
+@@ -29,6 +79,7 @@ add_library(swiftDispatch
+   Time.swift
+   Wrapper.swift)
+ target_compile_options(swiftDispatch PRIVATE
++  "SHELL:${swift_android_flags}"
+   "SHELL:-Xcc -fblocks"
+   "SHELL:-Xcc -fmodule-map-file=${PROJECT_SOURCE_DIR}/dispatch/module.modulemap"
+   "SHELL:-Xcc -I${PROJECT_SOURCE_DIR}")

@@ -54,16 +54,12 @@ class DispatchBuilder < Builder
 
       if @arch == Arch.armv7a
          abi = "armeabi-v7a"
-         swiftTarget = "armv7-none-linux-androideabi"
       elsif @arch == Arch.x86
          abi = "x86"
-         swiftTarget = "i686-none-linux-android"
       elsif @arch == Arch.aarch64
          abi = "arm64-v8a"
-         swiftTarget = "aarch64-none-linux-android"
       elsif @arch == Arch.x64
          abi = "x86_64"
-         swiftTarget = "x86_64-none-linux-android"
       end
 
       cFlags = "-fuse-ld=gold -Wno-unused-command-line-argument -B #{@ndk.toolchain}/#{@ndkArchPath}/bin -Wl,-L,#{@ndk.toolchain}/lib/gcc/#{@ndkArchPath}/4.9.x,-L,#{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath},-L,#{@ndk.toolchain}/sysroot/usr/lib/#{@ndkArchPath}/#{@ndk.api}"
@@ -111,14 +107,16 @@ EOM
       -DSWIFT_ANDROID_NDK_GCC_VERSION=#{@ndk.gcc}
       -DSWIFT_ANDROID_API_LEVEL=#{@ndk.api}
 
-      # See: "build: support `CMAKE_SWIFT_COMPILER_TARGET` by compnerd": https://github.com/apple/swift-corelibs-libdispatch/pull/509
-      -DCMAKE_SWIFT_COMPILER_TARGET=#{swiftTarget}
-
       -DCMAKE_BUILD_TYPE=Release
       -DENABLE_SWIFT=true
-      -DENABLE_TESTING=false
 
-      -DCMAKE_SWIFT_COMPILER=\"#{@swift.builds}/bin/swiftc\"
+      -DCMAKE_Swift_COMPILER=\"#{@swift.builds}/bin/swiftc\"
+      # Skipping Swift compiler check. See: /usr/local/Cellar/cmake/3.16.2/share/cmake/Modules/CMakeTestSwiftCompiler.cmake
+      -DCMAKE_Swift_COMPILER_FORCED=true
+
+      -DCMAKE_BUILD_WITH_INSTALL_RPATH=true
+      -DCMAKE_INSTALL_RPATH="$ORIGIN"
+
       -DCMAKE_PREFIX_PATH=\"#{@swift.builds}/lib/cmake/swift\"
       -DCMAKE_INSTALL_PREFIX=/
 
@@ -129,7 +127,7 @@ EOM
 
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
-      configurePatchFile("#{@patches}/src/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/src/swift/CMakeLists.txt.diff", shouldEnable)
    end
 
    def executeBuild
@@ -140,9 +138,11 @@ EOM
 
    def executeInstall
       execute "DESTDIR=#{@installs} cmake --build #{@builds} --target install"
-      Dir["#{@installs}/lib/swift/android/*.so"].each { |file|
+      Dir["#{@installs}/usr/lib/swift/android/*.so"].each { |file|
          FileUtils.mv(file, "#{File.dirname(file)}/#{@archPath}", force: true)
       }
+      FileUtils.mv("#{@installs}/usr/lib", "#{@installs}/lib", force: true)
+      FileUtils.rm_rf("#{@installs}/usr")
    end
 
    def libs()
