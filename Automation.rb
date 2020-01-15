@@ -37,8 +37,6 @@ require_relative "Scripts/Builders/OpenSSLBuilder.rb"
 require_relative "Scripts/Builders/XMLBuilder.rb"
 require_relative "Scripts/Builders/LLVMBuilder.rb"
 require_relative "Scripts/Builders/CMarkBuilder.rb"
-require_relative "Scripts/Builders/ClangBuilder.rb"
-require_relative "Scripts/Builders/CompilerRTBuilder.rb"
 require_relative "Scripts/Builders/SPMBuilder.rb"
 require_relative "Scripts/Builders/LLBBuilder.rb"
 require_relative "Scripts/Builders/SwiftSPMBuilder.rb"
@@ -145,6 +143,7 @@ class Automation < Tool
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
       elsif component == "llb" then LLBBuilder.new().rebuild()
       elsif component == "spm" then SPMBuilder.new().rebuild()
+      elsif component == "cmark" then CMarkBuilder.new().rebuild()
       elsif component == "icu-swift" then ICUSwiftHostBuilder.new().rebuild()
       elsif component == "icu-host" then ICUHostBuilder.new().rebuild()
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).rebuild() }
@@ -261,12 +260,12 @@ class Automation < Tool
      toolchainDir = Config.toolchainDir
      sourcesDir = Config.sources
      files = []
-     files << "#{sourcesDir}/#{Lib.clang}/LICENSE.TXT"
      files << "#{sourcesDir}/#{Lib.cmark}/COPYING"
-     files << "#{sourcesDir}/#{Lib.crt}/LICENSE.TXT"
      files << "#{sourcesDir}/#{Lib.curl}/COPYING"
      files << "#{sourcesDir}/#{Lib.icu}/icu4c/LICENSE"
      files << "#{sourcesDir}/#{Lib.llvm}/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.llvm}/clang/LICENSE.TXT"
+     files << "#{sourcesDir}/#{Lib.llvm}/compiler-rt/LICENSE.TXT"
      files << "#{sourcesDir}/#{Lib.ssl}/LICENSE"
      files << "#{sourcesDir}/#{Lib.dispatch}/LICENSE"
      files << "#{sourcesDir}/#{Lib.foundation}/LICENSE"

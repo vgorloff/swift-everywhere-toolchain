@@ -63,7 +63,6 @@ class SwiftBuilder < Builder
       @ndk = NDK.new()
       @cmark = CMarkBuilder.new()
       @llvm = LLVMBuilder.new()
-      @clang = ClangBuilder.new(@arch)
    end
 
    def executeConfigure
@@ -198,9 +197,6 @@ class SwiftBuilder < Builder
 
       # CLANG
       cmd << "-DClang_DIR=#{@llvm.builds}/lib/cmake/clang"
-      # In Swift 5.0 the following settings was used:
-      # cmd << "-DSWIFT_PATH_TO_CLANG_SOURCE=#{@clang.sources}"
-      # cmd << "-DSWIFT_PATH_TO_CLANG_BUILD=#{@llvm.builds}"
 
       # CMark
       cmd << "-DSWIFT_PATH_TO_CMARK_SOURCE=#{@cmark.sources}"

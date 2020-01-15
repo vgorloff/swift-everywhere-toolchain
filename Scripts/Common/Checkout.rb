@@ -27,10 +27,8 @@ require_relative "Tool.rb"
 class Checkout < Tool
 
    def checkout()
+      checkoutIfNeeded("#{Config.sources}/#{Lib.llvm}", "https://github.com/apple/llvm-project.git", Revision.llvm)
       checkoutIfNeeded("#{Config.sources}/#{Lib.swift}", "https://github.com/apple/swift.git", Revision.swift)
-      checkoutIfNeeded("#{Config.sources}/#{Lib.llvm}", "https://github.com/apple/swift-llvm.git", Revision.llvm)
-      checkoutIfNeeded("#{Config.sources}/#{Lib.clang}", "https://github.com/apple/swift-clang.git", Revision.clang)
-      checkoutIfNeeded("#{Config.sources}/#{Lib.crt}", "https://github.com/apple/swift-compiler-rt.git", Revision.crt)
       checkoutIfNeeded("#{Config.sources}/#{Lib.foundation}", "https://github.com/apple/swift-corelibs-foundation", Revision.foundation)
       checkoutIfNeeded("#{Config.sources}/#{Lib.dispatch}", "https://github.com/apple/swift-corelibs-libdispatch.git", Revision.dispatch)
       checkoutIfNeeded("#{Config.sources}/#{Lib.cmark}", "https://github.com/apple/swift-cmark.git", Revision.cmark)
