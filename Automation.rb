@@ -147,6 +147,8 @@ class Automation < Tool
       elsif component == "icu-swift" then ICUSwiftHostBuilder.new().rebuild()
       elsif component == "icu-host" then ICUHostBuilder.new().rebuild()
       elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).rebuild() }
+      elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).rebuild() }
+      elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).rebuild() }
       elsif component == "swift-spm" then SwiftSPMBuilder.new().rebuild()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
