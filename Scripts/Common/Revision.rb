@@ -90,10 +90,11 @@ class Revision
    end
 
    def self.ssl
+      return "894da2fb7ed5d314ee5c2fc9fd2d9b8b74111596"
+      # 1.0.53 @ OpenSSL_1_1_1d: 894da2fb7ed5d314ee5c2fc9fd2d9b8b74111596
       # OpenSSL_1_1_1c: 97ace46e11dba4c4c2b7cb67140b6ec152cfaaf4 (1.0.26)
       # OpenSSL_1_1_1b: 50eaac9f3337667259de725451f201e784599687
       # OpenSSL_1_1_1a: d1c28d791a7391a8dc101713cd8646df96491d03
-      return "97ace46e11dba4c4c2b7cb67140b6ec152cfaaf4"
    end
 
    def self.icu
@@ -103,11 +104,9 @@ class Revision
    end
 
    def self.curl
-      # 7_65_1: 69248b58f649e35b09a126c12781353e3471f5c6 (1.0.26)
-      # 7.65.0: 885ce31401b6789c959131754b1e5ae518964072
-      # 7.64.1: 521bbbe29928f9bc1c61306df612e856d45cbe5a
-      # 7.63.0: 4258dc02d86e7e4de9f795a1af3a0bc6732d4ab5
-      return "69248b58f649e35b09a126c12781353e3471f5c6"
+      return "2cfac302fbeec68f1727cba3d1705e16f02220ad"
+      # 1.0.53 @ curl-7_68_0: 2cfac302fbeec68f1727cba3d1705e16f02220ad
+      # 1.0.26 @ 7_65_1: 69248b58f649e35b09a126c12781353e3471f5c6
    end
 
    def self.xml
