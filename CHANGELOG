@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.53] - 2020-01-16
 ### Changed
 * libFoundation switched to recent version.
+* OpenSSL updated to OpenSSL_1_1_1d.
+* CURL updated to curl-7_68_0.
 
 ## [1.0.52] - 2020-01-15
 ### Changed
