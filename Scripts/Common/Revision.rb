@@ -48,7 +48,11 @@ class Revision
    end
 
    def self.foundation
-      return "facf5715d25d1765f10e4319b0701f300d9248e0"
+      return "62809e9e2f918e6c11e47cd6a8d858429c77b743"
+      # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-05-a: 62809e9e2f918e6c11e47cd6a8d858429c77b743
+      # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2019-12-27-a: 86eec6148c1e4ef1c56dbd5e53c5cbf6d023f202
+      # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2019-11-30-a: 2195121bf063e2db7c71080fcae7e76e8a43950e
+      # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2019-11-06-a: c093eb65ed3aabb334857714e01989ecfb875120
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-11-01-a: facf5715d25d1765f10e4319b0701f300d9248e0
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-30-a: 5bb98287f5945a8cbb37df5a69741328488d2dd0
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-30-a: f62c026cb2f2f162bb3b3d93ae49969b60652e0b
@@ -83,29 +87,26 @@ class Revision
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-03-a: 31e12547c4de3dfcacc69855d93298cb90fd4f27
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-14-a: bfa95d55b535fa178f75484b5e8f82ae3d8517af
       # 1.0.49 @ swift-5.1.1-RELEASE: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
-      # swift-5.1-branch @ 1.0.39: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
-      # swift-5.1-branch @ 1.0.26: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27
    end
 
    def self.ssl
+      return "894da2fb7ed5d314ee5c2fc9fd2d9b8b74111596"
+      # 1.0.53 @ OpenSSL_1_1_1d: 894da2fb7ed5d314ee5c2fc9fd2d9b8b74111596
       # OpenSSL_1_1_1c: 97ace46e11dba4c4c2b7cb67140b6ec152cfaaf4 (1.0.26)
       # OpenSSL_1_1_1b: 50eaac9f3337667259de725451f201e784599687
       # OpenSSL_1_1_1a: d1c28d791a7391a8dc101713cd8646df96491d03
-      return "97ace46e11dba4c4c2b7cb67140b6ec152cfaaf4"
    end
 
    def self.icu
-      # v64-2: e2d85306162d3a0691b070b4f0a73e4012433444 (1.0.26)
-      # v64-rc2: 67d218f2476ac543de2ed843fa080892972c604a
       return "e2d85306162d3a0691b070b4f0a73e4012433444"
+      # 1.0.26 @ v64-2: e2d85306162d3a0691b070b4f0a73e4012433444
+      # v64-rc2: 67d218f2476ac543de2ed843fa080892972c604a
    end
 
    def self.curl
-      # 7_65_1: 69248b58f649e35b09a126c12781353e3471f5c6 (1.0.26)
-      # 7.65.0: 885ce31401b6789c959131754b1e5ae518964072
-      # 7.64.1: 521bbbe29928f9bc1c61306df612e856d45cbe5a
-      # 7.63.0: 4258dc02d86e7e4de9f795a1af3a0bc6732d4ab5
-      return "69248b58f649e35b09a126c12781353e3471f5c6"
+      return "2cfac302fbeec68f1727cba3d1705e16f02220ad"
+      # 1.0.53 @ curl-7_68_0: 2cfac302fbeec68f1727cba3d1705e16f02220ad
+      # 1.0.26 @ 7_65_1: 69248b58f649e35b09a126c12781353e3471f5c6
    end
 
    def self.xml

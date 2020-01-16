@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 686ae5468be36169d012f221a358cc52178116c6..2958c524551b6ebc9bc8850c12afa6c91b3f79e3 100644
+index ecc6c3c9e30c51e70c1c7ed2f2bd074befd824e3..f910d88d2eace7750a0428c9850ef86fe6496a96 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -45,6 +45,14 @@ set(BUILD_SHARED_LIBS NO)
+@@ -43,6 +43,14 @@ set(BUILD_SHARED_LIBS NO)
  add_subdirectory(CoreFoundation EXCLUDE_FROM_ALL)
  set(BUILD_SHARED_LIBS ${SAVED_BUILD_SHARED_LIBS})
  
@@ -17,126 +17,14 @@ index 686ae5468be36169d012f221a358cc52178116c6..2958c524551b6ebc9bc8850c12afa6c9
  # Setup include paths for uuid/uuid.h
  target_include_directories(CoreFoundation PRIVATE
    ${CMAKE_CURRENT_SOURCE_DIR}
-@@ -113,6 +121,47 @@ foreach(library ${CoreFoundation_LINK_LIBRARIES})
-   endif()
- endforeach()
+@@ -50,7 +58,9 @@ target_include_directories(CoreFoundation PRIVATE
  
-+# Android specific configuration.
-+if(CMAKE_SYSTEM_NAME STREQUAL Android)
-+  if("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "armeabi-v7a")
-+    set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "arm-linux-androideabi")
-+    set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "armv7")
-+  elseif("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "arm64-v8a")
-+    set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "aarch64-linux-android")
-+    set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "aarch64")
-+  elseif("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "x86")
-+    set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "i686-linux-android")
-+    set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "i686")
-+  elseif("${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "x86_64")
-+    set(SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE "x86_64-linux-android")
-+    set(SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME "x86_64")
-+  else()
-+    message(FATAL_ERROR "Unknown arch for android SDK: ${CMAKE_ANDROID_ARCH_ABI}")
-+  endif()
-+
-+  # Get the prebuilt suffix to create the correct toolchain path when using the NDK
-+  if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
-+    set(_swift_android_prebuilt_build "darwin-x86_64")
-+  elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
-+    set(_swift_android_prebuilt_build "linux-x86_64")
-+  endif()
-+  set(SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH "${SWIFT_ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${_swift_android_prebuilt_build}")
-+
-+  # Setting Android specific Swift flags.
-+  get_filename_component(swift_android_lib_directory_path ${CMAKE_SWIFT_COMPILER} DIRECTORY)
-+  set(swift_android_lib_directory_path ${swift_android_lib_directory_path}/../lib/swift/android/${SWIFT_SDK_ANDROID_SWIFT_ARCH_NAME})
-+  get_filename_component(swift_android_lib_directory_path ${swift_android_lib_directory_path} ABSOLUTE)
-+
-+  # Note: Simbol name is `$s10Foundation19_NSCFConstantStringCN`. Double $$ used for escape.
-+  set(swift_android_foundation_link_flags -Xlinker --defsym -Xlinker '__CFConstantStringClassReference=$$s10Foundation19_NSCFConstantStringCN')
-+
-+  set(swift_android_link_flags -L ${swift_android_lib_directory_path} -L ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/sysroot/usr/lib/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE}/${CMAKE_ANDROID_API} -tools-directory ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/bin)
-+  set(swift_android_link_flags ${swift_android_link_flags} -use-ld=gold -Xlinker -v)
-+  set(swift_android_link_flags ${swift_android_link_flags} -L ${SWIFT_SDK_ANDROID_ARCH_NDK_PREBUILT_PATH}/lib/gcc/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE}/${SWIFT_ANDROID_NDK_GCC_VERSION}.x)
-+
-+  set(swift_android_compile_flags -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include -Xcc -I${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include/${SWIFT_SDK_ANDROID_ARCH_NDK_TRIPLE})
-+endif()
-+
- add_swift_library(Foundation
-                   MODULE_NAME
-                     Foundation
-@@ -266,6 +315,8 @@ add_swift_library(Foundation
-                     $<$<PLATFORM_ID:Windows>:-lShell32>
-                     $<$<PLATFORM_ID:Windows>:-lpathcch>
-                     $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:CoreFoundationResources>>
-+                    ${swift_android_link_flags}
-+                    ${swift_android_foundation_link_flags}
-                   SWIFT_FLAGS
-                     -Xcc -F${CMAKE_CURRENT_BINARY_DIR}
-                     -DDEPLOYMENT_RUNTIME_SWIFT
-@@ -275,6 +326,7 @@ add_swift_library(Foundation
-                     $<$<BOOL:ENABLE_TESTING>:-enable-testing>
-                     $<$<NOT:$<CONFIG:Debug>>:-O>
-                     ${swift_libc_flags}
-+                    ${swift_android_compile_flags}
-                   DEPENDS
-                     uuid
-                     CoreFoundation
-@@ -331,6 +383,7 @@ add_swift_library(FoundationNetworking
-                     ${Foundation_RPATH}
-                     ${WORKAROUND_SR9138}
-                     ${WORKAROUND_SR9995}
-+                    ${swift_android_link_flags}
-                   SWIFT_FLAGS
-                     -DDEPLOYMENT_RUNTIME_SWIFT
-                     -DNS_BUILDING_FOUNDATION_NETWORKING
-@@ -338,6 +391,7 @@ add_swift_library(FoundationNetworking
-                     -DDEPLOYMENT_ENABLE_LIBDISPATCH
-                     -I;${CMAKE_CURRENT_BINARY_DIR}/swift
-                     ${libdispatch_cflags}
-+                    ${swift_android_compile_flags}
-                     $<$<BOOL:ENABLE_TESTING>:-enable-testing>
-                     $<$<NOT:$<CONFIG:Debug>>:-O>
-                   DEPENDS
-@@ -373,6 +427,7 @@ add_swift_library(FoundationXML
-                     ${Foundation_RPATH}
-                     ${WORKAROUND_SR9138}
-                     ${WORKAROUND_SR9995}
-+                    ${swift_android_link_flags}
-                   SWIFT_FLAGS
-                     -DDEPLOYMENT_RUNTIME_SWIFT
-                     -DNS_BUILDING_FOUNDATION_NETWORKING
-@@ -380,6 +435,7 @@ add_swift_library(FoundationXML
-                     -DDEPLOYMENT_ENABLE_LIBDISPATCH
-                     -I;${CMAKE_CURRENT_BINARY_DIR}/swift
-                     ${libdispatch_cflags}
-+                    ${swift_android_compile_flags}
-                     $<$<BOOL:ENABLE_TESTING>:-enable-testing>
-                     $<$<NOT:$<CONFIG:Debug>>:-O>
-                   DEPENDS
-@@ -402,6 +458,7 @@ if(NOT BUILD_SHARED_LIBS)
-       ${LIBXML2_LIBRARIES})
- endif()
- 
+ add_subdirectory(uuid)
+ add_subdirectory(Foundation)
+-add_subdirectory(Tools)
 +if(NOT CMAKE_SYSTEM_NAME STREQUAL Android)
- add_swift_executable(plutil
-                      SOURCES
-                        Tools/plutil/main.swift
-@@ -448,6 +505,7 @@ add_swift_executable(GenerateTestFixtures
-                        ${swift_libc_flags}
-                      DEPENDS
-                        Foundation)
++  add_subdirectory(Tools)
 +endif()
- 
  if(ENABLE_TESTING)
-   add_swift_executable(xdgTestHelper
-@@ -735,7 +793,9 @@ install(FILES
-           CoreFoundation/Parsing.subproj/module.map
-         DESTINATION
-           lib/swift/CFXMLInterface)
-+if(NOT CMAKE_SYSTEM_NAME STREQUAL Android)
- install(PROGRAMS
-           ${CMAKE_CURRENT_BINARY_DIR}/plutil${CMAKE_EXECUTABLE_SUFFIX}
-         DESTINATION
-           ${CMAKE_INSTALL_FULL_BINDIR})
-+endif()
+   add_subdirectory(TestFoundation)
+ endif()
