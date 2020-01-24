@@ -90,6 +90,7 @@ class Automation < Tool
       elsif action == "bootstrap" then bootstrap()
       elsif action == "build" then build()
       elsif action == "checkout" then Checkout.new().checkout()
+      elsif action == "fetch" then Checkout.new().fetch()
       elsif action == "install" then install()
       elsif action == "archive" then archive()
       elsif action == "clean" then clean()

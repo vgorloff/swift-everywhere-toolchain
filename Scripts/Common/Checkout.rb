@@ -40,7 +40,27 @@ class Checkout < Tool
       # checkoutIfNeeded("#{Config.sources}/#{Lib.llb}", "https://github.com/apple/swift-llbuild.git", Revision.llb)
    end
 
+   def fetch()
+      fetchIfNeeded("#{Config.sources}/#{Lib.llvm}", "https://github.com/apple/llvm-project.git", Revision.llvm)
+      fetchIfNeeded("#{Config.sources}/#{Lib.swift}", "https://github.com/apple/swift.git", Revision.swift)
+      fetchIfNeeded("#{Config.sources}/#{Lib.foundation}", "https://github.com/apple/swift-corelibs-foundation", Revision.foundation)
+      fetchIfNeeded("#{Config.sources}/#{Lib.dispatch}", "https://github.com/apple/swift-corelibs-libdispatch.git", Revision.dispatch)
+      fetchIfNeeded("#{Config.sources}/#{Lib.cmark}", "https://github.com/apple/swift-cmark.git", Revision.cmark)
+      fetchIfNeeded("#{Config.sources}/#{Lib.icu}", "https://github.com/unicode-org/icu.git", Revision.icu)
+      fetchIfNeeded("#{Config.sources}/#{Lib.ssl}", "https://github.com/openssl/openssl.git", Revision.ssl)
+      fetchIfNeeded("#{Config.sources}/#{Lib.curl}", "https://github.com/curl/curl.git", Revision.curl)
+      fetchIfNeeded("#{Config.sources}/#{Lib.xml}", "https://github.com/GNOME/libxml2.git", Revision.xml)
+   end
+
    # Private
+
+   def fetchIfNeeded(localPath, repoURL, revision)
+      if File.exist?(localPath)
+         execute "cd \"#{localPath}\" && git fetch --prune origin"
+      else
+         checkoutIfNeeded(localPath, repoURL, revision)
+      end
+   end
 
    def checkoutIfNeeded(localPath, repoURL, revision)
       if File.exist?(localPath)
