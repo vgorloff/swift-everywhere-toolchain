@@ -151,6 +151,9 @@ class Automation < Tool
       elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).rebuild() }
       elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).rebuild() }
       elsif component == "swift-spm" then SwiftSPMBuilder.new().rebuild()
+      elsif component == "deps"
+         cleanDeps()
+         buildDeps()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
