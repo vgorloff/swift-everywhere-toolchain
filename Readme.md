@@ -1,6 +1,6 @@
 # Requirements
 
-- Xcode 11
+- Xcode 11.4
 - Android Studio 3.4.1
 - Android NDK r20b (Comes with Android Studio as downloadable package). **Note**: NDK r21 cannot be used with libDispatch yet due compile errors addressed clang/libc++ update.
 - Ruby 2.5 (Comes with macOS)
