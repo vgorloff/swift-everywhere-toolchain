@@ -2,7 +2,7 @@
 
 - Xcode 11
 - Android Studio 3.4.1
-- Android NDK r20b (Comes with Android Studio as downloadable package).
+- Android NDK r21 (Comes with Android Studio as downloadable package).
 - Ruby 2.5 (Comes with macOS)
 - CMake 3.14.5
 - Ninja 1.9.0
