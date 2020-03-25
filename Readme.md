@@ -4,8 +4,8 @@
 - Android Studio 3.4.1
 - Android NDK r20b (Comes with Android Studio as downloadable package). **Note**: NDK r21 cannot be used with libDispatch yet due compile errors addressed clang/libc++ update.
 - Ruby 2.5 (Comes with macOS)
-- CMake 3.14.5
-- Ninja 1.9.0
+- CMake 3.16.5
+- Ninja 1.10.0
 
 # Important
 
