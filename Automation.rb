@@ -385,7 +385,7 @@ class Automation < Tool
          error "! Please create symbolic link \"#{ndkDir}\" which points to Android NDK installation."
          puts ""
          message "  Example:"
-         message "  sudo ln -vs ~/Library/Android/sdk/ndk-bundle #{ndkDir}"
+         message "  sudo ln -vsi ~/Library/Android/sdk/ndk-bundle #{ndkDir}"
          puts ""
          exit(1)
       end
