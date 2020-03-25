@@ -40,6 +40,7 @@ class Revision
 
    def self.dispatch
       return "c992dacf3ca114806e6ac9ffc9113b19255be9fe"
+      # 1.0.54 @ 2019.10.01 @ swift-5.2-RELEASE: c992dacf3ca114806e6ac9ffc9113b19255be9fe
       # 1.0.52 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-13-a: c992dacf3ca114806e6ac9ffc9113b19255be9fe
       # 1.0.52 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-29-a: 2accb0b97738b9ba9a0ffc1cb335716b70f9f65a
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-26-a: 970d562fcaee756bae9d20386e64bba90e635818
@@ -49,7 +50,8 @@ class Revision
    end
 
    def self.foundation
-      return "62809e9e2f918e6c11e47cd6a8d858429c77b743"
+      return "8d0871530c52456278ef8c83cb049e6d70b28a6b"
+      # 1.0.54 @ 2020.03.18 @ swift-5.2-RELEASE: 8d0871530c52456278ef8c83cb049e6d70b28a6b
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-05-a: 62809e9e2f918e6c11e47cd6a8d858429c77b743
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2019-12-27-a: 86eec6148c1e4ef1c56dbd5e53c5cbf6d023f202
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2019-11-30-a: 2195121bf063e2db7c71080fcae7e76e8a43950e

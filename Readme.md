@@ -2,7 +2,7 @@
 
 - Xcode 11
 - Android Studio 3.4.1
-- Android NDK r21 (Comes with Android Studio as downloadable package).
+- Android NDK r20b (Comes with Android Studio as downloadable package). **Note**: NDK r21 cannot be used with libDispatch yet due compile errors addressed clang/libc++ update.
 - Ruby 2.5 (Comes with macOS)
 - CMake 3.14.5
 - Ninja 1.9.0
@@ -82,42 +82,6 @@ Build of complete toolchain takes ~1.5h. Instead of building it you can just dow
    ```
 
 10. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
-
-# Setup and Build (Vagrant Linux) - Draft Beta
-
-1. Clone this repository.
-
-   ```bash
-   git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
-   cd swift-everywhere-toolchain
-   ```
-
-2. Copy file `local.properties.yml.template` to `local.properties.yml`
-
-3. Edit file `local.properties.yml` and configure following settings:
-
-   - `ndk.dir.linux-vagrant`: Path to NDK installation directory.
-
-4. Launch Box.
-
-   ```bash
-   vagrant up
-   ```
-
-5. Login to Box.
-
-   ```bash
-   vagrant ssh
-   ```
-
-6. Start a build.
-
-   ```bash
-   cd /vagrant
-   make
-   ```
-
-7. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
 # Sample Projects
 
