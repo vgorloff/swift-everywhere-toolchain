@@ -27,8 +27,9 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      return "3b9014dc9acae3d95255a83befd85b52e7176acb"
-      # 1.0.52 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-13-a: 3b9014dc9acae3d95255a83befd85b52e7176acb
+      return "443e9a41d1a7c1fcae280490144fcbf8461d3499"
+      # 1.0.54 @ 2020.03.24 @ swift-5.2-RELEASE: 443e9a41d1a7c1fcae280490144fcbf8461d3499
+      # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-13-a: 3b9014dc9acae3d95255a83befd85b52e7176acb
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2019-12-27-a: 746b58e8e1c1ef1ac09d8031875fd2a08b65597c
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-14-a: 9a4abf47a450aeff6a3231225fd2cf18cc7a940a
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-26-a: 8a91e9802448de399df4ee3ed24c63dc25af7e67
@@ -39,6 +40,7 @@ class Revision
 
    def self.dispatch
       return "c992dacf3ca114806e6ac9ffc9113b19255be9fe"
+      # 1.0.54 @ 2019.10.01 @ swift-5.2-RELEASE: c992dacf3ca114806e6ac9ffc9113b19255be9fe
       # 1.0.52 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-13-a: c992dacf3ca114806e6ac9ffc9113b19255be9fe
       # 1.0.52 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-29-a: 2accb0b97738b9ba9a0ffc1cb335716b70f9f65a
       # 1.0.49 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-26-a: 970d562fcaee756bae9d20386e64bba90e635818
@@ -48,7 +50,8 @@ class Revision
    end
 
    def self.foundation
-      return "62809e9e2f918e6c11e47cd6a8d858429c77b743"
+      return "8d0871530c52456278ef8c83cb049e6d70b28a6b"
+      # 1.0.54 @ 2020.03.18 @ swift-5.2-RELEASE: 8d0871530c52456278ef8c83cb049e6d70b28a6b
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-05-a: 62809e9e2f918e6c11e47cd6a8d858429c77b743
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2019-12-27-a: 86eec6148c1e4ef1c56dbd5e53c5cbf6d023f202
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2019-11-30-a: 2195121bf063e2db7c71080fcae7e76e8a43950e
@@ -78,12 +81,15 @@ class Revision
    end
 
    def self.llvm
-      return "019936b2100dc33c8946928d424b5cff4211acea"
+      return "c2133f2b08047708b17230b598cb789062143650"
+      # 1.0.54 @ 2020.03.23 @ swift-5.2-RELEASE: c2133f2b08047708b17230b598cb789062143650
+      # 1.0.54 @ swift-5.1.5-RELEASE: 198fa1e3efcce2fd302f7aaa077aec443a82394b
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-03-a: 019936b2100dc33c8946928d424b5cff4211acea
    end
 
    def self.cmark
-      return "31e12547c4de3dfcacc69855d93298cb90fd4f27"
+      return "bfa95d55b535fa178f75484b5e8f82ae3d8517af"
+      # 1.0.54 @ 2019.10.10 @ swift-5.2-RELEASE: bfa95d55b535fa178f75484b5e8f82ae3d8517af
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-03-a: 31e12547c4de3dfcacc69855d93298cb90fd4f27
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-14-a: bfa95d55b535fa178f75484b5e8f82ae3d8517af
       # 1.0.49 @ swift-5.1.1-RELEASE: 32fa49671d0fc5d1f65d2bcbabfb1511a9d65c27

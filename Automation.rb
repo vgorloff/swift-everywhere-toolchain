@@ -90,6 +90,7 @@ class Automation < Tool
       elsif action == "bootstrap" then bootstrap()
       elsif action == "build" then build()
       elsif action == "checkout" then Checkout.new().checkout()
+      elsif action == "fetch" then Checkout.new().fetch()
       elsif action == "install" then install()
       elsif action == "archive" then archive()
       elsif action == "clean" then clean()
@@ -143,6 +144,7 @@ class Automation < Tool
       elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
       elsif component == "llb" then LLBBuilder.new().rebuild()
       elsif component == "spm" then SPMBuilder.new().rebuild()
+      elsif component == "llvm" then LLVMBuilder.new().rebuild()
       elsif component == "cmark" then CMarkBuilder.new().rebuild()
       elsif component == "icu-swift" then ICUSwiftHostBuilder.new().rebuild()
       elsif component == "icu-host" then ICUHostBuilder.new().rebuild()
@@ -150,6 +152,9 @@ class Automation < Tool
       elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).rebuild() }
       elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).rebuild() }
       elsif component == "swift-spm" then SwiftSPMBuilder.new().rebuild()
+      elsif component == "deps"
+         cleanDeps()
+         buildDeps()
       elsif component == "libs"
          @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
          @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
@@ -380,7 +385,7 @@ class Automation < Tool
          error "! Please create symbolic link \"#{ndkDir}\" which points to Android NDK installation."
          puts ""
          message "  Example:"
-         message "  sudo ln -vs ~/Library/Android/sdk/ndk-bundle #{ndkDir}"
+         message "  sudo ln -vsi ~/Library/Android/sdk/ndk-bundle #{ndkDir}"
          puts ""
          exit(1)
       end

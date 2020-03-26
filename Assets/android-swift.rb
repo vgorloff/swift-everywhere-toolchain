@@ -93,7 +93,11 @@ class SwiftBuilder
 
    def compile()
       args = swiftcArgs()
-      cmd = "#{@toolchainDir}/usr/bin/swiftc " + args.join(" ") + " " + @arguments.join(" ")
+      passedArguments = @arguments.join(" ")
+      passedArguments = passedArguments.gsub(/-Xlinker\s+-install_name/, '') # Removing non-Android options.
+      passedArguments = passedArguments.gsub(/-Xlinker\s+@rpath\/.+?\.dylib/, '') # Removing non-Android options.
+      passedArguments = passedArguments.gsub(/-rpath\s+@loader_path/, '') # Removing non-Android options.
+      cmd = "#{@toolchainDir}/usr/bin/swiftc " + args.join(" ") + " " + passedArguments
       if @isVerbose
          puts cmd
       end
@@ -157,7 +161,8 @@ class SwiftBuilder
       # cmd << "CXX=#{@ndkToolChain}/bin/#{@clang}++"
       cmd << "swift build"
       if @isVerbose
-         cmd << "-v"
+         # cmd << "-v"
+         cmd << "-Xswiftc -v"
       end
       cmd << "-Xswiftc -target -Xswiftc #{@targetTripple}"
       cmd << "-Xswiftc -sdk -Xswiftc #{@toolchainDir}"
