@@ -69,6 +69,9 @@ class FoundationBuilder < Builder
       else
          cFlags += " -Wl,-L,#{@ndk.toolchain}/#{@ndkArchPath}/lib"
       end
+      
+      # Enable to have verbose output.
+      # cFlags += " -Xswiftc -v"
 
       cmd = <<EOM
       cd #{@builds} &&
@@ -148,6 +151,7 @@ EOM
 
    def configurePatches(shouldEnable = true)
       configurePatchFile("#{@patches}/CMakeLists.txt.diff", shouldEnable)
+      configurePatchFile("#{@patches}/CoreFoundation/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/Foundation/CMakeLists.txt.diff", shouldEnable)
       configurePatchFile("#{@patches}/CoreFoundation/Base.subproj/SwiftRuntime/CoreFoundation.h.diff", shouldEnable)
    end
