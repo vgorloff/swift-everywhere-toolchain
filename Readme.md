@@ -1,11 +1,11 @@
 # Requirements
 
-- Xcode 11.4
-- Android Studio 3.4.1
+- Xcode 11.5
+- Android Studio 4.0
 - Android NDK 20.1.5948944. **Note**: NDK 21.0.6113669 or above cannot be used with libDispatch at the moment due compile errors addressed clang/libc++ update.
-- Ruby 2.5 (Comes with macOS)
-- CMake 3.16.5
-- Ninja 1.10.0
+- Ruby 2.6.3 (ruby -v)
+- CMake 3.17.3 (cmake --version)
+- Ninja 1.10.0 (ninja --version)
 
 # Important
 
