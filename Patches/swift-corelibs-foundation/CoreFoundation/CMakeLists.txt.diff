@@ -1,0 +1,13 @@
+diff --git a/CoreFoundation/CMakeLists.txt b/CoreFoundation/CMakeLists.txt
+index 90a777234eec54f5701f39ac2425b9ecf6385536..6913ee7430591352d10ea2487ecc836693581e01 100644
+--- a/CoreFoundation/CMakeLists.txt
++++ b/CoreFoundation/CMakeLists.txt
+@@ -382,7 +382,7 @@ target_include_directories(CoreFoundation
+                              ${PROJECT_SOURCE_DIR}
+                              ${ICU_INCLUDE_DIR})
+ target_link_libraries(CoreFoundation PRIVATE
+-  Threads::Threads
++  # Threads::Threads
+   ${CMAKE_DL_LIBS}
+   BlocksRuntime
+   dispatch)

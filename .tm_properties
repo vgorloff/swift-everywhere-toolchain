@@ -1,0 +1,1 @@
+excludeInFolderSearch = "{$excludeInFolderSearch,ToolChain/Build,ToolChain/Install}"

@@ -27,8 +27,9 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      return "443e9a41d1a7c1fcae280490144fcbf8461d3499"
-      # 1.0.54 @ 2020.03.24 @ swift-5.2-RELEASE: 443e9a41d1a7c1fcae280490144fcbf8461d3499
+      return "b623e823d42841ab8b151fb9c092bb0f9f5084e6"
+      # 1.0.55 @ 2020.05.18 @ origin/swift-5.2-branch: b623e823d42841ab8b151fb9c092bb0f9f5084e6
+      # 1.0.54 @ 2020.03.24 @ swift-5.2-RELEASE: 443e9a41d1a7c1fcae280490144fcbf8461d3499 // This commit is gone now :0
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-13-a: 3b9014dc9acae3d95255a83befd85b52e7176acb
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2019-12-27-a: 746b58e8e1c1ef1ac09d8031875fd2a08b65597c
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-14-a: 9a4abf47a450aeff6a3231225fd2cf18cc7a940a
@@ -50,7 +51,8 @@ class Revision
    end
 
    def self.foundation
-      return "8d0871530c52456278ef8c83cb049e6d70b28a6b"
+      return "9a9402ba492bbae1cab2ef2d9f61c9d7c24659f9"
+      # 1.0.55 @ 16. April 2020 at 20:36:00 CEST @ swift-5.2.4-RELEASE: 9a9402ba492bbae1cab2ef2d9f61c9d7c24659f9
       # 1.0.54 @ 2020.03.18 @ swift-5.2-RELEASE: 8d0871530c52456278ef8c83cb049e6d70b28a6b
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-05-a: 62809e9e2f918e6c11e47cd6a8d858429c77b743
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2019-12-27-a: 86eec6148c1e4ef1c56dbd5e53c5cbf6d023f202
