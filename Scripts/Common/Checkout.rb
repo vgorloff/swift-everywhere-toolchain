@@ -87,7 +87,7 @@ class Checkout < Tool
    def checkoutRevision(localPath, revision)
       branch = branchName(revision)
       message "Checking out revision #{revision}"
-      execute "cd \"#{localPath}\" && git fetch --prune origin"
+      execute "cd \"#{localPath}\" && git fetch --prune --prune-tags origin"
       # Disable warning about detached HEAD - https://stackoverflow.com/a/45652159/1418981
       execute "cd \"#{localPath}\" && git -c advice.detachedHead=false checkout #{revision}"
       execute "cd \"#{localPath}\" && git branch -f #{branch}"

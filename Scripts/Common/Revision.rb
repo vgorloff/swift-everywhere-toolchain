@@ -27,7 +27,8 @@ class Revision
    # See also: $ToolChain/Sources/swift/utils/update_checkout/update-checkout-config.json
 
    def self.swift
-      return "b623e823d42841ab8b151fb9c092bb0f9f5084e6"
+      return "e7c2f897ad2766b1664b56f3a77d939b844dd135"
+      # 1.0.56 @ 2020.10.13 @ swift-5.3-RELEASE: e7c2f897ad2766b1664b56f3a77d939b844dd135
       # 1.0.55 @ 2020.05.18 @ origin/swift-5.2-branch: b623e823d42841ab8b151fb9c092bb0f9f5084e6
       # 1.0.54 @ 2020.03.24 @ swift-5.2-RELEASE: 443e9a41d1a7c1fcae280490144fcbf8461d3499 // This commit is gone now :0
       # 1.0.53 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-13-a: 3b9014dc9acae3d95255a83befd85b52e7176acb
@@ -83,14 +84,16 @@ class Revision
    end
 
    def self.llvm
-      return "c2133f2b08047708b17230b598cb789062143650"
+      return "c39a810ec308dd4a8d93c5011fb73a5c987e8680"
+      # 1.0.56 @ 2020.10.13 @ swift-5.3-RELEASE: c39a810ec308dd4a8d93c5011fb73a5c987e8680
       # 1.0.54 @ 2020.03.23 @ swift-5.2-RELEASE: c2133f2b08047708b17230b598cb789062143650
       # 1.0.54 @ swift-5.1.5-RELEASE: 198fa1e3efcce2fd302f7aaa077aec443a82394b
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-03-a: 019936b2100dc33c8946928d424b5cff4211acea
    end
 
    def self.cmark
-      return "bfa95d55b535fa178f75484b5e8f82ae3d8517af"
+      return "1168665f6b36be747ffe6b7b90bc54cfc17f42b7"
+      # 1.0.56 @ 2020.10.13 @ swift-5.3-RELEASE: 1168665f6b36be747ffe6b7b90bc54cfc17f42b7
       # 1.0.54 @ 2019.10.10 @ swift-5.2-RELEASE: bfa95d55b535fa178f75484b5e8f82ae3d8517af
       # 1.0.51 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-03-a: 31e12547c4de3dfcacc69855d93298cb90fd4f27
       # 1.0.50 @ swift-DEVELOPMENT-SNAPSHOT-2019-10-14-a: bfa95d55b535fa178f75484b5e8f82ae3d8517af

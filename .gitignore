@@ -1,6 +1,7 @@
 /.vagrant
 /*.log
 .DS_Store
+/.idea
 
 /ToolChain
 /local.properties.yml

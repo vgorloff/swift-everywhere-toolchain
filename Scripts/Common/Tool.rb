@@ -49,10 +49,10 @@ class Tool
    def verifyXcode
       fullVersion = `xcodebuild -version`.strip
       version = fullVersion.split("\n").select { |comp| comp.include?("Xcode") }.first
-      status = version.include?("11")
+      status = version.include?("12")
       if !status
-         print("Please use Xcode 11.", 31)
-         print("Your Xcode version seems too old:", 36)
+         print("Please use Xcode 12.", 31)
+         print("Your Xcode version seems too old or too new:", 36)
          print(fullVersion, 32)
       end
       return status
