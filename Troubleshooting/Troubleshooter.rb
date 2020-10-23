@@ -6,7 +6,8 @@ class Troubleshooter
       @toolChain = File.expand_path("#{@currentDir}/../ToolChain")
       @sources = "#{@toolChain}/Sources"
       @builds = "#{@toolChain}/Build"
-      @ndk = File.expand_path("~/Library/Android/sdk/ndk-bundle")
+      @installs = "#{@toolChain}/Install"
+      @ndk = "/Volumes/Shared/Data/Android/sdk/ndk/20.1.5948944"
       @build = "#{@currentDir}/Build"
       @cmd = "echo 'Base class does nothing'"
    end

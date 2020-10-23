@@ -1,6 +1,6 @@
 # Requirements
 
-- Xcode 11.5
+- Xcode 12
 - Android Studio 4.0
 - Android NDK 20.1.5948944. **Note**: NDK 21.0.6113669 or above cannot be used with libDispatch at the moment due compile errors addressed clang/libc++ update.
 - Ruby 2.6.3 (ruby -v)
@@ -9,7 +9,8 @@
 
 # Important
 
-Toolchain build may fail if macOS headers installed under `/usr/include`. This usually happens if you previously installed package `/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg`. See details in [Xcode Command Line Tools](https://developer.apple.com/documentation/xcode_release_notes/xcode_10_release_notes#3035624) notes. See following [SuperUser question](https://superuser.com/questions/36567/how-do-i-uninstall-any-apple-pkg-package-file) about how to uninstall package.
+- Toolchain build may fail if macOS headers installed under `/usr/include`. This usually happens if you previously installed package `/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg`. See details in [Xcode Command Line Tools](https://developer.apple.com/documentation/xcode_release_notes/xcode_10_release_notes#3035624) notes. See following [SuperUser question](https://superuser.com/questions/36567/how-do-i-uninstall-any-apple-pkg-package-file) about how to uninstall package.
+- Toolchain build may fail if the command line tools are present in `/Library/Developer/CommandLineTools`. Remove them if you are not using them. See: [macos - How do I uninstall the command line tools for Xcode? - Ask Different](https://apple.stackexchange.com/questions/308943/how-do-i-uninstall-the-command-line-tools-for-xcode)
 
 Keep tools like `Cmake` and `ninja` up to date.
 

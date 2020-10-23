@@ -41,7 +41,8 @@ class Revision
    end
 
    def self.dispatch
-      return "c992dacf3ca114806e6ac9ffc9113b19255be9fe"
+      return "25ea083a3af4ca09eee2b6dbdf58f1b163f87008"
+      # 1.0.56 @ 2020.10.13 @ swift-5.3-RELEASE: 25ea083a3af4ca09eee2b6dbdf58f1b163f87008
       # 1.0.54 @ 2019.10.01 @ swift-5.2-RELEASE: c992dacf3ca114806e6ac9ffc9113b19255be9fe
       # 1.0.52 @ swift-DEVELOPMENT-SNAPSHOT-2020-01-13-a: c992dacf3ca114806e6ac9ffc9113b19255be9fe
       # 1.0.52 @ swift-DEVELOPMENT-SNAPSHOT-2019-09-29-a: 2accb0b97738b9ba9a0ffc1cb335716b70f9f65a

@@ -5,6 +5,7 @@
 
 /ToolChain
 /local.properties.yml
+/local.properties.json
 /*.code-workspace
 /.favorites.json
 /*.bbprojectd

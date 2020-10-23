@@ -6,14 +6,17 @@ class Builder < Troubleshooter
    def initialize()
       super(File.expand_path(File.dirname(__FILE__)))
       @cmd = <<EOM
-      /Users/vova/Downloads/usr/bin/swiftc -frontend -c
+      /usr/bin/swiftc -frontend -c
       -primary-file #{@sourceRoot}/Hello.swift
       -color-diagnostics -disable-objc-interop
       -Xcc -v
       -module-name hello
       -o #{@build}/Hello.o
 
-      -target armv7-none-linux-android
+      -target armv7-none-linux-androideabi
+      -resource-dir #{@installs}/darwin-armv7a/swift/usr/local/lib/swift
+      # -Xclang-linker -fuse-ld=gold
+      # -tools-directory #{@ndk}/toolchains/llvm/prebuilt/darwin-x86_64/bin
 
       # -target arm64-apple-ios12.0-simulator
       # -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk
@@ -21,13 +24,29 @@ class Builder < Troubleshooter
       # -Xcc -I#{@ndk}/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include
       # -Xcc -I#{@ndk}/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/arm-linux-androideabi
       # -L /Users/vova/Repositories/GitHub/Projects/swift-everywhere-toolchain/ToolChain/swift-android-toolchain/lib/swift/android/armv7
+EOM
+
+      @cmd = <<EOM
+      /usr/bin/swiftc
+      -v
+      -Xcc -v
+      -o #{@build}/Hello
+
+      -target armv7-none-linux-androideabi
+      -resource-dir #{@installs}/darwin-armv7a/swift/usr/local/lib/swift
+      -sdk #{@ndk}/sysroot
+
+      -use-ld=gold
+      -tools-directory #{@ndk}/toolchains/llvm/prebuilt/darwin-x86_64/bin
+
+      #{@sourceRoot}/Hello.swift
 
 EOM
    end
 
    def build()
       super()
-      execute "nm -a #{@build}/Hello.o"
+      # execute "nm -a #{@build}/Hello.o"
    end
 end
 
