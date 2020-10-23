@@ -18,7 +18,7 @@ module.exports = class Automation extends Tool {
     }
   }
 
-  runAction(action, component) {
+  runAction(component, action) {
     if (component == "llvm") {
       new LLVMBuilder().runAction(action)
     } else if (component == "stdlib") {
