@@ -4,6 +4,7 @@ var SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder")
 var SwiftBuilder = require("./lib/Builders/SwiftBuilder")
 var CMarkBuilder = require("./lib/Builders/CMarkBuilder")
 var DispatchBuilder = require("./lib/Builders/DispatchBuilder")
+var FoundationBuilder = require("./lib/Builders/FoundationBuilder")
 
 module.exports = class Automation extends Tool {
   run() {
@@ -28,6 +29,8 @@ module.exports = class Automation extends Tool {
       this.archs.forEach(item => new SwiftStdLibBuilder(item).runAction(action))
     } else if (component == "dispatch") {
       this.archs.forEach(item => new DispatchBuilder(item).runAction(action))
+    } else if (component == "foundation") {
+      this.archs.forEach(item => new FoundationBuilder(item).runAction(action))
     } else if (component == "swift") {
       new SwiftBuilder().runAction(action)
     } else if (component == "cmark") {
