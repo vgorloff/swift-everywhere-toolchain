@@ -52,108 +52,14 @@ class Automation < Tool
       action = ARGV.first
       if action.nil? then usage()
       elsif action == "bootstrap" then bootstrap()
-      elsif action == "build" then build()
       elsif action == "install" then install()
       elsif action == "archive" then archive()
-      elsif action == "clean" then clean()
-      elsif action == "status" then status()
       elsif action == "test" then test()
       elsif action == "verify" then verify()
       elsif action == "finalize"
          install()
          archive()
       else usage()
-      end
-   end
-
-   def buildComponent(component)
-      if component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
-      elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
-      elsif component == "icu-host" then ICUHostBuilder.new().make
-      elsif component == "icu-swift" then ICUSwiftHostBuilder.new().make
-      elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
-      elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
-      elsif component == "deps" then buildDeps()
-      elsif component == "libs"
-         @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
-         @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
-      elsif component == "swift" then SwiftBuilder.new().make
-      elsif component == "swift-spm" then SwiftSPMBuilder.new().make
-      elsif component == "spm" then SPMBuilder.new().make
-      elsif component == "llb" then LLBBuilder.new().make
-      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
-      elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
-      elsif component == "cmark" then CMarkBuilder.new().make
-      elsif component == "llvm" then LLVMBuilder.new().make
-      else
-         puts "! Unknown component \"#{component}\"."
-         usage()
-      end
-   end
-
-   def rebuildComponent(component)
-      if component == "swift" then SwiftBuilder.new().rebuild()
-      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
-      elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
-      elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).rebuild() }
-      elsif component == "llb" then LLBBuilder.new().rebuild()
-      elsif component == "spm" then SPMBuilder.new().rebuild()
-      elsif component == "llvm" then LLVMBuilder.new().rebuild()
-      elsif component == "cmark" then CMarkBuilder.new().rebuild()
-      elsif component == "icu-swift" then ICUSwiftHostBuilder.new().rebuild()
-      elsif component == "icu-host" then ICUHostBuilder.new().rebuild()
-      elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).rebuild() }
-      elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).rebuild() }
-      elsif component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).rebuild() }
-      elsif component == "swift-spm" then SwiftSPMBuilder.new().rebuild()
-      elsif component == "deps"
-         cleanDeps()
-         buildDeps()
-      elsif component == "libs"
-         @archsToBuild.each { |arch| DispatchBuilder.new(arch).rebuild() }
-         @archsToBuild.each { |arch| FoundationBuilder.new(arch).rebuild() }
-      elsif component == "stage-swift"
-         rebuildComponent("swift")
-         rebuildComponent("libs")
-      elsif component == "stage-spm"
-         rebuildComponent("llb")
-         rebuildComponent("spm")
-      else
-         puts "! Unknown component \"#{component}\"."
-         usage()
-      end
-   end
-
-   def cleanComponent(component)
-      if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
-      elsif component == "icu-host" then ICUHostBuilder.new().clean
-      elsif component == "icu-swift" then ICUSwiftHostBuilder.new().clean
-      elsif component == "icu" then @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
-      elsif component == "xml" then @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
-      elsif component == "ssl" then @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
-      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
-      elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
-      elsif component == "cmark" then CMarkBuilder.new().clean
-      elsif component == "llvm" then LLVMBuilder.new().clean
-      elsif component == "deps" then cleanDeps()
-      elsif component == "libs" then cleanLibs()
-      elsif component == "swift" then SwiftBuilder.new().clean
-      elsif component == "spm" then SPMBuilder.new().clean
-      elsif component == "llb" then LLBBuilder.new().clean
-      else
-         puts "! Unknown component \"#{component}\"."
-         usage()
-      end
-   end
-
-   def installComponent(component)
-      if component == "curl" then @archsToBuild.each { |arch| CurlBuilder.new(arch).install }
-      elsif component == "swift" then SwiftBuilder.new().install
-      elsif component == "llvm" then LLVMBuilder.new().install
-      elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).install }
-      else
-         puts "! Unknown component \"#{component}\"."
-         usage()
       end
    end
 
@@ -325,73 +231,6 @@ class Automation < Tool
          DispatchBuilder.new(arch).verify()
          FoundationBuilder.new(arch).verify()
       }
-   end
-
-   def status()
-      repos = []
-      repos << "#{Config.sources}/#{Lib.cmark}"
-      repos << "#{Config.sources}/#{Lib.curl}"
-      repos << "#{Config.sources}/#{Lib.icu}"
-      repos << "#{Config.sources}/#{Lib.llvm}"
-      repos << "#{Config.sources}/#{Lib.ssl}"
-      repos << "#{Config.sources}/#{Lib.swift}"
-      repos << "#{Config.sources}/#{Lib.dispatch}"
-      repos << "#{Config.sources}/#{Lib.foundation}"
-      repos << "#{Config.sources}/#{Lib.xml}"
-      repos.each { |repo|
-         execute "cd \"#{repo}\" && git status"
-      }
-   end
-
-   def clean()
-     LLVMBuilder.new().clean
-     CMarkBuilder.new().clean
-     cleanDeps()
-     SwiftBuilder.new().clean
-     cleanLibs()
-   end
-
-   def build()
-      LLVMBuilder.new().make
-      CMarkBuilder.new().make
-      buildDeps()
-      SwiftBuilder.new().make
-      @archsToBuild.each { |arch| DispatchBuilder.new(arch).make }
-      @archsToBuild.each { |arch| FoundationBuilder.new(arch).make }
-   end
-
-   def cleanDeps()
-      ICUHostBuilder.new().clean
-      @archsToBuild.each { |arch| ICUBuilder.new(arch).clean }
-      @archsToBuild.each { |arch| XMLBuilder.new(arch).clean }
-      @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).clean }
-      @archsToBuild.each { |arch| CurlBuilder.new(arch).clean }
-   end
-
-   def buildDeps()
-      ICUHostBuilder.new().make
-      @archsToBuild.each { |arch| ICUBuilder.new(arch).make }
-      @archsToBuild.each { |arch| XMLBuilder.new(arch).make }
-      @archsToBuild.each { |arch| OpenSSLBuilder.new(arch).make }
-      @archsToBuild.each { |arch| CurlBuilder.new(arch).make }
-   end
-
-   def cleanLibs()
-      @archsToBuild.each { |arch| DispatchBuilder.new(arch).clean }
-      @archsToBuild.each { |arch| FoundationBuilder.new(arch).clean }
-   end
-
-   def resetComponent(component)
-      if component == "swift" then SwiftBuilder.new().reset()
-      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).reset()
-      elsif component == "foundation" then FoundationBuilder.new(Arch.default).reset()
-      elsif component == "libs"
-         @archsToBuild.each { |arch| DispatchBuilder.new(arch).reset() }
-         @archsToBuild.each { |arch| FoundationBuilder.new(arch).reset() }
-      else
-         puts "! Unknown component \"#{component}\"."
-         usage()
-      end
    end
 
 end

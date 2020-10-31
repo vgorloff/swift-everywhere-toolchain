@@ -89,22 +89,6 @@ class Builder < Tool
       return toolchainPath + "/usr/bin/clang"
    end
 
-   def configure()
-      logStarted("Configure")
-      prepare()
-      unpatch()
-      patch()
-      executeConfigure()
-      logCompleted("Configure")
-   end
-
-   def build
-      logStarted("Build")
-      prepare()
-      executeBuild()
-      logCompleted("Build")
-   end
-
    def install
       logStarted("Install")
       removeInstalls()
@@ -112,94 +96,7 @@ class Builder < Tool
       logCompleted("Install")
    end
 
-   def executeConfigure()
-      # Base class does nothing
-   end
-
-   def executeBuild()
-      # Base class does nothing
-   end
-
-   def executeClean()
-      # Base class does nothing
-   end
-
-   def executeInstall()
-      # Base class does nothing
-   end
-
-   def patch()
-      configurePatches(true)
-   end
-
-   def unpatch()
-      configurePatches(false)
-   end
-
-   def configurePatches(shouldEnable = true)
-      # Base class does nothing
-   end
-
    # ------------------------------------
-
-   def logStarted(action)
-      puts ""
-      print(@startSpacer, 33)
-      print("\"#{@component}\" #{action} [#{@arch}] is started.", 36)
-   end
-
-   def logCompleted(action)
-      print("\"#{@component}\" #{action} [#{@arch}] is completed.", 36)
-      print(@endSpacer, 33)
-      puts ""
-   end
-
-   # ------------------------------------
-
-   def removeInstalls()
-      execute "rm -rf \"#{@installs}\""
-   end
-
-   def removeBuilds()
-      execute "rm -rf \"#{@builds}/\"*"
-      execute "find \"#{@builds}\" -type f | xargs -I{} rm -rf \"{}\""
-   end
-
-   def prepare()
-      execute "mkdir -p \"#{@builds}\""
-   end
-
-   def clean
-      logStarted("Clean")
-      unpatch()
-      executeClean()
-      removeBuilds()
-      cleanGitRepo()
-      logCompleted("Clean")
-   end
-
-   def make
-      configure()
-      build()
-      install()
-      unpatch()
-   end
-
-   def rebuild()
-      clean()
-      make()
-   end
-
-   def reset()
-      execute "cd #{@sources} && git status && git reset --hard"
-      cleanGitRepo()
-   end
-
-   def cleanGitRepo()
-      # See: https://stackoverflow.com/a/64966/1418981
-      execute "cd #{@sources} && git clean --quiet -f -x -d"
-      execute "cd #{@sources} && git clean --quiet -f -X"
-   end
 
    def setupSymLink(from, to, isRelative = false)
       removeSymLink(to)
@@ -231,31 +128,6 @@ class Builder < Tool
          message "Removing previously applied fix..."
          if File.exist? destinationFile
             execute "rm -fv #{destinationFile}"
-         end
-      end
-   end
-
-   def configurePatchFile(patchFile, shouldApply = true)
-      originalFile = patchFile.sub(@patches, @sources).sub('.diff', '')
-      gitRepoRoot = "#{Config.sources}/#{@component}"
-      backupFile = "#{originalFile}.orig"
-      diffFile = "#{originalFile}.diff"
-      if shouldApply
-         if !File.exist? backupFile
-            puts "Patching \"#{@component}\"..."
-            execute "patch --backup #{originalFile} #{patchFile}"
-            execute "diff -u #{backupFile} #{originalFile} > #{diffFile} | true"
-         else
-            puts "Backup file \"#{backupFile}\" exists. Seems you already patched \"#{@component}\". Skipping..."
-         end
-      else
-         message "Removing previously applied patch..."
-         execute "cd \"#{gitRepoRoot}\" && git checkout #{originalFile}"
-         if File.exist? backupFile
-            execute "rm -fv #{backupFile}"
-         end
-         if File.exist? diffFile
-            execute "rm -fv #{diffFile}"
          end
       end
    end

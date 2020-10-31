@@ -5,7 +5,10 @@ var SwiftBuilder = require("./lib/Builders/SwiftBuilder");
 var CMarkBuilder = require("./lib/Builders/CMarkBuilder");
 var DispatchBuilder = require("./lib/Builders/DispatchBuilder");
 var FoundationBuilder = require("./lib/Builders/FoundationBuilder");
+var ICUBuilder = require("./lib/Builders/ICUBuilder");
 var Checkout = require("./lib/Git/Checkout");
+const Paths = require("./lib/Paths");
+const Components = require("./lib/Components");
 
 module.exports = class Automation extends Tool {
   run() {
@@ -28,6 +31,12 @@ module.exports = class Automation extends Tool {
       new Checkout().fetch();
     } else if (action == "checkout") {
       new Checkout().checkout();
+    } else if (action == "build") {
+      this.build()
+    } else if (action == "clean") {
+      this.clean()
+    } else if (action == "status") {
+      this.status()
     } else {
       this.usage();
     }
@@ -42,6 +51,9 @@ module.exports = class Automation extends Tool {
       this.archs.forEach((item) => new DispatchBuilder(item).runAction(action));
     } else if (component == "foundation") {
       this.archs.forEach((item) => new FoundationBuilder(item).runAction(action));
+    } else if (component == "icu") {
+      new ICUHostBuilder().runAction(action)
+      this.archs.forEach((item) => new ICUBuilder(item).runAction(action));
     } else if (component == "swift") {
       new SwiftBuilder().runAction(action);
     } else if (component == "cmark") {
@@ -50,6 +62,46 @@ module.exports = class Automation extends Tool {
       this.logError(`! Unknown component \"${component}\".`);
       this.usage();
     }
+  }
+
+  build() {
+    this.runComponentAction("llvm", "build")
+    this.runComponentAction("cmark", "build")
+    this.runComponentAction("icu", "build")
+    this.runComponentAction("xml", "build")
+    this.runComponentAction("ssl", "build")
+    this.runComponentAction("curl", "build")
+    this.runComponentAction("swift", "build")
+    this.runComponentAction("stdlib", "build")
+    this.runComponentAction("dispatch", "build")
+    this.runComponentAction("foundation", "build")
+  }
+
+  clean() {
+    this.runComponentAction("llvm", "clean")
+    this.runComponentAction("cmark", "clean")
+    this.runComponentAction("icu", "clean")
+    this.runComponentAction("xml", "clean")
+    this.runComponentAction("ssl", "clean")
+    this.runComponentAction("curl", "clean")
+    this.runComponentAction("swift", "clean")
+    this.runComponentAction("stdlib", "clean")
+    this.runComponentAction("dispatch", "clean")
+    this.runComponentAction("foundation", "clean")
+  }
+
+  status() {
+    var paths = []
+    paths.push(Paths.sourcesDirPath(Components.llvm))
+    paths.push(Paths.sourcesDirPath(Components.cmark))
+    paths.push(Paths.sourcesDirPath(Components.icu))
+    paths.push(Paths.sourcesDirPath(Components.xml))
+    paths.push(Paths.sourcesDirPath(Components.ssl))
+    paths.push(Paths.sourcesDirPath(Components.curl))
+    paths.push(Paths.sourcesDirPath(Components.swift))
+    paths.push(Paths.sourcesDirPath(Components.dispatch))
+    paths.push(Paths.sourcesDirPath(Components.foundation))
+    paths.forEach((path) => this.execute(`cd "${path}" && git status`))
   }
 
   usage() {
