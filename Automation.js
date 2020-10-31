@@ -1,10 +1,11 @@
 var Tool = require("./lib/Tool");
-var LLVMBuilder = require("./lib/Builders/LLVMBuilder")
-var SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder")
-var SwiftBuilder = require("./lib/Builders/SwiftBuilder")
-var CMarkBuilder = require("./lib/Builders/CMarkBuilder")
-var DispatchBuilder = require("./lib/Builders/DispatchBuilder")
-var FoundationBuilder = require("./lib/Builders/FoundationBuilder")
+var LLVMBuilder = require("./lib/Builders/LLVMBuilder");
+var SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder");
+var SwiftBuilder = require("./lib/Builders/SwiftBuilder");
+var CMarkBuilder = require("./lib/Builders/CMarkBuilder");
+var DispatchBuilder = require("./lib/Builders/DispatchBuilder");
+var FoundationBuilder = require("./lib/Builders/FoundationBuilder");
+var Checkout = require("./lib/Git/Checkout");
 
 module.exports = class Automation extends Tool {
   run() {
@@ -15,26 +16,36 @@ module.exports = class Automation extends Tool {
     } else {
       var components = action.split(":");
       if (components.length == 2) {
-        this.runAction(components[0], components[1]);
+        this.runComponentAction(components[0], components[1]);
       } else {
-        this.usage();
+        this.runSimpleAction(action);
       }
     }
   }
 
-  runAction(component, action) {
+  runSimpleAction(action) {
+    if (action == "fetch") {
+      new Checkout().fetch();
+    } else if (action == "checkout") {
+      new Checkout().checkout();
+    } else {
+      this.usage();
+    }
+  }
+
+  runComponentAction(component, action) {
     if (component == "llvm") {
-      new LLVMBuilder().runAction(action)
+      new LLVMBuilder().runAction(action);
     } else if (component == "stdlib") {
-      this.archs.forEach(item => new SwiftStdLibBuilder(item).runAction(action))
+      this.archs.forEach((item) => new SwiftStdLibBuilder(item).runAction(action));
     } else if (component == "dispatch") {
-      this.archs.forEach(item => new DispatchBuilder(item).runAction(action))
+      this.archs.forEach((item) => new DispatchBuilder(item).runAction(action));
     } else if (component == "foundation") {
-      this.archs.forEach(item => new FoundationBuilder(item).runAction(action))
+      this.archs.forEach((item) => new FoundationBuilder(item).runAction(action));
     } else if (component == "swift") {
-      new SwiftBuilder().runAction(action)
+      new SwiftBuilder().runAction(action);
     } else if (component == "cmark") {
-      new CMarkBuilder().runAction(action)
+      new CMarkBuilder().runAction(action);
     } else {
       this.logError(`! Unknown component \"${component}\".`);
       this.usage();

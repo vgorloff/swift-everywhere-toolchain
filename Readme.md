@@ -1,11 +1,11 @@
 # Requirements
 
 - Xcode 12
-- Android Studio 4.0
+- Android Studio 4.1
 - Android NDK 20.1.5948944. **Note**: NDK 21.0.6113669 or above cannot be used with libDispatch at the moment due compile errors addressed clang/libc++ update.
-- Ruby 2.6.3 (ruby -v)
-- CMake 3.17.3 (cmake --version)
-- Ninja 1.10.0 (ninja --version)
+- Node 12.18 (node -v). Never versions may also wok, but not tested.
+- CMake 3.18 (cmake --version)
+- Ninja 1.10 (ninja --version)
 
 # Important
 
@@ -18,7 +18,7 @@ Keep tools like `Cmake` and `ninja` up to date.
 
 Build of complete toolchain takes ~1.5h. Instead of building it you can just download and use already pre-built package from [Releases](https://github.com/vgorloff/swift-everywhere-toolchain/releases) page.
 
-# Setup and Build (macOS)
+# Setup and Build
 
 1. Check that Cmake is installed. Install Cmake if Needed.
 
@@ -57,7 +57,7 @@ Build of complete toolchain takes ~1.5h. Instead of building it you can just dow
    brew install git-lfs
    ```
 
-5. Make sure that `Xcode Command Line Tools` properly configured.
+5. Make sure that `Xcode Build Tools` properly configured.
 
    ```bash
    xcode-select --print-path
@@ -70,16 +70,16 @@ Build of complete toolchain takes ~1.5h. Instead of building it you can just dow
    cd swift-everywhere-toolchain
    ```
 
-7. Copy file `local.properties.yml.template` to `local.properties.yml`
+7. Copy file `local.properties.template.json` to `local.properties.json`
 
-8. Edit file `local.properties.yml` and configure following settings:
+8. Edit file `local.properties.json` and configure following settings:
 
    - `ndk.dir.macos`: Path to NDK installation directory.
 
 9. Start a build.
 
    ```bash
-   make
+   node main.js
    ```
 
 10. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.

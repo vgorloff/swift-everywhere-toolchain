@@ -43,43 +43,7 @@ require_relative "Scripts/Builders/SwiftSPMBuilder.rb"
 
 require 'fileutils'
 
-# Pass `SA_ARCH=armv7a make ...` to build only armv7a.
 class Automation < Tool
-
-   def usage()
-
-       print("\nBuilding Toolchain with One Action:\n", 33)
-
-       print("   $ make bootstrap\n", 36)
-
-       print("Building Toolchain Step-by-Step:\n", 33)
-
-       print("1. Checkout sources:", 32)
-       print("   $ make checkout\n", 36)
-
-       print("2. Build toolchain:", 32)
-       print("   $ make build\n", 36)
-
-       print("3. Install toolchain:", 32)
-       print("   $ make install\n", 36)
-
-       print("4. Archive toolchain:", 32)
-       print("   $ make archive\n", 36)
-
-       print("5. (Optional) Verify toolchain build:", 32)
-       print("   $ make test\n", 36)
-
-       print("6. (Optional) Clean toolchain build:", 32)
-       print("   $ make clean\n", 36)
-
-       print("Building certain component (i.e. llvm, icu, xml, ssl, curl, swift, dispatch, foundation):\n", 33)
-
-       print("To build only certain component:", 32)
-       print("   $ make build:llvm\n", 36)
-
-       print("To clean only certain component:", 32)
-       print("   $ make clean:llvm\n", 36)
-   end
 
    def perform()
       if !verifyXcode
@@ -89,8 +53,6 @@ class Automation < Tool
       if action.nil? then usage()
       elsif action == "bootstrap" then bootstrap()
       elsif action == "build" then build()
-      elsif action == "checkout" then Checkout.new().checkout()
-      elsif action == "fetch" then Checkout.new().fetch()
       elsif action == "install" then install()
       elsif action == "archive" then archive()
       elsif action == "clean" then clean()
@@ -100,14 +62,6 @@ class Automation < Tool
       elsif action == "finalize"
          install()
          archive()
-      elsif action.start_with?("build:") then buildComponent(action.sub("build:", ''))
-      elsif action.start_with?("rebuild:") then rebuildComponent(action.sub("rebuild:", ''))
-      elsif action.start_with?("clean:") then cleanComponent(action.sub("clean:", ''))
-      elsif action.start_with?("install:") then installComponent(action.sub("install:", ''))
-      elsif action.start_with?("reset:") then resetComponent(action.sub("reset:", ''))
-      elsif action.start_with?("patch:") then patchComponent(action.sub("patch:", ''))
-      elsif action.start_with?("unpatch:") then unpatchComponent(action.sub("unpatch:", ''))
-      elsif action.start_with?("configure:") then configureComponent(action.sub("configure:", ''))
       else usage()
       end
    end
@@ -197,38 +151,6 @@ class Automation < Tool
       elsif component == "swift" then SwiftBuilder.new().install
       elsif component == "llvm" then LLVMBuilder.new().install
       elsif component == "foundation" then @archsToBuild.each { |arch| FoundationBuilder.new(arch).install }
-      else
-         puts "! Unknown component \"#{component}\"."
-         usage()
-      end
-   end
-
-   def configureComponent(component)
-      if component == "swift" then SwiftBuilder.new().configure
-      elsif component == "dispatch" then @archsToBuild.each { |arch| DispatchBuilder.new(arch).configure }
-      elsif component == "llvm" then LLVMBuilder.new().configure
-      else
-         puts "! Unknown component \"#{component}\"."
-         usage()
-      end
-   end
-
-   def patchComponent(component)
-      if component == "swift" then SwiftBuilder.new().patch
-      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).patch
-      elsif component == "icu" then ICUBuilder.new(Arch.default).patch
-      elsif component == "foundation" then FoundationBuilder.new(Arch.default).patch
-      else
-         puts "! Unknown component \"#{component}\"."
-         usage()
-      end
-   end
-
-   def unpatchComponent(component)
-      if component == "swift" then SwiftBuilder.new().unpatch
-      elsif component == "dispatch" then DispatchBuilder.new(Arch.default).unpatch
-      elsif component == "icu" then ICUBuilder.new(Arch.default).unpatch
-      elsif component == "foundation" then FoundationBuilder.new(Arch.default).unpatch
       else
          puts "! Unknown component \"#{component}\"."
          usage()
