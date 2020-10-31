@@ -76,16 +76,16 @@ module.exports = class Automation extends Tool {
   }
 
   build() {
-    this.runComponentAction("llvm", "build")
-    this.runComponentAction("cmark", "build")
-    this.runComponentAction("icu", "build")
-    this.runComponentAction("xml", "build")
-    this.runComponentAction("ssl", "build")
-    this.runComponentAction("curl", "build")
-    this.runComponentAction("swift", "build")
-    this.runComponentAction("stdlib", "build")
-    this.runComponentAction("dispatch", "build")
-    this.runComponentAction("foundation", "build")
+    this.runComponentAction("llvm", "make")
+    this.runComponentAction("cmark", "make")
+    this.runComponentAction("icu", "make")
+    this.runComponentAction("xml", "make")
+    this.runComponentAction("ssl", "make")
+    this.runComponentAction("curl", "make")
+    this.runComponentAction("swift", "make")
+    this.runComponentAction("stdlib", "make")
+    this.runComponentAction("dispatch", "make")
+    this.runComponentAction("foundation", "make")
   }
 
   clean() {
