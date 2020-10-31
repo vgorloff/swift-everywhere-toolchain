@@ -1,4 +1,8 @@
 var Tool = require("./lib/Tool");
+var Checkout = require("./lib/Git/Checkout");
+const Paths = require("./lib/Paths");
+const Components = require("./lib/Components");
+
 var LLVMBuilder = require("./lib/Builders/LLVMBuilder");
 var SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder");
 var SwiftBuilder = require("./lib/Builders/SwiftBuilder");
@@ -6,9 +10,10 @@ var CMarkBuilder = require("./lib/Builders/CMarkBuilder");
 var DispatchBuilder = require("./lib/Builders/DispatchBuilder");
 var FoundationBuilder = require("./lib/Builders/FoundationBuilder");
 var ICUBuilder = require("./lib/Builders/ICUBuilder");
-var Checkout = require("./lib/Git/Checkout");
-const Paths = require("./lib/Paths");
-const Components = require("./lib/Components");
+var ICUHostBuilder = require("./lib/Builders/ICUHostBuilder");
+var XMLBuilder = require("./lib/Builders/XMLBuilder");
+var CURLBuilder = require("./lib/Builders/CURLBuilder");
+var SSLBuilder = require("./lib/Builders/SSLBuilder");
 
 module.exports = class Automation extends Tool {
   run() {
@@ -58,6 +63,12 @@ module.exports = class Automation extends Tool {
       new SwiftBuilder().runAction(action);
     } else if (component == "cmark") {
       new CMarkBuilder().runAction(action);
+    } else if (component == "xml") {
+      this.archs.forEach((item) => new XMLBuilder(item).runAction(action));
+    } else if (component == "ssl") {
+      this.archs.forEach((item) => new SSLBuilder(item).runAction(action));
+    } else if (component == "curl") {
+      this.archs.forEach((item) => new CURLBuilder(item).runAction(action));
     } else {
       this.logError(`! Unknown component \"${component}\".`);
       this.usage();
