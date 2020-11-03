@@ -24,15 +24,6 @@
 
 class Arch
 
-   def self.default
-      return armv7a
-   end
-
-   # Fixme. Seems `x86` can be used instead.
-   def self.host
-      return "host"
-   end
-
    def self.x86
       return "x86"
    end

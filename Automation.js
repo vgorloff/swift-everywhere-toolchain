@@ -1,3 +1,5 @@
+const cp = require("child_process");
+
 var Tool = require("./lib/Tool");
 var Checkout = require("./lib/Git/Checkout");
 const Paths = require("./lib/Paths");
@@ -17,6 +19,7 @@ var SSLBuilder = require("./lib/Builders/SSLBuilder");
 
 module.exports = class Automation extends Tool {
   run() {
+    this.verifyXcodeAndExitIfNeeded()
     var args = process.argv.slice(2);
     var action = args[0];
     if (!action) {
@@ -31,6 +34,7 @@ module.exports = class Automation extends Tool {
     }
   }
 
+  /** @private */
   runSimpleAction(action) {
     if (action == "fetch") {
       new Checkout().fetch();
@@ -42,11 +46,14 @@ module.exports = class Automation extends Tool {
       this.clean()
     } else if (action == "status") {
       this.status()
+    } else if (action == "verify") {
+      this.verify()
     } else {
       this.usage();
     }
   }
 
+  /** @private */
   runComponentAction(component, action) {
     if (component == "llvm") {
       new LLVMBuilder().runAction(action);
@@ -75,6 +82,7 @@ module.exports = class Automation extends Tool {
     }
   }
 
+  /** @private */
   build() {
     this.runComponentAction("llvm", "make")
     this.runComponentAction("cmark", "make")
@@ -88,6 +96,7 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("foundation", "make")
   }
 
+  /** @private */
   clean() {
     this.runComponentAction("llvm", "clean")
     this.runComponentAction("cmark", "clean")
@@ -101,6 +110,7 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("foundation", "clean")
   }
 
+  /** @private */
   status() {
     var paths = []
     paths.push(Paths.sourcesDirPath(Components.llvm))
@@ -115,6 +125,18 @@ module.exports = class Automation extends Tool {
     paths.forEach((path) => this.execute(`cd "${path}" && git status`))
   }
 
+  /** @private */
+  verify() {
+    this.runComponentAction("icu", "verify")
+    this.runComponentAction("xml", "verify")
+    this.runComponentAction("ssl", "verify")
+    this.runComponentAction("curl", "verify")
+    this.runComponentAction("stdlib", "verify")
+    this.runComponentAction("dispatch", "verify")
+    this.runComponentAction("foundation", "verify")
+  }
+
+  /** @private */
   usage() {
     this.print("\nBuilding Toolchain with One Action:\n", 33);
 
@@ -147,5 +169,17 @@ module.exports = class Automation extends Tool {
 
     this.print("To clean only certain component:", 32);
     this.print("   $ node main.js llvm:clean\n", 36);
+  }
+
+  /** @private */
+  verifyXcodeAndExitIfNeeded() {
+    var xcodeVersion = cp.execSync("xcodebuild -version").toString().trim()
+    let version = xcodeVersion.split("\n").filter((comp) => comp.includes("Xcode"))[0]
+    if (!version.includes(12)) {
+      this.print("Please use Xcode 12.", 31)
+      this.print("Your Xcode version seems too old or too new:", 36)
+      this.print(xcodeVersion, 32)
+      process.exit(1)
+    }
   }
 };

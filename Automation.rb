@@ -46,21 +46,10 @@ require 'fileutils'
 class Automation < Tool
 
    def perform()
-      if !verifyXcode
-         exit 1
-      end
-      action = ARGV.first
-      if action.nil? then usage()
       elsif action == "bootstrap" then bootstrap()
       elsif action == "install" then install()
       elsif action == "archive" then archive()
       elsif action == "test" then test()
-      elsif action == "verify" then verify()
-      elsif action == "finalize"
-         install()
-         archive()
-      else usage()
-      end
    end
 
    def install()
@@ -222,15 +211,6 @@ class Automation < Tool
       execute "cd \"#{Config.tests}/sample-library\" && make build"
       puts()
       execute "cd \"#{Config.tests}/sample-package\" && make build"
-   end
-
-   def verify()
-      @archsToBuild.each { |arch|
-         ICUBuilder.new(arch).verify()
-         OpenSSLBuilder.new(arch).verify()
-         DispatchBuilder.new(arch).verify()
-         FoundationBuilder.new(arch).verify()
-      }
    end
 
 end
