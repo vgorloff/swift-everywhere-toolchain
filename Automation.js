@@ -1,5 +1,6 @@
 const cp = require("child_process");
 var path = require('path');
+var fs = require("fs");
 
 var Tool = require("./lib/Tool");
 var Checkout = require("./lib/Git/Checkout");
@@ -173,7 +174,21 @@ module.exports = class Automation extends Tool {
 
   /** @private */
   test() {
-    console.log("Test")
+    var ndkDir = `/usr/local/ndk/${Config.ndkVersion}`
+    var testFile = `${ndkDir}/toolchains/llvm/prebuilt/darwin-x86_64`
+    if(!fs.existsSync(testFile)) {
+       this.logError(`! Please create symbolic link "${ndkDir}" which points to Android NDK installation version ${Config.ndkVersion}.`)
+       console.log()
+       this.logMessage("  Example:")
+       this.logMessage(`  sudo mkdir -p /usr/local/ndk && sudo ln -vsi ~/Library/Android/sdk/ndk/${Config.ndkVersion} ${ndkDir}`)
+       console.log()
+       process.exit(1)
+    }
+    this.execute(`cd "${Config.tests}/sample-executable" && make build`)
+    console.log()
+    this.execute(`cd "${Config.tests}/sample-library" && make build`)
+    console.log()
+    this.execute(`cd "${Config.tests}/sample-package" && make build`)
   }
 
   /** @private */

@@ -1,5 +1,5 @@
 require_relative "ADB.rb"
-require_relative "../../Scripts/Common/Tool.rb"
+require_relative "Tool.rb"
 
 class ProjectBuilder < Tool
 
