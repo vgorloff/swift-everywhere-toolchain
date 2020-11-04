@@ -46,9 +46,7 @@ require 'fileutils'
 class Automation < Tool
 
    def perform()
-      elsif action == "bootstrap" then bootstrap()
       elsif action == "install" then install()
-      elsif action == "archive" then archive()
       elsif action == "test" then test()
    end
 
@@ -172,26 +170,6 @@ class Automation < Tool
        FileUtils.mkdir_p(File.dirname(dst))
        FileUtils.copy_entry(file, dst, false, false, true)
      }
-   end
-
-   def archive()
-      print("Compressing \"#{Config.toolchainDir}\"", 32)
-      baseName = File.basename(Config.toolchainDir)
-      extName = 'tar.gz'
-      fileName = "#{baseName}.#{extName}"
-      system("cd \"#{File.dirname(Config.toolchainDir)}\" && tar -czf #{fileName} --options='compression-level=9' #{baseName}")
-      print("Archive saved to \"#{Config.toolchainDir}.#{extName}\"", 36)
-   end
-
-   def bootstrap()
-      Checkout.new().checkout()
-      build()
-      install()
-      archive()
-      puts ""
-      print("\"Swift Toolchain for Android\" build is completed.")
-      print("It can be found in \"#{Config.toolchainDir}\".")
-      puts ""
    end
 
    def test()

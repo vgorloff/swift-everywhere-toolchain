@@ -1,9 +1,11 @@
 const cp = require("child_process");
+var path = require('path');
 
 var Tool = require("./lib/Tool");
 var Checkout = require("./lib/Git/Checkout");
 const Paths = require("./lib/Paths");
 const Components = require("./lib/Components");
+var Config = require("./lib/Config");
 
 var LLVMBuilder = require("./lib/Builders/LLVMBuilder");
 var SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder");
@@ -48,6 +50,12 @@ module.exports = class Automation extends Tool {
       this.status()
     } else if (action == "verify") {
       this.verify()
+    } else if (action == "bootstrap") {
+      this.bootstrap()
+    } else if (action == "archive") {
+      this.archive()
+    } else if (action == "test") {
+      this.test()
     } else {
       this.usage();
     }
@@ -134,6 +142,38 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("stdlib", "verify")
     this.runComponentAction("dispatch", "verify")
     this.runComponentAction("foundation", "verify")
+  }
+
+  /** @private */
+  bootstrap() {
+    this.runSimpleAction("checkout")
+    this.build()
+    this.install()
+    this.archive()
+    console.log("")
+    this.print("\"Swift Toolchain for Android\" build is completed.", 33)
+    this.print(`It can be found in "${Config.toolChainBuildOutput}".`, 33)
+    console.log("")
+  }
+
+  /** @private */
+  install() {
+
+  }
+
+  /** @private */
+  archive() {
+    this.print(`Compressing "${Config.toolChainBuildOutput}"`, 32)
+    var baseName = path.basename(Config.toolChainBuildOutput)
+    var extName = 'tar.gz'
+    var fileName = `${baseName}.${extName}`
+    this.execute(`cd "${path.dirname(Config.toolChainBuildOutput)}" && tar -czf ${fileName} --options='compression-level=9' ${baseName}`)
+    this.print(`Archive saved to "${Config.toolChainBuildOutput}.${extName}"`, 36)
+  }
+
+  /** @private */
+  test() {
+    console.log("Test")
   }
 
   /** @private */
