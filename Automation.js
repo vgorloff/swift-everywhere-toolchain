@@ -7,6 +7,7 @@ var Checkout = require("./lib/Git/Checkout");
 const Paths = require("./lib/Paths");
 const Components = require("./lib/Components");
 var Config = require("./lib/Config");
+const Installer = require("./lib/Installer")
 
 var LLVMBuilder = require("./lib/Builders/LLVMBuilder");
 var SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder");
@@ -57,6 +58,8 @@ module.exports = class Automation extends Tool {
       this.archive()
     } else if (action == "test") {
       this.test()
+    } else if (action == "install") {
+      this.install()
     } else {
       this.usage();
     }
@@ -159,7 +162,7 @@ module.exports = class Automation extends Tool {
 
   /** @private */
   install() {
-
+    new Installer().install()
   }
 
   /** @private */
