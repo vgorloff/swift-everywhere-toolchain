@@ -8,6 +8,8 @@ const Paths = require("./lib/Paths");
 const Components = require("./lib/Components");
 var Config = require("./lib/Config");
 const Installer = require("./lib/Installer")
+const Settings = require("./lib/Settings")
+const NDK = require("./lib/NDK");
 
 var LLVMBuilder = require("./lib/Builders/LLVMBuilder");
 var SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder");
@@ -24,6 +26,7 @@ var SSLBuilder = require("./lib/Builders/SSLBuilder");
 module.exports = class Automation extends Tool {
   run() {
     this.verifyXcodeAndExitIfNeeded()
+    this.verifyNDKAndExitIfNeeded()
     var args = process.argv.slice(2);
     var action = args[0];
     if (!action) {
@@ -177,16 +180,6 @@ module.exports = class Automation extends Tool {
 
   /** @private */
   test() {
-    var ndkDir = `/usr/local/ndk/${Config.ndkVersion}`
-    var testFile = `${ndkDir}/toolchains/llvm/prebuilt/darwin-x86_64`
-    if(!fs.existsSync(testFile)) {
-       this.logError(`! Please create symbolic link "${ndkDir}" which points to Android NDK installation version ${Config.ndkVersion}.`)
-       console.log()
-       this.logMessage("  Example:")
-       this.logMessage(`  sudo mkdir -p /usr/local/ndk && sudo ln -vsi ~/Library/Android/sdk/ndk/${Config.ndkVersion} ${ndkDir}`)
-       console.log()
-       process.exit(1)
-    }
     this.execute(`cd "${Config.tests}/sample-executable" && make build`)
     console.log()
     this.execute(`cd "${Config.tests}/sample-library" && make build`)
@@ -238,6 +231,18 @@ module.exports = class Automation extends Tool {
       this.print("Your Xcode version seems too old or too new:", 36)
       this.print(xcodeVersion, 32)
       process.exit(1)
+    }
+  }
+
+  /** @private */
+  verifyNDKAndExitIfNeeded() {
+    var ndkDir = Settings.ndkDir
+    var toolchainPath = new NDK().toolchainPath
+    if(!fs.existsSync(toolchainPath)) {
+       this.logError(`! Please create symbolic link "${ndkDir}" which points to Android NDK installation version ${Settings.ndkVersion}.`)
+       this.logMessage(`Usually Android NDK installation can be found at "~/Library/Android/sdk/ndk".`)
+       this.logMessage(`Refer to files "Readme.md" and "NDK_VERSION" for details.`)
+       process.exit(1)
     }
   }
 };

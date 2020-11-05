@@ -70,7 +70,14 @@ Build of complete toolchain takes ~1.5h. Instead of building it you can just dow
    cd swift-everywhere-toolchain
    ```
 
-7. Copy file `local.properties.template.json` to `local.properties.json`
+7. Create a symbolic link to NDK installation directory.
+
+   ```bash
+   sudo mkdir -p /usr/local/ndk
+   sudo ln -vsi ~/Library/Android/sdk/ndk/$VERSION /usr/local/ndk/$VERSION
+   `
+
+   The placeholder `$VERSION` needs to be replaced with a version mentioned in file `NDK_VERSION` at the root of cloned repository.
 
 8. Edit file `local.properties.json` and configure following settings:
 
