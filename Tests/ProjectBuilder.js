@@ -31,11 +31,13 @@ module.exports = class ProjectBuilder extends Tool {
       this.ndkArchPath = "x86_64-linux-android";
       this.swiftTarget = "x86_64-unknown-linux-android";
     }
-    this.swftcCmdPath = path.join(this.toolchainPath, `/usr/bin/swiftc-${this.ndkArchPath}`);
+    this.swftcCmdPath = path.join(this.toolchainPath, `/usr/bin/swiftc-${this.ndkArchPath}`) + ` -module-cache-path ${this.buildPath}/ModuleCache`;
     this.copyLibsCmdPath = path.join(this.toolchainPath, `/usr/bin/copy-libs-${this.ndkArchPath}`);
+
+    this.buildConfig = "release"
     this.swiftBuildCmdPath =
       path.join(this.toolchainPath, "/usr/bin/android-swift-build") +
-      ` --android-target ${this.swiftTarget} -c release --build-path "${this.buildPath}"`;
+      ` --android-target ${this.swiftTarget} -c ${this.buildConfig} --build-path "${this.buildPath}"`;
 
     if (this.isVerbose) {
       this.swftcCmdPath += " -v";

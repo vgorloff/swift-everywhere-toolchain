@@ -94,9 +94,6 @@ class SwiftBuilder
    def compile()
       args = swiftcArgs()
       passedArguments = @arguments.join(" ")
-      passedArguments = passedArguments.gsub(/-Xlinker\s+-install_name/, '') # Removing non-Android options.
-      passedArguments = passedArguments.gsub(/-Xlinker\s+@rpath\/.+?\.dylib/, '') # Removing non-Android options.
-      passedArguments = passedArguments.gsub(/-rpath\s+@loader_path/, '') # Removing non-Android options.
       cmd = "#{@toolchainDir}/usr/bin/swiftc " + args.join(" ") + " " + passedArguments
       if @isVerbose
          puts cmd
@@ -118,7 +115,6 @@ class SwiftBuilder
       # See:
       # - https://github.com/apple/swift/pull/26366/files
       # - https://github.com/apple/swift/pull/25990#issuecomment-522344255
-      args << "-Xcc --sysroot=#{@ndkPath}/sysroot"
       args << "-Xclang-linker --sysroot=#{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
       args << "-Xclang-linker --gcc-toolchain=#{@ndkToolChain}"
 
@@ -175,19 +171,6 @@ class SwiftBuilder
       end
       system cmd
       status = $?.exitstatus
-      if status.zero?
-         binaryDir = `swift build --show-bin-path #{@arguments.join(" ")}`.strip()
-         libs = Dir["#{binaryDir}/**/*.dylib"]
-         libs.each { |lib|
-            destination = lib.sub(/\.dylib$/, '.so')
-            if !FileUtils.uptodate?(destination, [lib])
-               if @isVerbose
-                  puts "- Copying \"#{lib}\" to \"#{destination}\""
-               end
-               FileUtils.copy_entry(lib, destination, false, false, true)
-            end
-         }
-      end
       exit(status)
    end
 

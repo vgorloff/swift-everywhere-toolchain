@@ -18,6 +18,8 @@ module.exports = class TestAutomation extends Tool {
     } else {
       if (action == "verify") {
         this.verify()
+      } else if (action == "clean") {
+        this.clean()
       } else {
         var components = action.split(":");
         if (components.length == 2) {
@@ -47,6 +49,12 @@ module.exports = class TestAutomation extends Tool {
 
   verify() {
     ADB.verify()
+  }
+
+  clean() {
+    this.runComponentAction("exe", "clean")
+    this.runComponentAction("lib", "clean")
+    this.runComponentAction("package", "clean")
   }
 
   /** @private */
