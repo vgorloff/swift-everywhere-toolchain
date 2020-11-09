@@ -1,9 +1,10 @@
 var path = require("path");
+const cp = require("child_process");
 
 const Tool = require("../lib/Tool");
 const Arch = require("../lib/Archs/Arch");
 const Config = require("../lib/Config");
-const { join } = require("path");
+const ADB = require("./ADB");
 
 module.exports = class ProjectBuilder extends Tool {
   constructor(/** @type {String} */ component, /** @type {Arch} */ arch) {
@@ -41,13 +42,14 @@ module.exports = class ProjectBuilder extends Tool {
       this.copyLibsCmdPath += " -v";
       this.swiftBuildCmdPath += " -v";
     }
+
+    this.binary = `${this.buildPath}/${this.component}`;
+    this.libsDirPath = path.join(this.buildPath, "libs");
   }
 
   runAction(/** @type {String} */ action) {
     if (action == "build") {
       this.build();
-    } else if (action == "verify") {
-      this.verify();
     } else if (action == "deploy") {
       this.deploy();
     } else if (action == "undeploy") {
@@ -63,41 +65,29 @@ module.exports = class ProjectBuilder extends Tool {
   executeBuild() {}
 
   copyLibs() {
-    var targetDir = `${this.buildPath}/lib`;
-    this.execute(`rm -rf "${targetDir}"`);
-    this.execute(`${this.copyLibsCmdPath} "${targetDir}"`);
+    this.execute(`rm -rf "${this.libsDirPath}"`);
+    this.execute(`${this.copyLibsCmdPath} "${this.libsDirPath}"`);
   }
 
-  // get libs() {
-  //   return Dir["#{@builds}/lib/*"]
-  // }
+  get libs() {
+    var libs = cp.execSync(`find "${this.libsDirPath}" -iname *.so -depth 1 || true`).toString().trim().split("\n");
+    return libs;
+  }
 
-  // deploy() {
-  // adb = ADB.new(libs, binary)
-  // adb.deploy()
-  // adb.run()
-  // }
+  deploy() {
+    let adb = new ADB(this.binary, this.libs);
+    adb.deploy();
+    adb.run();
+  }
 
-  // undeploy() {
-  //   ADB.new(libs, binary).clean
-  // }
+  undeploy() {
+    new ADB(this.binary, this.libs).undeploy();
+  }
 
   build() {
     this.clean();
     this.execute(`mkdir -p "${this.buildPath}"`);
     this.executeBuild();
-  }
-
-  verify() {
-    console.log("verify");
-  }
-
-  deploy() {
-    console.log("deploy");
-  }
-
-  undeploy() {
-    console.log("undeploy");
   }
 
   clean() {
