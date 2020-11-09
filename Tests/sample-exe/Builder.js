@@ -9,5 +9,7 @@ module.exports = class Builder extends ProjectBuilder {
       "${this.sourcesPath}/main.swift"
     `;
     this.executeCommands(cmd);
+    this.copyLibs();
+    this.execute(`file ${this.binary}`);
   }
 };

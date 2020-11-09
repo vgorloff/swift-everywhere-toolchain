@@ -9,7 +9,7 @@ module.exports = class ProjectBuilder extends Tool {
   constructor(/** @type {String} */ component, /** @type {Arch} */ arch) {
     super();
     var args = process.argv.slice(2);
-    this.isVerbose = args.filter((item) => item == "--verbose").length > 0
+    this.isVerbose = args.filter((item) => item == "--verbose").length > 0;
 
     this.arch = arch;
     this.component = component;
@@ -31,13 +31,15 @@ module.exports = class ProjectBuilder extends Tool {
       this.swiftTarget = "x86_64-unknown-linux-android";
     }
     this.swftcCmdPath = path.join(this.toolchainPath, `/usr/bin/swiftc-${this.ndkArchPath}`);
-    this.copyLibsCmdPath = path.join(this.toolchainPath, `/usr/bin/copy-libs-${this.ndkArchPath}`)
-    this.swiftBuildCmdPath = path.join(this.toolchainPath, "/usr/bin/android-swift-build") + ` --android-target ${this.swiftTarget} -c release --build-path "${this.buildPath}"`
+    this.copyLibsCmdPath = path.join(this.toolchainPath, `/usr/bin/copy-libs-${this.ndkArchPath}`);
+    this.swiftBuildCmdPath =
+      path.join(this.toolchainPath, "/usr/bin/android-swift-build") +
+      ` --android-target ${this.swiftTarget} -c release --build-path "${this.buildPath}"`;
 
     if (this.isVerbose) {
-      this.swftcCmdPath += " -v"
-      this.copyLibsCmdPath += " -v"
-      this.swiftBuildCmdPath += " -v"
+      this.swftcCmdPath += " -v";
+      this.copyLibsCmdPath += " -v";
+      this.swiftBuildCmdPath += " -v";
     }
   }
 
@@ -59,6 +61,26 @@ module.exports = class ProjectBuilder extends Tool {
   }
 
   executeBuild() {}
+
+  copyLibs() {
+    var targetDir = `${this.buildPath}/lib`;
+    this.execute(`rm -rf "${targetDir}"`);
+    this.execute(`${this.copyLibsCmdPath} "${targetDir}"`);
+  }
+
+  // get libs() {
+  //   return Dir["#{@builds}/lib/*"]
+  // }
+
+  // deploy() {
+  // adb = ADB.new(libs, binary)
+  // adb.deploy()
+  // adb.run()
+  // }
+
+  // undeploy() {
+  //   ADB.new(libs, binary).clean
+  // }
 
   build() {
     this.clean();
