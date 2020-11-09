@@ -81,7 +81,7 @@ class SwiftBuilder
          @clang = "x86_64-linux-android#{@ndkApiVersion}-clang"
       end
       @toolchainDir = File.dirname(File.dirname(File.dirname(__FILE__)))
-      @ndkPath = "/usr/local/ndk"
+      @ndkPath = "/usr/local/ndk/20.1.5948944"
       @ndkGccVersion = "4.9"
       @ndkToolChain = "#{@ndkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
    end
