@@ -154,8 +154,6 @@ class SwiftBuilder
    def build()
       cmd = []
       cmd << "SWIFT_EXEC=\"#{@toolchainDir}/usr/bin/swiftc-#{@ndkArch}\""
-      # cmd << "CC=#{@ndkToolChain}/bin/#{@clang}"
-      # cmd << "CXX=#{@ndkToolChain}/bin/#{@clang}++"
       cmd << "swift build"
       if @isVerbose
          # cmd << "-v"
@@ -164,7 +162,6 @@ class SwiftBuilder
       cmd << "-Xswiftc -target -Xswiftc #{@targetTripple}"
       cmd << "-Xswiftc -sdk -Xswiftc #{@toolchainDir}"
       # cmd << "-Xswiftc -swift-version -Xswiftc 5"
-      # cmd << "-Xlinker -L -Xlinker #{@ndkToolChain}/sysroot/usr/lib/#{@ndkArch}/#{@ndkApiVersion}"
       cmd = cmd.join(" ") + " " + @arguments.join(" ")
       if @isVerbose
          puts cmd
