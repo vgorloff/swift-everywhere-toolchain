@@ -109,18 +109,19 @@ class SwiftBuilder
       args = []
       if @isVerbose
          args << "-v"
+         args << "-Xcc -v"
       end
       args << "-swift-version 5"
       args << "-target #{@targetTripple}"
-      args << "-tools-directory #{@ndkToolChain}"
+      args << "-tools-directory #{@ndkToolChain}/bin"
 
       # See:
       # - https://github.com/apple/swift/pull/26366/files
       # - https://github.com/apple/swift/pull/25990#issuecomment-522344255
-      args << "-Xcc --sysroot -Xcc #{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
-      args << "-Xclang-linker --sysroot -Xclang-linker #{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
+      args << "-Xcc --sysroot=#{@ndkPath}/sysroot"
+      args << "-Xclang-linker --sysroot=#{@ndkPath}/platforms/android-#{@ndkApiVersion}/arch-#{@ndkPlatformArch}"
+      args << "-Xclang-linker --gcc-toolchain=#{@ndkToolChain}"
 
-      args << "-Xcc -DDEPLOYMENT_TARGET_ANDROID -Xcc -DDEPLOYMENT_TARGET_LINUX -Xcc -DDEPLOYMENT_RUNTIME_SWIFT"
       args << "-Xcc -I#{@ndkToolChain}/sysroot/usr/include -Xcc -I#{@ndkToolChain}/sysroot/usr/include/#{@ndkArch}"
       args << "-L #{@ndkPath}/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}"
       args << "-L #{@ndkToolChain}/lib/gcc/#{@ndkArch}/#{@ndkGccVersion}.x" # Link the Android NDK's -lstdc++ and libgcc.
