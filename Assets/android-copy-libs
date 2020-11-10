@@ -41,7 +41,7 @@ fi
 function usage {
   echo ""
   echo "Usage:"
-  echo "   $SaCurrentScriptName [-v] --target=<target> --output=<output>"
+  echo "   $SaCurrentScriptName [-v] -target <target> -output <output>"
   echo ""
   echo "   Where:"
   echo ""
@@ -58,23 +58,27 @@ function usage {
   echo ""
 }
 
-for i in "$@"
+while [[ $# -gt 0 ]]
 do
-case $i in
-    --target=*)
-    SaArchTarget="${i#*=}"
-    shift # past argument=value
+key="$1"
+
+case $key in
+    -target)
+    SaArchTarget="$2"
+    shift # past argument
+    shift # past value
     ;;
-    --output=*)
-    SaOutput="${i#*=}"
-    shift # past argument=value
+    -output)
+    SaOutput="$2"
+    shift # past argument
+    shift # past value
     ;;
     -v)
     SaVerbose=YES
-    shift # past argument with no value
+    shift # past argument
     ;;
-    *)
-    # unknown option
+    *) # unknown option
+    shift # past argument
     ;;
 esac
 done

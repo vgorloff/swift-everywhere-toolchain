@@ -31,13 +31,11 @@ module.exports = class ProjectBuilder extends Tool {
       this.ndkArchPath = "x86_64-linux-android";
       this.swiftTarget = "x86_64-unknown-linux-android";
     }
-    this.swftcCmdPath = path.join(this.toolchainPath, `/usr/bin/swiftc-${this.ndkArchPath}`) + ` -module-cache-path ${this.buildPath}/ModuleCache`;
-    this.copyLibsCmdPath = path.join(this.toolchainPath, `/usr/bin/copy-libs-${this.ndkArchPath}`);
+    this.swftcCmdPath = `${this.toolchainPath}/usr/bin/swiftc-${this.ndkArchPath} -module-cache-path ${this.buildPath}/ModuleCache`;
+    this.copyLibsCmdPath = `${this.toolchainPath}/usr/bin/copy-libs-${this.ndkArchPath}`;
 
-    this.buildConfig = "release" // FIXME: With `debug` not working. "error: unknown argument: '-modulewrap'"
-    this.swiftBuildCmdPath =
-      path.join(this.toolchainPath, "/usr/bin/android-swift-build") +
-      ` --android-target ${this.swiftTarget} -c ${this.buildConfig} --build-path "${this.buildPath}"`;
+    this.buildConfig = "release"; // FIXME: With `debug` not working. "error: unknown argument: '-modulewrap'"
+    this.swiftBuildCmdPath = `${this.toolchainPath}/usr/bin/swift-build-${this.ndkArchPath} -c ${this.buildConfig} --build-path "${this.buildPath}"`;
 
     if (this.isVerbose) {
       this.swftcCmdPath += " -v -Xcc -v";
@@ -68,7 +66,7 @@ module.exports = class ProjectBuilder extends Tool {
 
   copyLibs() {
     this.execute(`rm -rf "${this.libsDirPath}"`);
-    this.execute(`${this.copyLibsCmdPath} --output="${this.libsDirPath}"`);
+    this.execute(`${this.copyLibsCmdPath} -output "${this.libsDirPath}"`);
   }
 
   get libs() {
