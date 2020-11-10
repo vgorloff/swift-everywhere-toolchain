@@ -51,6 +51,12 @@ module.exports = class TestAutomation extends Tool {
     ADB.verify()
   }
 
+  build() {
+    this.runComponentAction("exe", "build")
+    this.runComponentAction("lib", "build")
+    this.runComponentAction("package", "build")
+  }
+
   clean() {
     this.runComponentAction("exe", "clean")
     this.runComponentAction("lib", "clean")

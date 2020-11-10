@@ -5,7 +5,9 @@
   "target": "armv7-none-linux-androideabi",
   "dynamic-library-extension": "so",
   "extra-cc-flags": [
-    "-v"
+    "-v",
+    "-I/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include",
+    "-I/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/arm-linux-androideabi"
   ],
   "extra-swiftc-flags": [
     "-v",

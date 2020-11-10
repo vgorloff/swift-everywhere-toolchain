@@ -1,27 +1,28 @@
 const cp = require("child_process");
-var path = require('path');
-var fs = require("fs");
+const path = require('path');
+const fs = require("fs");
 
-var Tool = require("./lib/Tool");
-var Checkout = require("./lib/Git/Checkout");
+const Tool = require("./lib/Tool");
+const Checkout = require("./lib/Git/Checkout");
 const Paths = require("./lib/Paths");
 const Components = require("./lib/Components");
-var Config = require("./lib/Config");
+const Config = require("./lib/Config");
 const Installer = require("./lib/Installer")
 const Settings = require("./lib/Settings")
 const NDK = require("./lib/NDK");
+const TestAutomation = require("./Tests/TestAutomation")
 
-var LLVMBuilder = require("./lib/Builders/LLVMBuilder");
-var SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder");
-var SwiftBuilder = require("./lib/Builders/SwiftBuilder");
-var CMarkBuilder = require("./lib/Builders/CMarkBuilder");
-var DispatchBuilder = require("./lib/Builders/DispatchBuilder");
-var FoundationBuilder = require("./lib/Builders/FoundationBuilder");
-var ICUBuilder = require("./lib/Builders/ICUBuilder");
-var ICUHostBuilder = require("./lib/Builders/ICUHostBuilder");
-var XMLBuilder = require("./lib/Builders/XMLBuilder");
-var CURLBuilder = require("./lib/Builders/CURLBuilder");
-var SSLBuilder = require("./lib/Builders/SSLBuilder");
+const LLVMBuilder = require("./lib/Builders/LLVMBuilder");
+const SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder");
+const SwiftBuilder = require("./lib/Builders/SwiftBuilder");
+const CMarkBuilder = require("./lib/Builders/CMarkBuilder");
+const DispatchBuilder = require("./lib/Builders/DispatchBuilder");
+const FoundationBuilder = require("./lib/Builders/FoundationBuilder");
+const ICUBuilder = require("./lib/Builders/ICUBuilder");
+const ICUHostBuilder = require("./lib/Builders/ICUHostBuilder");
+const XMLBuilder = require("./lib/Builders/XMLBuilder");
+const CURLBuilder = require("./lib/Builders/CURLBuilder");
+const SSLBuilder = require("./lib/Builders/SSLBuilder");
 
 module.exports = class Automation extends Tool {
   run() {
@@ -180,11 +181,9 @@ module.exports = class Automation extends Tool {
 
   /** @private */
   test() {
-    this.execute(`cd "${Config.tests}/sample-executable" && make build`)
-    console.log()
-    this.execute(`cd "${Config.tests}/sample-library" && make build`)
-    console.log()
-    this.execute(`cd "${Config.tests}/sample-package" && make build`)
+    const tests = new TestAutomation()
+    tests.build()
+    tests.clean()
   }
 
   /** @private */
