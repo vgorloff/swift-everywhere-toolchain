@@ -82,22 +82,6 @@ class SwiftBuilder
       @ndkToolChain = "#{@ndkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
    end
 
-   def warnOnInvalidTarget()
-      puts("Please provide valid build target.\nKnown targets:")
-      @knownTargets.map { |value| puts "   --android-target #{value}" }
-   end
-
-   def compile()
-      args = swiftcArgs()
-      passedArguments = @arguments.join(" ")
-      cmd = "#{@toolchainDir}/usr/bin/swiftc " + args.join(" ") + " " + passedArguments
-      if @isVerbose
-         puts cmd
-      end
-      system cmd
-      exit($?.exitstatus)
-   end
-
    def swiftcArgs()
       args = []
       if @isVerbose
@@ -120,31 +104,6 @@ class SwiftBuilder
       args << "-L #{@ndkToolChain}/sysroot/usr/lib/#{@ndkArch}/#{@ndkApiVersion}" # Link the Android NDK's -lc++
       args << "-L #{@toolchainDir}/usr/lib/swift/android/#{@swiftArch}"
       return args
-   end
-
-   def copyLibs()
-      destination = @arguments.first
-      if destination.nil?
-         puts "! Destination directory to copy \"#{@swiftArch}\" libraries is not provided."
-         exit(1)
-      end
-
-      if @isVerbose
-         puts "Copying \"#{@swiftArch}\" libraries to \"#{destination}\""
-      end
-      system "mkdir -p \"#{destination}\""
-
-      files = Dir["#{@toolchainDir}/usr/lib/swift/android/#{@swiftArch}" + "/*.so"]
-      files << "#{@ndkPath}/sources/cxx-stl/llvm-libc++/libs/#{@cppArch}/libc++_shared.so"
-      files.each { |lib|
-         dst = File.join(destination, File.basename(lib))
-         if !FileUtils.uptodate?(dst, [lib])
-            if @isVerbose
-               puts "- Copying \"#{lib}\" to \"#{dst}\""
-            end
-            FileUtils.copy_entry(lib, dst, false, false, true)
-         end
-      }
    end
 
    def build()

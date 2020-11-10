@@ -33,11 +33,15 @@ if [[ $SHELL =~ "zsh" ]]; then
 fi
 
 SaToolchainPath=$(cd "$(dirname "$SaCurrentScriptDirPath")/../"; pwd)
+if [ ! -f "$SaCurrentScriptDirPath/swift" ]; then
+  echo "-> Development mode!"
+  SaToolchainPath="$(cd "$(dirname "$SaCurrentScriptDirPath")"; pwd)/ToolChain/swift-android-toolchain"
+fi
 
 function usage {
   echo ""
   echo "Usage:"
-  echo "   $SaCurrentScriptName [--verbose] --target=<target> --output=<output>"
+  echo "   $SaCurrentScriptName [-v] --target=<target> --output=<output>"
   echo ""
   echo "   Where:"
   echo ""
@@ -49,6 +53,8 @@ function usage {
   echo "     - x86_64-unknown-linux-android"
   echo ""
   echo "   <output> Directory path into which the libraries will be copied."
+  echo ""
+  echo "   -v Verbose mode."
   echo ""
 }
 
@@ -63,7 +69,7 @@ case $i in
     SaOutput="${i#*=}"
     shift # past argument=value
     ;;
-    --verbose)
+    -v)
     SaVerbose=YES
     shift # past argument with no value
     ;;
@@ -79,16 +85,16 @@ if [ -z "$SaArchTarget" ]; then
   exit 1
 fi
 
-if [ -z "$SaOutput" ]; then
-  echo "The \"--output\" argument is not provided."
-  usage
-  exit 1
-fi
-
 if [ "$SaArchTarget" = "armv7-none-linux-androideabi" ] || [ "$SaArchTarget" = "aarch64-unknown-linux-android" ] || [ "$SaArchTarget" = "i686-unknown-linux-android" ] || [ "$SaArchTarget" = "x86_64-unknown-linux-android" ]; then
   true
 else
   echo "Unknown target \"$SaArchTarget\""
+  usage
+  exit 1
+fi
+
+if [ -z "$SaOutput" ]; then
+  echo "The \"--output\" argument is not provided."
   usage
   exit 1
 fi
@@ -111,11 +117,6 @@ case $SaArchTarget in
   SaCppArch=x86_64
   ;;
 esac
-
-if [ ! -f "$SaCurrentScriptDirPath/swift" ]; then
-  echo "Development mode!"
-  SaToolchainPath="$(cd "$(dirname "$SaCurrentScriptDirPath")"; pwd)/ToolChain/swift-android-toolchain"
-fi
 
 if [ "$SaVerbose" = "YES" ]; then
   echo "Using toolchain \"$SaToolchainPath\"."

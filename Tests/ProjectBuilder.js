@@ -40,7 +40,7 @@ module.exports = class ProjectBuilder extends Tool {
       ` --android-target ${this.swiftTarget} -c ${this.buildConfig} --build-path "${this.buildPath}"`;
 
     if (this.isVerbose) {
-      this.swftcCmdPath += " -v";
+      this.swftcCmdPath += " -v -Xcc -v";
       this.copyLibsCmdPath += " -v";
       this.swiftBuildCmdPath += " -v";
     }
@@ -68,7 +68,7 @@ module.exports = class ProjectBuilder extends Tool {
 
   copyLibs() {
     this.execute(`rm -rf "${this.libsDirPath}"`);
-    this.execute(`${this.copyLibsCmdPath} "${this.libsDirPath}"`);
+    this.execute(`${this.copyLibsCmdPath} --output="${this.libsDirPath}"`);
   }
 
   get libs() {
