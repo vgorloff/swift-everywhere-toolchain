@@ -16,7 +16,7 @@ module.exports = class ProjectBuilder extends Tool {
     this.component = component;
     this.rootPath = path.join(Config.root, "Tests", `sample-${component}`);
     this.sourcesPath = path.join(this.rootPath, "Sources");
-    this.buildPath = path.join(this.rootPath, "build");
+    this.buildPath = path.join(this.rootPath, "build", arch.name);
     this.toolchainPath = Config.toolChainBuildOutput;
     if (arch.name == "armv7a") {
       this.ndkArchPath = "arm-linux-androideabi";
@@ -34,7 +34,7 @@ module.exports = class ProjectBuilder extends Tool {
     this.swftcCmdPath = path.join(this.toolchainPath, `/usr/bin/swiftc-${this.ndkArchPath}`) + ` -module-cache-path ${this.buildPath}/ModuleCache`;
     this.copyLibsCmdPath = path.join(this.toolchainPath, `/usr/bin/copy-libs-${this.ndkArchPath}`);
 
-    this.buildConfig = "release"
+    this.buildConfig = "release" // FIXME: With `debug` not working. "error: unknown argument: '-modulewrap'"
     this.swiftBuildCmdPath =
       path.join(this.toolchainPath, "/usr/bin/android-swift-build") +
       ` --android-target ${this.swiftTarget} -c ${this.buildConfig} --build-path "${this.buildPath}"`;
