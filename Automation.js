@@ -88,6 +88,8 @@ module.exports = class Automation extends Tool {
       this.test()
     } else if (action == "install") {
       this.install()
+    } else if (action == "assets") {
+      this.assets()
     } else {
       this.usage();
     }
@@ -191,6 +193,11 @@ module.exports = class Automation extends Tool {
   /** @private */
   install() {
     new Installer().install()
+  }
+
+  /** @private */
+  assets() {
+    new Installer().copyAssets()
   }
 
   /** @private */
