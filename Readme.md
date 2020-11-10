@@ -79,17 +79,13 @@ Build of complete toolchain takes ~1.5h. Instead of building it you can just dow
 
    The placeholder `$VERSION` needs to be replaced with a version mentioned in file `NDK_VERSION` at the root of cloned repository.
 
-8. Edit file `local.properties.json` and configure following settings:
-
-   - `ndk.dir.macos`: Path to NDK installation directory.
-
-9. Start a build.
+8. Start a build.
 
    ```bash
    node main.js
    ```
 
-10. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
+9. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
 # Sample Projects
 
