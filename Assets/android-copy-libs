@@ -84,7 +84,7 @@ esac
 done
 
 if [ -z "$SaArchTarget" ]; then
-  echo "The \"--target\" argument is not provided."
+  echo "The \"-target\" argument is not provided."
   usage
   exit 1
 fi
@@ -98,7 +98,7 @@ else
 fi
 
 if [ -z "$SaOutput" ]; then
-  echo "The \"--output\" argument is not provided."
+  echo "The \"-output\" argument is not provided."
   usage
   exit 1
 fi
