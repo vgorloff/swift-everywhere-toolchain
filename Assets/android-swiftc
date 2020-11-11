@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/bin/bash
 #
 # The MIT License
 #
@@ -23,5 +23,128 @@
 # THE SOFTWARE.
 #
 
-require_relative "android-swift.rb"
-SwiftBuilder.new().compile()
+set -e
+
+SaNdkPath="/usr/local/ndk/20.1.5948944"
+SaCurrentScriptName="$(basename ${BASH_SOURCE[0]})"
+SaCurrentScriptDirPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+if [[ $SHELL =~ "zsh" ]]; then
+	SaCurrentScriptDirPath=$(dirname $0:A)
+fi
+
+SaToolchainPath=$(cd "$(dirname "$SaCurrentScriptDirPath")/../"; pwd)
+if [ ! -f "$SaCurrentScriptDirPath/swift" ]; then
+  echo "-> Development mode!"
+  SaToolchainPath="$(cd "$(dirname "$SaCurrentScriptDirPath")"; pwd)/ToolChain/swift-android-toolchain"
+fi
+
+function usage {
+  echo ""
+  echo "Usage:"
+  echo "   $SaCurrentScriptName -target <target> [-v] [OPTIONS]"
+  echo ""
+  echo "   Where:"
+  echo ""
+  echo "   <target> Is one of the following:"
+  echo ""
+  echo "     - armv7-none-linux-androideabi"
+  echo "     - aarch64-unknown-linux-android"
+  echo "     - i686-unknown-linux-android"
+  echo "     - x86_64-unknown-linux-android"
+  echo ""
+  echo "   -v Verbose mode."
+  echo ""
+  echo "   [OPTIONS] Other options for Swift compiler."
+  echo ""
+}
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    -target)
+    SaArchTarget="$2"
+    POSITIONAL+=("$1") # save it in an array for later
+    POSITIONAL+=("$2") # save it in an array for later
+    shift # past argument
+    shift # past value
+    ;;
+    -v)
+    SaVerbose=YES
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [ -z "$SaArchTarget" ]; then
+  echo "The \"-target\" argument is not provided."
+  usage
+  exit 1
+fi
+
+if [ "$SaArchTarget" = "armv7-none-linux-androideabi" ] || [ "$SaArchTarget" = "aarch64-unknown-linux-android" ] || [ "$SaArchTarget" = "i686-unknown-linux-android" ] || [ "$SaArchTarget" = "x86_64-unknown-linux-android" ]; then
+  true
+else
+  echo "Unknown target \"$SaArchTarget\""
+  usage
+  exit 1
+fi
+
+case $SaArchTarget in
+  armv7-none-linux-androideabi)
+  SaSwiftArch=armv7
+  SaCppArch=armeabi-v7a
+  SaNdkArch="arm-linux-androideabi"
+  SaNdkPlatformArch="arm"
+  ;;
+  aarch64-unknown-linux-android)
+  SaSwiftArch=aarch64
+  SaCppArch=arm64-v8a
+  SaNdkArch="aarch64-linux-android"
+  SaNdkPlatformArch="arm64"
+  ;;
+  i686-unknown-linux-android)
+  SaSwiftArch=i686
+  SaCppArch=x86
+  SaNdkArch="i686-linux-android"
+  SaNdkPlatformArch="x86"
+  ;;
+  x86_64-unknown-linux-android)
+  SaSwiftArch=x86_64
+  SaCppArch=x86_64
+  SaNdkArch="x86_64-linux-android"
+  SaNdkPlatformArch="x86_64"
+  ;;
+esac
+
+SaNdkToolChain="${SaNdkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
+SaNdkGccVersion="4.9"
+SaNdkApiVersion="24"
+SaSwiftCPath="$SaToolchainPath/usr/bin/swiftc"
+SaCmdArgs="-swift-version 5 -tools-directory $SaNdkToolChain"
+
+# See:
+# - https://github.com/apple/swift/pull/26366/files
+# - https://github.com/apple/swift/pull/25990#issuecomment-522344255
+SaCmdArgs="$SaCmdArgs -Xclang-linker --sysroot=${SaNdkPath}/platforms/android-${SaNdkApiVersion}/arch-${SaNdkPlatformArch}"
+SaCmdArgs="$SaCmdArgs -Xclang-linker --gcc-toolchain=$SaNdkToolChain"
+
+SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkToolChain}/sysroot/usr/include -Xcc -I${SaNdkToolChain}/sysroot/usr/include/${SaNdkArch}"
+SaCmdArgs="$SaCmdArgs -L ${SaNdkPath}/sources/cxx-stl/llvm-libc++/libs/${SaCppArch}"
+SaCmdArgs="$SaCmdArgs -L ${SaNdkToolChain}/lib/gcc/${SaNdkArch}/${SaNdkGccVersion}.x" # Link the Android NDK's -lstdc++ and libgcc.
+SaCmdArgs="$SaCmdArgs -L ${SaNdkToolChain}/sysroot/usr/lib/${SaNdkArch}/${SaNdkApiVersion}" # Link the Android NDK's -lc++
+SaCmdArgs="$SaCmdArgs -L ${SaToolchainPath}/usr/lib/swift/android/${SaSwiftArch}"
+
+if [ "$SaVerbose" = "YES" ]; then
+  echo "$SaSwiftCPath" $SaCmdArgs "$@"
+fi
+
+"$SaSwiftCPath" $SaCmdArgs "$@"

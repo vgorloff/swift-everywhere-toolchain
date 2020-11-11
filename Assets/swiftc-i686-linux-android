@@ -23,4 +23,4 @@
 # THE SOFTWARE.
 #
 
-`dirname $0`/android-swiftc --android-target i686-unknown-linux-android "$@"
+`dirname $0`/android-swiftc -target i686-unknown-linux-android "$@"

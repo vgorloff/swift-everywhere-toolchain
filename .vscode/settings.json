@@ -1,7 +1,9 @@
 {
+   "editor.tabSize": 2,
+   "cSpell.enabled": true,
    "cSpell.words": [
-      "Cmake",
-      "LLVM",
-      "Toolchain"
+      "Toolchain",
+      "cmake",
+      "libc"
    ]
 }

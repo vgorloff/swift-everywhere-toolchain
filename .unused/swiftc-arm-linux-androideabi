@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Run this script by `SWIFT_EXEC=/Volumes/Shared/Git/MyProjects/swift-everywhere-toolchain/.unused/swiftc-arm-linux-androideabi swift build -c release -Xswiftc -sdk -Xswiftc /Volumes/Shared/Git/MyProjects/swift-everywhere-toolchain/ToolChain/swift-android-toolchain`
+
+/Volumes/Shared/Git/MyProjects/swift-everywhere-toolchain/ToolChain/swift-android-toolchain/usr/bin/swiftc \
+-v -Xcc -v \
+-target armv7-none-linux-androideabi \
+-tools-directory /usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/bin \
+-Xclang-linker --sysroot=/usr/local/ndk/20.1.5948944/platforms/android-24/arch-arm \
+-Xclang-linker --gcc-toolchain=/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64 \
+-Xcc -I/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include \
+-Xcc -I/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/arm-linux-androideabi \
+-L /usr/local/ndk/20.1.5948944/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a \
+-L /usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/lib/gcc/arm-linux-androideabi/4.9.x \
+-L /usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/arm-linux-androideabi/24 \
+-L /Volumes/Shared/Git/MyProjects/swift-everywhere-toolchain/ToolChain/swift-android-toolchain/usr/lib/swift/android/armv7 \
+$@

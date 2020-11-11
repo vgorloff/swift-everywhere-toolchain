@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "sdk": "/Volumes/Shared/Git/MyProjects/swift-everywhere-toolchain/ToolChain/swift-android-toolchain",
+  "toolchain-bin-dir": "/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/bin",
+  "target": "armv7-none-linux-androideabi",
+  "dynamic-library-extension": "so",
+  "extra-cc-flags": [
+    "-v",
+    "-I/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include",
+    "-I/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/arm-linux-androideabi"
+  ],
+  "extra-swiftc-flags": [
+    "-v",
+    "-tools-directory",
+    "/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/bin",
+    "-Xcc",
+    "-I/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include",
+    "-Xcc",
+    "-I/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/arm-linux-androideabi",
+    "-Xclang-linker",
+    "--sysroot=/usr/local/ndk/20.1.5948944/platforms/android-24/arch-arm",
+    "-Xclang-linker",
+    "--gcc-toolchain=/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64",
+    "-L",
+    "/usr/local/ndk/20.1.5948944/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a",
+    "-L",
+    "/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/lib/gcc/arm-linux-androideabi/4.9.x",
+    "-L",
+    "/usr/local/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/arm-linux-androideabi/24",
+    "-L",
+    "/Volumes/Shared/Git/MyProjects/swift-everywhere-toolchain/ToolChain/swift-android-toolchain/usr/lib/swift/android/armv7"
+  ],
+  "extra-cpp-flags": [
+    "-v"
+  ]
+}

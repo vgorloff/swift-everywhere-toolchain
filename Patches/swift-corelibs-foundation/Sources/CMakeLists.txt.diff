@@ -1,0 +1,10 @@
+diff --git a/Sources/CMakeLists.txt b/Sources/CMakeLists.txt
+index ab3a1bef110ab7d7b0f5224bfeb2d8cf8be3b216..3a5c62a4b0df4d44050083cfd53d500ff98dee7c 100644
+--- a/Sources/CMakeLists.txt
++++ b/Sources/CMakeLists.txt
+@@ -2,4 +2,4 @@ add_subdirectory(UUID)
+ add_subdirectory(Foundation)
+ add_subdirectory(FoundationNetworking)
+ add_subdirectory(FoundationXML)
+-add_subdirectory(Tools)
++# add_subdirectory(Tools)
