@@ -47,6 +47,9 @@ const ICUHostBuilder = require("./lib/Builders/ICUHostBuilder");
 const XMLBuilder = require("./lib/Builders/XMLBuilder");
 const CURLBuilder = require("./lib/Builders/CURLBuilder");
 const SSLBuilder = require("./lib/Builders/SSLBuilder");
+const SwiftTSCBuilder = require("./lib/Builders/SwiftTSCBuilder");
+const LLBBuilder = require("./lib/Builders/LLBBuilder");
+const SPMBuilder = require("./lib/Builders/SPMBuilder");
 
 module.exports = class Automation extends Tool {
   run() {
@@ -118,6 +121,12 @@ module.exports = class Automation extends Tool {
       this.archs.forEach((item) => new SSLBuilder(item).runAction(action));
     } else if (component == "curl") {
       this.archs.forEach((item) => new CURLBuilder(item).runAction(action));
+    } else if (component == "tsc") {
+      new SwiftTSCBuilder().runAction(action);
+    } else if (component == "llb") {
+      new LLBBuilder().runAction(action);
+    } else if (component == "spm") {
+      new SPMBuilder().runAction(action);
     } else {
       this.logError(`! Unknown component \"${component}\".`);
       this.usage();
@@ -136,6 +145,9 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("stdlib", "make")
     this.runComponentAction("dispatch", "make")
     this.runComponentAction("foundation", "make")
+    this.runComponentAction("tsc", "make")
+    this.runComponentAction("llb", "make")
+    this.runComponentAction("spm", "make")
   }
 
   /** @private */
@@ -150,6 +162,9 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("stdlib", "clean")
     this.runComponentAction("dispatch", "clean")
     this.runComponentAction("foundation", "clean")
+    this.runComponentAction("tsc", "clean")
+    this.runComponentAction("llb", "clean")
+    this.runComponentAction("spm", "clean")
   }
 
   /** @private */
@@ -164,6 +179,9 @@ module.exports = class Automation extends Tool {
     paths.push(Paths.sourcesDirPath(Components.swift))
     paths.push(Paths.sourcesDirPath(Components.dispatch))
     paths.push(Paths.sourcesDirPath(Components.foundation))
+    paths.push(Paths.sourcesDirPath(Components.tsc))
+    paths.push(Paths.sourcesDirPath(Components.llb))
+    paths.push(Paths.sourcesDirPath(Components.spm))
     paths.forEach((path) => this.execute(`cd "${path}" && git status`))
   }
 

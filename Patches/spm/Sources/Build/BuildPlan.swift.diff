@@ -1,0 +1,15 @@
+diff --git a/Sources/Build/BuildPlan.swift b/Sources/Build/BuildPlan.swift
+index 02fa758f2d0080e86109180279ee327890dd9faa..a710166029e287eeadbb391758e8192e94aa6ef8 100644
+--- a/Sources/Build/BuildPlan.swift
++++ b/Sources/Build/BuildPlan.swift
+@@ -1438,7 +1438,9 @@ public class BuildPlan {
+                 case .swiftAST:
+                     buildProduct.swiftASTs.insert(description.moduleOutputPath)
+                 case .modulewrap:
+-                    buildProduct.objects += [description.wrappedModuleOutputPath]
++                    if !buildParameters.triple.isAndroid() {
++                        buildProduct.objects += [description.wrappedModuleOutputPath]
++                    }
+                 case nil:
+                     break
+                 }

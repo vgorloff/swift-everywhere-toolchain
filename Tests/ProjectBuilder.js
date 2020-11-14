@@ -17,7 +17,7 @@ module.exports = class ProjectBuilder extends Tool {
     this.rootPath = path.join(Config.root, "Tests", `sample-${component}`);
     this.sourcesPath = path.join(this.rootPath, "Sources");
     this.buildPath = path.join(this.rootPath, "build", arch.name);
-    this.toolchainPath = Config.toolChainBuildOutput;
+    this.binariesDirPath = path.join(Config.root, "Assets");
     if (arch.name == "armv7a") {
       this.ndkArchPath = "arm-linux-androideabi";
       this.swiftTarget = "armv7-none-linux-androideabi";
@@ -31,16 +31,15 @@ module.exports = class ProjectBuilder extends Tool {
       this.ndkArchPath = "x86_64-linux-android";
       this.swiftTarget = "x86_64-unknown-linux-android";
     }
-    this.swftcCmdPath = `${this.toolchainPath}/usr/bin/swiftc-${this.ndkArchPath} -module-cache-path ${this.buildPath}/ModuleCache`;
-    this.copyLibsCmdPath = `${this.toolchainPath}/usr/bin/copy-libs-${this.ndkArchPath}`;
+    this.swftcCmdPath = `${this.binariesDirPath}/swiftc-${this.ndkArchPath} -module-cache-path ${this.buildPath}/ModuleCache`;
+    this.copyLibsCmdPath = `${this.binariesDirPath}/copy-libs-${this.ndkArchPath}`;
 
-    this.buildConfig = "release"; // FIXME: With `debug` not working. "error: unknown argument: '-modulewrap'"
-    this.swiftBuildCmdPath = `${this.toolchainPath}/usr/bin/swift-build-${this.ndkArchPath} -c ${this.buildConfig} --build-path "${this.buildPath}"`;
+    this.swiftBuildCmd = `${this.binariesDirPath}/swift-build-${this.ndkArchPath} --build-path "${this.buildPath}"`;
 
     if (this.isVerbose) {
       this.swftcCmdPath += " -v -Xcc -v";
       this.copyLibsCmdPath += " -v";
-      this.swiftBuildCmdPath += " -v";
+      this.swiftBuildCmd += " -v";
     }
 
     this.binary = `${this.buildPath}/${this.component}`;
