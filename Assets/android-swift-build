@@ -125,6 +125,6 @@ if [ "$SaVerbose" = "YES" ]; then
   echo $SaCmd $SaCmdArgs "$@"
 fi
 
-export SWIFT_EXEC_MANIFEST=$SaSystemSwiftc
+export SWIFT_EXEC_MANIFEST=$SaSystemSwiftc # Still using system Swift compiler to parse package description.
 export SWIFT_EXEC=$SaSwiftCCmd
 $SaCmd $SaCmdArgs "$@"
