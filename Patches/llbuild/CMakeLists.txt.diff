@@ -1,0 +1,20 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 766e38e71f5cef142a455a879f1c83203eecacfb..0207d61671d829ba1451b9cc8a4a006401840336 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -209,10 +209,10 @@ endif()
+ 
+ # Process CMakeLists files for our subdirectories.
+ add_subdirectory(lib)
+-add_subdirectory(perftests)
++# add_subdirectory(perftests)
+ add_subdirectory(products)
+-add_subdirectory(tests)
+-add_subdirectory(unittests)
+-add_subdirectory(utils/unittest)
+-add_subdirectory(utils/adjust-times)
++# add_subdirectory(tests)
++# add_subdirectory(unittests)
++# add_subdirectory(utils/unittest)
++# add_subdirectory(utils/adjust-times)
+ add_subdirectory(cmake/modules)
