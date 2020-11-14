@@ -23,10 +23,8 @@
    cd /Path/To/Your/Swift/Package
 
    # Build for armv7a architecture.
-   $ToolChain/usr/bin/swift-build-arm-linux-androideabi -c release
+   $ToolChain/usr/bin/swift-build-arm-linux-androideabi
 
    # Copy dependencies (so-files) for armv7a architecture to [destination] directory.
    $ToolChain/usr/bin/copy-libs-arm-linux-androideabi -output [destination]
    ```
-
-   **Note**: Building Swift packages for `debug` build configuration still not supported due error `error: unknown argument: '-modulewrap'`.

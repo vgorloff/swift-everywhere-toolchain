@@ -113,16 +113,18 @@ esac
 
 SaNdkToolChain="${SaNdkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
 
+SaSystemSwiftc=`xcrun --find swiftc`
 SaSwiftCCmd="${SaToolchainPath}/usr/bin/swiftc-${SaNdkArch}"
-SaCmd="swift build"
+SaCmd="${SaToolchainPath}/usr/bin/swift build"
 SaCmdArgs="--triple $SaArchTarget --sdk ${SaToolchainPath} --toolchain ${SaNdkToolChain}/bin"
 SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkToolChain}/sysroot/usr/include -Xcc -I${SaNdkToolChain}/sysroot/usr/include/${SaNdkArch}"
 
 if [ "$SaVerbose" = "YES" ]; then
-  # SaCmd="$SaCmd -Xswiftc -v"
+  echo export SWIFT_EXEC_MANIFEST=$SaSystemSwiftc
   echo export SWIFT_EXEC=$SaSwiftCCmd
   echo $SaCmd $SaCmdArgs "$@"
 fi
 
+export SWIFT_EXEC_MANIFEST=$SaSystemSwiftc
 export SWIFT_EXEC=$SaSwiftCCmd
 $SaCmd $SaCmdArgs "$@"
