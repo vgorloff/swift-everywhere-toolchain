@@ -4,15 +4,13 @@ module.exports = class Builder extends ProjectBuilder {
 
   constructor(component, arch) {
     super(component, arch)
-    this.binary = `${this.buildPath}/${this.buildConfig}/Exe`
-    this.libFilePath = `${this.buildPath}/${this.buildConfig}/libLib.so`
+    this.binary = `${this.buildPath}/release/Exe`
+    this.libFilePath = `${this.buildPath}/release/libLib.so`
   }
 
   executeBuild() {
-    var cmd = `
-      cd "${this.rootPath}" && ${this.swiftBuildCmdPath}
-    `;
-    this.executeCommands(cmd);
+    this.execute(`cd "${this.rootPath}" && ${this.swiftBuildCmd}`);
+    this.execute(`cd "${this.rootPath}" && ${this.swiftBuildCmd} -c release`);
 
     // Swift Libs
     this.copyLibs()
