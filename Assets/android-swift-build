@@ -120,6 +120,7 @@ SaCmdArgs="--triple $SaArchTarget --sdk ${SaToolchainPath} --toolchain ${SaNdkTo
 SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkToolChain}/sysroot/usr/include -Xcc -I${SaNdkToolChain}/sysroot/usr/include/${SaNdkArch}"
 
 if [ "$SaVerbose" = "YES" ]; then
+  # SaCmd="$SaCmd -Xswiftc -v"
   echo export SWIFT_EXEC_MANIFEST=$SaSystemSwiftc
   echo export SWIFT_EXEC=$SaSwiftCCmd
   echo $SaCmd $SaCmdArgs "$@"
