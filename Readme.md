@@ -3,7 +3,7 @@
 - Xcode 12
 - Android Studio 4.1
 - Android NDK 20.1.5948944. **Note**: NDK 21.0.6113669 or above cannot be used with libDispatch at the moment due compile errors addressed clang/libc++ update.
-- Node 12.18 (node -v). Never versions may also work, but not tested.
+- Node 12.18 (node -v). Newer versions may also work, but not tested.
 - CMake 3.18 (cmake --version)
 - Ninja 1.10 (ninja --version)
 
@@ -85,7 +85,7 @@ Build of complete toolchain takes ~1.5h. Instead of building it you can just dow
    node main.js
    ```
 
-9. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and complessed into archive `ToolChain/swift-android-toolchain.tar.gz`.
+9. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and compressed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
 # Sample Projects
 
