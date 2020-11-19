@@ -18,6 +18,33 @@ if sema.wait(timeout: .now() + 10) == .timedOut {
 #endif
 
 
+#if true // CoreFoundation
+import CoreFoundation
+
+#if os(Android)
+let mode = kCFRunLoopDefaultMode
+#else
+let mode = CFRunLoopMode.defaultMode
+#endif
+
+let result = CFRunLoopRunInMode(mode, 1.0, false)
+//let x = kCFRunLoopRunFinished // This line won't compile on Android
+_ = CFRunLoopRunResult.finished
+switch result {
+case .finished:
+   break
+case .handledSource:
+   break
+case .stopped:
+   break
+case .timedOut:
+   break
+@unknown default:
+   break
+}
+#endif // CoreFoundation
+
+
 #if true
 // ~~~~~~~~~~~~~~ FOUNDATION
 import Foundation
@@ -49,7 +76,9 @@ do {
 
 
 #if true
+#if os(Android)
 import FoundationNetworking
+#endif
 
 let config = URLSessionConfiguration.default
 let session = URLSession(configuration: config)
