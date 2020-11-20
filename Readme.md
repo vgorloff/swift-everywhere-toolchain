@@ -5,7 +5,7 @@
 - Xcode 12
 - Android Studio 4.1
 - Android NDK 20.1.5948944. **Note**: NDK 21.0.6113669 or above cannot be used with libDispatch at the moment due compile errors addressed clang/libc++ update.
-- Node 12.18 (node -v). Never versions may also work, but not tested.
+- Node 12.18 (node -v). Newer versions may also work, but not tested.
 - CMake 3.18 (cmake --version)
 - Ninja 1.10 (ninja --version)
 
