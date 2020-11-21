@@ -1,0 +1,16 @@
+diff --git a/Sources/Commands/CMakeLists.txt b/Sources/Commands/CMakeLists.txt
+index e3b6867c87c856d0225cdb69a378d9ab3d3a77fc..0dfe5323af9cf1708f26ea242c9547ceb9ef6462 100644
+--- a/Sources/Commands/CMakeLists.txt
++++ b/Sources/Commands/CMakeLists.txt
+@@ -40,9 +40,9 @@ endif()
+ set_target_properties(Commands PROPERTIES
+   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ 
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++#if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+ install(TARGETS Commands
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+   RUNTIME DESTINATION bin)
+-endif()
++#endif()

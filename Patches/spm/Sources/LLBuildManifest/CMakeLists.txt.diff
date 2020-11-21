@@ -1,0 +1,16 @@
+diff --git a/Sources/LLBuildManifest/CMakeLists.txt b/Sources/LLBuildManifest/CMakeLists.txt
+index 856b13bf935b59fe4c01e7213dd388fc57787f2e..979d6b5a507f7406596771af2e1d81c599b03dc5 100644
+--- a/Sources/LLBuildManifest/CMakeLists.txt
++++ b/Sources/LLBuildManifest/CMakeLists.txt
+@@ -20,9 +20,9 @@ target_link_libraries(LLBuildManifest PUBLIC
+ set_target_properties(LLBuildManifest PROPERTIES
+   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ 
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++#if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+     install(TARGETS LLBuildManifest
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+   RUNTIME DESTINATION bin)
+-endif()
++#endif()

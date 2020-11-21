@@ -1,0 +1,14 @@
+diff --git a/Sources/swift-package/CMakeLists.txt b/Sources/swift-package/CMakeLists.txt
+index 1ebf9a3aabff7105be27907a246ed19868eb9b89..7d472eec956712c1c2458a766c5106fbe38f0e0f 100644
+--- a/Sources/swift-package/CMakeLists.txt
++++ b/Sources/swift-package/CMakeLists.txt
+@@ -11,7 +11,7 @@ add_executable(swift-package
+ target_link_libraries(swift-package PRIVATE
+   Commands)
+ 
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++#if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+ install(TARGETS swift-package
+   RUNTIME DESTINATION bin)
+-endif()
++#endif()

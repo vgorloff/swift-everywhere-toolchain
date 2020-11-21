@@ -1,0 +1,14 @@
+diff --git a/swift-tools-support-core/Sources/TSCUtility/CMakeLists.txt b/swift-tools-support-core/Sources/TSCUtility/CMakeLists.txt
+index f7db9246dfe8bd2f1ce41f6fa2c359d9d06b6afc..ae1b1f7f3c860d3e32e48cfe58ecdab1179e4519 100644
+--- a/swift-tools-support-core/Sources/TSCUtility/CMakeLists.txt
++++ b/swift-tools-support-core/Sources/TSCUtility/CMakeLists.txt
+@@ -44,4 +44,9 @@ endif()
+ set_target_properties(TSCUtility PROPERTIES
+   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ 
++install(TARGETS TSCUtility
++  ARCHIVE DESTINATION lib
++  LIBRARY DESTINATION lib
++  RUNTIME DESTINATION bin)
++
+ set_property(GLOBAL APPEND PROPERTY TSC_EXPORTS TSCUtility)

@@ -1,0 +1,16 @@
+diff --git a/Sources/Workspace/CMakeLists.txt b/Sources/Workspace/CMakeLists.txt
+index e19d26c3f35bf53e072578237c6a536068891aa1..1828056145b3facd03c0e77693a1a87e11ea7b85 100644
+--- a/Sources/Workspace/CMakeLists.txt
++++ b/Sources/Workspace/CMakeLists.txt
+@@ -29,9 +29,9 @@ target_link_libraries(Workspace PUBLIC
+ set_target_properties(Workspace PROPERTIES
+   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ 
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++#if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+ install(TARGETS Workspace
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+   RUNTIME DESTINATION bin)
+-endif()
++#endif()

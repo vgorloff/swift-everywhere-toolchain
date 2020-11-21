@@ -1,0 +1,16 @@
+diff --git a/Sources/SPMLLBuild/CMakeLists.txt b/Sources/SPMLLBuild/CMakeLists.txt
+index ba46f5ac5f2ea6ed544b60bb25a39e438bd0c4d2..2889bc39b583f57450fb60bf604375636f680259 100644
+--- a/Sources/SPMLLBuild/CMakeLists.txt
++++ b/Sources/SPMLLBuild/CMakeLists.txt
+@@ -17,9 +17,9 @@ target_link_libraries(SPMLLBuild PUBLIC
+   llbuildSwift)
+ 
+ 
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++#if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+ install(TARGETS SPMLLBuild
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+   RUNTIME DESTINATION bin)
+-endif()
++#endif()

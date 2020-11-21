@@ -1,0 +1,16 @@
+diff --git a/Sources/SourceControl/CMakeLists.txt b/Sources/SourceControl/CMakeLists.txt
+index 29388566c807dda691c70a5074ac4846388ad692..9d41c4592ec9ccc7c4c5e041ef91edb5a95c8efd 100644
+--- a/Sources/SourceControl/CMakeLists.txt
++++ b/Sources/SourceControl/CMakeLists.txt
+@@ -21,9 +21,9 @@ target_link_libraries(SourceControl PUBLIC
+ set_target_properties(SourceControl PROPERTIES
+   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ 
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++#if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+ install(TARGETS SourceControl
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+   RUNTIME DESTINATION bin)
+-endif()
++#endif()
