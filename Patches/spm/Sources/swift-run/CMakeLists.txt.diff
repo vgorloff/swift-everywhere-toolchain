@@ -1,0 +1,14 @@
+diff --git a/Sources/swift-run/CMakeLists.txt b/Sources/swift-run/CMakeLists.txt
+index d879e3c9b3fb990a48e5c9e2061a90babe6bf7b5..34f21752d6886bf2e6e24be4368cc4f76a557ad6 100644
+--- a/Sources/swift-run/CMakeLists.txt
++++ b/Sources/swift-run/CMakeLists.txt
+@@ -11,7 +11,7 @@ add_executable(swift-run
+ target_link_libraries(swift-run PRIVATE
+   Commands)
+ 
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++#if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+ install(TARGETS swift-run
+   RUNTIME DESTINATION bin)
+-endif()
++#endif()

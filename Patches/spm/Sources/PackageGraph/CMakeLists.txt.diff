@@ -1,0 +1,16 @@
+diff --git a/Sources/PackageGraph/CMakeLists.txt b/Sources/PackageGraph/CMakeLists.txt
+index 7c57ed3b40ecb81819f8392b8a4d70e9f5938e1c..4142568b0f48fae976965e4422d9612da11babe1 100644
+--- a/Sources/PackageGraph/CMakeLists.txt
++++ b/Sources/PackageGraph/CMakeLists.txt
+@@ -27,9 +27,9 @@ target_link_libraries(PackageGraph PUBLIC
+ set_target_properties(PackageGraph PROPERTIES
+   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+ 
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++#if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+ install(TARGETS PackageGraph
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+   RUNTIME DESTINATION bin)
+-endif()
++#endif()

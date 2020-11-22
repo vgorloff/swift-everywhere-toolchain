@@ -1,0 +1,14 @@
+diff --git a/Sources/swift-build/CMakeLists.txt b/Sources/swift-build/CMakeLists.txt
+index 6f8a87473c40c7de4f7d82d779d4c13870815e58..b85ce7e244f6c838db9045487b19a16e5daf08c7 100644
+--- a/Sources/swift-build/CMakeLists.txt
++++ b/Sources/swift-build/CMakeLists.txt
+@@ -11,7 +11,7 @@ add_executable(swift-build
+ target_link_libraries(swift-build PRIVATE
+     Commands)
+ 
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++#if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+     install(TARGETS swift-build
+         DESTINATION bin)
+-endif()
++#endif()
