@@ -1,3 +1,8 @@
+import Lib
+
+swift_c_sayHello()
+swift_cpp_sayHello()
+
 // ~~~~~~~~~~~~~~ CORE
 print("SA - SwiftCore: Works!")
 
