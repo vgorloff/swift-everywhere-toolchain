@@ -1,4 +1,10 @@
-# Usage
+# swift-everywhere-toolchain
+
+## Requirements
+
+- macOS 11.x
+
+## Usage
 
 1. Make sure that symbolic link with name `/usr/local/ndk/20.1.5948944` points to right `Android NDK` location (usually `~/Library/Android/sdk/ndk/20.1.5948944`). Create symbolic link if needed.
 
