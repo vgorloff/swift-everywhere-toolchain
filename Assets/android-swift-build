@@ -25,7 +25,7 @@
 
 set -e
 
-SaNdkPath="/usr/local/ndk/20.1.5948944"
+SaNdkPath="/usr/local/ndk/21.3.6528147"
 SaCurrentScriptName="$(basename ${BASH_SOURCE[0]})"
 SaCurrentScriptDirPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 if [[ $SHELL =~ "zsh" ]]; then
@@ -117,7 +117,8 @@ SaSystemSwiftc=`xcrun --find swiftc`
 SaSwiftCCmd="${SaToolchainPath}/usr/bin/swiftc-${SaNdkArch}"
 SaCmd="${SaToolchainPath}/usr/bin/swift build"
 SaCmdArgs="--triple $SaArchTarget --sdk ${SaToolchainPath} --toolchain ${SaNdkToolChain}/bin"
-SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkToolChain}/sysroot/usr/include -Xcc -I${SaNdkToolChain}/sysroot/usr/include/${SaNdkArch}"
+SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkPath}/sysroot/usr/include"
+SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkPath}/sysroot/usr/include/${SaNdkArch}"
 
 # Without next line, the Cpp code compilation may fail: See: https://github.com/vgorloff/swift-everywhere-toolchain/issues/89
 SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkToolChain}/sysroot/usr/include/c++/v1"

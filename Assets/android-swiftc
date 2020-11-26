@@ -25,7 +25,7 @@
 
 set -e
 
-SaNdkPath="/usr/local/ndk/20.1.5948944"
+SaNdkPath="/usr/local/ndk/21.3.6528147"
 SaCurrentScriptName="$(basename ${BASH_SOURCE[0]})"
 SaCurrentScriptDirPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 if [[ $SHELL =~ "zsh" ]]; then
@@ -137,7 +137,8 @@ SaCmdArgs="-swift-version 5 -tools-directory $SaNdkToolChain"
 SaCmdArgs="$SaCmdArgs -Xclang-linker --sysroot=${SaNdkPath}/platforms/android-${SaNdkApiVersion}/arch-${SaNdkPlatformArch}"
 SaCmdArgs="$SaCmdArgs -Xclang-linker --gcc-toolchain=$SaNdkToolChain"
 
-SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkToolChain}/sysroot/usr/include -Xcc -I${SaNdkToolChain}/sysroot/usr/include/${SaNdkArch}"
+SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkPath}/sysroot/usr/include"
+SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkPath}/sysroot/usr/include/${SaNdkArch}"
 SaCmdArgs="$SaCmdArgs -L ${SaNdkPath}/sources/cxx-stl/llvm-libc++/libs/${SaCppArch}"
 SaCmdArgs="$SaCmdArgs -L ${SaNdkToolChain}/lib/gcc/${SaNdkArch}/${SaNdkGccVersion}.x" # Link the Android NDK's -lstdc++ and libgcc.
 SaCmdArgs="$SaCmdArgs -L ${SaNdkToolChain}/sysroot/usr/lib/${SaNdkArch}/${SaNdkApiVersion}" # Link the Android NDK's -lc++
