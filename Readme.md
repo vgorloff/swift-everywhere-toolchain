@@ -90,6 +90,10 @@ Build of complete toolchain takes ~1.5h. Instead of building it you can just dow
 
 9. Once build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and compressed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
+## Usage
+
+Please refer file [Assets/Readme.md](Assets/Readme.md) to see how to compile Swift files or build Swift packages using Toolchain.
+
 ## Sample Projects
 
 Sample projects can be found in separate [swift-everywhere-samples](https://github.com/vgorloff/swift-everywhere-samples) repository. Please look into `Readme.md` in that repository to get information about how to configure and build sample projects.
