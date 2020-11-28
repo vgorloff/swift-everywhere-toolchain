@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.63] - 2020-11-28
+* [#97] Used NDK API level downgraded to 23 (__ANDROID_API_M__)
+
 ## [1.0.62] - 2020-11-27
 * [#95] Swift and related components updated to v.5.3.1
 

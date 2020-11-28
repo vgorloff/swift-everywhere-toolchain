@@ -11,9 +11,11 @@ let package = Package(
       .library(name: "CppLib", targets: ["CppLib"]),
    ],
    targets: [
-      .target(name: "Lib", dependencies: ["CLib", "CppLib"]),
+      .target(name: "Lib", dependencies: ["CLib", "CppLib", "CStdLib", "StdLib"]),
       .target(name: "Exe", dependencies: ["Lib"]),
       .target(name: "CLib"),
       .target(name: "CppLib"),
+      .target(name: "CStdLib"),
+      .target(name: "StdLib"),
    ]
 )
