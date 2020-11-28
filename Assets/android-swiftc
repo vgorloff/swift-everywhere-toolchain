@@ -26,6 +26,7 @@
 set -e
 
 SaNdkPath="/usr/local/ndk/21.3.6528147"
+SaNdkApi=23
 SaCurrentScriptName="$(basename ${BASH_SOURCE[0]})"
 SaCurrentScriptDirPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 if [[ $SHELL =~ "zsh" ]]; then
@@ -136,6 +137,7 @@ SaCmdArgs="-swift-version 5 -tools-directory $SaNdkToolChain"
 # - https://github.com/apple/swift/pull/25990#issuecomment-522344255
 SaCmdArgs="$SaCmdArgs -Xclang-linker --sysroot=${SaNdkPath}/platforms/android-${SaNdkApiVersion}/arch-${SaNdkPlatformArch}"
 SaCmdArgs="$SaCmdArgs -Xclang-linker --gcc-toolchain=$SaNdkToolChain"
+SaCmdArgs="$SaCmdArgs -Xcc -D__ANDROID_API__=$SaNdkApi"
 
 SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkPath}/sysroot/usr/include"
 SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkPath}/sysroot/usr/include/${SaNdkArch}"

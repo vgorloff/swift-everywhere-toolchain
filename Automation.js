@@ -93,6 +93,8 @@ module.exports = class Automation extends Tool {
       this.install()
     } else if (action == "assets") {
       this.assets()
+    } else if (action == "stage3") {
+      this.stage3()
     } else {
       this.usage();
     }
@@ -135,12 +137,27 @@ module.exports = class Automation extends Tool {
 
   /** @private */
   build() {
+    this.stage1()
+    this.stage2()
+    this.stage3()
+  }
+
+  /** @private */
+  stage1() {
     this.runComponentAction("llvm", "make")
     this.runComponentAction("cmark", "make")
+  }
+
+  /** @private */
+  stage2() {
     this.runComponentAction("icu", "make")
     this.runComponentAction("xml", "make")
     this.runComponentAction("ssl", "make")
     this.runComponentAction("curl", "make")
+  }
+
+  /** @private */
+  stage3() {
     this.runComponentAction("swift", "make")
     this.runComponentAction("stdlib", "make")
     this.runComponentAction("dispatch", "make")
