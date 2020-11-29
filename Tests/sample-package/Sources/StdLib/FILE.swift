@@ -15,6 +15,13 @@ func test() {
    isnan(7) // sysroot/usr/include/math.h
    #endif
 
+   #if os(Android)
+   _ = Glibc.stderr!
+   _ = Glibc.stdout!
+   #endif
+
+   _ = FOPEN_MAX
+
    //> sysroot/usr/include/stdio.h
    _ = off_t()
    _ = FILE()

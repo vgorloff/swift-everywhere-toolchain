@@ -26,7 +26,8 @@
 set -e
 
 SaNdkPath="/usr/local/ndk/21.3.6528147"
-SaNdkApi=21
+SaNdkApi=23
+SaNdkGccVersion="4.9"
 SaCurrentScriptName="$(basename ${BASH_SOURCE[0]})"
 SaCurrentScriptDirPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 if [[ $SHELL =~ "zsh" ]]; then
@@ -35,7 +36,6 @@ fi
 
 SaToolchainPath=$(cd "$(dirname "$SaCurrentScriptDirPath")/../"; pwd)
 if [ ! -f "$SaCurrentScriptDirPath/swift" ]; then
-  echo "-> Development mode!"
   SaToolchainPath="$(cd "$(dirname "$SaCurrentScriptDirPath")"; pwd)/ToolChain/swift-android-toolchain"
 fi
 
@@ -127,23 +127,24 @@ case $SaArchTarget in
 esac
 
 SaNdkToolChain="${SaNdkPath}/toolchains/llvm/prebuilt/darwin-x86_64"
-SaNdkGccVersion="4.9"
-SaNdkApiVersion="24"
 SaSwiftCPath="$SaToolchainPath/usr/bin/swiftc"
 SaCmdArgs="-swift-version 5 -tools-directory $SaNdkToolChain"
 
 # See:
 # - https://github.com/apple/swift/pull/26366/files
 # - https://github.com/apple/swift/pull/25990#issuecomment-522344255
-SaCmdArgs="$SaCmdArgs -Xclang-linker --sysroot=${SaNdkPath}/platforms/android-${SaNdkApiVersion}/arch-${SaNdkPlatformArch}"
+SaCmdArgs="$SaCmdArgs -Xclang-linker --sysroot=${SaNdkPath}/platforms/android-${SaNdkApi}/arch-${SaNdkPlatformArch}"
 SaCmdArgs="$SaCmdArgs -Xclang-linker --gcc-toolchain=$SaNdkToolChain"
-SaCmdArgs="$SaCmdArgs -Xcc -D__ANDROID_API__=$SaNdkApi"
+
+if ! [[ $@ =~ "-D__ANDROID_API__" ]]; then
+   SaCmdArgs="$SaCmdArgs -Xcc -D__ANDROID_API__=$SaNdkApi"
+fi
 
 SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkPath}/sysroot/usr/include"
 SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkPath}/sysroot/usr/include/${SaNdkArch}"
 SaCmdArgs="$SaCmdArgs -L ${SaNdkPath}/sources/cxx-stl/llvm-libc++/libs/${SaCppArch}"
 SaCmdArgs="$SaCmdArgs -L ${SaNdkToolChain}/lib/gcc/${SaNdkArch}/${SaNdkGccVersion}.x" # Link the Android NDK's -lstdc++ and libgcc.
-SaCmdArgs="$SaCmdArgs -L ${SaNdkToolChain}/sysroot/usr/lib/${SaNdkArch}/${SaNdkApiVersion}" # Link the Android NDK's -lc++
+SaCmdArgs="$SaCmdArgs -L ${SaNdkToolChain}/sysroot/usr/lib/${SaNdkArch}/${SaNdkApi}" # Link the Android NDK's -lc++
 SaCmdArgs="$SaCmdArgs -L ${SaToolchainPath}/usr/lib/swift/android/${SaSwiftArch}"
 
 if [ "$SaVerbose" = "YES" ]; then
