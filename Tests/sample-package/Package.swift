@@ -16,6 +16,7 @@ let package = Package(
       .target(name: "CLib"),
       .target(name: "CppLib"),
       .target(name: "CStdLib"),
-      .target(name: "StdLib"),
+      .target(name: "StdLib", dependencies: ["NDKExports"]),
+      .target(name: "NDKExports"),
    ]
 )
