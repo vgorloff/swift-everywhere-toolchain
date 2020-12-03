@@ -5,6 +5,7 @@ import MSVCRT
 #else
 import Glibc
 #endif
+import NDKExports
 
 func test() {
 
@@ -16,6 +17,8 @@ func test() {
    #endif
 
    #if os(Android)
+   _ = __swift_android_get_stdin()
+   _ = Glibc.stdin!
    _ = Glibc.stderr!
    _ = Glibc.stdout!
    #endif
