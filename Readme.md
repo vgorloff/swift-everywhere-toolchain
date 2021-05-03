@@ -4,7 +4,7 @@
 
 - macOS 11.3
 - Xcode 12.5
-- Android Studio 4.1
+- Android Studio 4.1.3
 - Android NDK 21.3.6528147
 - Node 14.16.1 (node -v). Newer versions may also work, but not tested.
 - CMake 3.20.2 (cmake --version)
