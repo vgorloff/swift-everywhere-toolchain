@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.67] - 2021-05-03
 * [#111] Fixes LLVM build failures on macOS 11.3 with Xcode 12.5
+* [#111] CURL updated to v7_76_1
 
 ## [1.0.66] - 2021-01-29
 * [#107] Swift and related components updated to v.5.3.3
