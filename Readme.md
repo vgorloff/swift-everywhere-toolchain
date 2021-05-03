@@ -2,13 +2,13 @@
 
 ## Requirements
 
-- macOS 11.x
-- Xcode 12.x
+- macOS 11.3
+- Xcode 12.5
 - Android Studio 4.1
 - Android NDK 21.3.6528147
-- Node 12.18 (node -v). Newer versions may also work, but not tested.
-- CMake 3.19.X (cmake --version)
-- Ninja 1.10 (ninja --version)
+- Node 14.16.1 (node -v). Newer versions may also work, but not tested.
+- CMake 3.20.2 (cmake --version)
+- Ninja 1.10.2 (ninja --version)
 
 ## Important
 
