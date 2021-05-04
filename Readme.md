@@ -9,6 +9,10 @@
 - Node 14.16.1 (node -v). Newer versions may also work, but not tested.
 - CMake 3.20.2 (cmake --version)
 - Ninja 1.10.2 (ninja --version)
+- autoconf 2.71 (autoconf --version)
+- aclocal 1.16.3 (aclocal --version)
+- glibtool 2.4.6 (glibtool --version)
+- pkg-config 0.29.2 (pkg-config --version)
 
 ## Important
 

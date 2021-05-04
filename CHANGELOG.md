@@ -134,8 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.36] - 2019-06-26
 ### Changed
-- Removed patch as it now part of libFoundation. See: https://github.com/apple/swift-corelibs-foundation/pull/2376
+- Removed patch as it now part of libFoundation. [See](https://github.com/apple/swift-corelibs-foundation/pull/2376)
 
 ## [1.0.35] - 2019-06-25
 ### Changed
-* Replaced patch for `cmake/modules/AddSwift.cmake` according to PR review notes: https://github.com/apple/swift/pull/25682
+* Replaced patch for `cmake/modules/AddSwift.cmake` according to [PR review notes](https://github.com/apple/swift/pull/25682)
