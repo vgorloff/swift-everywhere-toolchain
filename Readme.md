@@ -5,10 +5,14 @@
 - macOS 11.3
 - Xcode 12.5
 - Android Studio 4.1.3
-- Android NDK 21.3.6528147
+- Android NDK 21.4.7075529
 - Node 14.16.1 (node -v). Newer versions may also work, but not tested.
 - CMake 3.20.2 (cmake --version)
 - Ninja 1.10.2 (ninja --version)
+- autoconf 2.71 (autoconf --version)
+- aclocal 1.16.3 (aclocal --version)
+- glibtool 2.4.6 (glibtool --version)
+- pkg-config 0.29.2 (pkg-config --version)
 
 ## Important
 

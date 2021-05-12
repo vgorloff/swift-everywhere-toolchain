@@ -25,7 +25,7 @@
 
 set -e
 
-SaNdkPath="/usr/local/ndk/21.3.6528147"
+SaNdkPath="/usr/local/ndk/21.4.7075529"
 SaCurrentScriptName="$(basename ${BASH_SOURCE[0]})"
 SaCurrentScriptDirPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 if [[ $SHELL =~ "zsh" ]]; then
@@ -47,7 +47,7 @@ function usage {
   echo ""
   echo "   <target> Is one of the following:"
   echo ""
-  echo "     - armv7-none-linux-androideabi"
+  echo "     - armv7-unknown-linux-android"
   echo "     - aarch64-unknown-linux-android"
   echo "     - i686-unknown-linux-android"
   echo "     - x86_64-unknown-linux-android"
@@ -89,7 +89,7 @@ if [ -z "$SaArchTarget" ]; then
   exit 1
 fi
 
-if [ "$SaArchTarget" = "armv7-none-linux-androideabi" ] || [ "$SaArchTarget" = "aarch64-unknown-linux-android" ] || [ "$SaArchTarget" = "i686-unknown-linux-android" ] || [ "$SaArchTarget" = "x86_64-unknown-linux-android" ]; then
+if [ "$SaArchTarget" = "armv7-unknown-linux-android" ] || [ "$SaArchTarget" = "aarch64-unknown-linux-android" ] || [ "$SaArchTarget" = "i686-unknown-linux-android" ] || [ "$SaArchTarget" = "x86_64-unknown-linux-android" ]; then
   true
 else
   echo "Unknown target \"$SaArchTarget\""
@@ -104,7 +104,7 @@ if [ -z "$SaOutput" ]; then
 fi
 
 case $SaArchTarget in
-  armv7-none-linux-androideabi)
+  armv7-unknown-linux-android)
   SaSwiftArch=armv7
   SaCppArch=armeabi-v7a
   ;;

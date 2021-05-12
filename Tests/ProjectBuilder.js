@@ -20,7 +20,7 @@ module.exports = class ProjectBuilder extends Tool {
     this.binariesDirPath = path.join(Config.root, "Assets");
     if (arch.name == "armv7a") {
       this.ndkArchPath = "arm-linux-androideabi";
-      this.swiftTarget = "armv7-none-linux-androideabi";
+      this.swiftTarget = "armv7-unknown-linux-android";
     } else if (arch.name == "x86") {
       this.ndkArchPath = "i686-linux-android";
       this.swiftTarget = "i686-unknown-linux-android";
