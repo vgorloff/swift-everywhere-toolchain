@@ -155,6 +155,10 @@ module.exports = class Automation extends Tool {
   stage1() {
     this.runComponentAction("llvm", "make")
     this.runComponentAction("cmark", "make")
+    this.runComponentAction("yams", "make")
+    this.runComponentAction("sap", "make")
+    this.runComponentAction("tsc", "make")
+    this.runComponentAction("sd", "make")
   }
 
   /** @private */
@@ -171,7 +175,6 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("stdlib", "make")
     this.runComponentAction("dispatch", "make")
     this.runComponentAction("foundation", "make")
-    this.runComponentAction("tsc", "make")
     this.runComponentAction("llb", "make")
     this.runComponentAction("spm", "make")
   }
@@ -191,6 +194,9 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("tsc", "clean")
     this.runComponentAction("llb", "clean")
     this.runComponentAction("spm", "clean")
+    this.runComponentAction("sd", "clean")
+    this.runComponentAction("sap", "clean")
+    this.runComponentAction("yams", "clean")
   }
 
   /** @private */
