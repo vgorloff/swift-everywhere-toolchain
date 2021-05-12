@@ -1,0 +1,37 @@
+diff --git a/Sources/Foundation/Process.swift b/Sources/Foundation/Process.swift
+index 21615c19..4734e1bd 100644
+--- a/Sources/Foundation/Process.swift
++++ b/Sources/Foundation/Process.swift
+@@ -944,14 +944,10 @@ open class Process: NSObject {
+             try _throwIfPosixError(_CFPosixSpawnFileActionsAddClose(fileActions, fd))
+         }
+ 
+-#if canImport(Darwin) || os(Android)
++#if canImport(Darwin)
+         var spawnAttrs: posix_spawnattr_t? = nil
+-#else
+-        var spawnAttrs: posix_spawnattr_t = posix_spawnattr_t()
+-#endif
+         try _throwIfPosixError(posix_spawnattr_init(&spawnAttrs))
+         try _throwIfPosixError(posix_spawnattr_setflags(&spawnAttrs, .init(POSIX_SPAWN_SETPGROUP)))
+-#if canImport(Darwin)
+         try _throwIfPosixError(posix_spawnattr_setflags(&spawnAttrs, .init(POSIX_SPAWN_CLOEXEC_DEFAULT)))
+ #else
+         // POSIX_SPAWN_CLOEXEC_DEFAULT is an Apple extension so emulate it.
+@@ -978,10 +974,16 @@ open class Process: NSObject {
+ 
+         // Launch
+         var pid = pid_t()
++#if os(macOS)
+         guard _CFPosixSpawn(&pid, launchPath, fileActions, &spawnAttrs, argv, envp) == 0 else {
+             throw _NSErrorWithErrno(errno, reading: true, path: launchPath)
+         }
+         posix_spawnattr_destroy(&spawnAttrs)
++#else
++        guard _CFPosixSpawn(&pid, launchPath, fileActions, nil, argv, envp) == 0 else {
++            throw _NSErrorWithErrno(errno, reading: true, path: launchPath)
++        }
++#endif
+ 
+         // Close the write end of the input and output pipes.
+         if let pipe = standardInput as? Pipe {

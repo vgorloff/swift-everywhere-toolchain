@@ -50,6 +50,9 @@ const SSLBuilder = require("./lib/Builders/SSLBuilder");
 const SwiftTSCBuilder = require("./lib/Builders/SwiftTSCBuilder");
 const LLBBuilder = require("./lib/Builders/LLBBuilder");
 const SPMBuilder = require("./lib/Builders/SPMBuilder");
+const SAPBuilder = require("./lib/Builders/SAPBuilder");
+const YAMSBuilder = require("./lib/Builders/YAMSBuilder");
+const SwiftDriverBuilder = require("./lib/Builders/SwiftDriverBuilder");
 
 module.exports = class Automation extends Tool {
   run() {
@@ -129,6 +132,12 @@ module.exports = class Automation extends Tool {
       new LLBBuilder().runAction(action);
     } else if (component == "spm") {
       new SPMBuilder().runAction(action);
+    } else if (component == "sap") {
+      new SAPBuilder().runAction(action);
+    } else if (component == "yams") {
+      new YAMSBuilder().runAction(action);
+    } else if (component == "sd") {
+      new SwiftDriverBuilder().runAction(action);
     } else {
       this.logError(`! Unknown component \"${component}\".`);
       this.usage();
@@ -145,15 +154,21 @@ module.exports = class Automation extends Tool {
   /** @private */
   stage1() {
     this.runComponentAction("llvm", "make")
-    this.runComponentAction("cmark", "make")
-  }
-
-  /** @private */
-  stage2() {
     this.runComponentAction("icu", "make")
     this.runComponentAction("xml", "make")
     this.runComponentAction("ssl", "make")
     this.runComponentAction("curl", "make")
+  }
+
+  /** @private */
+  stage2() {
+    this.runComponentAction("cmark", "make")
+    this.runComponentAction("yams", "make")
+    this.runComponentAction("sap", "make")
+    this.runComponentAction("tsc", "make")
+    this.runComponentAction("llb", "make")
+    this.runComponentAction("sd", "make")
+    this.runComponentAction("spm", "make")
   }
 
   /** @private */
@@ -162,9 +177,6 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("stdlib", "make")
     this.runComponentAction("dispatch", "make")
     this.runComponentAction("foundation", "make")
-    this.runComponentAction("tsc", "make")
-    this.runComponentAction("llb", "make")
-    this.runComponentAction("spm", "make")
   }
 
   /** @private */
@@ -182,6 +194,9 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("tsc", "clean")
     this.runComponentAction("llb", "clean")
     this.runComponentAction("spm", "clean")
+    this.runComponentAction("sd", "clean")
+    this.runComponentAction("sap", "clean")
+    this.runComponentAction("yams", "clean")
   }
 
   /** @private */
