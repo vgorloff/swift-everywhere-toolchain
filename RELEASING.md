@@ -9,3 +9,10 @@
    - Assets/android-swift-build
    - Assets/android-swiftc
    - Assets/Readme.md
+
+4. Test toolchain:
+
+   1. Run `node main.js verify`
+   2. Run `node main.js test`
+   3. Compare in Diff-Tool contents of the Toolchain with contents of the Toolchain from previous build.
+   4. Run samples from [swift-everywhere-samples](https://github.com/vgorloff/swift-everywhere-samples) repository.
