@@ -31,6 +31,12 @@
    # Build for armv7a architecture.
    $ToolChain/usr/bin/swift-build-arm-linux-androideabi
 
+   # Build and pass additional build options.
+   $ToolChain/usr/bin/swift-build-arm-linux-androideabi -v -Xcc -D__ANDROID_API__=24
+
+   # To see available build options.
+   $ToolChain/usr/bin/swift-build-arm-linux-androideabi --help
+
    # Copy dependencies (so-files) for armv7a architecture to [destination] directory.
    $ToolChain/usr/bin/copy-libs-arm-linux-androideabi -output [destination]
    ```
