@@ -96,6 +96,8 @@ module.exports = class Automation extends Tool {
       this.install()
     } else if (action == "assets") {
       this.assets()
+    } else if (action == "stage2") {
+      this.stage2()
     } else if (action == "stage3") {
       this.stage3()
     } else {

@@ -2,15 +2,15 @@
 
 ## Requirements
 
-- macOS 11.3
-- Xcode 12.5
-- Android Studio 4.1.3
-- Android NDK 21.4.7075529
-- Node 14.16.1 (node -v). Newer versions may also work, but not tested.
-- CMake 3.20.2 (cmake --version)
+- macOS 11.5.2
+- Xcode 12.5.1
+- Android Studio 2020.3.1
+- Android NDK (See version number in file `NDK_VERSION` in the root of this repository)
+- Node 14.17.3 (node -v). Newer versions may also work, but not tested.
+- CMake 3.21.2 (cmake --version)
 - Ninja 1.10.2 (ninja --version)
 - autoconf 2.71 (autoconf --version)
-- aclocal 1.16.3 (aclocal --version)
+- aclocal 1.16.4 (aclocal --version)
 - glibtool 2.4.6 (glibtool --version)
 - pkg-config 0.29.2 (pkg-config --version)
 
