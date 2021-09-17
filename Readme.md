@@ -2,15 +2,15 @@
 
 ## Requirements
 
-- macOS 11.3
-- Xcode 12.5
-- Android Studio 4.1.3
-- Android NDK 21.4.7075529
-- Node 14.16.1 (node -v). Newer versions may also work, but not tested.
-- CMake 3.20.2 (cmake --version)
+- macOS 11.5.2
+- Xcode 12.5.1
+- Android Studio 2020.3.1
+- Android NDK (See version number in file `NDK_VERSION` in the root of this repository)
+- Node 14.17.3 (node -v). Newer versions may also work, but not tested.
+- CMake 3.21.2 (cmake --version)
 - Ninja 1.10.2 (ninja --version)
 - autoconf 2.71 (autoconf --version)
-- aclocal 1.16.3 (aclocal --version)
+- aclocal 1.16.4 (aclocal --version)
 - glibtool 2.4.6 (glibtool --version)
 - pkg-config 0.29.2 (pkg-config --version)
 
@@ -27,57 +27,33 @@ Build of complete toolchain takes ~1.5h. Instead of building it you can just dow
 
 ## Setup and Build
 
-1. Check that CMake is installed. Install CMake if needed.
+1. Install CMake, Ninja, Autotools and git-lfs. Check that all requirements are installed.
 
    ```bash
+   brew install cmake ninja autoconf automake libtool pkg-config git-lfs
    which cmake
-   brew install cmake
-   ```
-
-2. Check that Ninja is installed. Install Ninja if needed.
-
-   ```bash
    which ninja
-   brew install ninja
-   ```
-
-3. Check that Autotools is installed. Install Autotools if needed.
-
-   ```bash
    which autoconf
-   brew install autoconf
-
    which aclocal
-   brew install automake
-
    which glibtool
-   brew install libtool
-
    which pkg-config
-   brew install pkg-config
-   ```
-
-4. Check that git-lfs is installed. Install git-lfs if needed.
-
-   ```bash
    which git-lfs
-   brew install git-lfs
    ```
 
-5. Make sure that `Xcode Build Tools` properly configured.
+2. Make sure that `Xcode Build Tools` properly configured.
 
    ```bash
    xcode-select --print-path
    ```
 
-6. Clone this repository.
+3. Clone this repository.
 
    ```bash
    git clone https://github.com/vgorloff/swift-everywhere-toolchain.git
    cd swift-everywhere-toolchain
    ```
 
-7. Create a symbolic link to NDK installation directory.
+4. Create a symbolic link to NDK installation directory.
 
    ```bash
    sudo mkdir -p /usr/local/ndk
@@ -86,13 +62,13 @@ Build of complete toolchain takes ~1.5h. Instead of building it you can just dow
 
    The placeholder `$VERSION` needs to be replaced with a version mentioned in file `NDK_VERSION` at the root of cloned repository.
 
-8. Start a build.
+5. Start a build.
 
    ```bash
    node main.js
    ```
 
-9. Once the build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and compressed into archive `ToolChain/swift-android-toolchain.tar.gz`.
+6. Once the build completed, toolchain will be saved to folder `ToolChain/swift-android-toolchain` and compressed into archive `ToolChain/swift-android-toolchain.tar.gz`.
 
 ## Usage
 

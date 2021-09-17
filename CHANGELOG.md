@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.72] - 2021-09-17
+* #110 Fixes build issues on Apple M1 Silicon.
+
+## [1.0.71] - 2021-07-11
+* #124 Updated to use Swift 5.4.2
+
+## [1.0.70] - 2021-06-08
+* #118 Updated to use Swift 5.4.1
+
 ## [1.0.69] - 2021-05-12
 * #113 Updated to use Swift 5.4
 
