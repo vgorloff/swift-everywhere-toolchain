@@ -1,0 +1,13 @@
+diff --git a/stdlib/private/CMakeLists.txt b/stdlib/private/CMakeLists.txt
+index 181aec48a9e2dec76b489c94939cb66d0f2f92a2..0ff445fbafc92b9c197a6494e5eec5e70f2053e3 100644
+--- a/stdlib/private/CMakeLists.txt
++++ b/stdlib/private/CMakeLists.txt
+@@ -10,7 +10,7 @@ if(SWIFT_BUILD_SDK_OVERLAY)
+   endif()
+ endif()
+ 
+-if(SWIFT_BUILD_SDK_OVERLAY OR SWIFT_BUILD_TEST_SUPPORT_MODULES)
++if(SWIFT_INCLUDE_TESTS AND (SWIFT_BUILD_SDK_OVERLAY OR SWIFT_BUILD_TEST_SUPPORT_MODULES))
+   add_subdirectory(RuntimeUnittest)
+   add_subdirectory(StdlibUnicodeUnittest)
+   add_subdirectory(StdlibCollectionUnittest)
