@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.74] - 2021-09-25
+* #129 Updated to use Swift 5.5.0
+
 ## [1.0.73] - 2021-09-19
 * #128 Updated to use Swift 5.4.3
 

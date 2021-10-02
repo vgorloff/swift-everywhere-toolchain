@@ -53,6 +53,7 @@ const SPMBuilder = require("./lib/Builders/SPMBuilder");
 const SAPBuilder = require("./lib/Builders/SAPBuilder");
 const YAMSBuilder = require("./lib/Builders/YAMSBuilder");
 const SwiftDriverBuilder = require("./lib/Builders/SwiftDriverBuilder");
+const SwiftCryptoBuilder = require("./lib/Builders/SwiftCryptoBuilder");
 
 module.exports = class Automation extends Tool {
   run() {
@@ -140,6 +141,8 @@ module.exports = class Automation extends Tool {
       new YAMSBuilder().runAction(action);
     } else if (component == "sd") {
       new SwiftDriverBuilder().runAction(action);
+    } else if (component == "sc") {
+      new SwiftCryptoBuilder().runAction(action);
     } else {
       this.logError(`! Unknown component \"${component}\".`);
       this.usage();
@@ -170,6 +173,7 @@ module.exports = class Automation extends Tool {
     this.runComponentAction("tsc", "make")
     this.runComponentAction("llb", "make")
     this.runComponentAction("sd", "make")
+    this.runComponentAction("sc", "make")
     this.runComponentAction("spm", "make")
   }
 
