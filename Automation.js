@@ -23,7 +23,7 @@
  */
 
 const cp = require("child_process");
-const path = require('path');
+const path = require("path");
 const fs = require("fs");
 
 const Tool = require("./lib/Tool");
@@ -31,10 +31,10 @@ const Checkout = require("./lib/Git/Checkout");
 const Paths = require("./lib/Paths");
 const Components = require("./lib/Components");
 const Config = require("./lib/Config");
-const Installer = require("./lib/Installer")
-const Settings = require("./lib/Settings")
+const Installer = require("./lib/Installer");
+const Settings = require("./lib/Settings");
 const NDK = require("./lib/NDK");
-const TestAutomation = require("./Tests/TestAutomation")
+const TestAutomation = require("./Tests/TestAutomation");
 
 const LLVMBuilder = require("./lib/Builders/LLVMBuilder");
 const SwiftStdLibBuilder = require("./lib/Builders/SwiftStdLibBuilder");
@@ -57,8 +57,8 @@ const SwiftCryptoBuilder = require("./lib/Builders/SwiftCryptoBuilder");
 
 module.exports = class Automation extends Tool {
   run() {
-    this.verifyXcodeAndExitIfNeeded()
-    this.verifyNDKAndExitIfNeeded()
+    this.verifyXcodeAndExitIfNeeded();
+    this.verifyNDKAndExitIfNeeded();
     var args = process.argv.slice(2);
     var action = args[0];
     if (!action) {
@@ -80,27 +80,27 @@ module.exports = class Automation extends Tool {
     } else if (action == "checkout") {
       new Checkout().checkout();
     } else if (action == "build") {
-      this.build()
+      this.build();
     } else if (action == "clean") {
-      this.clean()
+      this.clean();
     } else if (action == "status") {
-      this.status()
+      this.status();
     } else if (action == "verify") {
-      this.verify()
+      this.verify();
     } else if (action == "bootstrap") {
-      this.bootstrap()
+      this.bootstrap();
     } else if (action == "archive") {
-      this.archive()
+      this.archive();
     } else if (action == "test") {
-      this.test()
+      this.test();
     } else if (action == "install") {
-      this.install()
+      this.install();
     } else if (action == "assets") {
-      this.assets()
+      this.assets();
     } else if (action == "stage2") {
-      this.stage2()
+      this.stage2();
     } else if (action == "stage3") {
-      this.stage3()
+      this.stage3();
     } else {
       this.usage();
     }
@@ -117,7 +117,7 @@ module.exports = class Automation extends Tool {
     } else if (component == "foundation") {
       this.archs.forEach((item) => new FoundationBuilder(item).runAction(action));
     } else if (component == "icu") {
-      new ICUHostBuilder().runAction(action)
+      new ICUHostBuilder().runAction(action);
       this.archs.forEach((item) => new ICUBuilder(item).runAction(action));
     } else if (component == "swift") {
       new SwiftBuilder().runAction(action);
@@ -151,126 +151,128 @@ module.exports = class Automation extends Tool {
 
   /** @private */
   build() {
-    this.stage1()
-    this.stage2()
-    this.stage3()
+    this.stage1();
+    this.stage2();
+    this.stage3();
   }
 
   /** @private */
   stage1() {
-    this.runComponentAction("llvm", "make")
-    this.runComponentAction("icu", "make")
-    this.runComponentAction("xml", "make")
-    this.runComponentAction("ssl", "make")
-    this.runComponentAction("curl", "make")
+    this.runComponentAction("llvm", "make");
+    this.runComponentAction("icu", "make");
+    this.runComponentAction("xml", "make");
+    this.runComponentAction("ssl", "make");
+    this.runComponentAction("curl", "make");
   }
 
   /** @private */
   stage2() {
-    this.runComponentAction("cmark", "make")
-    this.runComponentAction("yams", "make")
-    this.runComponentAction("sap", "make")
-    this.runComponentAction("tsc", "make")
-    this.runComponentAction("llb", "make")
-    this.runComponentAction("sd", "make")
-    this.runComponentAction("sc", "make")
-    this.runComponentAction("spm", "make")
+    this.runComponentAction("cmark", "make");
+    this.runComponentAction("yams", "make");
+    this.runComponentAction("sap", "make");
+    this.runComponentAction("tsc", "make");
+    this.runComponentAction("llb", "make");
+    this.runComponentAction("sd", "make");
+    this.runComponentAction("sc", "make");
+    this.runComponentAction("spm", "make");
   }
 
   /** @private */
   stage3() {
-    this.runComponentAction("swift", "make")
-    this.runComponentAction("stdlib", "make")
-    this.runComponentAction("dispatch", "make")
-    this.runComponentAction("foundation", "make")
+    this.runComponentAction("swift", "make");
+    this.runComponentAction("stdlib", "make");
+    this.runComponentAction("dispatch", "make");
+    this.runComponentAction("foundation", "make");
   }
 
   /** @private */
   clean() {
-    this.runComponentAction("llvm", "clean")
-    this.runComponentAction("cmark", "clean")
-    this.runComponentAction("icu", "clean")
-    this.runComponentAction("xml", "clean")
-    this.runComponentAction("ssl", "clean")
-    this.runComponentAction("curl", "clean")
-    this.runComponentAction("swift", "clean")
-    this.runComponentAction("stdlib", "clean")
-    this.runComponentAction("dispatch", "clean")
-    this.runComponentAction("foundation", "clean")
-    this.runComponentAction("tsc", "clean")
-    this.runComponentAction("llb", "clean")
-    this.runComponentAction("spm", "clean")
-    this.runComponentAction("sd", "clean")
-    this.runComponentAction("sap", "clean")
-    this.runComponentAction("yams", "clean")
+    this.runComponentAction("llvm", "clean");
+    this.runComponentAction("cmark", "clean");
+    this.runComponentAction("icu", "clean");
+    this.runComponentAction("xml", "clean");
+    this.runComponentAction("ssl", "clean");
+    this.runComponentAction("curl", "clean");
+    this.runComponentAction("swift", "clean");
+    this.runComponentAction("stdlib", "clean");
+    this.runComponentAction("dispatch", "clean");
+    this.runComponentAction("foundation", "clean");
+    this.runComponentAction("tsc", "clean");
+    this.runComponentAction("llb", "clean");
+    this.runComponentAction("spm", "clean");
+    this.runComponentAction("sd", "clean");
+    this.runComponentAction("sap", "clean");
+    this.runComponentAction("yams", "clean");
   }
 
   /** @private */
   status() {
-    var paths = []
-    paths.push(Paths.sourcesDirPath(Components.llvm))
-    paths.push(Paths.sourcesDirPath(Components.cmark))
-    paths.push(Paths.sourcesDirPath(Components.icu))
-    paths.push(Paths.sourcesDirPath(Components.xml))
-    paths.push(Paths.sourcesDirPath(Components.ssl))
-    paths.push(Paths.sourcesDirPath(Components.curl))
-    paths.push(Paths.sourcesDirPath(Components.swift))
-    paths.push(Paths.sourcesDirPath(Components.dispatch))
-    paths.push(Paths.sourcesDirPath(Components.foundation))
-    paths.push(Paths.sourcesDirPath(Components.tsc))
-    paths.push(Paths.sourcesDirPath(Components.llb))
-    paths.push(Paths.sourcesDirPath(Components.spm))
-    paths.forEach((path) => this.execute(`cd "${path}" && git status`))
+    var paths = [];
+    paths.push(Paths.sourcesDirPath(Components.llvm));
+    paths.push(Paths.sourcesDirPath(Components.cmark));
+    paths.push(Paths.sourcesDirPath(Components.icu));
+    paths.push(Paths.sourcesDirPath(Components.xml));
+    paths.push(Paths.sourcesDirPath(Components.ssl));
+    paths.push(Paths.sourcesDirPath(Components.curl));
+    paths.push(Paths.sourcesDirPath(Components.swift));
+    paths.push(Paths.sourcesDirPath(Components.dispatch));
+    paths.push(Paths.sourcesDirPath(Components.foundation));
+    paths.push(Paths.sourcesDirPath(Components.tsc));
+    paths.push(Paths.sourcesDirPath(Components.llb));
+    paths.push(Paths.sourcesDirPath(Components.spm));
+    paths.forEach((path) => this.execute(`cd "${path}" && git status`));
   }
 
   /** @private */
   verify() {
-    this.runComponentAction("icu", "verify")
-    this.runComponentAction("xml", "verify")
-    this.runComponentAction("ssl", "verify")
-    this.runComponentAction("curl", "verify")
-    this.runComponentAction("stdlib", "verify")
-    this.runComponentAction("dispatch", "verify")
-    this.runComponentAction("foundation", "verify")
+    this.runComponentAction("icu", "verify");
+    this.runComponentAction("xml", "verify");
+    this.runComponentAction("ssl", "verify");
+    this.runComponentAction("curl", "verify");
+    this.runComponentAction("stdlib", "verify");
+    this.runComponentAction("dispatch", "verify");
+    this.runComponentAction("foundation", "verify");
   }
 
   /** @private */
   bootstrap() {
-    this.runSimpleAction("checkout")
-    this.build()
-    this.install()
-    this.archive()
-    console.log("")
-    this.print("\"Swift Toolchain for Android\" build is completed.", 33)
-    this.print(`It can be found in "${Config.toolChainBuildOutput}".`, 33)
-    console.log("")
+    this.runSimpleAction("checkout");
+    this.build();
+    this.install();
+    this.archive();
+    console.log("");
+    this.print('"Swift Toolchain for Android" build is completed.', 33);
+    this.print(`It can be found in "${Config.toolChainBuildOutput}".`, 33);
+    console.log("");
   }
 
   /** @private */
   install() {
-    new Installer().install()
+    new Installer().install();
   }
 
   /** @private */
   assets() {
-    new Installer().copyAssets()
+    new Installer().copyAssets();
   }
 
   /** @private */
   archive() {
-    this.print(`Compressing "${Config.toolChainBuildOutput}"`, 32)
-    var baseName = path.basename(Config.toolChainBuildOutput)
-    var extName = 'tar.gz'
-    var fileName = `${baseName}.${extName}`
-    this.execute(`cd "${path.dirname(Config.toolChainBuildOutput)}" && tar -czf ${fileName} --options='compression-level=9' ${baseName}`)
-    this.print(`Archive saved to "${Config.toolChainBuildOutput}.${extName}"`, 36)
+    this.print(`Compressing "${Config.toolChainBuildOutput}"`, 32);
+    var baseName = path.basename(Config.toolChainBuildOutput);
+    var extName = "tar.gz";
+    var fileName = `${baseName}.${extName}`;
+    this.execute(
+      `cd "${path.dirname(Config.toolChainBuildOutput)}" && tar -czf ${fileName} --options='compression-level=9' ${baseName}`
+    );
+    this.print(`Archive saved to "${Config.toolChainBuildOutput}.${extName}"`, 36);
   }
 
   /** @private */
   test() {
-    const tests = new TestAutomation()
-    tests.build()
-    tests.clean()
+    const tests = new TestAutomation();
+    tests.build();
+    tests.clean();
   }
 
   /** @private */
@@ -306,29 +308,35 @@ module.exports = class Automation extends Tool {
 
     this.print("To clean only certain component:", 32);
     this.print("   $ node main.js llvm:clean\n", 36);
+
+    this.print("Advanced:\n", 33);
+    this.print("To see which commands will be executed for build without running build:", 32);
+    this.print("   $ node main.js build --dry-run\n", 36);
   }
 
   /** @private */
   verifyXcodeAndExitIfNeeded() {
-    var xcodeVersion = cp.execSync("xcodebuild -version").toString().trim()
-    let version = xcodeVersion.split("\n").filter((comp) => comp.includes("Xcode"))[0]
-    if (!version.includes(12)) {
-      this.print("Please use Xcode 12.", 31)
-      this.print("Your Xcode version seems too old or too new:", 36)
-      this.print(xcodeVersion, 32)
-      process.exit(1)
+    var xcodeVersion = cp.execSync("xcodebuild -version").toString().trim();
+    let version = xcodeVersion.split("\n").filter((comp) => comp.includes("Xcode"))[0];
+    if (!version.includes(13)) {
+      this.print("Please use Xcode 13.", 31);
+      this.print("Your Xcode version seems too old or too new:", 36);
+      this.print(xcodeVersion, 32);
+      process.exit(1);
     }
   }
 
   /** @private */
   verifyNDKAndExitIfNeeded() {
-    var ndkDir = Settings.ndkDir
-    var toolchainPath = new NDK().toolchainPath
-    if(!fs.existsSync(toolchainPath)) {
-       this.logError(`! Please create symbolic link "${ndkDir}" which points to Android NDK installation version ${Settings.ndkVersion}.`)
-       this.logMessage(`Usually Android NDK installation can be found at "~/Library/Android/sdk/ndk".`)
-       this.logMessage(`Refer to files "Readme.md" and "NDK_VERSION" for details.`)
-       process.exit(1)
+    var ndkDir = Settings.ndkDir;
+    var toolchainPath = new NDK().toolchainPath;
+    if (!fs.existsSync(toolchainPath)) {
+      this.logError(
+        `! Please create symbolic link "${ndkDir}" which points to Android NDK installation version ${Settings.ndkVersion}.`
+      );
+      this.logMessage(`Usually Android NDK installation can be found at "~/Library/Android/sdk/ndk".`);
+      this.logMessage(`Refer to files "Readme.md" and "NDK_VERSION" for details.`);
+      process.exit(1);
     }
   }
 };

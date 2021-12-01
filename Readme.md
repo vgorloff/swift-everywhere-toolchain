@@ -3,7 +3,7 @@
 ## Requirements
 
 - macOS 11.5.2
-- Xcode 12.5.1
+- Xcode 13
 - Android Studio 2020.3.1
 - Android NDK (See version number in file `NDK_VERSION` in the root of this repository)
 - Node 14.17.3 (node -v). Newer versions may also work, but not tested.
