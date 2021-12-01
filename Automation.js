@@ -312,6 +312,12 @@ module.exports = class Automation extends Tool {
     this.print("Advanced:\n", 33);
     this.print("To see which commands will be executed for build without running build:", 32);
     this.print("   $ node main.js build --dry-run\n", 36);
+
+    this.print("To fetch updates from git repositories of the dependencies:", 32);
+    this.print("   $ node main.js fetch\n", 36);
+
+    this.print("To see is there are any local changes in git repositories of the dependencies:", 32);
+    this.print("   $ node main.js status\n", 36);
   }
 
   /** @private */
