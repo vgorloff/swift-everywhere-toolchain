@@ -12,7 +12,7 @@ let package = Package(
    ],
    targets: [
       .target(name: "Lib", dependencies: ["CLib", "CppLib", "CStdLib", "StdLib"]),
-      .target(name: "Exe", dependencies: ["Lib", "SAConcurrency"]),
+      .executableTarget(name: "Exe", dependencies: ["Lib", "SAConcurrency"]),
       .target(name: "CLib"),
       .target(name: "CppLib"),
       .target(name: "CStdLib"),
