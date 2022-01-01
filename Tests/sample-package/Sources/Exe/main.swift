@@ -110,3 +110,6 @@ if let url = URL(string: "http://www.example.com") {
    print("bad url")
 }
 #endif
+
+let consumer = SAConcurrencyConsumer()
+consumer.consume()
