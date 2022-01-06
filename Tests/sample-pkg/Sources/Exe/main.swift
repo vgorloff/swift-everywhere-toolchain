@@ -87,7 +87,7 @@ import FoundationNetworking
 
 let config = URLSessionConfiguration.default
 let session = URLSession(configuration: config)
-if let url = URL(string: "https://www.example.com") {
+if let url = URL(string: "http://www.example.com") {
    let sema2 = DispatchSemaphore(value: 0)
    let task = session.dataTask(with: url) { data, response, error in
       if let response = response {
