@@ -279,10 +279,12 @@ module.exports = class Automation extends Tool {
     var baseName = path.basename(Config.toolChainBuildOutput);
     var extName = "tar.gz";
     var fileName = `${baseName}.${extName}`;
+    const fullFilePath = `${Config.toolChainBuildOutput}.${extName}`;
+    this.execute(`rm -rfv "${fullFilePath}"`);
     this.execute(
       `cd "${path.dirname(Config.toolChainBuildOutput)}" && tar -czf ${fileName} --options='compression-level=9' ${baseName}`
     );
-    this.print(`Archive saved to "${Config.toolChainBuildOutput}.${extName}"`, 36);
+    this.print(`Archive saved to "${fullFilePath}"`, 36);
   }
 
   /** @private */
