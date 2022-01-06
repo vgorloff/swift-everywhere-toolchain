@@ -1,0 +1,13 @@
+diff --git a/cmake/modules/Libdispatch.cmake b/cmake/modules/Libdispatch.cmake
+index bc03326d908..c435fe5d5b9 100644
+--- a/cmake/modules/Libdispatch.cmake
++++ b/cmake/modules/Libdispatch.cmake
+@@ -100,6 +100,8 @@ foreach(sdk ${DISPATCH_SDKS})
+                           "-DCMAKE_ANDROID_NDK=${SWIFT_ANDROID_NDK_PATH}"
+                           -DCMAKE_ANDROID_ARCH_ABI=${SWIFT_SDK_ANDROID_ARCH_${arch}_ABI}
+                           -DCMAKE_ANDROID_API=${SWIFT_ANDROID_API_LEVEL}
++                          -DANDROID_PLATFORM=${ANDROID_PLATFORM}
++                          -DANDROID_ABI=${ANDROID_ABI}
+                           -DBUILD_SHARED_LIBS=YES
+                           -DENABLE_SWIFT=NO
+                           -DENABLE_TESTING=NO

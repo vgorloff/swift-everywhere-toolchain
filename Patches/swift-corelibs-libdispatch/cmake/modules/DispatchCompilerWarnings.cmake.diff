@@ -1,0 +1,15 @@
+diff --git a/cmake/modules/DispatchCompilerWarnings.cmake b/cmake/modules/DispatchCompilerWarnings.cmake
+index 35b80f3..1cb43d9 100644
+--- a/cmake/modules/DispatchCompilerWarnings.cmake
++++ b/cmake/modules/DispatchCompilerWarnings.cmake
+@@ -71,6 +71,10 @@ else()
+     add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:-Wno-conversion>)
+     add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:-Wno-int-conversion>)
+     add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:-Wno-shorten-64-to-32>)
++    if(CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
++      # Needed to avoid issue with `-Werror`. See: https://github.com/vgorloff/swift-everywhere-toolchain/issues/138
++      add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:-Wno-unused-command-line-argument>)
++    endif()
+   endif()
+   add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:-Wno-error=assign-enum>)
+ endif()
