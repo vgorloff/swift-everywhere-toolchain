@@ -85,6 +85,8 @@ module.exports = class Automation extends Tool {
       this.clean();
     } else if (action == "status") {
       this.status();
+    } else if (action == "reset") {
+      this.reset();
     } else if (action == "verify") {
       this.verify();
     } else if (action == "bootstrap") {
@@ -97,10 +99,6 @@ module.exports = class Automation extends Tool {
       this.install();
     } else if (action == "assets") {
       this.assets();
-    } else if (action == "stage2") {
-      this.stage2();
-    } else if (action == "stage3") {
-      this.stage3();
     } else {
       this.usage();
     }
@@ -143,6 +141,10 @@ module.exports = class Automation extends Tool {
       new SwiftDriverBuilder().runAction(action);
     } else if (component == "sc") {
       new SwiftCryptoBuilder().runAction(action);
+    } else if (component == "stage2") {
+      this.stage2(action);
+    } else if (component == "stage3") {
+      this.stage3(action);
     } else {
       this.logError(`! Unknown component \"${component}\".`);
       this.usage();
@@ -151,38 +153,38 @@ module.exports = class Automation extends Tool {
 
   /** @private */
   build() {
-    this.stage1();
-    this.stage2();
-    this.stage3();
+    this.stage1("make");
+    this.stage2("make");
+    this.stage3("make");
   }
 
   /** @private */
-  stage1() {
-    this.runComponentAction("llvm", "make");
-    this.runComponentAction("icu", "make");
-    this.runComponentAction("xml", "make");
-    this.runComponentAction("ssl", "make");
-    this.runComponentAction("curl", "make");
+  stage1(action) {
+    this.runComponentAction("llvm", action);
+    this.runComponentAction("icu", action);
+    this.runComponentAction("xml", action);
+    this.runComponentAction("ssl", action);
+    this.runComponentAction("curl", action);
   }
 
   /** @private */
-  stage2() {
-    this.runComponentAction("cmark", "make");
-    this.runComponentAction("yams", "make");
-    this.runComponentAction("sap", "make");
-    this.runComponentAction("tsc", "make");
-    this.runComponentAction("llb", "make");
-    this.runComponentAction("sd", "make");
-    this.runComponentAction("sc", "make");
-    this.runComponentAction("spm", "make");
+  stage2(action) {
+    this.runComponentAction("cmark", action);
+    this.runComponentAction("yams", action);
+    this.runComponentAction("sap", action);
+    this.runComponentAction("tsc", action);
+    this.runComponentAction("llb", action);
+    this.runComponentAction("sd", action);
+    this.runComponentAction("sc", action);
+    this.runComponentAction("spm", action);
   }
 
   /** @private */
-  stage3() {
-    this.runComponentAction("swift", "make");
-    this.runComponentAction("stdlib", "make");
-    this.runComponentAction("dispatch", "make");
-    this.runComponentAction("foundation", "make");
+  stage3(action) {
+    this.runComponentAction("swift", action);
+    this.runComponentAction("stdlib", action);
+    this.runComponentAction("dispatch", action);
+    this.runComponentAction("foundation", action);
   }
 
   /** @private */
@@ -206,8 +208,9 @@ module.exports = class Automation extends Tool {
   }
 
   /** @private */
-  status() {
-    var paths = [];
+
+  getPathsOfAllComponents() {
+    let paths = [];
     paths.push(Paths.sourcesDirPath(Components.llvm));
     paths.push(Paths.sourcesDirPath(Components.cmark));
     paths.push(Paths.sourcesDirPath(Components.icu));
@@ -220,7 +223,21 @@ module.exports = class Automation extends Tool {
     paths.push(Paths.sourcesDirPath(Components.tsc));
     paths.push(Paths.sourcesDirPath(Components.llb));
     paths.push(Paths.sourcesDirPath(Components.spm));
+    paths.push(Paths.sourcesDirPath(Components.sap));
+    paths.push(Paths.sourcesDirPath(Components.sc));
+    paths.push(Paths.sourcesDirPath(Components.sd));
+    paths.push(Paths.sourcesDirPath(Components.yams));
+    return paths;
+  }
+
+  status() {
+    const paths = this.getPathsOfAllComponents();
     paths.forEach((path) => this.execute(`cd "${path}" && git status`));
+  }
+
+  reset() {
+    const paths = this.getPathsOfAllComponents();
+    paths.forEach((path) => this.execute(`cd "${path}" && git status && git reset --hard`));
   }
 
   /** @private */
@@ -309,7 +326,14 @@ module.exports = class Automation extends Tool {
     this.print("To clean only certain component:", 32);
     this.print("   $ node main.js llvm:clean\n", 36);
 
-    this.print("Advanced:\n", 33);
+    this.print("Other per-component actions:", 32);
+    this.print("   $ node main.js <component>:[configure|build|install|clean|make|rebuild|patch|unpatch|reset]\n", 36);
+    this.print("   Where:", 36);
+    this.print(`     - make:    The sequence of "configure -> build -> install"`, 36);
+    this.print(`     - rebuild: The sequence of "clean -> make"`, 36);
+    this.print(`     - reset:   Will reset any changes made in sources.`, 36);
+
+    this.print("\nAdvanced:\n", 33);
     this.print("To see which commands will be executed for build without running build:", 32);
     this.print("   $ node main.js build --dry-run\n", 36);
 
@@ -318,6 +342,9 @@ module.exports = class Automation extends Tool {
 
     this.print("To see is there are any local changes in git repositories of the dependencies:", 32);
     this.print("   $ node main.js status\n", 36);
+
+    this.print("To reset any local changes in git repositories of the dependencies:", 32);
+    this.print("   $ node main.js reset\n", 36);
   }
 
   /** @private */

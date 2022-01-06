@@ -125,8 +125,9 @@ if ! [[ $@ =~ "-D__ANDROID_API__" ]]; then
    SaCmdArgs="$SaCmdArgs -Xcc -D__ANDROID_API__=$SaNdkApi"
 fi
 
-# Without next line, the Cpp code compilation may fail: See: https://github.com/vgorloff/swift-everywhere-toolchain/issues/89
-SaCmdArgs="$SaCmdArgs -Xcc -I${SaNdkToolChain}/sysroot/usr/include/c++/v1"
+# v1. Without next line, the Cpp code compilation may fail: See: https://github.com/vgorloff/swift-everywhere-toolchain/issues/89
+# v2. Changed `-Xcc` to `-Xcxx` to adopt to upcoming changes made in https://github.com/apple/swift/pull/35707.
+SaCmdArgs="$SaCmdArgs -Xcxx -I${SaNdkToolChain}/sysroot/usr/include/c++/v1"
 
 if [ "$SaVerbose" = "YES" ]; then
   # SaCmd="$SaCmd -Xswiftc -v"

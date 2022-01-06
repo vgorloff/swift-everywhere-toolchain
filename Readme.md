@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- macOS 11.6
+- macOS 12
 - Xcode 13
 - Android Studio 2020.3.1
 - Android NDK (See version number in file `NDK_VERSION` in the root of this repository)
