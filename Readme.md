@@ -1,5 +1,16 @@
 # swift-everywhere-toolchain
 
+## My Town
+
+This Open source project won't be updated until Kremlin will stop war in Ukraine and repair damages made in towns: Irpin, Bucha, Gostomel. If this won't happen during next 6 months (until 1 September 2022), then this project will be removed from public space.
+
+![Town of Irpin after Airstrike](./Media/irpin.jpg "Town of Irpin after Airstrike")
+
+See also:
+
+- [Russian invaders bomb high-rise building in Irpin west of Kyiv](https://www.pravda.com.ua/eng/news/2022/03/2/7327381/)
+- [In the morning, the invaders launched two air strikes on Irpin, a residential building was destroyed](https://gordonua.com/news/war/utrom-okkupanty-nanesli-dva-aviaudara-po-irpenyu-razrushen-zhiloy-dom-foto-i-video-1598067.html)
+
 ## Requirements
 
 - macOS 12
